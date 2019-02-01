@@ -1,0 +1,81 @@
+[
+    {
+        "name": "DUNGEON_SIZE",
+        "val": 39
+    },
+    {
+        "name": "ROOM_TRIES",
+        "val": 100
+    },
+    {
+        "name": "SQUARE_CONSTANTS",
+        "val": {
+            "floor": 0,
+            "wall": 1,
+            "door": 2,
+            "stairDown": 3,
+            "stairUp": 4,
+            "loot": 5,
+            "pillar": -10
+        }
+    },
+    {
+        "name": "PLAYER_VISION_RANGE",
+        "val": 20
+    },
+    {
+        "name": "IDLE_LOOP_SPEED",
+        "val": 20
+    },
+    {
+        "name": "IDLE_ANIMATION_SLOW_FACTOR",
+        "val": 8
+    },
+    {
+        "name": "IDLE_DELAY",
+        "val": 15
+    },
+    {
+        "name": "FIRST_INPUT_DELAY",
+        "val": 100
+    },
+    {
+        "name": "CONSECUTIVE_INPUT_DELAY",
+        "val": 24
+    },
+    {
+        "name": "DEFAULT_ANIMATIONS",
+        "val": [
+            [
+                0,
+                0,
+                0,
+                0
+            ],
+            [
+                0,
+                0,
+                0,
+                0
+            ],
+            [
+                0,
+                0,
+                0,
+                0
+            ],
+            [
+                0,
+                0,
+                0,
+                0
+            ],
+            [
+                0,
+                0,
+                0,
+                0
+            ]
+        ]
+    }
+]
