@@ -24,3 +24,8 @@ Dungeon.prototype.currentLevelMobs = function () {
     return this.levels[this.currentLevelIndex].mobs;
 }
 
+Dungeon.prototype.newLevel = function () {
+    this.currentLevelIndex++;
+    this.levels.push(generateLevel(this.currentLevelIndex));
+}
+

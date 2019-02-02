@@ -9,9 +9,9 @@ function Square(x, y, type) {
 }
 
 Square.prototype.walkable = function () {
-    return (this.squareType == FLOOR || this.squareType == DOOR || this.squareType == STAIRDOWN || this.squareType == STAIRUP);
+    return (this.squareType == FLOOR || this.squareType == DOOR || this.squareType == STAIR_DOWN || this.squareType == STAIR_UP);
 };
 
 Square.prototype.currentlyWalkable = function () {
-    return (!this.containsMob && (this.squareType == FLOOR || this.squareType == DOOR || this.squareType == STAIRDOWN || this.squareType == STAIRUP));
+    return (!this.containsMob && (this.squareType == FLOOR || this.squareType == DOOR || this.squareType == STAIR_DOWN || this.squareType == STAIR_UP));
 }; 

@@ -89,19 +89,19 @@ function GameManager() {
 
     let handleInputs = function () {
         if (typeof inputs[0] == "string") {
-            let success = false;
+            let returnCode = false;
             switch (inputs[0]) {
                 case 'w':
-                    success = player.move(UP, dungeon.currentBoard());
+                    returnCode = player.move(UP, dungeon.currentBoard());
                     break;
                 case 'd':
-                    success = player.move(RIGHT, dungeon.currentBoard());
+                    returnCode = player.move(RIGHT, dungeon.currentBoard());
                     break;
                 case 's':
-                    success = player.move(DOWN, dungeon.currentBoard());
+                    returnCode = player.move(DOWN, dungeon.currentBoard());
                     break;
                 case 'a':
-                    success = player.move(LEFT, dungeon.currentBoard());
+                    returnCode = player.move(LEFT, dungeon.currentBoard());
                     break;
                 default:
                     console.log("Invalid input");
@@ -111,9 +111,14 @@ function GameManager() {
                 let newEnd = inputs.splice(0, 1)[0];
                 inputs.push(newEnd);
             }
-            if (success) {
+            if (returnCode == 1) {
                 decreaseMoveDelay();
                 aLoop(true);
+            }
+            else if (returnCode == 2) {
+                // decreaseMoveDelay();
+                // aLoop(true);
+                newLevel();
             }
         }
         else if (typeof inputs[0] == "object") {
@@ -145,5 +150,10 @@ function GameManager() {
         }
         idleAnimationCounter++;
         if (idleAnimationCounter >= CONFIG.IDLE_ANIMATION_SLOW_FACTOR) idleAnimationCounter = 0;
+    }
+
+    let newLevel = function(){
+        console.log("test");
+        dungeon.newLevel();
     }
 }

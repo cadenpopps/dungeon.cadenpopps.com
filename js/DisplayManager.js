@@ -15,7 +15,7 @@ function DisplayManager(square_size, vision, animation_stages) {
     let BOB_OFFSET_X = [0, SQUARE_SIZE / 20, 0, -SQUARE_SIZE / 20];
     let BOB_OFFSET_Y = [0, SQUARE_SIZE / 30, 0, SQUARE_SIZE / 30];
 
-    let MOVE_OFFSET = [2 * SQUARE_SIZE / 3, 2 * SQUARE_SIZE / 5, SQUARE_SIZE / 4, 0];
+    let MOVE_OFFSET = [3 * SQUARE_SIZE / 4, SQUARE_SIZE / 2, SQUARE_SIZE / 4, 0];
 
     let CENTER_X = floor(width / 2);
     let CENTER_Y = floor(height / 2);
@@ -88,27 +88,29 @@ function DisplayManager(square_size, vision, animation_stages) {
             for (let y = constrainLow(0, player.y - PLAYER_VISION_RANGE); y < constrainHigh(CONFIG.DUNGEON_SIZE, player.y + PLAYER_VISION_RANGE); y++) {
                 if (board[x][y].visible || board[x][y].discovered) {
                     //TEMPORARY UNTIL WE HAVE TEXTURES
+                    // let distFromPlayer = (abs(player.x))
+                    let distFromPlayer = map(dist(player.x, player.y, x, y) - 2, 0, PLAYER_VISION_RANGE, 1, .1);
                     switch (board[x][y].squareType) {
                         case WALL:
-                            fill(45, 45, 45);
+                            fill(45, 45, 45, distFromPlayer);
                             break;
                         case FLOOR:
-                            fill(220, 220, 220);
+                            fill(220, 220, 220, distFromPlayer);
                             break;
                         case LOOT:
-                            fill(229, 90, 4);
+                            fill(229, 90, 4, distFromPlayer);
                             break;
                         case DOOR:
-                            fill(120, 80, 60);
+                            fill(120, 80, 60, distFromPlayer);
                             break;
-                        case STAIRUP:
-                            fill(71, 100, 193);
+                        case STAIR_UP:
+                            fill(71, 100, 193, distFromPlayer);
                             break;
-                        case STAIRDOWN:
-                            fill(72, 52, 173);
+                        case STAIR_DOWN:
+                            fill(72, 52, 173, distFromPlayer);
                             break;
                         default:
-                            fill(255, 0, 0);
+                            fill(255, 0, 0, distFromPlayer);
                             break;
                     }
                     rect(DUNGEON_OFFSET_X - ((player.x - x) * SQUARE_SIZE), DUNGEON_OFFSET_Y - ((player.y - y) * SQUARE_SIZE), SQUARE_SIZE, SQUARE_SIZE);
@@ -168,10 +170,10 @@ function DisplayManager(square_size, vision, animation_stages) {
                     case DOOR:
                         fill(120, 80, 60);
                         break;
-                    case STAIRUP:
+                    case STAIR_UP:
                         fill(71, 100, 193);
                         break;
-                    case STAIRDOWN:
+                    case STAIR_DOWN:
                         fill(72, 52, 173);
                         break;
                     default:

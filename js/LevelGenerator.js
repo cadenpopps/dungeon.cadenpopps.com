@@ -73,13 +73,13 @@ function generateLevel(depth, previousStair) {
         // console.log(stairUp);
         // console.log(stairDown);
 
-        board[stairUp.x][stairUp.y].squareType = STAIRUP;
-        board[stairDown.x][stairDown.y].squareType = STAIRDOWN;
+        board[stairUp.x][stairUp.y].squareType = STAIR_UP;
+        board[stairDown.x][stairDown.y].squareType = STAIR_DOWN;
 
         makeSquares(board);
 
 
-        // if (!findPath(board[stairDown.x][stairDown.y], board[stairUp.x][stairUp.y], board)) {
+        // if (!findPath(board[STAIR_DOWN.x][STAIR_DOWN.y], board[stairUp.x][stairUp.y], board)) {
         //     return createLevel(_stairUp, _floorNum);
         // }
 
@@ -130,8 +130,8 @@ function generateLevel(depth, previousStair) {
 
 
 
-        board[stairUp.x][stairUp.y].squareType = STAIRUP;
-        board[stairDown.x][stairDown.y].squareType = STAIRDOWN;
+        board[stairUp.x][stairUp.y].squareType = STAIR_DOWN;
+        board[stairDown.x][stairDown.y].squareType = STAIR_DOWN;
 
         // populate();
 
@@ -189,15 +189,15 @@ function generateLevel(depth, previousStair) {
     var genStairDownSector = function (stairUpSector) {
         let coordinates = [];
         if (stairUpSector % 2 == 0) {
-            let availibleSectors = [];
+            let availableSectors = [];
             let row = (floor(stairUpSector / 3) + 2) % 4;
             let col = ((stairUpSector % 3) + 2) % 4;
             for (let i = 0; i < 9; i++) {
                 if (floor(i / 3) == row || (i % 3) == col) {
-                    availibleSectors.push(i);
+                    availableSectors.push(i);
                 }
             }
-            coordinates = getSectorCoords(random(availibleSectors));
+            coordinates = getSectorCoords(random(availableSectors));
         }
         else {
             if ((stairUpSector - 1) % 6 == 0) {
@@ -537,7 +537,7 @@ function generateLevel(depth, previousStair) {
         i = 0;
         while (i < mobCap || (i > mobCap - 2 && random() < .2)) {
             var randomSquare = board[randomInt(CONFIG.DUNGEON_SIZE)][randomInt(CONFIG.DUNGEON_SIZE)];
-            while (!randomSquare.canBeMobStart(stairUp)) {
+            while (!randomSquare.canBeMobStart(STAIR_UP)) {
                 var randomSquare = board[randomInt(CONFIG.DUNGEON_SIZE)][randomInt(CONFIG.DUNGEON_SIZE)];
             }
             randomSquare.containsMob = true;

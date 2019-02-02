@@ -14,6 +14,48 @@ function Player(pos, hp, str, mag, int) {
         if (playerMoved) updateSight(board, this.x, this.y);
     }
 
+    this.move = function (dir, board) {
+        let status = false;
+        switch (dir) {
+            case UP:
+                if (this.y > 0 && board[this.x][this.y - 1].walkable()) {
+                    this.y--;
+                    status = 1;
+                }
+                break;
+            case RIGHT:
+                if (this.x < CONFIG.DUNGEON_SIZE && board[this.x + 1][this.y].walkable()) {
+                    this.x++;
+                    status = 1;
+                }
+                break;
+            case DOWN:
+                if (this.y < CONFIG.DUNGEON_SIZE && board[this.x][this.y + 1].walkable()) {
+                    this.y++;
+                    status = 1;
+                }
+                break;
+            case LEFT:
+                if (this.x > 0 && board[this.x - 1][this.y].walkable()) {
+                    this.x--;
+                    status = 1;
+                }
+                break;
+            default:
+                console.log("No direction");
+                break;
+        }
+        if (status) {
+            this.animation = dir;
+            this.animationCounter = 0;
+            this.busy = true;
+            if (board[this.x][this.y].squareType == STAIR_DOWN) {
+                status = 2;
+            } 
+        }
+        return status;
+    }
+
     let updateSight = function (board, x, y) {
 
         for (var i = 0; i < CONFIG.DUNGEON_SIZE; i++) {

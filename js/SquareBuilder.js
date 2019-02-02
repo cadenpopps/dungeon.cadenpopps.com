@@ -73,7 +73,7 @@ function SquareBuilder(x, y) {
 		}
 
 		for (let n of neighbors) {
-			if (n.squareType == DOOR || n.squareType == LOOT || n.squareType == STAIRUP || n.squareType == STAIRDOWN) {
+			if (n.squareType == DOOR || n.squareType == LOOT || n.squareType == STAIR_UP || n.squareType == STAIR_DOWN) {
 				return false;
 			}
 		}
@@ -81,11 +81,11 @@ function SquareBuilder(x, y) {
 		return true;
 	};
 
-	this.canBeMobStart = function (stairUp) {
+	this.canBeMobStart = function (STAIR_UP) {
 		if (this.squareType != FLOOR) {
 			return false;
 		}
-		if (dist(this.x, this.y, stairUp.x, stairUp.y) < 7) {
+		if (dist(this.x, this.y, STAIR_UP.x, STAIR_UP.y) < 7) {
 			return false;
 		}
 		return true;
@@ -110,11 +110,11 @@ function SquareBuilder(x, y) {
 	};
 
 	this.walkable = function () {
-		return (this.squareType == FLOOR || this.squareType == DOOR || this.squareType == STAIRDOWN || this.squareType == STAIRUP);
+		return (this.squareType == FLOOR || this.squareType == DOOR || this.squareType == STAIR_DOWN || this.squareType == STAIR_UP);
 	};
 
 	this.currentlyWalkable = function () {
-		return (!this.containsMob && (this.squareType == FLOOR || this.squareType == DOOR || this.squareType == STAIRDOWN || this.squareType == STAIRUP));
+		return (!this.containsMob && (this.squareType == FLOOR || this.squareType == DOOR || this.squareType == STAIR_DOWN || this.squareType == STAIR_UP));
 	};
 
 	this.diagNeighbors = function (board) {
