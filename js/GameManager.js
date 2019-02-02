@@ -73,6 +73,8 @@ function GameManager() {
     this.clearInputs = function () {
         inputs = [];
         resetMoveDelay();
+        clearTimeout(handleInputTimer);
+        handleInputTimer = undefined;
     }
 
     let resetMoveDelay = function () {
