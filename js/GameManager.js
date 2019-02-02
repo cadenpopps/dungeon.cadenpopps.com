@@ -83,24 +83,23 @@ function GameManager() {
         if (player.currentMoveDelay != CONFIG.MIN_MOVE_DELAY) {
             player.currentMoveDelay = floor(constrainLow(player.currentMoveDelay * CONFIG.MOVE_DELAY_DECREASE, CONFIG.MIN_MOVE_DELAY));
         }
-        console.log(player.currentMoveDelay);
     }
 
     let handleInputs = function () {
         if (typeof inputs[0] == "string") {
-            let sucess = false;
+            let success = false;
             switch (inputs[0]) {
                 case 'w':
-                    sucess = player.move(UP, dungeon.currentBoard());
+                    success = player.move(UP, dungeon.currentBoard());
                     break;
                 case 'd':
-                    sucess = player.move(RIGHT, dungeon.currentBoard());
+                    success = player.move(RIGHT, dungeon.currentBoard());
                     break;
                 case 's':
-                    sucess = player.move(DOWN, dungeon.currentBoard());
+                    success = player.move(DOWN, dungeon.currentBoard());
                     break;
                 case 'a':
-                    sucess = player.move(LEFT, dungeon.currentBoard());
+                    success = player.move(LEFT, dungeon.currentBoard());
                     break;
                 default:
                     console.log("Invalid input");
@@ -110,7 +109,7 @@ function GameManager() {
                 let newEnd = inputs.splice(0, 1)[0];
                 inputs.push(newEnd);
             }
-            if (sucess) {
+            if (success) {
                 decreaseMoveDelay();
                 aLoop(true);
             }
