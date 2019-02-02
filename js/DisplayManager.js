@@ -28,7 +28,7 @@ function DisplayManager(square_size, vision, animation_stages) {
 
     this._display = function (board, player, mobs) {
         if (DEBUG_BOARD) {
-            drawDungeonDebug(board);
+            drawDungeonDebug(board, player);
         }
         else {
             drawDungeon(board, player);
@@ -84,8 +84,8 @@ function DisplayManager(square_size, vision, animation_stages) {
 
     let drawDungeon = function (board, player) {
         fixOffset(player);
-        for (let x = getMax(0, player.x - PLAYER_VISION_RANGE); x < getMin(CONFIG.DUNGEON_SIZE, player.x + PLAYER_VISION_RANGE); x++) {
-            for (let y = getMax(0, player.y - PLAYER_VISION_RANGE); y < getMin(CONFIG.DUNGEON_SIZE, player.y + PLAYER_VISION_RANGE); y++) {
+        for (let x = constrainLow(0, player.x - PLAYER_VISION_RANGE); x < constrainHigh(CONFIG.DUNGEON_SIZE, player.x + PLAYER_VISION_RANGE); x++) {
+            for (let y = constrainLow(0, player.y - PLAYER_VISION_RANGE); y < constrainHigh(CONFIG.DUNGEON_SIZE, player.y + PLAYER_VISION_RANGE); y++) {
                 if (board[x][y].visible || board[x][y].discovered) {
                     //TEMPORARY UNTIL WE HAVE TEXTURES
                     switch (board[x][y].squareType) {
@@ -148,7 +148,11 @@ function DisplayManager(square_size, vision, animation_stages) {
         DUNGEON_OFFSET_Y = floor(offy);
     }
 
-    let drawDungeonDebug = function (board) {
+    let drawDungeonDebug = function (board, player) {
+        SQUARE_SIZE = floor((height - 200) / CONFIG.DUNGEON_SIZE);
+        PLAYER_SIZE = SQUARE_SIZE * .8;
+        CONFIG.MAX_MOVE_DELAY = 10;
+        PLAYER_OFFSET = (SQUARE_SIZE - PLAYER_SIZE) / 2;
         for (let i = 0; i < CONFIG.DUNGEON_SIZE; i++) {
             for (let j = 0; j < CONFIG.DUNGEON_SIZE; j++) {
                 switch (board[i][j].squareType) {
@@ -177,5 +181,7 @@ function DisplayManager(square_size, vision, animation_stages) {
                 rect(100 + (i * SQUARE_SIZE), 100 + (j * SQUARE_SIZE), SQUARE_SIZE, SQUARE_SIZE);
             }
         }
+        fill(255, 255, 0);
+        rect(100 + (player.x * SQUARE_SIZE) + PLAYER_OFFSET, 100 + (player.y * SQUARE_SIZE) + PLAYER_OFFSET, PLAYER_SIZE, PLAYER_SIZE);
     }
 }
