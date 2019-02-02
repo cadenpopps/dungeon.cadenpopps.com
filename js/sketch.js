@@ -41,7 +41,10 @@ function setup() {
 
 function init() {
     gm = new GameManager();
-    document.addEventListener('contextmenu', gm.clearInputs());
+    document.addEventListener('contextmenu', function () {
+        console.log("test");
+        gm.clearInputs()
+    });
 }
 
 function draw() {
