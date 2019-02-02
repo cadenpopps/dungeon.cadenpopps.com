@@ -23,7 +23,6 @@ function GameManager() {
     const dm = new DisplayManager(SQUARE_SIZE, PLAYER_VISION_RANGE, ANIMATION_STAGES);
 
     let inputs = [];
-    let removeInputs = [];
     const VALID_INPUTS = ['w', 'a', 's', 'd'];
 
 
@@ -33,34 +32,22 @@ function GameManager() {
         updateMobs();
     }
 
+    iLoopInterval = setInterval(() => {
+        iLoop();
+    }, CONFIG.IDLE_LOOP_SPEED);
+
     let iLoop = function () {
         updateLevel();
         updateAnimations();
         if (inputs.length > 0) {
             if (!player.busy && handleInputTimer == undefined) {
-                if (player.firstMove) {
-                    handleInputTimer = setTimeout(() => {
-                        player.firstMove = false;
-                        handleInputs();
-                        handleInputTimer = undefined;
-                    }, CONFIG.FIRST_INPUT_DELAY);
-                }
-                else {
-                    handleInputTimer = setTimeout(() => {
-                        handleInputs();
-                        handleInputTimer = undefined;
-                    }, CONFIG.CONSECUTIVE_INPUT_DELAY);
-                }
+                handleInputTimer = setTimeout(() => {
+                    handleInputs();
+                    handleInputTimer = undefined;
+                }, player.currentMoveDelay);
             }
         }
-        else {
-            player.firstMove = true;
-        }
     }
-
-    iLoopInterval = setInterval(() => {
-        iLoop();
-    }, CONFIG.IDLE_LOOP_SPEED);
 
     this.display = function () {
         dm._display(dungeon.currentBoard(), player, mobs);
@@ -69,16 +56,34 @@ function GameManager() {
     this.input = function (type, key, mouseY) {
         if (type == ADD_KEY && inputs.length < 3 && !inputs.includes(key) && VALID_INPUTS.includes(key)) {
             inputs.unshift(key);
-            if (player.firstMove && handleInputTimer == undefined) {
+            if (handleInputTimer == undefined) {
                 handleInputs();
             }
         }
         else if (type == REMOVE_KEY && inputs.includes(key)) {
             inputs.splice(inputs.indexOf(key), 1);
             if (inputs.length == 0) {
-                player.firstMove = true;
+                clearTimeout(handleInputTimer);
+                resetMoveDelay();
+                handleInputTimer = undefined;
             }
         }
+    }
+
+    this.clearInputs = function () {
+        inputs = [];
+        resetMoveDelay();
+    }
+
+    let resetMoveDelay = function () {
+        player.currentMoveDelay = CONFIG.MAX_MOVE_DELAY;
+    }
+
+    let decreaseMoveDelay = function () {
+        if (player.currentMoveDelay != CONFIG.MIN_MOVE_DELAY) {
+            player.currentMoveDelay = floor(constrainLow(player.currentMoveDelay * CONFIG.MOVE_DELAY_DECREASE, CONFIG.MIN_MOVE_DELAY));
+        }
+        console.log(player.currentMoveDelay);
     }
 
     let handleInputs = function () {
@@ -101,9 +106,12 @@ function GameManager() {
                     console.log("Invalid input");
                     break;
             }
-            let newEnd = inputs.splice(0, 1)[0];
-            inputs.push(newEnd);
+            if (inputs.length > 1) {
+                let newEnd = inputs.splice(0, 1)[0];
+                inputs.push(newEnd);
+            }
             if (sucess) {
+                decreaseMoveDelay();
                 aLoop(true);
             }
         }

@@ -2,10 +2,10 @@
 Player.prototype = Object.create(Entity.prototype);
 
 function Player(pos, hp, str, mag, int) {
-    this.x = 0; this.y = 0;
+    // this.x = 0; this.y = 0;
     Entity.call(this, pos, hp, str, mag, int);
 
-    this.firstMove = true;
+    this.currentMoveDelay = CONFIG.MAX_INPUT_DELAY;
 
     this.visibleSquares = [];
 
@@ -32,8 +32,8 @@ function Player(pos, hp, str, mag, int) {
         // var incY = floor(dY / 4);
         // var numInc = 2;
 
-        for (let i = getMax(x - CONFIG.PLAYER_VISION_RANGE, 0); i < getMin(x + CONFIG.PLAYER_VISION_RANGE, CONFIG.DUNGEON_SIZE); i++) {
-            for (let j = getMax(y - CONFIG.PLAYER_VISION_RANGE, 0); j < getMin(y + CONFIG.PLAYER_VISION_RANGE, CONFIG.DUNGEON_SIZE); j++) {
+        for (let i = constrainLow(x - CONFIG.PLAYER_VISION_RANGE, 0); i < constrainHigh(x + CONFIG.PLAYER_VISION_RANGE, CONFIG.DUNGEON_SIZE); i++) {
+            for (let j = constrainLow(y - CONFIG.PLAYER_VISION_RANGE, 0); j < constrainHigh(y + CONFIG.PLAYER_VISION_RANGE, CONFIG.DUNGEON_SIZE); j++) {
                 if (DEBUG_SIGHT) {
                     squarecounter++;
                 }
@@ -42,8 +42,8 @@ function Player(pos, hp, str, mag, int) {
             }
         }
 
-        for (let i = getMax(x - CONFIG.PLAYER_VISION_RANGE, 1); i < getMin(x + CONFIG.PLAYER_VISION_RANGE, CONFIG.DUNGEON_SIZE - 1); i++) {
-            for (let j = getMax(y - CONFIG.PLAYER_VISION_RANGE, 1); j < getMin(y + CONFIG.PLAYER_VISION_RANGE, CONFIG.DUNGEON_SIZE - 1); j++) {
+        for (let i = constrainLow(x - CONFIG.PLAYER_VISION_RANGE, 1); i < constrainHigh(x + CONFIG.PLAYER_VISION_RANGE, CONFIG.DUNGEON_SIZE - 1); i++) {
+            for (let j = constrainLow(y - CONFIG.PLAYER_VISION_RANGE, 1); j < constrainHigh(y + CONFIG.PLAYER_VISION_RANGE, CONFIG.DUNGEON_SIZE - 1); j++) {
                 if (board[i - 1][j].squareType == FLOOR && board[i - 1][j].visible) {
                     board[i][j].discovered = true;
                     continue;

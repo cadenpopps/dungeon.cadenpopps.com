@@ -7,7 +7,7 @@ const DEBUG_SIGHT = false;
 
 const CONFIG = {};
 
-const ADD_KEY = 0, REMOVE_KEY = 1, MOUSE_CLICK = 2;;
+const ADD_KEY = 0, REMOVE_KEY = 1, MOUSE_CLICK = 2;
 // const MOUSE = 1;
 
 var gm;
@@ -34,12 +34,14 @@ function setup() {
 
     createCanvas(windowWidth, windowHeight);
 
+
     init();
     loop();
 }
 
 function init() {
     gm = new GameManager();
+    document.addEventListener('contextmenu', gm.clearInputs());
 }
 
 function draw() {
