@@ -36,12 +36,16 @@
         "val": 15
     },
     {
-        "name": "FIRST_INPUT_DELAY",
-        "val": 100
+        "name": "MAX_MOVE_DELAY",
+        "val": 125
     },
     {
-        "name": "CONSECUTIVE_INPUT_DELAY",
-        "val": 24
+        "name": "MIN_MOVE_DELAY",
+        "val": 10
+    },
+    {
+        "name": "MOVE_DELAY_DECREASE",
+        "val": 0.70
     },
     {
         "name": "DEFAULT_ANIMATIONS",
