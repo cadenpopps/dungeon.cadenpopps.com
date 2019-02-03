@@ -21,6 +21,7 @@ function GameManager() {
     }, 10);
 
     const dm = new DisplayManager(SQUARE_SIZE, PLAYER_VISION_RANGE, ANIMATION_STAGES);
+    const am = new AudioManager();
 
     let inputs = [];
     const VALID_INPUTS = ['w', 'a', 's', 'd'];
@@ -152,7 +153,7 @@ function GameManager() {
         if (idleAnimationCounter >= CONFIG.IDLE_ANIMATION_SLOW_FACTOR) idleAnimationCounter = 0;
     }
 
-    let newLevel = function(){
+    let newLevel = function () {
         console.log("test");
         dungeon.newLevel();
     }

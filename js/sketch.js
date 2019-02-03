@@ -11,6 +11,7 @@ const ADD_KEY = 0, REMOVE_KEY = 1, MOUSE_CLICK = 2;
 // const MOUSE = 1;
 
 var gm;
+var MUSIC = [];
 
 function preload() {
     let settings = loadJSON('/config/config.json');
@@ -28,6 +29,18 @@ function preload() {
     let pools = loadJSON('/config/roompool.json');
     CONFIG.ROOMPOOL = pools[0];
     CONFIG.STAIRROOMPOOL = pools[1];
+
+    MUSIC.push(loadAudio('/audio/music/001_0100.wav'));
+    MUSIC.push(loadAudio('/audio/music/002_0001.wav'));
+    MUSIC.push(loadAudio('/audio/music/003_0101.wav'));
+    MUSIC.push(loadAudio('/audio/music/004_1101.wav'));
+    MUSIC.push(loadAudio('/audio/music/005_1121.wav'));
+    MUSIC.push(loadAudio('/audio/music/006_2121.wav'));
+    MUSIC.push(loadAudio('/audio/music/007_0200.wav'));
+    MUSIC.push(loadAudio('/audio/music/008_0201.wav'));
+    MUSIC.push(loadAudio('/audio/music/009_1201.wav'));
+    MUSIC.push(loadAudio('/audio/music/010_1221.wav'));
+
 }
 
 function setup() {
