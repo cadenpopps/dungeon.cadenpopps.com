@@ -20,8 +20,8 @@ function preload() {
     window.FLOOR = CONFIG.SQUARE_CONSTANTS.floor;
     window.WALL = CONFIG.SQUARE_CONSTANTS.wall;
     window.DOOR = CONFIG.SQUARE_CONSTANTS.door;
-    window.STAIRDOWN = CONFIG.SQUARE_CONSTANTS.stairDown;
-    window.STAIRUP = CONFIG.SQUARE_CONSTANTS.stairUp;
+    window.STAIR_DOWN = CONFIG.SQUARE_CONSTANTS.stairDown;
+    window.STAIR_UP = CONFIG.SQUARE_CONSTANTS.stairUp;
     window.LOOT = CONFIG.SQUARE_CONSTANTS.loot;
     window.PILLAR = CONFIG.SQUARE_CONSTANTS.pillar;
 
