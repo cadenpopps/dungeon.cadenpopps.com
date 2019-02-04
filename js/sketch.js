@@ -47,7 +47,6 @@ function setup() {
 
     createCanvas(windowWidth, windowHeight);
 
-
     init();
     loop();
 }

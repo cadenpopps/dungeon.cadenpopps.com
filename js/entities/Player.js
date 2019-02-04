@@ -51,7 +51,10 @@ function Player(pos, hp, str, mag, int) {
             this.busy = true;
             if (board[this.x][this.y].squareType == STAIR_DOWN) {
                 status = 2;
-            } 
+            }
+            else if (board[this.x][this.y].squareType == STAIR_UP) {
+                status = 3;
+            }
         }
         return status;
     }

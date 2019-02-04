@@ -6,9 +6,6 @@ function generateLevel(depth, previousStair) {
     let regions = [];
     let stairUp = createVector(0, 0);
     let stairDown = createVector(0, 0);
-    if (depth > 0 && previousStair) {
-        stairUp = previousStair;
-    }
 
     var createLevel = function (depth, stairUp) {
 
@@ -27,12 +24,7 @@ function generateLevel(depth, previousStair) {
 
         let board = initBoard(CONFIG.DUNGEON_SIZE);
 
-        if (stairUp) {
-            genStairs(board, stairUp);
-        }
-        else {
-            genStairs(board);
-        }
+        genStairs(board);
         if (DEBUG) {
             console.log("STAIRS DONE");
         }
@@ -140,29 +132,16 @@ function generateLevel(depth, previousStair) {
 
     };
 
-    var genStairs = function (board, stairUp) {
+    var genStairs = function (board) {
 
         let stairDownTemplate = random(CONFIG.STAIRROOMPOOL);
         let stairUpTemplate = random(CONFIG.STAIRROOMPOOL);
 
         let stairUpLocation;
-        if (stairUp === undefined) {
-            stairUpLocation = randomInt(8);
-            if (stairUpLocation == 4) stairUpLocation = 8;
-
-        }
-        else {
-            let scale = floor((CONFIG.DUNGEON_SIZE - 10) / 3);
-            stairUpLocation = floor(stairUp.x / scale) + (3 * floor(stairUp.y / scale));
-            console.log(stairUpLocation);
-        }
+        stairUpLocation = randomInt(8);
+        if (stairUpLocation == 4) stairUpLocation = 8;
         let stairDownLocation = sectorToCoordinates(genStairDownSector(stairUpLocation), stairDownTemplate);
         stairUpLocation = sectorToCoordinates(getSectorCoords(stairUpLocation), stairUpTemplate);
-
-        if (DEBUG) {
-            console.log("UP: " + stairUpLocation);
-            console.log("DOWN: " + stairDownLocation);
-        }
 
         let stairUpRoom = new Room(stairUpTemplate, stairUpLocation[0], stairUpLocation[1]);
         let stairDownRoom = new Room(stairDownTemplate, stairDownLocation[0], stairDownLocation[1]);
@@ -182,7 +161,10 @@ function generateLevel(depth, previousStair) {
         stairDown.x = stairDownLocation[0] + (floor(stairDownTemplate.width / 2));
         stairDown.y = stairDownLocation[1] + (floor(stairDownTemplate.height / 2));
 
-        console.log(stairUp);
+        if (DEBUG) {
+            console.log("STAIR UP: " + stairUp.x + " " + stairUp.y);
+            console.log("STAIR DOWN: " + stairDown.x + " " + stairDown.y);
+        }
 
     };
 

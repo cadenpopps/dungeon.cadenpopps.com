@@ -62,7 +62,7 @@ function DisplayManager(square_size, vision, animation_stages) {
         //TEMPORARY UNTIL WE HAVE ANIMATIONS
         stroke(0, 0, 0);
         fill(255, 255, 0);
-        for (let m of mobs) {
+        for (let m in mobs) {
             if (m instanceof Player) continue;
             let xoff = 0;
             let yoff = 0;
@@ -143,6 +143,8 @@ function DisplayManager(square_size, vision, animation_stages) {
                     break;
                 case LEFT:
                     offx -= MOVE_OFFSET[player.animationCounter];
+                    break;
+                default:
                     break;
             }
         }

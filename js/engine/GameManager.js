@@ -6,7 +6,7 @@ function GameManager() {
 
     const ANIMATION_STAGES = CONFIG.ANIMATION_STAGES;
 
-    let iLoopInterval = undefined;
+    let undefined;
     let idleAnimationCounter = 0;
     let handleInputTimer = undefined;
 
@@ -14,28 +14,17 @@ function GameManager() {
     const player = new Player([dungeon.currentStairUp().x, dungeon.currentStairUp().y]);
     let mobs = dungeon.currentLevelMobs();
 
-    setTimeout(() => {
-        mobs.unshift(player);
-        mobs.push(new Mob(player.x - 2, player.y - 2));
-        aLoop(true);
-    }, 10);
-
     const dm = new DisplayManager(SQUARE_SIZE, PLAYER_VISION_RANGE, ANIMATION_STAGES);
     const am = new AudioManager();
 
     let inputs = [];
     const VALID_INPUTS = ['w', 'a', 's', 'd'];
 
-
     let aLoop = function (playerMoved) {
         idleAnimationCounter = CONFIG.IDLE_DELAY;
         updatePlayer(playerMoved);
         updateMobs();
     }
-
-    iLoopInterval = setInterval(() => {
-        iLoop();
-    }, CONFIG.IDLE_LOOP_SPEED);
 
     let iLoop = function () {
         updateLevel();
@@ -49,6 +38,10 @@ function GameManager() {
             }
         }
     }
+
+    setInterval(() => {
+        iLoop();
+    }, CONFIG.IDLE_LOOP_SPEED);
 
     this.display = function () {
         dm._display(dungeon.currentBoard(), player, mobs);
@@ -90,7 +83,7 @@ function GameManager() {
 
     let handleInputs = function () {
         if (typeof inputs[0] == "string") {
-            let returnCode = false;
+            let returnCode = 0;
             switch (inputs[0]) {
                 case 'w':
                     returnCode = player.move(UP, dungeon.currentBoard());
@@ -119,7 +112,10 @@ function GameManager() {
             else if (returnCode == 2) {
                 // decreaseMoveDelay();
                 // aLoop(true);
-                newLevel();
+                downLevel();
+            }
+            else if (returnCode == 3) {
+                upLevel();
             }
         }
         else if (typeof inputs[0] == "object") {
@@ -132,7 +128,7 @@ function GameManager() {
     }
 
     let updateMobs = function () {
-        for (let m of mobs) {
+        for (let m in mobs) {
             if (!m instanceof Player && player.x - m.x < ACTIVE_MOB_RANGE && player.y - m.y < ACTIVE_MOB_RANGE) {
                 m.update();
             }
@@ -144,7 +140,8 @@ function GameManager() {
     }
 
     let updateAnimations = function () {
-        for (let m of mobs) {
+        player.animate(idleAnimationCounter);
+        for (let m in mobs) {
             if (player.x - m.x < ACTIVE_MOB_RANGE && player.y - m.y < ACTIVE_MOB_RANGE) {
                 m.animate(idleAnimationCounter);
             }
@@ -153,8 +150,37 @@ function GameManager() {
         if (idleAnimationCounter >= CONFIG.IDLE_ANIMATION_SLOW_FACTOR) idleAnimationCounter = 0;
     }
 
-    let newLevel = function () {
-        console.log("test");
-        dungeon.newLevel();
+    let downLevel = function () {
+        if (dungeon.currentLevelIndex < dungeon.levels.length - 1) {
+            dungeon.currentLevelIndex++;
+            player.x = dungeon.currentStairUp().x + 1;
+            player.y = dungeon.currentStairUp().y;
+            player.animation = RIGHT;
+            player.animationCounter = 0;
+            aLoop(true);
+        }
+        else {
+            dungeon.newLevel();
+            downLevel();
+        }
     }
+
+    let upLevel = function () {
+        if (dungeon.currentLevelIndex > 0) {
+            dungeon.currentLevelIndex--;
+            player.x = dungeon.currentStairDown().x - 1;
+            player.y = dungeon.currentStairDown().y;
+            player.animation = LEFT;
+            player.animationCounter = 0;
+            setTimeout(() => {
+                aLoop(true);
+            }, 300);
+        }
+    }
+
+    let init = (function () {
+        // mobs.unshift(player);
+        // mobs.push(new Mob(player.x - 2, player.y - 2));
+        aLoop(true);
+    }());
 }
