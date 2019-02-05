@@ -71,6 +71,24 @@ function DisplayManager(square_size, vision, animation_stages) {
                 xoff = BOB_OFFSET_X[mob.animationCounter];
                 yoff = BOB_OFFSET_Y[mob.animationCounter];
             }
+            else if (mob.animation < IDLE && mob.animation >= 0) {
+                switch (mob.animation) {
+                    case UP:
+                        yoff += MOVE_OFFSET[mob.animationCounter];
+                        break;
+                    case RIGHT:
+                        xoff -= MOVE_OFFSET[mob.animationCounter];
+                        break;
+                    case DOWN:
+                        yoff -= MOVE_OFFSET[mob.animationCounter];
+                        break;
+                    case LEFT:
+                        xoff += MOVE_OFFSET[mob.animationCounter];
+                        break;
+                    default:
+                        break;
+                }
+            }
 
             rect(DUNGEON_OFFSET_X - ((player.x - mob.x) * SQUARE_SIZE) + MOB_OFFSET + xoff, DUNGEON_OFFSET_Y - ((player.y - mob.y) * SQUARE_SIZE) + MOB_OFFSET + yoff, MOB_SIZE, MOB_SIZE);
             strokeRect(DUNGEON_OFFSET_X - ((player.x - mob.x) * SQUARE_SIZE) + MOB_OFFSET + xoff, DUNGEON_OFFSET_Y - ((player.y - mob.y) * SQUARE_SIZE) + MOB_OFFSET + yoff, MOB_SIZE, MOB_SIZE);

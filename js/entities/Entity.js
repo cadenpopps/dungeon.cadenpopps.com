@@ -60,11 +60,33 @@ Entity.prototype.move = function (dir, board, mobs) {
             break;
     }
     if (status != FAIL) {
+        this.updateMobs(mobs, dir);
         this.animation = dir;
         this.animationCounter = 0;
         this.busy = true;
     }
     return status;
+}
+
+Entity.prototype.updateMobs = function (mobs, dir) {
+    switch (dir) {
+        case UP:
+            delete mobs[getSquareCode(this.x, this.y + 1)];
+            break;
+        case RIGHT:
+            delete mobs[getSquareCode(this.x - 1, this.y)];
+            break;
+        case DOWN:
+            delete mobs[getSquareCode(this.x, this.y - 1)];
+            break;
+        case LEFT:
+            delete mobs[getSquareCode(this.x + 1, this.y)];
+            break;
+        default:
+            console.log("No direction");
+            break;
+    }
+    mobs[getSquareCode(this.x, this.y)] = this;
 }
 
 Entity.prototype.attack = function () {

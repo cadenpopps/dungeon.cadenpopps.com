@@ -12,7 +12,6 @@ function GameManager() {
 
     const dungeon = new Dungeon();
     const player = new Player([dungeon.currentStairUp().x, dungeon.currentStairUp().y]);
-    let mobs = dungeon.currentMobs();
 
     const dm = new DisplayManager(SQUARE_SIZE, PLAYER_VISION_RANGE, ANIMATION_STAGES);
     const am = new AudioManager();
@@ -24,7 +23,9 @@ function GameManager() {
     let aLoop = function (playerMoved) {
         idleAnimationCounter = CONFIG.IDLE_DELAY;
         updatePlayer(playerMoved);
-        updateMobs();
+        setTimeout(() => {
+            updateMobs();
+        }, CONFIG.MOB_MOVE_DELAY);
     }
 
     let iLoop = function () {
@@ -129,9 +130,11 @@ function GameManager() {
     }
 
     let updateMobs = function () {
+        let mobs = dungeon.currentMobs()
         for (let m in mobs) {
-            if (!m instanceof Player && player.x - m.x < ACTIVE_MOB_RANGE && player.y - m.y < ACTIVE_MOB_RANGE) {
-                m.update();
+            let mob = mobs[m];
+            if (abs(player.x - mob.x) < ACTIVE_MOB_RANGE && abs(player.y - mob.y) < ACTIVE_MOB_RANGE) {
+                mob.update(dungeon.currentBoard(), dungeon.currentMobs());
             }
         }
     }
@@ -141,10 +144,11 @@ function GameManager() {
     }
 
     let updateAnimations = function () {
-        player.animate(idleAnimationCounter);
+        mobs = dungeon.currentMobs();
         for (let m in mobs) {
-            if (player.x - m.x < ACTIVE_MOB_RANGE && player.y - m.y < ACTIVE_MOB_RANGE) {
-                m.animate(idleAnimationCounter);
+            let mob = mobs[m];
+            if (player.x - mob.x < ACTIVE_MOB_RANGE && player.y - mob.y < ACTIVE_MOB_RANGE) {
+                mob.animate(idleAnimationCounter);
             }
         }
         idleAnimationCounter++;
