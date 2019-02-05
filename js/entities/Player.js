@@ -9,8 +9,11 @@ function Player(pos, hp, str, mag, int) {
     this.visibleSquares = [];
 
 
-    this.update = function (board, playerMoved) {
-        if (playerMoved) updateSight(board, this.x, this.y);
+    this.update = function (board, mobs, playerMoved) {
+        if (playerMoved) {
+            updateBoardSight(board, this.x, this.y);
+            updateMobSight(board, mobs);
+        }
     }
 
     this.move = function (dir, board, mobs) {
@@ -32,7 +35,7 @@ function Player(pos, hp, str, mag, int) {
         return status;
     }
 
-    let updateSight = function (board, x, y) {
+    let updateBoardSight = function (board, x, y) {
 
         for (var i = 0; i < CONFIG.DUNGEON_SIZE; i++) {
             for (var j = 0; j < CONFIG.DUNGEON_SIZE; j++) {
@@ -85,6 +88,8 @@ function Player(pos, hp, str, mag, int) {
         if (DEBUG_SIGHT) {
             console.log(squarecounter);
         }
+
+
     }
 
     function sight(i, j, x, y, board) {
@@ -110,6 +115,13 @@ function Player(pos, hp, str, mag, int) {
                 s.visible = true;
                 s.discovered = true;
             }
+        }
+    }
+
+    let updateMobSight = function (board, mobs) {
+        for (let m in mobs) {
+            let mob = mobs[m];
+            mob.visible = board[mob.x][mob.y].visible;
         }
     }
 }

@@ -1,7 +1,6 @@
 
-function generateLevel(depth, previousStair) {
+function generateLevel(depth) {
 
-    // var level;
     let rooms = [];
     let regions = [];
     let stairUp = createVector(0, 0);
@@ -9,17 +8,8 @@ function generateLevel(depth, previousStair) {
 
     var createLevel = function (depth, stairUp) {
 
-        // var lootCap = floor((CONFIG.DUNGEON_SIZE / 5) + ((depth + 7) / 2));
         // var mobCap = floor((CONFIG.DUNGEON_SIZE / 8) + ((depth + 30) / 2));
 
-        // if (lootCap > CONFIG.DUNGEON_SIZE / 2) {
-        //     lootCap = CONFIG.DUNGEON_SIZE / 2;
-        // }
-        // if (lootCap > CONFIG.DUNGEON_SIZE / 1.5) {
-        //     lootCap = CONFIG.DUNGEON_SIZE / 1.5;
-        // }
-
-        // console.log("\n\n\nLootcap for this floor: " + lootCap);
         // console.log("Mobcap for this floor: " + mobCap);
 
         let board = initBoard(CONFIG.DUNGEON_SIZE);

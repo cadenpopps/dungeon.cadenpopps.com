@@ -125,7 +125,7 @@ function GameManager() {
     }
 
     let updatePlayer = function (playerMoved) {
-        player.update(dungeon.currentBoard(), playerMoved);
+        player.update(dungeon.currentBoard(), dungeon.currentMobs(), playerMoved);
     }
 
     let updateMobs = function () {

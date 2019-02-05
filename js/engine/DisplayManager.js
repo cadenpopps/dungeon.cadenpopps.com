@@ -64,7 +64,7 @@ function DisplayManager(square_size, vision, animation_stages) {
         fill(0, 255, 0);
         for (let m in mobs) {
             let mob = mobs[m];
-            if (mob instanceof Player) continue;
+            if (mob instanceof Player || !mob.visible) continue;
             let xoff = 0;
             let yoff = 0;
             if (mob.animation == IDLE) {
