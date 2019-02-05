@@ -13,7 +13,16 @@ function SquareBuilder(x, y) {
 				return new WallSquare(this.x, this.y);
 			case FLOOR:
 				return new FloorSquare(this.x, this.y);
+			case DOOR:
+				return new DoorSquare(this.x, this.y);
+			case STAIR_UP:
+				return new StairSquare(this.x, this.y, true);
+			case STAIR_DOWN:
+				return new StairSquare(this.x, this.y, false);
+			case LOOT:
+				return new FloorSquare(this.x, this.y, true);
 			default:
+				console.log(this.squareType);
 				return new Square(this.x, this.y, this.squareType);
 		}
 	};
@@ -54,34 +63,34 @@ function SquareBuilder(x, y) {
 		return neighbors;
 	};
 
-	this.canBeLoot = function (board) {
+	// this.canBeLoot = function (board) {
 
-		if (this.squareType != FLOOR) {
-			return false;
-		}
+	// 	if (this.squareType != FLOOR) {
+	// 		return false;
+	// 	}
 
-		var neighbors = [];
-		neighbors.push(board[this.x - 1][this.y]);
-		neighbors.push(board[this.x + 1][this.y]);
-		neighbors.push(board[this.x][this.y + 1]);
-		neighbors.push(board[this.x][this.y - 1]);
-		neighbors.push(board[this.x - 1][this.y - 1]);
-		neighbors.push(board[this.x - 1][this.y + 1]);
-		neighbors.push(board[this.x + 1][this.y - 1]);
-		neighbors.push(board[this.x + 1][this.y + 1]);
+	// 	var neighbors = [];
+	// 	neighbors.push(board[this.x - 1][this.y]);
+	// 	neighbors.push(board[this.x + 1][this.y]);
+	// 	neighbors.push(board[this.x][this.y + 1]);
+	// 	neighbors.push(board[this.x][this.y - 1]);
+	// 	neighbors.push(board[this.x - 1][this.y - 1]);
+	// 	neighbors.push(board[this.x - 1][this.y + 1]);
+	// 	neighbors.push(board[this.x + 1][this.y - 1]);
+	// 	neighbors.push(board[this.x + 1][this.y + 1]);
 
-		if (this.numNeighbors(board) != 3 || this.diagNeighbors(board) < 2) {
-			return false;
-		}
+	// 	if (this.numNeighbors(board) != 3 || this.diagonalFloorNeighbors(board) < 2) {
+	// 		return false;
+	// 	}
 
-		for (let n of neighbors) {
-			if (n.squareType == DOOR || n.squareType == LOOT || n.squareType == STAIR_UP || n.squareType == STAIR_DOWN) {
-				return false;
-			}
-		}
+	// 	for (let n of neighbors) {
+	// 		if (n.squareType == DOOR || n.squareType == LOOT || n.squareType == STAIR_UP || n.squareType == STAIR_DOWN) {
+	// 			return false;
+	// 		}
+	// 	}
 
-		return true;
-	};
+	// 	return true;
+	// };
 
 	this.canBeMobStart = function (STAIR_UP) {
 		if (this.squareType != FLOOR) {
@@ -115,24 +124,24 @@ function SquareBuilder(x, y) {
 		return (this.squareType == FLOOR || this.squareType == DOOR || this.squareType == STAIR_DOWN || this.squareType == STAIR_UP);
 	};
 
-	this.diagNeighbors = function (board) {
+	this.diagonalFloorNeighbors = function (board) {
 		var neighbors = 0;
-		if (this.x > 0 && board[this.x - 1][this.y - 1].squareType === 0) {
+		if (this.x > 0 && board[this.x - 1][this.y - 1].squareType === FLOOR) {
 			neighbors++;
 		}
-		if (this.x < CONFIG.DUNGEON_SIZE - 1 && board[this.x + 1][this.y + 1].squareType === 0) {
+		if (this.x < CONFIG.DUNGEON_SIZE - 1 && board[this.x + 1][this.y + 1].squareType === FLOOR) {
 			neighbors++;
 		}
-		if (this.y > 0 && board[this.x + 1][this.y - 1].squareType === 0) {
+		if (this.y > 0 && board[this.x + 1][this.y - 1].squareType === FLOOR) {
 			neighbors++;
 		}
-		if (this.y < CONFIG.DUNGEON_SIZE - 1 && board[this.x - 1][this.y + 1].squareType === 0) {
+		if (this.y < CONFIG.DUNGEON_SIZE - 1 && board[this.x - 1][this.y + 1].squareType === FLOOR) {
 			neighbors++;
 		}
 		return neighbors;
 	};
 
-	this.pathNeighbors = function (board) {
+	this.floorNeighbors = function (board) {
 		var neighbors = 0;
 		if (this.x > 0 && board[this.x - 1][this.y].squareType === 0) {
 			neighbors++;
@@ -173,14 +182,5 @@ function SquareBuilder(x, y) {
 		}
 
 		return false;
-	};
-
-	this.mobAt = function () {
-		for (let m of gameManager.getDungeon().getFloor(gameManager.getCurrentFloor()).getMobs()) {
-			if (this.x == m.x && this.y == m.y) {
-				return m;
-			}
-		}
-		return null;
 	};
 }

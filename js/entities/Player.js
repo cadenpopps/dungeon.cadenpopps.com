@@ -14,45 +14,19 @@ function Player(pos, hp, str, mag, int) {
     }
 
     this.move = function (dir, board, mobs) {
-        let status = false;
-        switch (dir) {
-            case UP:
-                if (this.y > 0 && board[this.x][this.y - 1].walkable(mobs)) {
-                    this.y--;
-                    status = 1;
-                }
-                break;
-            case RIGHT:
-                if (this.x < CONFIG.DUNGEON_SIZE && board[this.x + 1][this.y].walkable(mobs)) {
-                    this.x++;
-                    status = 1;
-                }
-                break;
-            case DOWN:
-                if (this.y < CONFIG.DUNGEON_SIZE && board[this.x][this.y + 1].walkable(mobs)) {
-                    this.y++;
-                    status = 1;
-                }
-                break;
-            case LEFT:
-                if (this.x > 0 && board[this.x - 1][this.y].walkable(mobs)) {
-                    this.x--;
-                    status = 1;
-                }
-                break;
-            default:
-                console.log("No direction");
-                break;
-        }
-        if (status) {
-            this.animation = dir;
-            this.animationCounter = 0;
-            this.busy = true;
-            if (board[this.x][this.y].squareType == STAIR_DOWN) {
-                status = 2;
+        let status = Entity.prototype.move.call(this, dir, board, mobs);
+        if (status == SUCCESS) {
+            if (board[this.x][this.y].squareType == DOOR) {
+                board[this.x][this.y].open();
+                status = DOOR;
             }
-            else if (board[this.x][this.y].squareType == STAIR_UP) {
-                status = 3;
+            else if (board[this.x][this.y] instanceof StairSquare) {
+                if (board[this.x][this.y].down) {
+                    status = STAIR_DOWN;
+                }
+                else if (board[this.x][this.y].up) {
+                    status = STAIR_UP;
+                }
             }
         }
         return status;
@@ -126,7 +100,7 @@ function Player(pos, hp, str, mag, int) {
             if (blocked) {
                 continue;
             }
-            else if (s.squareType == WALL) {
+            else if (s.squareType == WALL || (s.squareType == DOOR && !s.opened)) {
                 // else if (s.squareType == WALL || (s.getSquareType() == DOOR && !s.getOpen())) {
                 blocked = true;
                 s.visible = true;

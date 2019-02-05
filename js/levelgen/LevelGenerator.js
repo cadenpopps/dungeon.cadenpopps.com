@@ -285,7 +285,7 @@ function generateLevel(depth, previousStair) {
 
         for (var i = 2; i < CONFIG.DUNGEON_SIZE - 2; i++) {
             for (let j = 2; j < CONFIG.DUNGEON_SIZE - 2; j++) {
-                if (board[i][j].squareType == FLOOR && board[i][j].pathNeighbors(board, CONFIG.DUNGEON_SIZE) == 2) {
+                if (board[i][j].squareType == FLOOR && board[i][j].floorNeighbors(board, CONFIG.DUNGEON_SIZE) == 2) {
                     if ((board[i - 1][j].squareType == WALL && board[i - 2][j].squareType == FLOOR && board[i - 2][j].region == board[i][j].region) && oneIn(IMPERFECTION_RATE)) {
                         board[i - 1][j].squareType = FLOOR;
                         board[i - 1][j].region = board[i][j].region;
@@ -308,7 +308,7 @@ function generateLevel(depth, previousStair) {
         //more imperfections?
         for (var i = 2; i < CONFIG.DUNGEON_SIZE - 2; i++) {
             for (let j = 2; j < CONFIG.DUNGEON_SIZE - 2; j++) {
-                if (board[i][j].squareType == WALL && board[i][j].pathNeighbors(board, CONFIG.DUNGEON_SIZE) == 2) {
+                if (board[i][j].squareType == WALL && board[i][j].floorNeighbors(board, CONFIG.DUNGEON_SIZE) == 2) {
                     if ((board[i - 1][j].squareType == FLOOR && board[i + 1][j].squareType == FLOOR && board[i - 1][j].region == board[i + 1][j].region) && random(1) < .02) {
                         board[i][j].squareType = FLOOR;
                         board[i][j].region = board[i][j].region;
@@ -430,7 +430,7 @@ function generateLevel(depth, previousStair) {
     var removeDetours = function (board) {
         for (let i = 2; i < CONFIG.DUNGEON_SIZE - 2; i++) {
             for (let j = 2; j < CONFIG.DUNGEON_SIZE - 2; j++) {
-                if (board[i][j].squareType == WALL && board[i][j].pathNeighbors(board) == 3 && board[i][j].diagNeighbors(board) == 4) {
+                if (board[i][j].squareType == WALL && board[i][j].floorNeighbors(board) == 3 && board[i][j].diagonalFloorNeighbors(board) == 4) {
                     board[i][j].squareType = PILLAR;
                     if ((board[i - 1][j].squareType == WALL || board[i - 1][j].squareType == PILLAR)) {
                         board[i - 1][j].squareType = FLOOR;
@@ -460,7 +460,7 @@ function generateLevel(depth, previousStair) {
         }
         for (let i = 0; i < CONFIG.DUNGEON_SIZE; i++) {
             for (let j = 0; j < CONFIG.DUNGEON_SIZE; j++) {
-                if (board[i][j].squareType == WALL && board[i][j].pathNeighbors(board) == 4 && board[i][j].diagNeighbors(board) == 4 && random(1) < .98) {
+                if (board[i][j].squareType == WALL && board[i][j].floorNeighbors(board) == 4 && board[i][j].diagonalFloorNeighbors(board) == 4 && random(1) < .98) {
                     var n = board[i][j].neighbors(board);
                     var temp = randomInt(0, n.length);
                     n[temp].squareType = WALL;
@@ -486,7 +486,7 @@ function generateLevel(depth, previousStair) {
                 if (board[i][j].squareType == DOOR && random(1) < .02) {
                     board[i][j].squareType = FLOOR;
                 }
-                if (board[i][j].squareType == WALL && board[i][j].pathNeighbors(board) > 2) {
+                if (board[i][j].squareType == WALL && board[i][j].floorNeighbors(board) > 2) {
                     //change walls to paths if they have more than 2 path neighbors
                     board[i][j].squareType = FLOOR;
                 }
@@ -507,15 +507,6 @@ function generateLevel(depth, previousStair) {
 
     var populate = function () {
 
-        // var i = 0;
-        // while (i < lootCap) {
-        //     var randomSquare = board[randomInt(CONFIG.DUNGEON_SIZE)][randomInt(CONFIG.DUNGEON_SIZE)];
-        //     while (!randomSquare.canBeLoot(board)) {
-        //         var randomSquare = board[randomInt(CONFIG.DUNGEON_SIZE)][randomInt(CONFIG.DUNGEON_SIZE)];
-        //     }
-        //     randomSquare.squareType = 2;
-        //     i++;
-        // }
         var i = 0;
         while (i < mobCap || (i > mobCap - 2 && random() < .2)) {
             var randomSquare = board[randomInt(CONFIG.DUNGEON_SIZE)][randomInt(CONFIG.DUNGEON_SIZE)];

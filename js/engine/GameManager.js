@@ -108,16 +108,14 @@ function GameManager() {
                 let newEnd = inputs.splice(0, 1)[0];
                 inputs.push(newEnd);
             }
-            if (returnCode == 1) {
+            if (returnCode == SUCCESS || returnCode == DOOR) {
                 decreaseMoveDelay();
                 aLoop(true);
             }
-            else if (returnCode == 2) {
-                // decreaseMoveDelay();
-                // aLoop(true);
+            else if (returnCode == STAIR_DOWN) {
                 downLevel();
             }
-            else if (returnCode == 3) {
+            else if (returnCode == STAIR_UP) {
                 upLevel();
             }
         }

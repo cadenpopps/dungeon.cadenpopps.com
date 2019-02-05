@@ -4,11 +4,11 @@ function DisplayManager(square_size, vision, animation_stages) {
     let SQUARE_SIZE = square_size;
     let HALF_SQUARE_SIZE = SQUARE_SIZE / 2;
 
-    let PLAYER_SIZE = SQUARE_SIZE * .6;
+    let PLAYER_SIZE = floor(SQUARE_SIZE * .6);
     let HALF_PLAYER_SIZE = PLAYER_SIZE / 2;
     let PLAYER_VISION_RANGE = vision;
 
-    let MOB_SIZE = SQUARE_SIZE * .75;
+    let MOB_SIZE = SQUARE_SIZE * .70;
     let MOB_OFFSET = (SQUARE_SIZE - MOB_SIZE) / 2;
 
 
@@ -61,7 +61,7 @@ function DisplayManager(square_size, vision, animation_stages) {
 
         //TEMPORARY UNTIL WE HAVE ANIMATIONS
         stroke(0, 0, 0);
-        fill(255, 255, 0);
+        fill(0, 255, 0);
         for (let m in mobs) {
             let mob = mobs[m];
             if (mob instanceof Player) continue;
@@ -97,12 +97,15 @@ function DisplayManager(square_size, vision, animation_stages) {
                             break;
                         case FLOOR:
                             fill(220, 220, 220, distFromPlayer);
-                            break;
-                        case LOOT:
-                            fill(229, 90, 4, distFromPlayer);
+                            if (board[x][y].loot) {
+                                fill(255, 199, 0, distFromPlayer);
+                            }
                             break;
                         case DOOR:
-                            fill(120, 80, 60, distFromPlayer);
+                            fill(90, 50, 30, distFromPlayer);
+                            if (!board[x][y].opened) {
+                                fill(120, 80, 60, distFromPlayer);
+                            }
                             break;
                         case STAIR_UP:
                             fill(71, 100, 193, distFromPlayer);
