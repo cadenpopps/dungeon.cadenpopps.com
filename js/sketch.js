@@ -4,7 +4,7 @@
 const DEBUG = true;
 const DEBUG_BOARD = false;
 const DEBUG_SIGHT = false;
-const SUPER_POWERS = true;
+const SUPER_POWERS = false;
 
 const CONFIG = {};
 

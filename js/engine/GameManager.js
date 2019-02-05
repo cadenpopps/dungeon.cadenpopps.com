@@ -12,7 +12,7 @@ function GameManager() {
 
     const dungeon = new Dungeon();
     const player = new Player([dungeon.currentStairUp().x, dungeon.currentStairUp().y]);
-    let mobs = dungeon.currentLevelMobs();
+    let mobs = dungeon.currentMobs();
 
     const dm = new DisplayManager(SQUARE_SIZE, PLAYER_VISION_RANGE, ANIMATION_STAGES);
     const am = new AudioManager();
@@ -89,16 +89,16 @@ function GameManager() {
             let returnCode = 0;
             switch (inputs[0]) {
                 case 'w':
-                    returnCode = player.move(UP, dungeon.currentBoard());
+                    returnCode = player.move(UP, dungeon.currentBoard(), dungeon.currentMobs());
                     break;
                 case 'd':
-                    returnCode = player.move(RIGHT, dungeon.currentBoard());
+                    returnCode = player.move(RIGHT, dungeon.currentBoard(), dungeon.currentMobs());
                     break;
                 case 's':
-                    returnCode = player.move(DOWN, dungeon.currentBoard());
+                    returnCode = player.move(DOWN, dungeon.currentBoard(), dungeon.currentMobs());
                     break;
                 case 'a':
-                    returnCode = player.move(LEFT, dungeon.currentBoard());
+                    returnCode = player.move(LEFT, dungeon.currentBoard(), dungeon.currentMobs());
                     break;
                 default:
                     console.log("Invalid input");

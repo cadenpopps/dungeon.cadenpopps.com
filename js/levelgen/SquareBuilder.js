@@ -3,20 +3,22 @@ function SquareBuilder(x, y) {
 	this.x = x;
 	this.y = y;
 	this.squareType = WALL;
-	// if ((random() < .7 && (_x % 5 == 0 || _y % 7 == 0)) || (_x % 5 == 0 && _y % 7 == 0) || _x == 0 || _y == 0 || _x == CONFIG.DUNGEON_SIZE - 1 || _y == CONFIG.DUNGEON_SIZE - 1) {
-	// 	this.squareType = WALL;
-	// }
-	this.lightLevel = 0;
 	this.deadend = false;
-	this.containsMob = false;
 	this.isOpen = false;
 	this.region = null;
 
 	this.copy = function () {
-		return new Square(this.x, this.y, this.squareType);
+		switch (this.squareType) {
+			case WALL:
+				return new WallSquare(this.x, this.y);
+			case FLOOR:
+				return new FloorSquare(this.x, this.y);
+			default:
+				return new Square(this.x, this.y, this.squareType);
+		}
 	};
 
-	//returns an array of pvectors of moves (for maze)
+	//returns an array of vectors of moves (for maze)
 	this.moves = function (board) {
 		moves = [];
 		if (this.x > 1 && board[this.x - 1][this.y].squareType == WALL && this.y % 2 == 1 && board[this.x - 1][this.y].numNeighbors(board) < 2) {
@@ -111,10 +113,6 @@ function SquareBuilder(x, y) {
 
 	this.walkable = function () {
 		return (this.squareType == FLOOR || this.squareType == DOOR || this.squareType == STAIR_DOWN || this.squareType == STAIR_UP);
-	};
-
-	this.currentlyWalkable = function () {
-		return (!this.containsMob && (this.squareType == FLOOR || this.squareType == DOOR || this.squareType == STAIR_DOWN || this.squareType == STAIR_UP));
 	};
 
 	this.diagNeighbors = function (board) {

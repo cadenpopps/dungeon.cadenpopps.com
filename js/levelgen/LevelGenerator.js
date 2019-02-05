@@ -507,16 +507,16 @@ function generateLevel(depth, previousStair) {
 
     var populate = function () {
 
+        // var i = 0;
+        // while (i < lootCap) {
+        //     var randomSquare = board[randomInt(CONFIG.DUNGEON_SIZE)][randomInt(CONFIG.DUNGEON_SIZE)];
+        //     while (!randomSquare.canBeLoot(board)) {
+        //         var randomSquare = board[randomInt(CONFIG.DUNGEON_SIZE)][randomInt(CONFIG.DUNGEON_SIZE)];
+        //     }
+        //     randomSquare.squareType = 2;
+        //     i++;
+        // }
         var i = 0;
-        while (i < lootCap) {
-            var randomSquare = board[randomInt(CONFIG.DUNGEON_SIZE)][randomInt(CONFIG.DUNGEON_SIZE)];
-            while (!randomSquare.canBeLoot(board)) {
-                var randomSquare = board[randomInt(CONFIG.DUNGEON_SIZE)][randomInt(CONFIG.DUNGEON_SIZE)];
-            }
-            randomSquare.squareType = 2;
-            i++;
-        }
-        i = 0;
         while (i < mobCap || (i > mobCap - 2 && random() < .2)) {
             var randomSquare = board[randomInt(CONFIG.DUNGEON_SIZE)][randomInt(CONFIG.DUNGEON_SIZE)];
             while (!randomSquare.canBeMobStart(STAIR_UP)) {

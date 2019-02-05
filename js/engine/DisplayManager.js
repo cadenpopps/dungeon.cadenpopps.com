@@ -63,16 +63,17 @@ function DisplayManager(square_size, vision, animation_stages) {
         stroke(0, 0, 0);
         fill(255, 255, 0);
         for (let m in mobs) {
-            if (m instanceof Player) continue;
+            let mob = mobs[m];
+            if (mob instanceof Player) continue;
             let xoff = 0;
             let yoff = 0;
-            if (m.animation == IDLE) {
-                xoff = BOB_OFFSET_X[m.animationCounter];
-                yoff = BOB_OFFSET_Y[m.animationCounter];
+            if (mob.animation == IDLE) {
+                xoff = BOB_OFFSET_X[mob.animationCounter];
+                yoff = BOB_OFFSET_Y[mob.animationCounter];
             }
 
-            rect(DUNGEON_OFFSET_X - ((player.x - m.x) * SQUARE_SIZE) + MOB_OFFSET + xoff, DUNGEON_OFFSET_Y - ((player.y - m.y) * SQUARE_SIZE) + MOB_OFFSET + yoff, MOB_SIZE, MOB_SIZE);
-            strokeRect(DUNGEON_OFFSET_X - ((player.x - m.x) * SQUARE_SIZE) + MOB_OFFSET + xoff, DUNGEON_OFFSET_Y - ((player.y - m.y) * SQUARE_SIZE) + MOB_OFFSET + yoff, MOB_SIZE, MOB_SIZE);
+            rect(DUNGEON_OFFSET_X - ((player.x - mob.x) * SQUARE_SIZE) + MOB_OFFSET + xoff, DUNGEON_OFFSET_Y - ((player.y - mob.y) * SQUARE_SIZE) + MOB_OFFSET + yoff, MOB_SIZE, MOB_SIZE);
+            strokeRect(DUNGEON_OFFSET_X - ((player.x - mob.x) * SQUARE_SIZE) + MOB_OFFSET + xoff, DUNGEON_OFFSET_Y - ((player.y - mob.y) * SQUARE_SIZE) + MOB_OFFSET + yoff, MOB_SIZE, MOB_SIZE);
         }
 
 

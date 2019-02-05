@@ -2,7 +2,6 @@
 Player.prototype = Object.create(Entity.prototype);
 
 function Player(pos, hp, str, mag, int) {
-    // this.x = 0; this.y = 0;
     Entity.call(this, pos, hp, str, mag, int);
 
     this.currentMoveDelay = CONFIG.MAX_INPUT_DELAY;
@@ -14,29 +13,29 @@ function Player(pos, hp, str, mag, int) {
         if (playerMoved) updateSight(board, this.x, this.y);
     }
 
-    this.move = function (dir, board) {
+    this.move = function (dir, board, mobs) {
         let status = false;
         switch (dir) {
             case UP:
-                if (this.y > 0 && board[this.x][this.y - 1].walkable()) {
+                if (this.y > 0 && board[this.x][this.y - 1].walkable(mobs)) {
                     this.y--;
                     status = 1;
                 }
                 break;
             case RIGHT:
-                if (this.x < CONFIG.DUNGEON_SIZE && board[this.x + 1][this.y].walkable()) {
+                if (this.x < CONFIG.DUNGEON_SIZE && board[this.x + 1][this.y].walkable(mobs)) {
                     this.x++;
                     status = 1;
                 }
                 break;
             case DOWN:
-                if (this.y < CONFIG.DUNGEON_SIZE && board[this.x][this.y + 1].walkable()) {
+                if (this.y < CONFIG.DUNGEON_SIZE && board[this.x][this.y + 1].walkable(mobs)) {
                     this.y++;
                     status = 1;
                 }
                 break;
             case LEFT:
-                if (this.x > 0 && board[this.x - 1][this.y].walkable()) {
+                if (this.x > 0 && board[this.x - 1][this.y].walkable(mobs)) {
                     this.x--;
                     status = 1;
                 }
