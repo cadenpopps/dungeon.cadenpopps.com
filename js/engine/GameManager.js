@@ -17,6 +17,7 @@ function GameManager() {
     const dm = new DisplayManager(SQUARE_SIZE, PLAYER_VISION_RANGE, ANIMATION_STAGES);
     const am = new AudioManager();
 
+    let looping = true;
     let inputs = [];
     const VALID_INPUTS = ['w', 'a', 's', 'd'];
 
@@ -27,14 +28,16 @@ function GameManager() {
     }
 
     let iLoop = function () {
-        updateLevel();
-        updateAnimations();
-        if (inputs.length > 0) {
-            if (!player.busy && handleInputTimer == undefined) {
-                handleInputTimer = setTimeout(() => {
-                    handleInputs();
-                    handleInputTimer = undefined;
-                }, player.currentMoveDelay);
+        if (looping) {
+            updateLevel();
+            updateAnimations();
+            if (inputs.length > 0) {
+                if (!player.busy && handleInputTimer == undefined) {
+                    handleInputTimer = setTimeout(() => {
+                        handleInputs();
+                        handleInputTimer = undefined;
+                    }, player.currentMoveDelay);
+                }
             }
         }
     }
@@ -152,12 +155,17 @@ function GameManager() {
 
     let downLevel = function () {
         if (dungeon.currentLevelIndex < dungeon.levels.length - 1) {
-            dungeon.currentLevelIndex++;
-            player.x = dungeon.currentStairUp().x + 1;
-            player.y = dungeon.currentStairUp().y;
-            player.animation = RIGHT;
-            player.animationCounter = 0;
-            aLoop(true);
+            dm.levelChange();
+            setTimeout(() => {
+                dungeon.currentLevelIndex++;
+                player.x = dungeon.currentStairUp().x + 1;
+                player.y = dungeon.currentStairUp().y;
+                player.animation = RIGHT;
+                player.animationCounter = 0;
+            }, CONFIG.LEVEL_CHANGE_ANIMATION_TIME / 2);
+            setTimeout(() => {
+                aLoop(true);
+            }, 3 * CONFIG.LEVEL_CHANGE_ANIMATION_TIME / 4);
         }
         else {
             dungeon.newLevel();
@@ -167,20 +175,21 @@ function GameManager() {
 
     let upLevel = function () {
         if (dungeon.currentLevelIndex > 0) {
-            dungeon.currentLevelIndex--;
-            player.x = dungeon.currentStairDown().x - 1;
-            player.y = dungeon.currentStairDown().y;
-            player.animation = LEFT;
-            player.animationCounter = 0;
+            dm.levelChange();
+            setTimeout(() => {
+                dungeon.currentLevelIndex--;
+                player.x = dungeon.currentStairDown().x - 1;
+                player.y = dungeon.currentStairDown().y;
+                player.animation = LEFT;
+                player.animationCounter = 0;
+            }, CONFIG.LEVEL_CHANGE_ANIMATION_TIME / 2);
             setTimeout(() => {
                 aLoop(true);
-            }, 300);
+            }, 3 * CONFIG.LEVEL_CHANGE_ANIMATION_TIME / 4);
         }
     }
 
-    let init = (function () {
-        // mobs.unshift(player);
-        // mobs.push(new Mob(player.x - 2, player.y - 2));
+    let _init = (function () {
         aLoop(true);
     }());
 }

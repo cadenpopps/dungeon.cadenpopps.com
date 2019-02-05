@@ -48,6 +48,10 @@
         "val": 0.70
     },
     {
+        "name": "LEVEL_CHANGE_ANIMATION_TIME",
+        "val": 500
+    },
+    {
         "name": "DEFAULT_ANIMATIONS",
         "val": [
             [

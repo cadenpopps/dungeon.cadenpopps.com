@@ -4,6 +4,7 @@
 const DEBUG = true;
 const DEBUG_BOARD = false;
 const DEBUG_SIGHT = false;
+const SUPER_POWERS = true;
 
 const CONFIG = {};
 
@@ -25,6 +26,11 @@ function preload() {
     window.STAIR_UP = CONFIG.SQUARE_CONSTANTS.stairUp;
     window.LOOT = CONFIG.SQUARE_CONSTANTS.loot;
     window.PILLAR = CONFIG.SQUARE_CONSTANTS.pillar;
+
+    if (SUPER_POWERS) {
+        CONFIG.MIN_MOVE_SPEED = 1;
+        CONFIG.MOVE_DELAY_DECREASE = .2;
+    }
 
     let pools = loadJSON('/config/roompool.json');
     CONFIG.ROOMPOOL = pools[0];

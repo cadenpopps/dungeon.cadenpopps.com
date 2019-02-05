@@ -188,4 +188,12 @@ function DisplayManager(square_size, vision, animation_stages) {
         fill(255, 255, 0);
         rect(100 + (player.x * SQUARE_SIZE) + PLAYER_OFFSET, 100 + (player.y * SQUARE_SIZE) + PLAYER_OFFSET, PLAYER_SIZE, PLAYER_SIZE);
     }
+
+    this.levelChange = function () {
+        $("#overlay").css("transition-duration", (CONFIG.LEVEL_CHANGE_ANIMATION_TIME / 4000) + "s");
+        $("#overlay").css("opacity", 1);
+        setTimeout(() => {
+            $("#overlay").css("opacity", 0);
+        }, CONFIG.LEVEL_CHANGE_ANIMATION_TIME / 2);
+    }
 }
