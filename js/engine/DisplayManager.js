@@ -4,11 +4,11 @@ function DisplayManager(square_size, vision, animation_stages) {
     let SQUARE_SIZE = square_size;
     let HALF_SQUARE_SIZE = SQUARE_SIZE / 2;
 
-    let PLAYER_SIZE = SQUARE_SIZE * .6;
+    let PLAYER_SIZE = floor(SQUARE_SIZE * .6);
     let HALF_PLAYER_SIZE = PLAYER_SIZE / 2;
     let PLAYER_VISION_RANGE = vision;
 
-    let MOB_SIZE = SQUARE_SIZE * .75;
+    let MOB_SIZE = SQUARE_SIZE * .70;
     let MOB_OFFSET = (SQUARE_SIZE - MOB_SIZE) / 2;
 
 
@@ -61,18 +61,37 @@ function DisplayManager(square_size, vision, animation_stages) {
 
         //TEMPORARY UNTIL WE HAVE ANIMATIONS
         stroke(0, 0, 0);
-        fill(255, 255, 0);
-        for (let m of mobs) {
-            if (m instanceof Player) continue;
+        fill(0, 255, 0);
+        for (let m in mobs) {
+            let mob = mobs[m];
+            if (mob instanceof Player || !mob.visible) continue;
             let xoff = 0;
             let yoff = 0;
-            if (m.animation == IDLE) {
-                xoff = BOB_OFFSET_X[m.animationCounter];
-                yoff = BOB_OFFSET_Y[m.animationCounter];
+            if (mob.animation == IDLE) {
+                xoff = BOB_OFFSET_X[mob.animationCounter];
+                yoff = BOB_OFFSET_Y[mob.animationCounter];
+            }
+            else if (mob.animation < IDLE && mob.animation >= 0) {
+                switch (mob.animation) {
+                    case UP:
+                        yoff += MOVE_OFFSET[mob.animationCounter];
+                        break;
+                    case RIGHT:
+                        xoff -= MOVE_OFFSET[mob.animationCounter];
+                        break;
+                    case DOWN:
+                        yoff -= MOVE_OFFSET[mob.animationCounter];
+                        break;
+                    case LEFT:
+                        xoff += MOVE_OFFSET[mob.animationCounter];
+                        break;
+                    default:
+                        break;
+                }
             }
 
-            rect(DUNGEON_OFFSET_X - ((player.x - m.x) * SQUARE_SIZE) + MOB_OFFSET + xoff, DUNGEON_OFFSET_Y - ((player.y - m.y) * SQUARE_SIZE) + MOB_OFFSET + yoff, MOB_SIZE, MOB_SIZE);
-            strokeRect(DUNGEON_OFFSET_X - ((player.x - m.x) * SQUARE_SIZE) + MOB_OFFSET + xoff, DUNGEON_OFFSET_Y - ((player.y - m.y) * SQUARE_SIZE) + MOB_OFFSET + yoff, MOB_SIZE, MOB_SIZE);
+            rect(DUNGEON_OFFSET_X - ((player.x - mob.x) * SQUARE_SIZE) + MOB_OFFSET + xoff, DUNGEON_OFFSET_Y - ((player.y - mob.y) * SQUARE_SIZE) + MOB_OFFSET + yoff, MOB_SIZE, MOB_SIZE);
+            strokeRect(DUNGEON_OFFSET_X - ((player.x - mob.x) * SQUARE_SIZE) + MOB_OFFSET + xoff, DUNGEON_OFFSET_Y - ((player.y - mob.y) * SQUARE_SIZE) + MOB_OFFSET + yoff, MOB_SIZE, MOB_SIZE);
         }
 
 
@@ -96,12 +115,15 @@ function DisplayManager(square_size, vision, animation_stages) {
                             break;
                         case FLOOR:
                             fill(220, 220, 220, distFromPlayer);
-                            break;
-                        case LOOT:
-                            fill(229, 90, 4, distFromPlayer);
+                            if (board[x][y].loot) {
+                                fill(255, 199, 0, distFromPlayer);
+                            }
                             break;
                         case DOOR:
-                            fill(120, 80, 60, distFromPlayer);
+                            fill(90, 50, 30, distFromPlayer);
+                            if (!board[x][y].opened) {
+                                fill(120, 80, 60, distFromPlayer);
+                            }
                             break;
                         case STAIR_UP:
                             fill(71, 100, 193, distFromPlayer);
@@ -144,6 +166,8 @@ function DisplayManager(square_size, vision, animation_stages) {
                 case LEFT:
                     offx -= MOVE_OFFSET[player.animationCounter];
                     break;
+                default:
+                    break;
             }
         }
         DUNGEON_OFFSET_X = floor(offx);
@@ -185,5 +209,13 @@ function DisplayManager(square_size, vision, animation_stages) {
         }
         fill(255, 255, 0);
         rect(100 + (player.x * SQUARE_SIZE) + PLAYER_OFFSET, 100 + (player.y * SQUARE_SIZE) + PLAYER_OFFSET, PLAYER_SIZE, PLAYER_SIZE);
+    }
+
+    this.levelChange = function () {
+        $("#overlay").css("transition-duration", (CONFIG.LEVEL_CHANGE_ANIMATION_TIME / 4000) + "s");
+        $("#overlay").css("opacity", 1);
+        setTimeout(() => {
+            $("#overlay").css("opacity", 0);
+        }, CONFIG.LEVEL_CHANGE_ANIMATION_TIME / 2);
     }
 }

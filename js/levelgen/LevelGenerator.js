@@ -1,38 +1,20 @@
 
-function generateLevel(depth, previousStair) {
+function generateLevel(depth) {
 
-    // var level;
     let rooms = [];
     let regions = [];
     let stairUp = createVector(0, 0);
     let stairDown = createVector(0, 0);
-    if (depth > 0 && previousStair) {
-        stairUp = previousStair;
-    }
 
     var createLevel = function (depth, stairUp) {
 
-        // var lootCap = floor((CONFIG.DUNGEON_SIZE / 5) + ((depth + 7) / 2));
         // var mobCap = floor((CONFIG.DUNGEON_SIZE / 8) + ((depth + 30) / 2));
 
-        // if (lootCap > CONFIG.DUNGEON_SIZE / 2) {
-        //     lootCap = CONFIG.DUNGEON_SIZE / 2;
-        // }
-        // if (lootCap > CONFIG.DUNGEON_SIZE / 1.5) {
-        //     lootCap = CONFIG.DUNGEON_SIZE / 1.5;
-        // }
-
-        // console.log("\n\n\nLootcap for this floor: " + lootCap);
         // console.log("Mobcap for this floor: " + mobCap);
 
         let board = initBoard(CONFIG.DUNGEON_SIZE);
 
-        if (stairUp) {
-            genStairs(board, stairUp);
-        }
-        else {
-            genStairs(board);
-        }
+        genStairs(board);
         if (DEBUG) {
             console.log("STAIRS DONE");
         }
@@ -140,29 +122,16 @@ function generateLevel(depth, previousStair) {
 
     };
 
-    var genStairs = function (board, stairUp) {
+    var genStairs = function (board) {
 
         let stairDownTemplate = random(CONFIG.STAIRROOMPOOL);
         let stairUpTemplate = random(CONFIG.STAIRROOMPOOL);
 
         let stairUpLocation;
-        if (stairUp === undefined) {
-            stairUpLocation = randomInt(8);
-            if (stairUpLocation == 4) stairUpLocation = 8;
-
-        }
-        else {
-            let scale = floor((CONFIG.DUNGEON_SIZE - 10) / 3);
-            stairUpLocation = floor(stairUp.x / scale) + (3 * floor(stairUp.y / scale));
-            console.log(stairUpLocation);
-        }
+        stairUpLocation = randomInt(8);
+        if (stairUpLocation == 4) stairUpLocation = 8;
         let stairDownLocation = sectorToCoordinates(genStairDownSector(stairUpLocation), stairDownTemplate);
         stairUpLocation = sectorToCoordinates(getSectorCoords(stairUpLocation), stairUpTemplate);
-
-        if (DEBUG) {
-            console.log("UP: " + stairUpLocation);
-            console.log("DOWN: " + stairDownLocation);
-        }
 
         let stairUpRoom = new Room(stairUpTemplate, stairUpLocation[0], stairUpLocation[1]);
         let stairDownRoom = new Room(stairDownTemplate, stairDownLocation[0], stairDownLocation[1]);
@@ -182,7 +151,10 @@ function generateLevel(depth, previousStair) {
         stairDown.x = stairDownLocation[0] + (floor(stairDownTemplate.width / 2));
         stairDown.y = stairDownLocation[1] + (floor(stairDownTemplate.height / 2));
 
-        console.log(stairUp);
+        if (DEBUG) {
+            console.log("STAIR UP: " + stairUp.x + " " + stairUp.y);
+            console.log("STAIR DOWN: " + stairDown.x + " " + stairDown.y);
+        }
 
     };
 
@@ -303,7 +275,7 @@ function generateLevel(depth, previousStair) {
 
         for (var i = 2; i < CONFIG.DUNGEON_SIZE - 2; i++) {
             for (let j = 2; j < CONFIG.DUNGEON_SIZE - 2; j++) {
-                if (board[i][j].squareType == FLOOR && board[i][j].pathNeighbors(board, CONFIG.DUNGEON_SIZE) == 2) {
+                if (board[i][j].squareType == FLOOR && board[i][j].floorNeighbors(board, CONFIG.DUNGEON_SIZE) == 2) {
                     if ((board[i - 1][j].squareType == WALL && board[i - 2][j].squareType == FLOOR && board[i - 2][j].region == board[i][j].region) && oneIn(IMPERFECTION_RATE)) {
                         board[i - 1][j].squareType = FLOOR;
                         board[i - 1][j].region = board[i][j].region;
@@ -326,7 +298,7 @@ function generateLevel(depth, previousStair) {
         //more imperfections?
         for (var i = 2; i < CONFIG.DUNGEON_SIZE - 2; i++) {
             for (let j = 2; j < CONFIG.DUNGEON_SIZE - 2; j++) {
-                if (board[i][j].squareType == WALL && board[i][j].pathNeighbors(board, CONFIG.DUNGEON_SIZE) == 2) {
+                if (board[i][j].squareType == WALL && board[i][j].floorNeighbors(board, CONFIG.DUNGEON_SIZE) == 2) {
                     if ((board[i - 1][j].squareType == FLOOR && board[i + 1][j].squareType == FLOOR && board[i - 1][j].region == board[i + 1][j].region) && random(1) < .02) {
                         board[i][j].squareType = FLOOR;
                         board[i][j].region = board[i][j].region;
@@ -448,7 +420,7 @@ function generateLevel(depth, previousStair) {
     var removeDetours = function (board) {
         for (let i = 2; i < CONFIG.DUNGEON_SIZE - 2; i++) {
             for (let j = 2; j < CONFIG.DUNGEON_SIZE - 2; j++) {
-                if (board[i][j].squareType == WALL && board[i][j].pathNeighbors(board) == 3 && board[i][j].diagNeighbors(board) == 4) {
+                if (board[i][j].squareType == WALL && board[i][j].floorNeighbors(board) == 3 && board[i][j].diagonalFloorNeighbors(board) == 4) {
                     board[i][j].squareType = PILLAR;
                     if ((board[i - 1][j].squareType == WALL || board[i - 1][j].squareType == PILLAR)) {
                         board[i - 1][j].squareType = FLOOR;
@@ -478,7 +450,7 @@ function generateLevel(depth, previousStair) {
         }
         for (let i = 0; i < CONFIG.DUNGEON_SIZE; i++) {
             for (let j = 0; j < CONFIG.DUNGEON_SIZE; j++) {
-                if (board[i][j].squareType == WALL && board[i][j].pathNeighbors(board) == 4 && board[i][j].diagNeighbors(board) == 4 && random(1) < .98) {
+                if (board[i][j].squareType == WALL && board[i][j].floorNeighbors(board) == 4 && board[i][j].diagonalFloorNeighbors(board) == 4 && random(1) < .98) {
                     var n = board[i][j].neighbors(board);
                     var temp = randomInt(0, n.length);
                     n[temp].squareType = WALL;
@@ -504,7 +476,7 @@ function generateLevel(depth, previousStair) {
                 if (board[i][j].squareType == DOOR && random(1) < .02) {
                     board[i][j].squareType = FLOOR;
                 }
-                if (board[i][j].squareType == WALL && board[i][j].pathNeighbors(board) > 2) {
+                if (board[i][j].squareType == WALL && board[i][j].floorNeighbors(board) > 2) {
                     //change walls to paths if they have more than 2 path neighbors
                     board[i][j].squareType = FLOOR;
                 }
@@ -526,15 +498,6 @@ function generateLevel(depth, previousStair) {
     var populate = function () {
 
         var i = 0;
-        while (i < lootCap) {
-            var randomSquare = board[randomInt(CONFIG.DUNGEON_SIZE)][randomInt(CONFIG.DUNGEON_SIZE)];
-            while (!randomSquare.canBeLoot(board)) {
-                var randomSquare = board[randomInt(CONFIG.DUNGEON_SIZE)][randomInt(CONFIG.DUNGEON_SIZE)];
-            }
-            randomSquare.squareType = 2;
-            i++;
-        }
-        i = 0;
         while (i < mobCap || (i > mobCap - 2 && random() < .2)) {
             var randomSquare = board[randomInt(CONFIG.DUNGEON_SIZE)][randomInt(CONFIG.DUNGEON_SIZE)];
             while (!randomSquare.canBeMobStart(STAIR_UP)) {

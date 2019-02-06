@@ -20,12 +20,11 @@ Dungeon.prototype.currentStairDown = function () {
     return this.levels[this.currentLevelIndex].stairDown;
 }
 
-Dungeon.prototype.currentLevelMobs = function () {
+Dungeon.prototype.currentMobs = function () {
     return this.levels[this.currentLevelIndex].mobs;
 }
 
 Dungeon.prototype.newLevel = function () {
-    this.currentLevelIndex++;
-    this.levels.push(generateLevel(this.currentLevelIndex));
+    this.levels.push(generateLevel(this.currentLevelIndex + 1, this.currentStairDown()));
 }
 

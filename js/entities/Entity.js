@@ -3,6 +3,7 @@ const UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
 const SLOW = 1, MEDIUM = 2, FAST = 3;
 const IDLE = 4;
 const NUMBER_MOVES = 4;
+const FAIL = 0, SUCCESS = 1;
 
 function Entity(pos, hp = 1, str = 1, mag = 1, int = 1, speed = MEDIUM, animations = undefined) {
     this.x = pos[0];
@@ -27,43 +28,65 @@ Entity.prototype.update = function () {
     // this.toString();
 }
 
-Entity.prototype.move = function (dir, board) {
-    let success = false;
+Entity.prototype.move = function (dir, board, mobs) {
+    let status = 0;
     switch (dir) {
         case UP:
-            if (this.y > 0 && board[this.x][this.y - 1].walkable()) {
+            if (this.y > 0 && board[this.x][this.y - 1].walkable(mobs, this)) {
                 this.y--;
-                success = true;
+                status = SUCCESS;
             }
             break;
         case RIGHT:
-            if (this.x < CONFIG.DUNGEON_SIZE && board[this.x + 1][this.y].walkable()) {
+            if (this.x < CONFIG.DUNGEON_SIZE && board[this.x + 1][this.y].walkable(mobs, this)) {
                 this.x++;
-                success = true;
+                status = SUCCESS;
             }
             break;
         case DOWN:
-            if (this.y < CONFIG.DUNGEON_SIZE && board[this.x][this.y + 1].walkable()) {
+            if (this.y < CONFIG.DUNGEON_SIZE && board[this.x][this.y + 1].walkable(mobs, this)) {
                 this.y++;
-                success = true;
+                status = SUCCESS;
             }
             break;
         case LEFT:
-            if (this.x > 0 && board[this.x - 1][this.y].walkable()) {
+            if (this.x > 0 && board[this.x - 1][this.y].walkable(mobs, this)) {
                 this.x--;
-                success = true;
+                status = SUCCESS;
             }
             break;
         default:
             console.log("No direction");
             break;
     }
-    if (success) {
+    if (status != FAIL) {
+        this.updateMobs(mobs, dir);
         this.animation = dir;
         this.animationCounter = 0;
         this.busy = true;
     }
-    return success;
+    return status;
+}
+
+Entity.prototype.updateMobs = function (mobs, dir) {
+    switch (dir) {
+        case UP:
+            delete mobs[getSquareCode(this.x, this.y + 1)];
+            break;
+        case RIGHT:
+            delete mobs[getSquareCode(this.x - 1, this.y)];
+            break;
+        case DOWN:
+            delete mobs[getSquareCode(this.x, this.y - 1)];
+            break;
+        case LEFT:
+            delete mobs[getSquareCode(this.x + 1, this.y)];
+            break;
+        default:
+            console.log("No direction");
+            break;
+    }
+    mobs[getSquareCode(this.x, this.y)] = this;
 }
 
 Entity.prototype.attack = function () {

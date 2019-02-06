@@ -2,7 +2,6 @@
 Player.prototype = Object.create(Entity.prototype);
 
 function Player(pos, hp, str, mag, int) {
-    // this.x = 0; this.y = 0;
     Entity.call(this, pos, hp, str, mag, int);
 
     this.currentMoveDelay = CONFIG.MAX_INPUT_DELAY;
@@ -10,53 +9,33 @@ function Player(pos, hp, str, mag, int) {
     this.visibleSquares = [];
 
 
-    this.update = function (board, playerMoved) {
-        if (playerMoved) updateSight(board, this.x, this.y);
+    this.update = function (board, mobs, playerMoved) {
+        if (playerMoved) {
+            updateBoardSight(board, this.x, this.y);
+            updateMobSight(board, mobs);
+        }
     }
 
-    this.move = function (dir, board) {
-        let status = false;
-        switch (dir) {
-            case UP:
-                if (this.y > 0 && board[this.x][this.y - 1].walkable()) {
-                    this.y--;
-                    status = 1;
+    this.move = function (dir, board, mobs) {
+        let status = Entity.prototype.move.call(this, dir, board, mobs);
+        if (status == SUCCESS) {
+            if (board[this.x][this.y].squareType == DOOR) {
+                board[this.x][this.y].open();
+                status = DOOR;
+            }
+            else if (board[this.x][this.y] instanceof StairSquare) {
+                if (board[this.x][this.y].down) {
+                    status = STAIR_DOWN;
                 }
-                break;
-            case RIGHT:
-                if (this.x < CONFIG.DUNGEON_SIZE && board[this.x + 1][this.y].walkable()) {
-                    this.x++;
-                    status = 1;
+                else if (board[this.x][this.y].up) {
+                    status = STAIR_UP;
                 }
-                break;
-            case DOWN:
-                if (this.y < CONFIG.DUNGEON_SIZE && board[this.x][this.y + 1].walkable()) {
-                    this.y++;
-                    status = 1;
-                }
-                break;
-            case LEFT:
-                if (this.x > 0 && board[this.x - 1][this.y].walkable()) {
-                    this.x--;
-                    status = 1;
-                }
-                break;
-            default:
-                console.log("No direction");
-                break;
-        }
-        if (status) {
-            this.animation = dir;
-            this.animationCounter = 0;
-            this.busy = true;
-            if (board[this.x][this.y].squareType == STAIR_DOWN) {
-                status = 2;
-            } 
+            }
         }
         return status;
     }
 
-    let updateSight = function (board, x, y) {
+    let updateBoardSight = function (board, x, y) {
 
         for (var i = 0; i < CONFIG.DUNGEON_SIZE; i++) {
             for (var j = 0; j < CONFIG.DUNGEON_SIZE; j++) {
@@ -109,6 +88,8 @@ function Player(pos, hp, str, mag, int) {
         if (DEBUG_SIGHT) {
             console.log(squarecounter);
         }
+
+
     }
 
     function sight(i, j, x, y, board) {
@@ -124,7 +105,7 @@ function Player(pos, hp, str, mag, int) {
             if (blocked) {
                 continue;
             }
-            else if (s.squareType == WALL) {
+            else if (s.squareType == WALL || (s.squareType == DOOR && !s.opened)) {
                 // else if (s.squareType == WALL || (s.getSquareType() == DOOR && !s.getOpen())) {
                 blocked = true;
                 s.visible = true;
@@ -134,6 +115,13 @@ function Player(pos, hp, str, mag, int) {
                 s.visible = true;
                 s.discovered = true;
             }
+        }
+    }
+
+    let updateMobSight = function (board, mobs) {
+        for (let m in mobs) {
+            let mob = mobs[m];
+            mob.visible = board[mob.x][mob.y].visible;
         }
     }
 }

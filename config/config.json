@@ -36,16 +36,24 @@
         "val": 15
     },
     {
+        "name": "MOB_MOVE_DELAY",
+        "val": 100
+    },
+    {
         "name": "MAX_MOVE_DELAY",
-        "val": 125
+        "val": 130
     },
     {
         "name": "MIN_MOVE_DELAY",
-        "val": 10
+        "val": 12
     },
     {
         "name": "MOVE_DELAY_DECREASE",
-        "val": 0.70
+        "val": 0.72
+    },
+    {
+        "name": "LEVEL_CHANGE_ANIMATION_TIME",
+        "val": 500
     },
     {
         "name": "DEFAULT_ANIMATIONS",
