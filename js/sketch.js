@@ -4,7 +4,7 @@
 const DEBUG = true;
 const DEBUG_BOARD = false;
 const DEBUG_SIGHT = false;
-const SHOW_TEXTURES = false;
+const SHOW_TEXTURES = true;
 const SUPER_POWERS = false;
 
 const CONFIG = {};
@@ -53,14 +53,11 @@ function preload() {
     MUSIC.push(loadAudio('/audio/music/009_1201.wav'));
     MUSIC.push(loadAudio('/audio/music/010_1221.wav'));
 
-    TEXTURES[FLOOR] = loadImage('/img/textures/path0.jpg');
+    TEXTURES[FLOOR] = loadImage('/img/textures/floor0.jpg');
     TEXTURES[WALL] = loadImage('/img/textures/wall0.jpg');
     TEXTURES[DOOR] = [];
     TEXTURES[DOOR][OPEN] = loadImage('/img/textures/doorOpen.png');
     TEXTURES[DOOR][CLOSED] = loadImage('/img/textures/doorClosed.jpg');
-    // TEXTURES.push(loadImage('/img/path0.jpg'));
-    // TEXTURES.push(loadImage('/img/path0.jpg'));
-    // TEXTURES.push(loadImage('/img/path0.jpg'));
 
 
 }
