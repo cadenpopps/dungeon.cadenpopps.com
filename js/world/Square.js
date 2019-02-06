@@ -21,6 +21,7 @@ Square.prototype.mobHere = function (mobs) {
 WallSquare.prototype = Object.create(Square.prototype);
 function WallSquare(x, y) {
     Square.call(this, x, y, WALL);
+    this.texture = TEXTURES[WALL];
 }
 WallSquare.prototype.walkable = function (mobs) {
     return false;
@@ -31,6 +32,7 @@ WallSquare.prototype.walkable = function (mobs) {
 FloorSquare.prototype = Object.create(Square.prototype);
 function FloorSquare(x, y, loot) {
     Square.call(this, x, y, FLOOR);
+    this.texture = TEXTURES[FLOOR]
     this.loot = loot;
 }
 FloorSquare.prototype.walkable = function (mobs) {
@@ -42,6 +44,7 @@ FloorSquare.prototype.walkable = function (mobs) {
 DoorSquare.prototype = Object.create(Square.prototype);
 function DoorSquare(x, y) {
     Square.call(this, x, y, DOOR);
+    this.texture = TEXTURES[DOOR][CLOSED]
     this.opened = false;
 }
 DoorSquare.prototype.walkable = function (mobs, type) {
@@ -49,6 +52,7 @@ DoorSquare.prototype.walkable = function (mobs, type) {
 }
 DoorSquare.prototype.open = function () {
     this.opened = true;
+    this.texture = TEXTURES[DOOR][OPEN]
 }
 
 

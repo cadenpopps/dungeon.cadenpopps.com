@@ -106,43 +106,48 @@ function DisplayManager(square_size, vision, animation_stages) {
         for (let x = constrainLow(0, player.x - PLAYER_VISION_RANGE); x < constrainHigh(CONFIG.DUNGEON_SIZE, player.x + PLAYER_VISION_RANGE); x++) {
             for (let y = constrainLow(0, player.y - PLAYER_VISION_RANGE); y < constrainHigh(CONFIG.DUNGEON_SIZE, player.y + PLAYER_VISION_RANGE); y++) {
                 if (board[x][y].visible || board[x][y].discovered) {
-                    //TEMPORARY UNTIL WE HAVE TEXTURES
-                    // let distFromPlayer = (abs(player.x))
-                    let distFromPlayer = map(dist(player.x, player.y, x, y) - 2, 0, PLAYER_VISION_RANGE, 1, .1);
-                    switch (board[x][y].squareType) {
-                        case WALL:
-                            fill(45, 45, 45, distFromPlayer);
-                            break;
-                        case FLOOR:
-                            fill(220, 220, 220, distFromPlayer);
-                            if (board[x][y].loot) {
-                                fill(255, 199, 0, distFromPlayer);
-                            }
-                            break;
-                        case DOOR:
-                            fill(90, 50, 30, distFromPlayer);
-                            if (!board[x][y].opened) {
-                                fill(120, 80, 60, distFromPlayer);
-                            }
-                            break;
-                        case STAIR_UP:
-                            fill(71, 100, 193, distFromPlayer);
-                            break;
-                        case STAIR_DOWN:
-                            fill(72, 52, 173, distFromPlayer);
-                            break;
-                        default:
-                            fill(255, 0, 0, distFromPlayer);
-                            break;
-                    }
-                    rect(DUNGEON_OFFSET_X - ((player.x - x) * SQUARE_SIZE), DUNGEON_OFFSET_Y - ((player.y - y) * SQUARE_SIZE), SQUARE_SIZE, SQUARE_SIZE);
-                    if (!board[x][y].visible && board[x][y].discovered) {
-                        fill(0, 0, 0, .6);
+                    if (!SHOW_TEXTURES) {
+                        // TEMPORARY UNTIL WE HAVE TEXTURES
+                        let distFromPlayer = map(dist(player.x, player.y, x, y) - 2, 0, PLAYER_VISION_RANGE, 1, .1);
+                        switch (board[x][y].squareType) {
+                            case WALL:
+                                fill(45, 45, 45, distFromPlayer);
+                                break;
+                            case FLOOR:
+                                fill(220, 220, 220, distFromPlayer);
+                                if (board[x][y].loot) {
+                                    fill(255, 199, 0, distFromPlayer);
+                                }
+                                break;
+                            case DOOR:
+                                fill(90, 50, 30, distFromPlayer);
+                                if (!board[x][y].opened) {
+                                    fill(120, 80, 60, distFromPlayer);
+                                }
+                                break;
+                            case STAIR_UP:
+                                fill(71, 100, 193, distFromPlayer);
+                                break;
+                            case STAIR_DOWN:
+                                fill(72, 52, 173, distFromPlayer);
+                                break;
+                            default:
+                                fill(255, 0, 0, distFromPlayer);
+                                break;
+                        }
                         rect(DUNGEON_OFFSET_X - ((player.x - x) * SQUARE_SIZE), DUNGEON_OFFSET_Y - ((player.y - y) * SQUARE_SIZE), SQUARE_SIZE, SQUARE_SIZE);
                     }
-
-                    //CODE FOR WHEN WE HAVE TEXTURES
-                    // image(board[x][y].texture, DUNGEON_OFFSET_X - ((player.x - x) * SQUARE_SIZE), DUNGEON_OFFSET_Y - ((player.y - y) * SQUARE_SIZE), SQUARE_SIZE, SQUARE_SIZE);
+                    else {
+                        // CODE FOR WHEN WE HAVE TEXTURES
+                        image(board[x][y].texture, DUNGEON_OFFSET_X - ((player.x - x) * SQUARE_SIZE), DUNGEON_OFFSET_Y - ((player.y - y) * SQUARE_SIZE), SQUARE_SIZE, SQUARE_SIZE);
+                        let distFromPlayer = 1 - map(dist(player.x, player.y, x, y) - 2, 0, PLAYER_VISION_RANGE, 1, 0);
+                        fill(0, 0, 0, distFromPlayer);
+                        rect(DUNGEON_OFFSET_X - ((player.x - x) * SQUARE_SIZE), DUNGEON_OFFSET_Y - ((player.y - y) * SQUARE_SIZE), SQUARE_SIZE, SQUARE_SIZE);
+                        if (!board[x][y].visible && board[x][y].discovered) {
+                            fill(0, 0, 0, .6);
+                            rect(DUNGEON_OFFSET_X - ((player.x - x) * SQUARE_SIZE), DUNGEON_OFFSET_Y - ((player.y - y) * SQUARE_SIZE), SQUARE_SIZE, SQUARE_SIZE);
+                        }
+                    }
                 }
             }
         }

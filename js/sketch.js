@@ -4,6 +4,7 @@
 const DEBUG = true;
 const DEBUG_BOARD = false;
 const DEBUG_SIGHT = false;
+const SHOW_TEXTURES = false;
 const SUPER_POWERS = false;
 
 const CONFIG = {};
@@ -11,14 +12,19 @@ const CONFIG = {};
 const ADD_KEY = 0, REMOVE_KEY = 1, MOUSE_CLICK = 2;
 // const MOUSE = 1;
 
+const OPEN = 0;
+const CLOSED = 1;
+
 var gm;
 var MUSIC = [];
+var TEXTURES = [];
 
 function preload() {
     let settings = loadJSON('/config/config.json');
     for (let s of settings) {
         CONFIG[s.name] = s.val;
     }
+
     window.FLOOR = CONFIG.SQUARE_CONSTANTS.floor;
     window.WALL = CONFIG.SQUARE_CONSTANTS.wall;
     window.DOOR = CONFIG.SQUARE_CONSTANTS.door;
@@ -46,6 +52,16 @@ function preload() {
     MUSIC.push(loadAudio('/audio/music/008_0201.wav'));
     MUSIC.push(loadAudio('/audio/music/009_1201.wav'));
     MUSIC.push(loadAudio('/audio/music/010_1221.wav'));
+
+    TEXTURES[FLOOR] = loadImage('/img/textures/path0.jpg');
+    TEXTURES[WALL] = loadImage('/img/textures/wall0.jpg');
+    TEXTURES[DOOR] = [];
+    TEXTURES[DOOR][OPEN] = loadImage('/img/textures/doorOpen.png');
+    TEXTURES[DOOR][CLOSED] = loadImage('/img/textures/doorClosed.jpg');
+    // TEXTURES.push(loadImage('/img/path0.jpg'));
+    // TEXTURES.push(loadImage('/img/path0.jpg'));
+    // TEXTURES.push(loadImage('/img/path0.jpg'));
+
 
 }
 
