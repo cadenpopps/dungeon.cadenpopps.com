@@ -48,7 +48,7 @@ function GameManager() {
     }, CONFIG.IDLE_LOOP_SPEED);
 
     this.display = function () {
-        dm._display(dungeon.currentBoard(), player, mobs);
+        dm._display(dungeon.currentBoard(), player, dungeon.currentMobs());
     }
 
     this.input = function (type, key, mouseY) {
@@ -159,11 +159,13 @@ function GameManager() {
         if (dungeon.currentLevelIndex < dungeon.levels.length - 1) {
             dm.levelChange();
             setTimeout(() => {
+                delete dungeon.currentMobs()[getSquareCode(player.x, player.y)];
                 dungeon.currentLevelIndex++;
                 player.x = dungeon.currentStairUp().x + 1;
                 player.y = dungeon.currentStairUp().y;
                 player.animation = RIGHT;
                 player.animationCounter = 0;
+                dungeon.currentMobs()[getSquareCode(player.x, player.y)] = player;
             }, CONFIG.LEVEL_CHANGE_ANIMATION_TIME / 2);
             setTimeout(() => {
                 aLoop(true);
@@ -179,11 +181,13 @@ function GameManager() {
         if (dungeon.currentLevelIndex > 0) {
             dm.levelChange();
             setTimeout(() => {
+                delete dungeon.currentMobs()[getSquareCode(player.x, player.y)];
                 dungeon.currentLevelIndex--;
                 player.x = dungeon.currentStairDown().x - 1;
                 player.y = dungeon.currentStairDown().y;
                 player.animation = LEFT;
                 player.animationCounter = 0;
+                dungeon.currentMobs()[getSquareCode(player.x, player.y)] = player;
             }, CONFIG.LEVEL_CHANGE_ANIMATION_TIME / 2);
             setTimeout(() => {
                 aLoop(true);
