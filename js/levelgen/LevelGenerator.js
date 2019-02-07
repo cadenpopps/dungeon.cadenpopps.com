@@ -692,7 +692,7 @@ function canBeTarget(board, doors, square) {
 
 function connect(board, start, target) {
     if (target == start) addToConnected(start);
-    // console.log(findNodePath(board, start, target));
+    console.log(findNodePath(board, start, target));
 }
 
 function connectToNode(board, node1, node2) {
@@ -714,9 +714,4 @@ function connectToNode(board, node1, node2) {
 
     board[node1.x + difX][node1.y + difY].squareType = FLOOR;
     node2.connected = true;
-}
-
-
-function findNodePath(board, start, end) {
-
 }

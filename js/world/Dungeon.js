@@ -8,6 +8,12 @@ function Dungeon() {
 
     console.log(millis() - startTime);
 
+    // findPath(this.currentBoard(), this.currentBoard()[this.currentStairUp().x][this.currentStairUp().y], this.currentBoard()[this.currentStairDown().x][this.currentStairDown().y]);
+
+
+    findPath(this.currentBoard(), this.currentBoard()[this.currentStairUp().x][this.currentStairUp().y], this.currentBoard()[this.currentStairUp().x + 2][this.currentStairUp().y + 2]);
+
+
 }
 
 Dungeon.prototype.currentLevel = function () {

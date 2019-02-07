@@ -48,7 +48,7 @@ function DoorSquare(x, y) {
     this.opened = false;
 }
 DoorSquare.prototype.walkable = function (mobs, type) {
-    return (this.opened || (type instanceof Player)) && Square.prototype.walkable.call(this, mobs);
+    return (this.opened || (type instanceof Player || type == PATHFINDING)) && Square.prototype.walkable.call(this, mobs);
 }
 DoorSquare.prototype.open = function () {
     this.opened = true;
@@ -69,5 +69,5 @@ function StairSquare(x, y, up) {
     this.down = !up;
 }
 StairSquare.prototype.walkable = function (mobs, type) {
-    return (type instanceof Player) && Square.prototype.walkable.call(this, mobs);
+    return (type instanceof Player || type == PATHFINDING) && Square.prototype.walkable.call(this, mobs);
 }
