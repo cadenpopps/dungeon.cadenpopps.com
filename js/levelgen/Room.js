@@ -1,14 +1,17 @@
 function Room(template, x, y) {
 
-    this.width = template.width;
-    this.height = template.height;
-    this.left = x;
-    this.top = y;
-    this.right = x + this.width;
-    this.bottom = y + this.height;
+    this.width = template.width - 2;
+    this.height = template.height - 2;
+    this.left = x + 1;
+    this.top = y + 1;
+    this.right = x + this.width + 1;
+    this.bottom = y + this.height + 1;
 
     this.squares = template.squares;
+
     this.roomType = 0;
+
+    this.connected = false;
 
     this.overlaps = function (otherRoom) {
         if (otherRoom.left > this.right || otherRoom.top > this.bottom) {
@@ -20,21 +23,40 @@ function Room(template, x, y) {
         return true;
     };
 
-    this.edges = function () {
+    this.doorSquares = (function (squares, width, height) {
 
-        let edges = [];
+        let doorSquares = [];
 
-        for (let i = 0; i < this.height; i++) {
-            edges.push(this.squares[0][i]);
-            edges.push(this.squares[this.width - 1][i]);
+        for (let x = 0; x < width; x++) {
+            if (squares[0][x] == DOOR) {
+                doorSquares.push({ x: x, y: 0 });
+            }
+            if (squares[height - 1][x] == DOOR) {
+                doorSquares.push({ x: x, y: height - 1 });
+            }
         }
-        for (let i = 1; i < this.width - 1; i++) {
-            edges.push(this.squares[i][0]);
-            edges.push(this.squares[i][this.height - 1]);
+
+        for (let y = 1; y < height - 1; y++) {
+            if (squares[y][0] == DOOR) {
+                doorSquares.push({ x: 0, y: y });
+            }
+            if (squares[y][width - 1] == DOOR) {
+                doorSquares.push({ x: width - 1, y: y });
+            }
         }
+        // for (let i = 0; i < this.height + 2; i++) {
+        //     if (this.squares[0][i] == DOOR) {
+        //         doorSquares.push(this.squares[0][i]);
+        //     }
+        //     doorSquares.push(this.squares[this.width + 1][i]);
+        // }
+        // for (let i = 1; i < this.width + 1; i++) {
+        //     doorSquares.push(this.squares[i][0]);
+        //     doorSquares.push(this.squares[i][this.height - 1]);
+        // }
 
-        return edges;
+        return doorSquares;
 
-    };
+    })(this.squares, this.width + 2, this.height + 2);
 
 }

@@ -29,27 +29,32 @@ function generateLevel(depth) {
             console.log("MAZE DONE");
         }
 
-        connectRegions(board);
+        connectRooms(board);
         if (DEBUG) {
-            console.log("CONNECTING REGIONS DONE");
+            console.log("ROOMS CONNECTED");
         }
 
-        for (let i = 0; i < 3; i++) {
-            sparseMaze(board);
-            if (DEBUG) {
-                console.log("SPARSING DONE: " + i);
-            }
+        // connectRegions(board);
+        // if (DEBUG) {
+        //     console.log("CONNECTING REGIONS DONE");
+        // }
 
-            removeDetours(board);
-            if (DEBUG) {
-                console.log("REMOVE DONE: " + i);
-            }
-        }
+        // for (let i = 0; i < 3; i++) {
+        //     sparseMaze(board);
+        //     if (DEBUG) {
+        //         console.log("SPARSING DONE: " + i);
+        //     }
 
-        fixMaze(board);
-        if (DEBUG) {
-            console.log("FIXING MAZE DONE");
-        }
+        //     removeDetours(board);
+        //     if (DEBUG) {
+        //         console.log("REMOVE DONE: " + i);
+        //     }
+        // }
+
+        // fixMaze(board);
+        // if (DEBUG) {
+        //     console.log("FIXING MAZE DONE");
+        // }
 
 
         // console.log(stairUp);
@@ -78,48 +83,6 @@ function generateLevel(depth) {
             }
         }
         return board;
-    };
-
-    var genDungeon = function () {
-        genStairs();
-        console.log("stairs done");
-
-        genRooms();
-        console.log("rooms done");
-
-        genMaze();
-        console.log("maze done");
-
-        connectRegions();
-        console.log("regions done");
-
-        sparseMaze();
-        removeDetours();
-        sparseMaze();
-        removeDetours();
-        // sparseMaze();
-
-        // console.log("sparse done");
-
-        // for (var i = 0; i < 3; i++) {
-        // 	removeDetours();
-        // 	sparseMaze();
-        // }
-        // console.log("detours removed");
-
-        fixMaze();
-        // console.log("maze fixed");
-
-
-
-        board[stairUp.x][stairUp.y].squareType = STAIR_DOWN;
-        board[stairDown.x][stairDown.y].squareType = STAIR_DOWN;
-
-        // populate();
-
-        // rooms = null;
-        // regions = null;
-
     };
 
     var genStairs = function (board) {
@@ -215,19 +178,21 @@ function generateLevel(depth) {
         let translationScale = floor((CONFIG.DUNGEON_SIZE - 10) / 3);
         x = (x * translationScale) + randomInt(-3, 3) - floor(template.width / 2);
         y = (y * translationScale) + randomInt(-3, 3) - floor(template.height / 2);
-        x += (x + 1) % 2;
-        y += (y + 1) % 2
+        x += (x) % 2;
+        y += (y) % 2
         return [x, y];
     }
 
     var genRooms = function (board) {
-        let HALF_DUNGEON = floor((CONFIG.DUNGEON_SIZE) / 2);
-        for (var i = 0; i < CONFIG.ROOM_TRIES; i++) {
+        let HALF_DUNGEON = floor(CONFIG.DUNGEON_SIZE / 2);
+        for (let i = 0; i < CONFIG.ROOM_TRIES; i++) {
 
             let template = random(CONFIG.ROOMPOOL);
 
-            let roomx = randomInt(0, HALF_DUNGEON - floor(template.width / 2)) * 2 + 1;
-            let roomy = randomInt(0, HALF_DUNGEON - floor(template.height / 2)) * 2 + 1;
+            let roomx = randomInt(0, HALF_DUNGEON - floor(template.width / 2) + 1) * 2;
+            let roomy = randomInt(0, HALF_DUNGEON - floor(template.height / 2) + 1) * 2;
+
+            // console.log("x: " + roomx + "   y: " + roomy);
 
             var newRoom = new Room(template, roomx, roomy);
             var valid = true;
@@ -250,66 +215,85 @@ function generateLevel(depth) {
 
     var genMaze = function (board) {
 
-        let current = createVector();
+        // le = [];
 
         for (let x = 1; x < CONFIG.DUNGEON_SIZE - 1; x++) {
             for (let y = 1; y < CONFIG.DUNGEON_SIZE - 1; y++) {
-                if (x % 2 == 1 || y % 2 == 1) {
-                    if (board[x][y].squareType == WALL && board[x][y].numNeighbors(board) <= 1 && board[x - 1][y].squareType == WALL && board[x][y - 1].squareType == WALL) {
-                        current.x = x;
-                        current.y = y;
-                        genMazeSection(board, current);
-                    }
+                if (x % 2 == 1 && y % 2 == 1 && !board[x][y].roomSquare) {
+
+                    board[x][y].squareType = FLOOR;
+                    // nodes.push(board[x][y]);
+                    board[x][y].nodeSquare = true;
+                    // if (board[x][y].squareType == WALL && board[x][y].numNeighbors(board) <= 1 && board[x - 1][y].squareType == WALL && board[x][y - 1].squareType == WALL) {
+                    // current.x = x;
+                    // current.y = y;
+                    // genMazeSection(board, current);
                 }
             }
         }
 
-        for (let r of regions) {
-            for (let s of r.squares) {
-                s.region = r;
-            }
-        }
+        // retur;
+
+        // let current = createVector();
+
+        // for (let x = 1; x < CONFIG.DUNGEON_SIZE - 1; x++) {
+        //     for (let y = 1; y < CONFIG.DUNGEON_SIZE - 1; y++) {
+        //         if (x % 2 == 1 && y % 2 == 1) {
+        //             if (board[x][y].squareType == WALL && board[x][y].numNeighbors(board) <= 1 && board[x - 1][y].squareType == WALL && board[x][y - 1].squareType == WALL) {
+        //                 current.x = x;
+        //                 current.y = y;
+        //                 genMazeSection(board, current);
+        //             }
+        //         }
+        //     }
+        // }
+
+        // for (let r of regions) {
+        //     for (let s of r.squares) {
+        //         s.region = r;
+        //     }
+        // }
 
         //make some imperfections
-        let IMPERFECTION_RATE = floor(1 / .01);
+        // let IMPERFECTION_RATE = floor(1 / .01);
 
-        for (var i = 2; i < CONFIG.DUNGEON_SIZE - 2; i++) {
-            for (let j = 2; j < CONFIG.DUNGEON_SIZE - 2; j++) {
-                if (board[i][j].squareType == FLOOR && board[i][j].floorNeighbors(board, CONFIG.DUNGEON_SIZE) == 2) {
-                    if ((board[i - 1][j].squareType == WALL && board[i - 2][j].squareType == FLOOR && board[i - 2][j].region == board[i][j].region) && oneIn(IMPERFECTION_RATE)) {
-                        board[i - 1][j].squareType = FLOOR;
-                        board[i - 1][j].region = board[i][j].region;
-                    }
-                    if ((board[i + 1][j].squareType == WALL && board[i + 2][j].squareType == FLOOR && board[i + 2][j].region == board[i][j].region) && oneIn(IMPERFECTION_RATE)) {
-                        board[i + 1][j].squareType = FLOOR;
-                        board[i + 1][j].region = board[i][j].region;
-                    }
-                    if ((board[i][j - 1].squareType == WALL && board[i][j - 2].squareType == FLOOR && board[i][j - 2].region == board[i][j].region) && oneIn(IMPERFECTION_RATE)) {
-                        board[i][j - 1].squareType = FLOOR;
-                        board[i][j - 1].region = board[i][j].region;
-                    }
-                    if ((board[i][j + 1].squareType == WALL && board[i][j + 2].squareType == FLOOR && board[i][j + 2].region == board[i][j].region) && oneIn(IMPERFECTION_RATE)) {
-                        board[i][j + 1].squareType = FLOOR;
-                        board[i][j + 1].region = board[i][j].region;
-                    }
-                }
-            }
-        }
-        //more imperfections?
-        for (var i = 2; i < CONFIG.DUNGEON_SIZE - 2; i++) {
-            for (let j = 2; j < CONFIG.DUNGEON_SIZE - 2; j++) {
-                if (board[i][j].squareType == WALL && board[i][j].floorNeighbors(board, CONFIG.DUNGEON_SIZE) == 2) {
-                    if ((board[i - 1][j].squareType == FLOOR && board[i + 1][j].squareType == FLOOR && board[i - 1][j].region == board[i + 1][j].region) && random(1) < .02) {
-                        board[i][j].squareType = FLOOR;
-                        board[i][j].region = board[i][j].region;
-                    }
-                    if ((board[i][j - 1].squareType == FLOOR && board[i][j + 1].squareType == FLOOR && board[i][j - 1].region == board[i][j + 1].region) && random(1) < .02) {
-                        board[i][j].squareType = FLOOR;
-                        board[i][j].region = board[i][j].region;
-                    }
-                }
-            }
-        }
+        // for (var i = 2; i < CONFIG.DUNGEON_SIZE - 2; i++) {
+        //     for (let j = 2; j < CONFIG.DUNGEON_SIZE - 2; j++) {
+        //         if (board[i][j].squareType == FLOOR && board[i][j].floorNeighbors(board, CONFIG.DUNGEON_SIZE) == 2) {
+        //             if ((board[i - 1][j].squareType == WALL && board[i - 2][j].squareType == FLOOR && board[i - 2][j].region == board[i][j].region) && oneIn(IMPERFECTION_RATE)) {
+        //                 board[i - 1][j].squareType = FLOOR;
+        //                 board[i - 1][j].region = board[i][j].region;
+        //             }
+        //             if ((board[i + 1][j].squareType == WALL && board[i + 2][j].squareType == FLOOR && board[i + 2][j].region == board[i][j].region) && oneIn(IMPERFECTION_RATE)) {
+        //                 board[i + 1][j].squareType = FLOOR;
+        //                 board[i + 1][j].region = board[i][j].region;
+        //             }
+        //             if ((board[i][j - 1].squareType == WALL && board[i][j - 2].squareType == FLOOR && board[i][j - 2].region == board[i][j].region) && oneIn(IMPERFECTION_RATE)) {
+        //                 board[i][j - 1].squareType = FLOOR;
+        //                 board[i][j - 1].region = board[i][j].region;
+        //             }
+        //             if ((board[i][j + 1].squareType == WALL && board[i][j + 2].squareType == FLOOR && board[i][j + 2].region == board[i][j].region) && oneIn(IMPERFECTION_RATE)) {
+        //                 board[i][j + 1].squareType = FLOOR;
+        //                 board[i][j + 1].region = board[i][j].region;
+        //             }
+        //         }
+        //     }
+        // }
+        // //more imperfections?
+        // for (var i = 2; i < CONFIG.DUNGEON_SIZE - 2; i++) {
+        //     for (let j = 2; j < CONFIG.DUNGEON_SIZE - 2; j++) {
+        //         if (board[i][j].squareType == WALL && board[i][j].floorNeighbors(board, CONFIG.DUNGEON_SIZE) == 2) {
+        //             if ((board[i - 1][j].squareType == FLOOR && board[i + 1][j].squareType == FLOOR && board[i - 1][j].region == board[i + 1][j].region) && random(1) < .02) {
+        //                 board[i][j].squareType = FLOOR;
+        //                 board[i][j].region = board[i][j].region;
+        //             }
+        //             if ((board[i][j - 1].squareType == FLOOR && board[i][j + 1].squareType == FLOOR && board[i][j - 1].region == board[i][j + 1].region) && random(1) < .02) {
+        //                 board[i][j].squareType = FLOOR;
+        //                 board[i][j].region = board[i][j].region;
+        //             }
+        //         }
+        //     }
+        // }
     };
 
     var genMazeSection = function (board, current) {
@@ -352,6 +336,36 @@ function generateLevel(depth) {
         r.path = true;
         regions.push(r);
     };
+
+    var connectRooms = function (board) {
+
+        let allConnected = false;
+
+        //actually, loop through all rooms, get a couple doors for each room, then make it a region. then connect regions. this way you guarentee 1-? doors per room, with many fewer wasted loops
+
+        //then, connect regions
+
+        while (!allConnected) {
+            let room = random(rooms);
+            while (room.connected) {
+                room = random(rooms);
+            }
+            let door = getDoorSquare(board, random(room.doorSquares), room.left, room.top);
+            while (door.adjacentNodes(board) == 0) {
+                room = random(rooms);
+                door = getDoorSquare(board, random(room.doorSquares), room.left, room.top);
+            }
+            door.squareType = DOOR;
+            room.connected = true;
+            allConnected = true;
+            for (let r of rooms) {
+                if (!r.connected) allConnected = false;
+            }
+        }
+
+    }
+
+
 
     var connectRegions = function (board) {
         regions[0].connect();
@@ -521,7 +535,8 @@ function generateLevel(depth) {
     var addChildren = function (room, board) {
         for (let i = room.left; i < room.right; i++) {
             for (let j = room.top; j < room.bottom; j++) {
-                board[i][j].squareType = room.squares[i - room.left][j - room.top];
+                board[i][j].squareType = room.squares[i - room.left + 1][j - room.top + 1];
+                board[i][j].roomSquare = true;
             }
         }
     };
@@ -547,4 +562,9 @@ function generateLevel(depth) {
 
     return createLevel(depth, stairUp);
 
+}
+
+
+function getDoorSquare(board, pos, left, top) {
+    return board[left + pos.x - 1][top + pos.y - 1];
 }

@@ -5,6 +5,8 @@ function SquareBuilder(x, y) {
 	this.squareType = WALL;
 	this.deadend = false;
 	this.isOpen = false;
+	this.roomSquare = false;
+	this.nodeSquare = false;
 	this.region = null;
 
 	this.copy = function () {
@@ -156,6 +158,23 @@ function SquareBuilder(x, y) {
 			neighbors++;
 		}
 		return neighbors;
+	};
+
+	this.adjacentNodes = function (board, nodes) {
+		var nodes = 0;
+		if (this.x > 1 && board[this.x - 1][this.y].nodeSquare) {
+			nodes++;
+		}
+		if (this.x < CONFIG.DUNGEON_SIZE - 2 && board[this.x + 1][this.y].nodeSquare) {
+			nodes++;
+		}
+		if (this.y > 1 && board[this.x][this.y - 1].nodeSquare) {
+			nodes++;
+		}
+		if (this.y < CONFIG.DUNGEON_SIZE - 2 && board[this.x][this.y + 1].nodeSquare) {
+			nodes++;
+		}
+		return nodes;
 	};
 
 	this.connector = function (regions, board) {
