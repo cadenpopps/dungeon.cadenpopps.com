@@ -184,20 +184,23 @@ function DisplayManager(square_size, vision, animation_stages) {
         PLAYER_SIZE = SQUARE_SIZE * .8;
         CONFIG.MAX_MOVE_DELAY = 10;
         PLAYER_OFFSET = (SQUARE_SIZE - PLAYER_SIZE) / 2;
-        for (let i = 0; i < CONFIG.DUNGEON_SIZE; i++) {
-            for (let j = 0; j < CONFIG.DUNGEON_SIZE; j++) {
-                switch (board[i][j].squareType) {
+        for (let x = 0; x < CONFIG.DUNGEON_SIZE; x++) {
+            for (let y = 0; y < CONFIG.DUNGEON_SIZE; y++) {
+                switch (board[x][y].squareType) {
                     case WALL:
                         fill(45, 45, 45);
                         break;
                     case FLOOR:
                         fill(220, 220, 220);
-                        break;
-                    case LOOT:
-                        fill(229, 90, 4);
+                        if (board[x][y].loot) {
+                            fill(255, 199, 0);
+                        }
                         break;
                     case DOOR:
-                        fill(120, 80, 60);
+                        fill(90, 50, 30);
+                        if (!board[x][y].opened) {
+                            fill(120, 80, 60);
+                        }
                         break;
                     case STAIR_UP:
                         fill(71, 100, 193);
@@ -209,7 +212,7 @@ function DisplayManager(square_size, vision, animation_stages) {
                         fill(255, 0, 0);
                         break;
                 }
-                rect(100 + (i * SQUARE_SIZE), 100 + (j * SQUARE_SIZE), SQUARE_SIZE, SQUARE_SIZE);
+                rect(100 + (x * SQUARE_SIZE), 100 + (y * SQUARE_SIZE), SQUARE_SIZE, SQUARE_SIZE);
             }
         }
         fill(255, 255, 0);

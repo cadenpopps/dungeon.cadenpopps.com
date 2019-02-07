@@ -7,11 +7,15 @@ function Room(template, x, y) {
     this.right = x + this.width + 1;
     this.bottom = y + this.height + 1;
 
+    this.maxDoors = template.maxDoors;
+
     this.squares = template.squares;
 
     this.roomType = 0;
 
     this.connected = false;
+
+    this.doors = [];
 
     this.overlaps = function (otherRoom) {
         if (otherRoom.left > this.right || otherRoom.top > this.bottom) {
@@ -28,19 +32,19 @@ function Room(template, x, y) {
         let doorSquares = [];
 
         for (let x = 0; x < width; x++) {
-            if (squares[0][x] == DOOR) {
+            if (squares[x][0] == DOOR) {
                 doorSquares.push({ x: x, y: 0 });
             }
-            if (squares[height - 1][x] == DOOR) {
+            if (squares[x][height - 1] == DOOR) {
                 doorSquares.push({ x: x, y: height - 1 });
             }
         }
 
         for (let y = 1; y < height - 1; y++) {
-            if (squares[y][0] == DOOR) {
+            if (squares[0][y] == DOOR) {
                 doorSquares.push({ x: 0, y: y });
             }
-            if (squares[y][width - 1] == DOOR) {
+            if (squares[width - 1][y] == DOOR) {
                 doorSquares.push({ x: width - 1, y: y });
             }
         }

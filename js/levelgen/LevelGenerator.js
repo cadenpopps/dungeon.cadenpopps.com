@@ -339,29 +339,100 @@ function generateLevel(depth) {
 
     var connectRooms = function (board) {
 
-        let allConnected = false;
-
         //actually, loop through all rooms, get a couple doors for each room, then make it a region. then connect regions. this way you guarentee 1-? doors per room, with many fewer wasted loops
 
-        //then, connect regions
+        // for (let r of rooms) {
+        //     let numDoors = randomInt(1, r.maxDoors);
+        //     for (let i = 0; i < numDoors; i++) {
+        //         let door = getDoorSquare(board, random(r.doorSquares), r.left, r.top);
+        //         while (!door.connector(board) || door.adjacentDoors(board) > 0 || door.nearbyDoors(board) > 0) {
+        //             console.log(door.nearbyDoors(board));
+        //             door = getDoorSquare(board, random(r.doorSquares), r.left, r.top);
+        //         }
+        //         door.squareType = DOOR;
+        //         r.doors.push(door);
+        //     }
+        // }
 
-        while (!allConnected) {
-            let room = random(rooms);
-            while (room.connected) {
-                room = random(rooms);
+        let allConnected = false;
+
+        // r = rooms[0];
+        for (let r of rooms) {
+            addToConnected(r);
+
+            let numDoors = randomInt(1, r.maxDoors);
+            for (let i = r.doorSquares - 1; i >= 0; i--) {
+                if (getDoorSquare(board, d, r.left, r.top).squareType == DOOR) {
+                    numDoors--;
+                    r.doorSquares.splice(i, 1);
+                }
             }
-            let door = getDoorSquare(board, random(room.doorSquares), room.left, room.top);
-            while (door.adjacentNodes(board) == 0) {
-                room = random(rooms);
-                door = getDoorSquare(board, random(room.doorSquares), room.left, room.top);
+            for (let i = 0; i < numDoors; i++) {
+                let door = getDoorSquare(board, random(r.doorSquares), r.left, r.top);
+                while (!door.connector(board) || door.adjacentDoors(board) > 0 || door.nearbyDoors(board) > 0) {
+                    door = getDoorSquare(board, random(r.doorSquares), r.left, r.top);
+                }
+                door.squareType = DOOR;
+                r.doors.push(door);
             }
-            door.squareType = DOOR;
-            room.connected = true;
-            allConnected = true;
-            for (let r of rooms) {
-                if (!r.connected) allConnected = false;
+
+
+            for (let d of r.doors) {
+                //connect to closest connected path or unconnected door
+                let target = findTarget(board, d, r.doors);
+                // console.log(target);
+                connect(board, d, target);
             }
         }
+
+        // while (!allConnected) {
+
+        //     //for all rooms, for all doors, find a path to a connected square or another door
+        //     let currentRoom = random(rooms);
+        //     addToConnected(currentRoom);
+        //     rooms.splice(rooms.indexOf(currentRoom), 1);
+        //     let currentDoor = random(currentRoom.doors);
+        //     console.log(currentDoor);
+        //     while (!currentDoor.connector(board)) {
+        //         currentRoom.doors.splice(currentRoom.doors.indexOf(currentDoor), 1);
+        //         currentDoor = random(currentRoom.doors);
+        //     }
+        //     addToConnected(currentDoor);
+        //     currentRoom.doors.splice(currentRoom.doors.indexOf(currentDoor), 1);
+        //     let currentNode = random(currentDoor.adjacentNodes(board));
+        //     while (currentNode.adjacentDoors(board) == 0 && currentNode.surroundingNodes(board).length > 0) {
+        //         let newNode = random(currentNode.surroundingNodes(board));
+        //         addToConnected(currentNode);
+        //         connectToNode(board, currentNode, newNode);
+        //         currentNode = newNode;
+        //     }
+        //     allConnected = true;
+        //     for (let r of rooms) {
+        //         if (!r.connected) allConnected = false;
+        //     }
+        // }
+
+
+
+        // console.log(currentlyConnecting);
+
+        // while (!allConnected) {
+        // let room = random(rooms);
+        // while (room.connected) {
+        //     room = random(rooms);
+        // }
+        // let door = getDoorSquare(board, random(room.doorSquares), room.left, room.top);
+        // while (door.adjacentNodes(board) == 0) {
+        //     room = random(rooms);
+        //     door = getDoorSquare(board, random(room.doorSquares), room.left, room.top);
+        // }
+        // door.squareType = DOOR;
+        // room.connected = true;
+        // allConnected = true;
+        // for (let r of rooms) {
+        //     if (!r.connected) allConnected = false;
+        // }
+        // }
 
     }
 
@@ -527,6 +598,7 @@ function generateLevel(depth) {
     var makeSquares = function (board) {
         for (var i = 0; i < CONFIG.DUNGEON_SIZE; i++) {
             for (let j = 0; j < CONFIG.DUNGEON_SIZE; j++) {
+                if (!board[i][j].connected) board[i][j].squareType = WALL;
                 board[i][j] = board[i][j].copy();
             }
         }
@@ -537,7 +609,11 @@ function generateLevel(depth) {
             for (let j = room.top; j < room.bottom; j++) {
                 board[i][j].squareType = room.squares[i - room.left + 1][j - room.top + 1];
                 board[i][j].roomSquare = true;
+                board[i][j].connected = true;
             }
+        }
+        for (let d of room.doorSquares) {
+            board[d.x][d.y].doorSquare = true;
         }
     };
 
@@ -567,4 +643,80 @@ function generateLevel(depth) {
 
 function getDoorSquare(board, pos, left, top) {
     return board[left + pos.x - 1][top + pos.y - 1];
+}
+
+function addToConnected(toConnect) {
+    toConnect.connected = true;
+}
+
+function findTarget(board, square, doors) {
+    if (square.roomConnector(board)) return square;
+    let target = undefined;
+    let radius = 1;
+    while (target === undefined) {
+        minX = constrainLow(0, square.x - radius);
+        maxX = constrainHigh(CONFIG.DUNGEON_SIZE - 1, square.x + radius);
+        minY = constrainLow(0, square.y - radius);
+        maxY = constrainHigh(CONFIG.DUNGEON_SIZE - 1, square.y + radius);
+
+        for (let x = minX; x <= maxX; x++) {
+            if (canBeTarget(board, doors, board[x][minY])) {
+                target = board[x][minY];
+                break;
+            }
+            else if (canBeTarget(board, doors, board[x][maxY])) {
+                target = board[x][maxY];
+                break;
+            }
+        }
+        if (target === undefined) {
+            for (let y = minY; y <= maxY; y++) {
+                if (canBeTarget(board, doors, board[minX][y])) {
+                    target = board[minX][y];
+                    break;
+                }
+                else if (canBeTarget(board, doors, board[maxX][y])) {
+                    target = board[maxX][y];
+                    break;
+                }
+            }
+        }
+        radius++;
+    }
+    return target;
+}
+
+function canBeTarget(board, doors, square) {
+    return ((square.nodeSquare && square.connected) || (square.doorSquare && !square.connected && !doors.includes(square) && square.adjacentDoors(board) == 0));
+}
+
+function connect(board, start, target) {
+    if (target == start) addToConnected(start);
+    // console.log(findNodePath(board, start, target));
+}
+
+function connectToNode(board, node1, node2) {
+    let difX = 0;
+    if (node2.x < node1.x) {
+        difX = -1;
+    }
+    else if (node2.x > node1.x) {
+        difX = 1;
+    }
+
+    let difY = 0;
+    if (node2.y < node1.y) {
+        difY = -1;
+    }
+    else if (node2.y > node1.y) {
+        difY = 1;
+    }
+
+    board[node1.x + difX][node1.y + difY].squareType = FLOOR;
+    node2.connected = true;
+}
+
+
+function findNodePath(board, start, end) {
+
 }

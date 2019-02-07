@@ -1,11 +1,11 @@
 [
     {
         "name": "DUNGEON_SIZE",
-        "val": 39
+        "val": 45
     },
     {
         "name": "ROOM_TRIES",
-        "val": 100
+        "val": 120
     },
     {
         "name": "SQUARE_CONSTANTS",

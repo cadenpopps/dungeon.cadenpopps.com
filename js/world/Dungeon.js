@@ -1,7 +1,13 @@
 function Dungeon() {
     this.currentLevelIndex = 0;
     this.levels = [];
+
+    let startTime = millis();
+
     this.levels.push(generateLevel(0));
+
+    console.log(millis() - startTime);
+
 }
 
 Dungeon.prototype.currentLevel = function () {
