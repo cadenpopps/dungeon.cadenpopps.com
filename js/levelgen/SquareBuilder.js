@@ -159,7 +159,7 @@ function SquareBuilder(x, y) {
 		return neighbors;
 	};
 
-	this.adjacentNodes = function (board, nodes) {
+	this.adjacentNodes = function (board) {
 		var nodes = [];
 		if (this.x > 2 && board[this.x - 1][this.y].nodeSquare) {
 			nodes.push(board[this.x - 1][this.y]);
@@ -177,22 +177,22 @@ function SquareBuilder(x, y) {
 	};
 
 	this.connector = function (board) {
-		if (this.x > 1 && board[this.x - 1][this.y].nodeSquare) {
+		if (this.x > 2 && board[this.x - 1][this.y].nodeSquare) {
 			return true;
 		}
-		if (this.x < CONFIG.DUNGEON_SIZE - 2 && board[this.x + 1][this.y].nodeSquare) {
+		if (this.x < CONFIG.DUNGEON_SIZE - 3 && board[this.x + 1][this.y].nodeSquare) {
 			return true;
 		}
-		if (this.y > 1 && board[this.x][this.y - 1].nodeSquare) {
+		if (this.y > 2 && board[this.x][this.y - 1].nodeSquare) {
 			return true;
 		}
-		if (this.y < CONFIG.DUNGEON_SIZE - 2 && board[this.x][this.y + 1].nodeSquare) {
+		if (this.y < CONFIG.DUNGEON_SIZE - 3 && board[this.x][this.y + 1].nodeSquare) {
 			return true;
 		}
-		if (this.x > 1 && this.x < CONFIG.DUNGEON_SIZE - 2 && board[this.x - 1][this.y].roomSquare && board[this.x + 1][this.y].roomSquare && board[this.x - 1][this.y].squareType == FLOOR && board[this.x + 1][this.y].squareType == FLOOR) {
+		if (this.x > 2 && this.x < CONFIG.DUNGEON_SIZE - 3 && board[this.x - 1][this.y].squareType == FLOOR && board[this.x + 1][this.y].squareType == FLOOR) {
 			return true;
 		}
-		if (this.y > 1 && this.y < CONFIG.DUNGEON_SIZE - 2 && board[this.x][this.y - 1].roomSquare && board[this.x][this.y + 1].roomSquare && board[this.x][this.y - 1].squareType == FLOOR && board[this.x][this.y + 1].squareType == FLOOR) {
+		if (this.y > 2 && this.y < CONFIG.DUNGEON_SIZE - 3 && board[this.x][this.y - 1].squareType == FLOOR && board[this.x][this.y + 1].squareType == FLOOR) {
 			return true;
 		}
 		return false;

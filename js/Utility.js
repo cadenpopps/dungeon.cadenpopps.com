@@ -104,8 +104,8 @@ function findNodePath(board, start, end) {
         }
     }
 
-    start = adjacentNode(board, start);
-    end = adjacentNode(board, end);
+    // start = adjacentNode(board, start);
+    // end = adjacentNode(board, end);
 
     searching.push(start);
     distFromStart[start] = 0;

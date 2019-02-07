@@ -6,7 +6,9 @@ function Dungeon() {
 
     this.levels.push(generateLevel(0));
 
-    console.log(millis() - startTime);
+    let endTime = millis()
+
+    console.log(endTime - startTime);
 
     // findPath(this.currentBoard(), this.currentBoard()[this.currentStairUp().x][this.currentStairUp().y], this.currentBoard()[this.currentStairDown().x][this.currentStairDown().y]);
 

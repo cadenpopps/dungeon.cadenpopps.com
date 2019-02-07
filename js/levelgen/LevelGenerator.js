@@ -341,28 +341,25 @@ function generateLevel(depth) {
 
         //actually, loop through all rooms, get a couple doors for each room, then make it a region. then connect regions. this way you guarentee 1-? doors per room, with many fewer wasted loops
 
-        // for (let r of rooms) {
-        //     let numDoors = randomInt(1, r.maxDoors);
-        //     for (let i = 0; i < numDoors; i++) {
-        //         let door = getDoorSquare(board, random(r.doorSquares), r.left, r.top);
-        //         while (!door.connector(board) || door.adjacentDoors(board) > 0 || door.nearbyDoors(board) > 0) {
-        //             console.log(door.nearbyDoors(board));
-        //             door = getDoorSquare(board, random(r.doorSquares), r.left, r.top);
-        //         }
-        //         door.squareType = DOOR;
-        //         r.doors.push(door);
-        //     }
-        // }
+        for (let r of rooms) {
+            let door = getDoorSquare(board, random(r.doorSquares), r.left, r.top);
+            while (!door.connector(board) || door.adjacentDoors(board) > 0 || door.nearbyDoors(board) > 0) {
+                door = getDoorSquare(board, random(r.doorSquares), r.left, r.top);
+            }
+            door.squareType = DOOR;
+            addToConnected(door);
+            r.doors.push(door);
+            if (door.adjacentNodes(board).length == 1) {
+                addToConnected(door.adjacentNodes(board)[0]);
+            }
+        }
 
         let allConnected = false;
 
-        // r = rooms[0];
         for (let r of rooms) {
-            addToConnected(r);
-
-            let numDoors = randomInt(1, r.maxDoors);
+            let numDoors = randomInt(1, r.maxDoors) - 1;
             for (let i = r.doorSquares - 1; i >= 0; i--) {
-                if (getDoorSquare(board, d, r.left, r.top).squareType == DOOR) {
+                if (getDoorSquare(board, r.doorSquares[i], r.left, r.top).squareType == DOOR) {
                     numDoors--;
                     r.doorSquares.splice(i, 1);
                 }
@@ -685,18 +682,22 @@ function findTarget(board, square, doors) {
 }
 
 function canBeTarget(board, doors, square) {
-    return ((square.nodeSquare && square.connected) || (square.doorSquare && !square.connected && !doors.includes(square) && square.adjacentDoors(board) == 0 && square.adjacentNodes(board).length > 0));
+    // return ((square.nodeSquare && square.connected) || (square.doorSquare && !square.connected && !doors.includes(square) && square.adjacentDoors(board) == 0 && square.adjacentNodes(board).length > 0));
+    return (square.nodeSquare && square.connected);
 }
 
 function connect(board, start, target) {
     if (target == start) addToConnected(start);
     else {
         let path = findNodePath(board, start, target);
+
         if (path !== false) {
             addToConnected(start);
-            target.squareType = FLOOR;
             addToConnected(target);
             connectPath(board, path, start);
+        }
+        else {
+            console.log("Failed to find path");
         }
     }
 }
@@ -707,7 +708,6 @@ function connectPath(board, path, start) {
         connectToNode(board, current, p);
         current = p;
     }
-    // addToConnected(current.adjacentDoors)
 }
 
 function connectToNode(board, node1, node2) {
