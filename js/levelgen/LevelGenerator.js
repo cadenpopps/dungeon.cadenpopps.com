@@ -378,9 +378,7 @@ function generateLevel(depth) {
 
 
             for (let d of r.doors) {
-                //connect to closest connected path or unconnected door
                 let target = findTarget(board, d, r.doors);
-                // console.log(target);
                 connect(board, d, target);
             }
         }
@@ -687,31 +685,50 @@ function findTarget(board, square, doors) {
 }
 
 function canBeTarget(board, doors, square) {
-    return ((square.nodeSquare && square.connected) || (square.doorSquare && !square.connected && !doors.includes(square) && square.adjacentDoors(board) == 0));
+    return ((square.nodeSquare && square.connected) || (square.doorSquare && !square.connected && !doors.includes(square) && square.adjacentDoors(board) == 0 && square.adjacentNodes(board).length > 0));
 }
 
 function connect(board, start, target) {
     if (target == start) addToConnected(start);
-    console.log(findNodePath(board, start, target));
+    else {
+        let path = findNodePath(board, start, target);
+        if (path !== false) {
+            addToConnected(start);
+            target.squareType = FLOOR;
+            addToConnected(target);
+            connectPath(board, path, start);
+        }
+    }
+}
+
+function connectPath(board, path, start) {
+    let current = start;
+    for (let p of path) {
+        connectToNode(board, current, p);
+        current = p;
+    }
+    // addToConnected(current.adjacentDoors)
 }
 
 function connectToNode(board, node1, node2) {
     let difX = 0;
-    if (node2.x < node1.x) {
-        difX = -1;
-    }
-    else if (node2.x > node1.x) {
+    if (node1.x < node2.x) {
         difX = 1;
+    }
+    else if (node1.x > node2.x) {
+        difX = -1;
     }
 
     let difY = 0;
-    if (node2.y < node1.y) {
-        difY = -1;
-    }
-    else if (node2.y > node1.y) {
+    if (node1.y < node2.y) {
         difY = 1;
+    }
+    else if (node1.y > node2.y) {
+        difY = -1;
     }
 
     board[node1.x + difX][node1.y + difY].squareType = FLOOR;
-    node2.connected = true;
+    addToConnected(board[node1.x + difX][node1.y + difY]);
+    addToConnected(node1);
+    addToConnected(node2);
 }

@@ -38,7 +38,6 @@ function findPath(board, start, end) {
 
         let currentNeighbors = getNeighbors(board, current);
         for (let n of currentNeighbors) {
-            let currentNeighbor = n;
             if (searched.includes(n)) {
                 continue;
             }
@@ -58,12 +57,11 @@ function findPath(board, start, end) {
             }
         }
     }
-    console.log("fail");
     return false;
 }
 
 function squareDistance(start, end) {
-    return ((start.x - end.x) * (start.x - end.x)) + ((start.y - end.y) * (start.y - end.y));
+    return abs(start.x - end.x) + abs(start.y - end.y);
 }
 
 function makePath(board, cameFrom, last) {
@@ -73,7 +71,7 @@ function makePath(board, cameFrom, last) {
         path.unshift(getSquareFromCode(board, current));
         current = cameFrom[current];
     }
-    // console.log(path);
+    return path;
 }
 
 function getSquareFromCode(board, code) {
@@ -106,10 +104,13 @@ function findNodePath(board, start, end) {
         }
     }
 
+    start = adjacentNode(board, start);
+    end = adjacentNode(board, end);
+
     searching.push(start);
     distFromStart[start] = 0;
-    finalCost[start] = squareDistance(start, end);
-    cameFrom[start] = -1;
+    finalCost[start] = nodeDistance(start, end);
+    cameFrom[getSquareCode(start.x, start.y)] = -1;
 
     while (searching.length > 0) {
         let current = searching[0];
@@ -117,16 +118,19 @@ function findNodePath(board, start, end) {
             if (finalCost[s] < finalCost[current]) current = s;
         }
 
+        // if (current == end || adjacentToTarget(board, current, end)) {
+        //     return makeNodePath(board, cameFrom, current);
+        // };
+
         if (current == end) {
-            return makePath(board, cameFrom, current);
+            return makeNodePath(board, cameFrom, current);
         };
 
         searching.splice(searching.indexOf(current), 1);
         searched.push(current);
 
-        let currentNeighbors = getNeighbors(board, current);
+        let currentNeighbors = getNodeNeighbors(board, current);
         for (let n of currentNeighbors) {
-            let currentNeighbor = n;
             if (searched.includes(n)) {
                 continue;
             }
@@ -140,12 +144,53 @@ function findNodePath(board, start, end) {
                     continue;
                 }
 
-                cameFrom[n.squareCode] = current.squareCode;
+                cameFrom[getSquareCode(n.x, n.y)] = getSquareCode(current.x, current.y);
                 distFromStart[n] = estimatedDistFromStart;
-                finalCost[n] = distFromStart[n] + squareDistance(start, end);
+                finalCost[n] = distFromStart[n] + nodeDistance(start, end);
             }
         }
     }
-    console.log("fail");
     return false;
+}
+
+function nodeDistance(start, end) {
+    return abs(start.x - end.x) + abs(start.y - end.y);
+}
+
+function getNodeNeighbors(board, square) {
+    neighbors = [];
+    if (square.x > 1 && board[square.x - 2][square.y].nodeSquare) neighbors.push(board[square.x - 2][square.y]);
+    if (square.y > 1 && board[square.x][square.y - 2].nodeSquare) neighbors.push(board[square.x][square.y - 2]);
+    if (square.x < CONFIG.DUNGEON_SIZE - 2 && board[square.x + 2][square.y].nodeSquare) neighbors.push(board[square.x + 2][square.y]);
+    if (square.y < CONFIG.DUNGEON_SIZE - 2 && board[square.x][square.y + 2].nodeSquare) neighbors.push(board[square.x][square.y + 2]);
+    return neighbors;
+}
+
+function adjacentToTarget(board, square, target) {
+    if (square.x > 1 && board[square.x - 1][square.y] == target) return true;
+    if (square.y > 1 && board[square.x][square.y - 1] == target) return true;
+    if (square.x < CONFIG.DUNGEON_SIZE - 2 && board[square.x + 1][square.y] == target) return true;
+    if (square.y < CONFIG.DUNGEON_SIZE - 2 && board[square.x][square.y + 1] == target) return true;
+    return false;
+}
+
+function adjacentNode(board, square) {
+    if (square.nodeSquare) return square;
+    if (square.x > 1 && board[square.x - 1][square.y].nodeSquare) return board[square.x - 1][square.y];
+    if (square.y > 1 && board[square.x][square.y - 1].nodeSquare) return board[square.x][square.y - 1];
+    if (square.x < CONFIG.DUNGEON_SIZE - 2 && board[square.x + 1][square.y].nodeSquare) return board[square.x + 1][square.y];
+    if (square.y < CONFIG.DUNGEON_SIZE - 2 && board[square.x][square.y + 1].nodeSquare) return board[square.x][square.y + 1];
+    // return square;
+}
+
+function makeNodePath(board, cameFrom, last) {
+
+    let path = [];
+    let current = getSquareCode(last.x, last.y);
+    while (cameFrom[current] > 0) {
+        path.unshift(getSquareFromCode(board, current));
+        current = cameFrom[current];
+    }
+    path.unshift(getSquareFromCode(board, current));
+    return path;
 }

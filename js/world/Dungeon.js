@@ -11,7 +11,7 @@ function Dungeon() {
     // findPath(this.currentBoard(), this.currentBoard()[this.currentStairUp().x][this.currentStairUp().y], this.currentBoard()[this.currentStairDown().x][this.currentStairDown().y]);
 
 
-    findPath(this.currentBoard(), this.currentBoard()[this.currentStairUp().x][this.currentStairUp().y], this.currentBoard()[this.currentStairUp().x + 2][this.currentStairUp().y + 2]);
+    // console.log(findPath(this.currentBoard(), this.currentBoard()[this.currentStairUp().x][this.currentStairUp().y], this.currentBoard()[this.currentStairUp().x + 2][this.currentStairUp().y + 2]));
 
 
 }
