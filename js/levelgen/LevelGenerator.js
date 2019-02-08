@@ -344,39 +344,59 @@ function generateLevel(depth) {
         for (let r of rooms) {
             let door = getDoorSquare(board, random(r.doorSquares), r.left, r.top);
             while (!door.connector(board) || door.adjacentDoors(board) > 0 || door.nearbyDoors(board) > 0) {
+                r.doorSquares.splice(r.doorSquares.indexOf(door), 1);
                 door = getDoorSquare(board, random(r.doorSquares), r.left, r.top);
             }
             door.squareType = DOOR;
             addToConnected(door);
             r.doors.push(door);
-            if (door.adjacentNodes(board).length == 1) {
-                addToConnected(door.adjacentNodes(board)[0]);
+
+            let adjacentNodes = door.adjacentNodes(board);
+            if (adjacentNodes.length > 0) {
+                addToConnected(adjacentNodes[0]);
             }
         }
 
         let allConnected = false;
 
         for (let r of rooms) {
-            let numDoors = randomInt(1, r.maxDoors) - 1;
+
+            let door = r.doors[0];
+            let target = findTarget(board, door, r.doors);
+            if (!connect(board, door, target)) {
+                while (!connect(board, door, target) && r.doorSquares.length > 2) {
+                    r.doorSquares.splice(r.doorSquares.indexOf(door), 1);
+                    door = getDoorSquare(board, random(r.doorSquares), r.left, r.top);
+                    while ((!door.connector(board) || door.adjacentDoors(board) > 0 || door.nearbyDoors(board) > 1) && r.doorSquares.length > 1) {
+                        r.doorSquares.splice(r.doorSquares.indexOf(door), 1);
+                        door = getDoorSquare(board, random(r.doorSquares), r.left, r.top);
+                    }
+
+                    target = findTarget(board, door, r.doors);
+                }
+
+            }
+            r.doors.push(door);
+
+            let numDoors = random(2, r.maxDoors) - 1;
             for (let i = r.doorSquares - 1; i >= 0; i--) {
                 if (getDoorSquare(board, r.doorSquares[i], r.left, r.top).squareType == DOOR) {
                     numDoors--;
-                    r.doorSquares.splice(i, 1);
+                    // r.doorSquares.splice(i, 1);
                 }
             }
-            for (let i = 0; i < numDoors; i++) {
-                let door = getDoorSquare(board, random(r.doorSquares), r.left, r.top);
-                while (!door.connector(board) || door.adjacentDoors(board) > 0 || door.nearbyDoors(board) > 0) {
+
+            while (numDoors > 0 && r.doorSquares.length > 2) {
+                r.doorSquares.splice(r.doorSquares.indexOf(door), 1);
+                door = getDoorSquare(board, random(r.doorSquares), r.left, r.top);
+                while ((!door.connector(board) || door.adjacentDoors(board) > 0 || door.nearbyDoors(board) > 1) && r.doorSquares.length > 1) {
+                    r.doorSquares.splice(r.doorSquares.indexOf(door), 1);
                     door = getDoorSquare(board, random(r.doorSquares), r.left, r.top);
                 }
-                door.squareType = DOOR;
-                r.doors.push(door);
-            }
-
-
-            for (let d of r.doors) {
-                let target = findTarget(board, d, r.doors);
-                connect(board, d, target);
+                if (door.connector(board) && door.adjacentDoors(board) == 0 && door.nearbyDoors(board) <= 1) {
+                    target = findTarget(board, door, r.doors);
+                    if (connect(board, door, target)) numDoors--;
+                }
             }
         }
 
@@ -644,8 +664,9 @@ function addToConnected(toConnect) {
     toConnect.connected = true;
 }
 
-function findTarget(board, square, doors) {
+function findTarget(board, square) {
     if (square.roomConnector(board)) return square;
+    square = square.adjacentNodes(board)[0];
     let target = undefined;
     let radius = 1;
     while (target === undefined) {
@@ -655,22 +676,22 @@ function findTarget(board, square, doors) {
         maxY = constrainHigh(CONFIG.DUNGEON_SIZE - 1, square.y + radius);
 
         for (let x = minX; x <= maxX; x++) {
-            if (canBeTarget(board, doors, board[x][minY])) {
+            if (canBeTarget(board, board[x][minY])) {
                 target = board[x][minY];
                 break;
             }
-            else if (canBeTarget(board, doors, board[x][maxY])) {
+            else if (canBeTarget(board, board[x][maxY])) {
                 target = board[x][maxY];
                 break;
             }
         }
         if (target === undefined) {
             for (let y = minY; y <= maxY; y++) {
-                if (canBeTarget(board, doors, board[minX][y])) {
+                if (canBeTarget(board, board[minX][y])) {
                     target = board[minX][y];
                     break;
                 }
-                else if (canBeTarget(board, doors, board[maxX][y])) {
+                else if (canBeTarget(board, board[maxX][y])) {
                     target = board[maxX][y];
                     break;
                 }
@@ -681,7 +702,7 @@ function findTarget(board, square, doors) {
     return target;
 }
 
-function canBeTarget(board, doors, square) {
+function canBeTarget(board, square) {
     // return ((square.nodeSquare && square.connected) || (square.doorSquare && !square.connected && !doors.includes(square) && square.adjacentDoors(board) == 0 && square.adjacentNodes(board).length > 0));
     return (square.nodeSquare && square.connected);
 }
@@ -689,17 +710,20 @@ function canBeTarget(board, doors, square) {
 function connect(board, start, target) {
     if (target == start) addToConnected(start);
     else {
-        let path = findNodePath(board, start, target);
+        let nodeStart = start.adjacentNodes(board)[0];
+        let path = findNodePath(board, nodeStart, target);
 
         if (path !== false) {
             addToConnected(start);
+            addToConnected(nodeStart);
             addToConnected(target);
-            connectPath(board, path, start);
+            connectPath(board, path, nodeStart);
         }
         else {
-            console.log("Failed to find path");
+            return false;
         }
     }
+    return true;
 }
 
 function connectPath(board, path, start) {
