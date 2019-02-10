@@ -1,7 +1,7 @@
 [
     {
         "name": "DUNGEON_SIZE",
-        "val": 25
+        "val": 43
     },
     {
         "name": "ROOM_TRIES",

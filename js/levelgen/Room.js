@@ -14,6 +14,7 @@ function Room(template, x, y) {
     this.roomType = 0;
 
     this.connected = false;
+    this.region = undefined;
 
     this.doors = [];
 
