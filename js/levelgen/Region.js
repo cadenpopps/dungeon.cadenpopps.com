@@ -1,8 +1,7 @@
 function Region(room) {
     this.connected = false;
-
-    this.rooms = [room];
-    room.region = this;
+    this.rooms = [];
+    this.addRoom(room);
 }
 
 Region.prototype.addRoom = function (room) {
@@ -12,7 +11,7 @@ Region.prototype.addRoom = function (room) {
 
 Region.prototype.addRooms = function (rooms) {
     for (let r of rooms) {
-        r.region = this;
+        r.changeRegion(this);
         if (!this.rooms.includes(r)) this.rooms.push(r);
     }
 }

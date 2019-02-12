@@ -2,7 +2,7 @@
 function generateLevel(depth) {
 
     let rooms = [];
-    // let regions = [];
+    let regions = [];
     let stairUp = createVector(0, 0);
     let stairDown = createVector(0, 0);
 
@@ -24,10 +24,12 @@ function generateLevel(depth) {
             console.log("ROOMS DONE");
         }
 
-        genMaze(board);
+        genNodes(board);
         if (DEBUG) {
             console.log("MAZE DONE");
         }
+
+
 
         connectRooms(board);
         if (DEBUG) {
@@ -103,9 +105,8 @@ function generateLevel(depth) {
         rooms.push(stairDownRoom);
 
         for (let r of rooms) {
-            addChildren(r, board);
-            // regions.push(new Region(r.squares));
-            // addRegion(board, r, regions[regions.length - 1]);
+            regions.push(new Region(r));
+            addChildren(board, r);
             r.roomType = -1;
         }
 
@@ -184,6 +185,7 @@ function generateLevel(depth) {
     }
 
     var genRooms = function (board) {
+
         let HALF_DUNGEON = floor(CONFIG.DUNGEON_SIZE / 2);
         for (let i = 0; i < CONFIG.ROOM_TRIES; i++) {
 
@@ -192,10 +194,8 @@ function generateLevel(depth) {
             let roomx = randomInt(0, HALF_DUNGEON - floor(template.width / 2) + 1) * 2;
             let roomy = randomInt(0, HALF_DUNGEON - floor(template.height / 2) + 1) * 2;
 
-            // console.log("x: " + roomx + "   y: " + roomy);
-
-            var newRoom = new Room(template, roomx, roomy);
-            var valid = true;
+            let newRoom = new Room(template, roomx, roomy);
+            let valid = true;
 
             for (let r of rooms) {
                 if (newRoom.overlaps(r)) {
@@ -206,167 +206,29 @@ function generateLevel(depth) {
 
             if (valid) {
                 rooms.push(newRoom);
-                addChildren(newRoom, board);
-                // regions.push(new Region(newRoom.squares));
-                // addRegion(board, newRoom, regions[regions.length - 1]);
+                regions.push(new Region(newRoom));
+                addChildren(board, newRoom);
             }
+
         }
     };
 
-    var genMaze = function (board) {
-
-        // le = [];
+    var genNodes = function (board) {
 
         for (let x = 1; x < CONFIG.DUNGEON_SIZE - 1; x++) {
             for (let y = 1; y < CONFIG.DUNGEON_SIZE - 1; y++) {
                 if (x % 2 == 1 && y % 2 == 1 && !board[x][y].roomSquare) {
-
-                    board[x][y].squareType = FLOOR;
-                    // nodes.push(board[x][y]);
+                    // board[x][y].squareType = FLOOR;
                     board[x][y].nodeSquare = true;
-                    // if (board[x][y].squareType == WALL && board[x][y].numNeighbors(board) <= 1 && board[x - 1][y].squareType == WALL && board[x][y - 1].squareType == WALL) {
-                    // current.x = x;
-                    // current.y = y;
-                    // genMazeSection(board, current);
                 }
             }
         }
-
-        // retur;
-
-        // let current = createVector();
-
-        // for (let x = 1; x < CONFIG.DUNGEON_SIZE - 1; x++) {
-        //     for (let y = 1; y < CONFIG.DUNGEON_SIZE - 1; y++) {
-        //         if (x % 2 == 1 && y % 2 == 1) {
-        //             if (board[x][y].squareType == WALL && board[x][y].numNeighbors(board) <= 1 && board[x - 1][y].squareType == WALL && board[x][y - 1].squareType == WALL) {
-        //                 current.x = x;
-        //                 current.y = y;
-        //                 genMazeSection(board, current);
-        //             }
-        //         }
-        //     }
-        // }
-
-        // for (let r of regions) {
-        //     for (let s of r.squares) {
-        //         s.region = r;
-        //     }
-        // }
-
-        //make some imperfections
-        // let IMPERFECTION_RATE = floor(1 / .01);
-
-        // for (var i = 2; i < CONFIG.DUNGEON_SIZE - 2; i++) {
-        //     for (let j = 2; j < CONFIG.DUNGEON_SIZE - 2; j++) {
-        //         if (board[i][j].squareType == FLOOR && board[i][j].floorNeighbors(board, CONFIG.DUNGEON_SIZE) == 2) {
-        //             if ((board[i - 1][j].squareType == WALL && board[i - 2][j].squareType == FLOOR && board[i - 2][j].region == board[i][j].region) && oneIn(IMPERFECTION_RATE)) {
-        //                 board[i - 1][j].squareType = FLOOR;
-        //                 board[i - 1][j].region = board[i][j].region;
-        //             }
-        //             if ((board[i + 1][j].squareType == WALL && board[i + 2][j].squareType == FLOOR && board[i + 2][j].region == board[i][j].region) && oneIn(IMPERFECTION_RATE)) {
-        //                 board[i + 1][j].squareType = FLOOR;
-        //                 board[i + 1][j].region = board[i][j].region;
-        //             }
-        //             if ((board[i][j - 1].squareType == WALL && board[i][j - 2].squareType == FLOOR && board[i][j - 2].region == board[i][j].region) && oneIn(IMPERFECTION_RATE)) {
-        //                 board[i][j - 1].squareType = FLOOR;
-        //                 board[i][j - 1].region = board[i][j].region;
-        //             }
-        //             if ((board[i][j + 1].squareType == WALL && board[i][j + 2].squareType == FLOOR && board[i][j + 2].region == board[i][j].region) && oneIn(IMPERFECTION_RATE)) {
-        //                 board[i][j + 1].squareType = FLOOR;
-        //                 board[i][j + 1].region = board[i][j].region;
-        //             }
-        //         }
-        //     }
-        // }
-        // //more imperfections?
-        // for (var i = 2; i < CONFIG.DUNGEON_SIZE - 2; i++) {
-        //     for (let j = 2; j < CONFIG.DUNGEON_SIZE - 2; j++) {
-        //         if (board[i][j].squareType == WALL && board[i][j].floorNeighbors(board, CONFIG.DUNGEON_SIZE) == 2) {
-        //             if ((board[i - 1][j].squareType == FLOOR && board[i + 1][j].squareType == FLOOR && board[i - 1][j].region == board[i + 1][j].region) && random(1) < .02) {
-        //                 board[i][j].squareType = FLOOR;
-        //                 board[i][j].region = board[i][j].region;
-        //             }
-        //             if ((board[i][j - 1].squareType == FLOOR && board[i][j + 1].squareType == FLOOR && board[i][j - 1].region == board[i][j + 1].region) && random(1) < .02) {
-        //                 board[i][j].squareType = FLOOR;
-        //                 board[i][j].region = board[i][j].region;
-        //             }
-        //         }
-        //     }
-        // }
-    };
-
-    var genMazeSection = function (board, current) {
-        let moveStack = [];
-        let unvisitedSquares = true;
-        let sectionSquares = [];
-        let currentSquare = createVector(current.x, current.y);
-
-        while (unvisitedSquares) {
-            board[currentSquare.x][currentSquare.y].squareType = FLOOR;
-            sectionSquares.push(board[currentSquare.x][currentSquare.y]);
-            let moves = board[currentSquare.x][currentSquare.y].moves(board);
-            if (moves.length !== 0) {
-                moveStack.push(currentSquare);
-                var randomMove = randomInt(moves.length);
-                if (randomMove % 2 == 1) {
-                    randomMove = randomInt(moves.length);
-                }
-                currentSquare = moves[randomMove];
-            }
-            else if (moveStack.length !== 0) {
-                currentSquare = moveStack[moveStack.length - 1];
-                moveStack.pop();
-            }
-            else {
-                break;
-            }
-            unvisitedSquares = false;
-            for (var i = 0; i < CONFIG.DUNGEON_SIZE; i++) {
-                for (let j = 0; j < CONFIG.DUNGEON_SIZE; j++) {
-                    if (i % 2 == 1 || j % 2 == 1) {
-                        if (board[i][j].squareType == WALL) {
-                            unvisitedSquares = true;
-                        }
-                    }
-                }
-            }
-        }
-        var r = new Region(sectionSquares);
-        r.path = true;
-        regions.push(r);
     };
 
     var connectRooms = function (board) {
 
-        //actually, loop through all rooms, get a couple doors for each room, then make it a region. then connect regions. this way you guarentee 1-? doors per room, with many fewer wasted loops
 
-        let regions = [];
-
-        for (let r of rooms) {
-            regions.push(new Region(r));
-            // let door = getDoorSquare(board, random(r.doorSquares), r.left, r.top);
-            // while (!door.connector(board) || door.adjacentDoors(board) > 0 || door.nearbyDoors(board) > 0) {
-            //     r.doorSquares.splice(r.doorSquares.indexOf(door), 1);
-            //     door = getDoorSquare(board, random(r.doorSquares), r.left, r.top);
-            // }
-            // door.squareType = DOOR;
-            // addToConnected(door);
-            // r.doors.push(door);
-            // door.region = regions[regions.length - 1];
-
-            // let adjacentNodes = door.adjacentNodes(board);
-            // if (adjacentNodes.length > 0) {
-            //     addToConnected(adjacentNodes[0]);
-            //     adjacentNodes[0].region = regions[regions.length - 1];
-            // }
-        }
-
-        // regions[0].connected = true;
-
-        let tries = 1000;
-
-        while (regions.length > 1 && tries > 0) {
+        while (regions.length > 0) {
 
             let smallestRegion = regions[0];
 
@@ -377,8 +239,6 @@ function generateLevel(depth) {
 
             connectToRegion(board, regions, smallestRegion);
 
-            console.log(regions);
-            // tries--;
 
             // allConnected = true;
             // for (let r of regions) {
@@ -640,23 +500,9 @@ function generateLevel(depth) {
     var makeSquares = function (board) {
         for (var i = 0; i < CONFIG.DUNGEON_SIZE; i++) {
             for (let j = 0; j < CONFIG.DUNGEON_SIZE; j++) {
-                if (!board[i][j].connected) board[i][j].squareType = WALL;
+                // if (!board[i][j].connected) board[i][j].squareType = WALL;
                 board[i][j] = board[i][j].copy();
             }
-        }
-    };
-
-    var addChildren = function (room, board) {
-        for (let i = room.left; i < room.right; i++) {
-            for (let j = room.top; j < room.bottom; j++) {
-                board[i][j].squareType = room.squares[i - room.left + 1][j - room.top + 1];
-                board[i][j].roomSquare = true;
-                board[i][j].connected = true;
-            }
-        }
-        for (let d of room.doorSquares) {
-            board[d.x][d.y].doorSquare = true;
-            board[d.x][d.y].room = room;
         }
     };
 
@@ -684,9 +530,23 @@ function generateLevel(depth) {
 }
 
 
-function getDoorSquare(board, pos, left, top) {
-    return board[left + pos.x - 1][top + pos.y - 1];
-}
+function addChildren(board, room) {
+    for (let i = room.left; i < room.right; i++) {
+        for (let j = room.top; j < room.bottom; j++) {
+            board[i][j].squareType = room.squares[i - room.left + 1][j - room.top + 1];
+            board[i][j].roomSquare = true;
+            board[i][j].room = room;
+            // board[i][j].connected = true;
+        }
+    }
+    for (let d of room.doorSquares) {
+        if (board[d.x + room.left - 1][d.y + room.top - 1].region != undefined) {
+            board[d.x + room.left - 1][d.y + room.top - 1].overlaps = true;
+        }
+        board[d.x + room.left - 1][d.y + room.top - 1].doorSquare = true;
+        board[d.x + room.left - 1][d.y + room.top - 1].region = room.region;
+    }
+};
 
 function addToConnected(s) {
     s.connected = true;
@@ -694,53 +554,49 @@ function addToConnected(s) {
 
 function connectToRegion(board, regions, region) {
 
-    let room = region.rooms[0];
+    let room = random(region.rooms);
     let door = getDoor(board, room);
     let target = findTarget(board, region, door);
     let connected = connect(board, door, target);
 
-    // let tries = 100;
-
     while (!connected) {
         room.doorSquares.splice(room.doorSquares.indexOf(door), 1);
-        let attemptConnect = false;
 
         room = random(region.rooms);
-        if (room.doorSquares.length > 0) {
-            door = getDoorSquare(board, random(room.doorSquares), room.left, room.top);
-            while (!door.connector(board) || door.adjacentDoors(board) > 0 || door.nearbyDoors(board) > 1) {
-                room.doorSquares.splice(room.doorSquares.indexOf(door), 1);
-                door = getDoorSquare(board, random(room.doorSquares), room.left, room.top);
-            }
-            door.region = region;
-            attemptConnect = true;
+        while (room.doorSquares.length == 0) {
+            room = random(region.rooms);
         }
-
-        if (attemptConnect) {
-            target = findTarget(board, region, door);
-            connected = connect(board, door, target);
+        door = getDoor(board, room);
+        if (door.overlaps == true) {
+            target = start;
         }
+        target = findTarget(board, region, door);
+        connected = connect(board, door, target);
     }
 
+    room.addDoor(door);
     target.region.addRooms(door.region.rooms);
-    door.region = target.region;
-
     regions.splice(regions.indexOf(region), 1);
 
 }
 
-function getDoor(board, room) { //HAS TO GUARAN TEE A CONNECTABLE DOOR
+function getDoor(board, room) {
     let door = getDoorSquare(board, random(room.doorSquares), room.left, room.top);
-    while (!door.connector(board) || door.adjacentDoors(board) > 0 || door.nearbyDoors(board) > 1) {
+    while (!door.connector(board) || !room.canBeDoor(door)) {
         room.doorSquares.splice(room.doorSquares.indexOf(door), 1);
         door = getDoorSquare(board, random(room.doorSquares), room.left, room.top);
     }
     return door;
 }
 
+function getDoorSquare(board, pos, left, top) {
+    return board[left + pos.x - 1][top + pos.y - 1];
+}
+
 function findTarget(board, region, square) {
-    if (square.roomConnector(board)) return square;
-    square = square.adjacentNodes(board)[0];
+    if (square.overlaps == true) return square;
+    //square.roomConnector(board)
+    // square = square.adjacentNodes(board)[0];
     let target = undefined;
     let radius = 1;
     while (target === undefined) {
@@ -777,43 +633,48 @@ function findTarget(board, region, square) {
 }
 
 function canBeTarget(board, region, square) {
-    // return ((square.nodeSquare && square.connected) || (square.doorSquare && !square.connected && !doors.includes(square) && square.adjacentDoors(board) == 0 && square.adjacentNodes(board).length > 0));
+    return canBeDoorTarget(board, region, square);
+}
+
+function canBeDoorTarget(board, region, square) {
+    return (square.overlaps == false && square.doorSquare && square.region != region && square.adjacentNodes(board).length > 0);
+}
+
+function canBeNodeTarget(region, square) {
     return (square.nodeSquare && square.connected && square.region != region && square.region !== undefined);
 }
 
 function connect(board, start, target) {
-    if (target == start) {
+    if (start.overlaps == true) {
         start.squareType = DOOR;
-        addToConnected(start);
-        target.region = start.region;
+        // start.region = target.region;
+        return true;
     }
     else {
         let nodeStart = start.adjacentNodes(board)[0];
-        let path = findNodePath(board, nodeStart, target);
-        if (path !== false) {
-            addToConnected(start);
+        let nodeTarget = target.adjacentNodes(board)[0];
+        let path = findNodePath(board, nodeStart, nodeTarget);
+        if (path != false) {
             addToConnected(nodeStart);
-            addToConnected(target);
-            start.squareType == DOOR;
-            target.squareType == DOOR;
-            connectPath(board, path, nodeStart);
-        }
-        else {
-            return false;
+            addToConnected(nodeTarget);
+            start.squareType = DOOR;
+            target.squareType = DOOR;
+            connectPath(board, target.region, path, nodeStart);
+            return true;
         }
     }
-    return true;
+    return false;
 }
 
-function connectPath(board, path, start) {
+function connectPath(board, region, path, start) {
     let current = start;
     for (let p of path) {
-        connectToNode(board, current, p);
+        connectToNode(board, region, current, p);
         current = p;
     }
 }
 
-function connectToNode(board, node1, node2) {
+function connectToNode(board, region, node1, node2) {
     let difX = 0;
     if (node1.x < node2.x) {
         difX = 1;
@@ -830,9 +691,13 @@ function connectToNode(board, node1, node2) {
         difY = -1;
     }
 
+    board[node1.x][node1.y].squareType = FLOOR;
+    board[node2.x][node2.y].squareType = FLOOR;
     board[node1.x + difX][node1.y + difY].squareType = FLOOR;
+    board[node1.x][node1.y].region = region;
+    board[node2.x][node2.y].region = region;
+    board[node1.x + difX][node1.y + difY].region = region;
     addToConnected(board[node1.x + difX][node1.y + difY]);
     addToConnected(node1);
     addToConnected(node2);
-    node1.region = node2.region;
 }

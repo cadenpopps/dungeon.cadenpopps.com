@@ -15,55 +15,86 @@ function Room(template, x, y) {
 
     this.connected = false;
     this.region = undefined;
-    this.topDoor = false, this.rightDoor = false, this.leftDoor = false, this.bottomDoor = false;
+    this.topDoor, this.rightDoor, this.leftDoor, this.bottomDoor = false;
 
 
     this.doors = [];
 
-    this.overlaps = function (otherRoom) {
-        if (otherRoom.left > this.right || otherRoom.top > this.bottom) {
-            return false;
+    this.doorSquares = this.getDoorSquares(this.squares, this.width + 2, this.height + 2);
+}
+
+Room.prototype.overlaps = function (otherRoom) {
+    if (otherRoom.left > this.right || otherRoom.top > this.bottom) {
+        return false;
+    }
+    if (otherRoom.right < this.left || otherRoom.bottom < this.top) {
+        return false;
+    }
+    return true;
+};
+
+Room.prototype.getDoorSquares = function (squares, width, height) {
+
+    let doorSquares = [];
+
+    for (let x = 0; x < width; x++) {
+        if (squares[x][0] == DOOR) {
+            doorSquares.push({ x: x, y: 0 });
         }
-        if (otherRoom.right < this.left || otherRoom.bottom < this.top) {
-            return false;
+        if (squares[x][height - 1] == DOOR) {
+            doorSquares.push({ x: x, y: height - 1 });
         }
-        return true;
-    };
+    }
 
-    this.doorSquares = (function (squares, width, height) {
-
-        let doorSquares = [];
-
-        for (let x = 0; x < width; x++) {
-            if (squares[x][0] == DOOR) {
-                doorSquares.push({ x: x, y: 0 });
-            }
-            if (squares[x][height - 1] == DOOR) {
-                doorSquares.push({ x: x, y: height - 1 });
-            }
+    for (let y = 1; y < height - 1; y++) {
+        if (squares[0][y] == DOOR) {
+            doorSquares.push({ x: 0, y: y });
         }
-
-        for (let y = 1; y < height - 1; y++) {
-            if (squares[0][y] == DOOR) {
-                doorSquares.push({ x: 0, y: y });
-            }
-            if (squares[width - 1][y] == DOOR) {
-                doorSquares.push({ x: width - 1, y: y });
-            }
+        if (squares[width - 1][y] == DOOR) {
+            doorSquares.push({ x: width - 1, y: y });
         }
-        // for (let i = 0; i < this.height + 2; i++) {
-        //     if (this.squares[0][i] == DOOR) {
-        //         doorSquares.push(this.squares[0][i]);
-        //     }
-        //     doorSquares.push(this.squares[this.width + 1][i]);
-        // }
-        // for (let i = 1; i < this.width + 1; i++) {
-        //     doorSquares.push(this.squares[i][0]);
-        //     doorSquares.push(this.squares[i][this.height - 1]);
-        // }
+    }
 
-        return doorSquares;
+    return doorSquares;
+}
 
-    })(this.squares, this.width + 2, this.height + 2);
+Room.prototype.canBeDoor = function (door) {
+    if (this.doors.length < this.maxDoors) {
+        if (door.y < this.top && !this.topDoor) {
+            return true;
+        }
+        else if (door.x < this.left && !this.leftDoor) {
+            return true;
+        }
+        else if (door.y == this.bottom && !this.bottomDoor) {
+            return true;
+        }
+        else if (door.x == this.right && !this.rightDoor) {
+            return true;
+        }
+    }
+    return false;
+}
 
+Room.prototype.addDoor = function (door) {
+    door.region = this.region;
+    if (door.y < this.top && !this.topDoor) {
+        this.topDoor = true;
+    }
+    else if (door.x < this.left && !this.leftDoor) {
+        this.leftDoor = true;
+    }
+    else if (door.y == this.bottom && !this.bottomDoor) {
+        this.bottomDoor = true;
+    }
+    else if (door.x == this.right && !this.rightDoor) {
+        this.rightDoor = true;
+    }
+}
+
+Room.prototype.changeRegion = function (region) {
+    this.region = region;
+    for (let d of this.doors) {
+        this.door.region = region;
+    }
 }

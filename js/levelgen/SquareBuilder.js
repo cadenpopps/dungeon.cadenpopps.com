@@ -7,6 +7,7 @@ function SquareBuilder(x, y) {
 	this.nodeSquare = false;
 	this.doorSquare = false;
 	this.region = undefined;
+	this.overlaps = false;
 	this.connected = false;
 
 	this.copy = function () {
@@ -177,27 +178,38 @@ function SquareBuilder(x, y) {
 		return nodes;
 	};
 
+
 	this.connector = function (board) {
-		if (this.x > 2 && board[this.x - 1][this.y].nodeSquare) {
+		// if (this.x > 2 && board[this.x - 1][this.y].nodeSquare) {
+		// 	return true;
+		// }
+		// if (this.x < CONFIG.DUNGEON_SIZE - 3 && board[this.x + 1][this.y].nodeSquare) {
+		// 	return true;
+		// }
+		// if (this.y > 2 && board[this.x][this.y - 1].nodeSquare) {
+		// 	return true;
+		// }
+		// if (this.y < CONFIG.DUNGEON_SIZE - 3 && board[this.x][this.y + 1].nodeSquare) {
+		// 	return true;
+		// }
+		if (this.adjacentNodes(board).length > 0) {
 			return true;
 		}
-		if (this.x < CONFIG.DUNGEON_SIZE - 3 && board[this.x + 1][this.y].nodeSquare) {
-			return true;
-		}
-		if (this.y > 2 && board[this.x][this.y - 1].nodeSquare) {
-			return true;
-		}
-		if (this.y < CONFIG.DUNGEON_SIZE - 3 && board[this.x][this.y + 1].nodeSquare) {
-			return true;
-		}
-		if (this.x > 2 && this.x < CONFIG.DUNGEON_SIZE - 3 && board[this.x - 1][this.y].roomSquare && board[this.x + 1][this.y].roomSquare && board[this.x - 1][this.y].squareType == FLOOR && board[this.x + 1][this.y].squareType == FLOOR) {
-			return true;
-		}
-		if (this.y > 2 && this.y < CONFIG.DUNGEON_SIZE - 3 && board[this.x][this.y - 1].roomSquare && board[this.x][this.y + 1].roomSquare && board[this.x][this.y - 1].squareType == FLOOR && board[this.x][this.y + 1].squareType == FLOOR) {
-			return true;
-		}
+		if (this.overlaps && this.checkAdjacentRooms(board)) return true;
+		// if (this.x > 2 && this.x < CONFIG.DUNGEON_SIZE - 3 && board[this.x - 1][this.y].roomSquare && board[this.x + 1][this.y].roomSquare && board[this.x - 1][this.y].squareType == FLOOR && board[this.x + 1][this.y].squareType == FLOOR) {
+		// 	return true;
+		// }
+		// if (this.y > 2 && this.y < CONFIG.DUNGEON_SIZE - 3 && board[this.x][this.y - 1].roomSquare && board[this.x][this.y + 1].roomSquare && board[this.x][this.y - 1].squareType == FLOOR && board[this.x][this.y + 1].squareType == FLOOR) {
+		// 	return true;
+		// }
 		return false;
 	};
+
+	this.checkAdjacentRooms = function (board) {
+		if (this.x > 2 && this.x < CONFIG.DUNGEON_SIZE - 3 && board[this.x - 1][this.y].room != board[this.x + 1][this.y].room) return true;
+		if (this.y > 2 && this.y < CONFIG.DUNGEON_SIZE - 3 && board[this.x][this.y - 1].room != board[this.x][this.y + 1].room) return true;
+		return false;
+	}
 
 	this.roomConnector = function (board) {
 		if (this.x > 2 && this.x < CONFIG.DUNGEON_SIZE - 3 && board[this.x - 1][this.y].roomSquare && board[this.x + 1][this.y].roomSquare && board[this.x - 1][this.y].squareType == FLOOR && board[this.x + 1][this.y].squareType == FLOOR) {
