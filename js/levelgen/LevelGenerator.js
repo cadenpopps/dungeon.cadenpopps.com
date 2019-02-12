@@ -543,6 +543,7 @@ function addChildren(board, room) {
         if (board[d.x + room.left - 1][d.y + room.top - 1].region != undefined) {
             board[d.x + room.left - 1][d.y + room.top - 1].overlaps = true;
         }
+        board[d.x + room.left - 1][d.y + room.top - 1].room = room;
         board[d.x + room.left - 1][d.y + room.top - 1].doorSquare = true;
         board[d.x + room.left - 1][d.y + room.top - 1].region = room.region;
     }
@@ -556,7 +557,16 @@ function connectToRegion(board, regions, region) {
 
     let room = random(region.rooms);
     let door = getDoor(board, room);
-    let target = findTarget(board, region, door);
+    let target;
+    let otherRoom;
+    if (door.overlaps == true) {
+        target = door;
+        otherRoom = getOtherRoom(board, room, target);
+    }
+    else {
+        target = findTarget(board, region, door);
+    }
+
     let connected = connect(board, door, target);
 
     while (!connected) {
@@ -568,16 +578,36 @@ function connectToRegion(board, regions, region) {
         }
         door = getDoor(board, room);
         if (door.overlaps == true) {
-            target = start;
+            target = door;
+            otherRoom = getOtherRoom(board, room, target);
         }
-        target = findTarget(board, region, door);
+        else {
+            target = findTarget(board, region, door);
+        }
         connected = connect(board, door, target);
     }
 
+    console.log(target);
+    console.log(otherRoom);
+
     room.addDoor(door);
-    target.region.addRooms(door.region.rooms);
+    if (door.overlaps) {
+        otherRoom.region.addRooms(door.region.rooms);
+        otherRoom.addDoor(door);
+    }
+    else {
+        target.region.addRooms(door.region.rooms);
+    }
     regions.splice(regions.indexOf(region), 1);
 
+}
+
+function getOtherRoom(board, room, square) {
+    if (square.x > 3 && board[square.x - 1][square.y].room != room) return board[square.x - 1][square.y].room;
+    if (square.y > 3 && board[square.x][square.y - 1].room != room) return board[square.x][square.y - 1].room;
+    if (square.x < CONFIG.DUNGEON_SIZE - 4 && board[square.x + 1][square.y].room != room) return board[square.x + 1][square.y].room;
+    if (square.y < CONFIG.DUNGEON_SIZE - 4 && board[square.x][square.y + 1].room != room) return board[square.x][square.y + 1].room;
+    return false;
 }
 
 function getDoor(board, room) {
@@ -594,9 +624,6 @@ function getDoorSquare(board, pos, left, top) {
 }
 
 function findTarget(board, region, square) {
-    if (square.overlaps == true) return square;
-    //square.roomConnector(board)
-    // square = square.adjacentNodes(board)[0];
     let target = undefined;
     let radius = 1;
     while (target === undefined) {
@@ -606,22 +633,22 @@ function findTarget(board, region, square) {
         maxY = constrainHigh(CONFIG.DUNGEON_SIZE - 1, square.y + radius);
 
         for (let x = minX; x <= maxX; x++) {
-            if (canBeTarget(board, region, board[x][minY])) {
+            if (canBeTarget(board, square, board[x][minY])) {
                 target = board[x][minY];
                 break;
             }
-            else if (canBeTarget(board, region, board[x][maxY])) {
+            else if (canBeTarget(board, square, board[x][maxY])) {
                 target = board[x][maxY];
                 break;
             }
         }
         if (target === undefined) {
             for (let y = minY; y <= maxY; y++) {
-                if (canBeTarget(board, region, board[minX][y])) {
+                if (canBeTarget(board, square, board[minX][y])) {
                     target = board[minX][y];
                     break;
                 }
-                else if (canBeTarget(board, region, board[maxX][y])) {
+                else if (canBeTarget(board, square, board[maxX][y])) {
                     target = board[maxX][y];
                     break;
                 }
@@ -632,12 +659,12 @@ function findTarget(board, region, square) {
     return target;
 }
 
-function canBeTarget(board, region, square) {
-    return canBeDoorTarget(board, region, square);
+function canBeTarget(board, start, square) {
+    return canBeDoorTarget(board, start, square);
 }
 
-function canBeDoorTarget(board, region, square) {
-    return (square.overlaps == false && square.doorSquare && square.region != region && square.adjacentNodes(board).length > 0);
+function canBeDoorTarget(board, start, square) {
+    return (square.doorSquare && square.overlaps == false && square.region != start.region && square.adjacentNodes(board).length > 0);
 }
 
 function canBeNodeTarget(region, square) {
@@ -645,16 +672,18 @@ function canBeNodeTarget(region, square) {
 }
 
 function connect(board, start, target) {
-    if (start.overlaps == true) {
+    if (start == target) {
         start.squareType = DOOR;
-        // start.region = target.region;
         return true;
     }
     else {
         let nodeStart = start.adjacentNodes(board)[0];
         let nodeTarget = target.adjacentNodes(board)[0];
         let path = findNodePath(board, nodeStart, nodeTarget);
-        if (path != false) {
+        if (path == false) {
+            return false
+        }
+        else {
             addToConnected(nodeStart);
             addToConnected(nodeTarget);
             start.squareType = DOOR;
@@ -663,7 +692,6 @@ function connect(board, start, target) {
             return true;
         }
     }
-    return false;
 }
 
 function connectPath(board, region, path, start) {
