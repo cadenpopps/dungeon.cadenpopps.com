@@ -134,7 +134,7 @@ function GameManager() {
         for (let m in mobs) {
             let mob = mobs[m];
             if (abs(player.x - mob.x) < ACTIVE_MOB_RANGE && abs(player.y - mob.y) < ACTIVE_MOB_RANGE) {
-                mob.update(dungeon.currentBoard(), dungeon.currentMobs());
+                mob.update(dungeon.currentBoard(), dungeon.currentMobs(), player);
             }
         }
     }

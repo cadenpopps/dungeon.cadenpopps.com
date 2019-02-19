@@ -3,7 +3,7 @@ function Square(x, y, type) {
     this.x = x;
     this.y = y;
     this.squareType = type;
-    this.squareCode = this.x + (this.y * CONFIG.DUNGEON_SIZE);
+    this.squareCode = getSquareCode(this.x, this.y); 
 
     this.visible = false;
     this.discovered = false;

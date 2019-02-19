@@ -8,10 +8,6 @@ function generateLevel(depth) {
 
     var createLevel = function (depth, stairUp) {
 
-        // var mobCap = floor((CONFIG.DUNGEON_SIZE / 8) + ((depth + 30) / 2));
-
-        // console.log("Mobcap for this floor: " + mobCap);
-
         let board = initBoard(CONFIG.DUNGEON_SIZE);
 
         genStairs(board);
