@@ -1,8 +1,6 @@
 
-
-
 const DEBUG = true;
-const DEBUG_BOARD = true;
+const DEBUG_BOARD = false;
 const DEBUG_SIGHT = false;
 const SHOW_TEXTURES = true;
 const SUPER_POWERS = false;

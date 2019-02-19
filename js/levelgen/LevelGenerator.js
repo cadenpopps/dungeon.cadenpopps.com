@@ -185,8 +185,8 @@ function generateLevel(depth) {
 
 			let template = random(CONFIG.ROOMPOOL);
 
-			let roomx = randomInt(0, HALF_DUNGEON - floor(template.width / 2) + 1) * 2;
-			let roomy = randomInt(0, HALF_DUNGEON - floor(template.height / 2) + 1) * 2;
+			let roomx = randomInt(3, HALF_DUNGEON - floor(template.width / 2) - 1) * 2;
+			let roomy = randomInt(3, HALF_DUNGEON - floor(template.height / 2) - 1) * 2;
 
 			let newRoom = new Room(template, roomx, roomy);
 			let valid = true;
@@ -221,9 +221,6 @@ function generateLevel(depth) {
 
 	var connectRooms = function (board) {
 
-			console.log("ROOMS CONNECTED");
-		console.log("test");
-
 		let connectedRooms = [];
 		let unconnectedRooms= rooms.slice();
 
@@ -232,65 +229,63 @@ function generateLevel(depth) {
 		connectedRooms.push(firstRoom);
 
 		while(unconnectedRooms.length > 0){
-			let connectedRooms = findClosestRooms(connectedRooms, unconnectedRooms);
-			console.log(connectedRooms);
-			if(connectRooms(closestRooms)){
+			let closestRooms = findClosestRooms(connectedRooms, unconnectedRooms);
+			if(connectClosestRooms(board, closestRooms)){
 				unconnectedRooms.splice(unconnectedRooms.indexOf(closestRooms[1]),1);
 				connectedRooms.push(closestRooms[0]);
 			}
 		}
 	}
 
-
 	var findClosestRooms = function(connected, unconnected){
 		let connectedRoom = connected[0];
 		let unconnectedRoom = unconnected[0];
+		let lowestDist = (connectedRoom.x, connectedRoom.y, unconnectedRoom.x, unconnectedRoom.y);
 
-		console.log(connectedRoom.centerX + "    " + connectedRoom.centerY);
+		for(let r of connected){
+			for(let o of unconnected){
+				if(dist(r.x, r.y, o.x, o.y) < lowestDist){
+					connectedRoom = r;
+					unconnectedRoom = o;
+					lowestDist = dist(r.x, r.y, o.x, o.y);
+				}
+			}
+		}
 
 		return [connectedRoom, unconnectedRoom];
 	}
 
-	var connectRooms = function(closestRooms){
-		let connectedRoom = closestRooms[0];
-		let unconnectedRoom = closestRooms[1];
-
-		return true;
-
+	var connectClosestRooms = function(board, closestRooms) {
+		let connected = closestRooms[0];
+		let unconnected = closestRooms[1];
+		let closestDoors = findClosestDoors(board, connected, unconnected);		
+		return connect(board, closestDoors[0], closestDoors[1]);
 	}
 
-	var connectRegions = function (board) {
-		regions[0].connect();
-		for (let i = 0; i < CONFIG.DUNGEON_SIZE; i++) {
-			for (let j = 0; j < CONFIG.DUNGEON_SIZE; j++) {
-				if (board[i][j].squareType == WALL) {
-					board[i][j].connector(regions, board);
-				}
-			}
-		}
-		var allConnected = false;
-		while (!allConnected) {
-			for (let r of regions) {
-				if (r.connected && r.connectors.length != 0) {
-					var temp = randomInt(r.connectors.length);
-					for (let u of regions) {
-						if (!u.connected && u.connectors.includes(r.connectors[temp])) {
-							u.connect();
-							r.connectors[temp].squareType = DOOR;
-							u.connectors.splice(u.connectors.indexOf(r.connectors[temp]), 1)
-							r.connectors.splice(temp, 1);
+	var findClosestDoors = function(board, connected, unconnected){
+		let connectedDoor = getDoorSquare(board, connected.doorSquares[0], connected.left, connected.top);
+		let unconnectedDoor = getDoorSquare(board, unconnected.doorSquares[0], unconnected.left, unconnected.top);
+		let lowestDist = CONFIG.DUNGEON_SIZE;
+		for(let r of connected.doorSquares){
+			let d1 = getDoorSquare(board, r, connected.left, connected.top);
+			if(d1.usableDoorSquare){
+				for(let o of unconnected.doorSquares){
+					let d2 = getDoorSquare(board, o, unconnected.left, unconnected.top);
+					if(d2.usableDoorSquare){
+						if(dist(d1.x, d1.y, d2.x, d2.y) < lowestDist){
+							connectedDoor = d1
+							unconnectedDoor = d2;
+							lowestDist = dist(d1.x, d1.y, d2.x, d2.y);
 						}
 					}
 				}
 			}
-			allConnected = true;
-			for (let r of regions) {
-				if (!r.connected) {
-					allConnected = false;
-				}
-			}
 		}
-	};
+		if(connectedDoor.usableDoorSquare && unconnectedDoor.usableDoorSquare){
+			return [connectedDoor, unconnectedDoor];
+		}
+		else return false;
+	}
 
 	var sparseMaze = function (board) {
 		var deadends = true;
@@ -506,9 +501,6 @@ function connectToRegion(board, regions, region) {
 		connected = connect(board, door, target);
 	}
 
-	console.log(target);
-	console.log(otherRoom);
-
 	room.addDoor(door);
 	if (door.overlaps) {
 		otherRoom.region.addRooms(door.region.rooms);
@@ -598,9 +590,16 @@ function connect(board, start, target) {
 	else {
 		let nodeStart = start.adjacentNodes(board)[0];
 		let nodeTarget = target.adjacentNodes(board)[0];
+		if(nodeStart == undefined){
+			start.usableDoorSquare = false;
+			return false;
+		}
+		if(nodeTarget == undefined){
+			target.usableDoorSquare = false;
+			return false;
+		}
 		let path = findNodePath(board, nodeStart, nodeTarget);
-		if (path == false) {
-			return false
+		if (path == false) { return false
 		}
 		else {
 			addToConnected(nodeStart);
@@ -614,8 +613,7 @@ function connect(board, start, target) {
 }
 
 function connectPath(board, region, path, start) {
-	let current = start;
-	for (let p of path) {
+	let current = start; for (let p of path) {
 		connectToNode(board, region, current, p);
 		current = p;
 	}

@@ -6,6 +6,7 @@ function SquareBuilder(x, y) {
 	this.roomSquare = false;
 	this.nodeSquare = false;
 	this.doorSquare = false;
+	this.usableDoorSquare = true;
 	this.region = undefined;
 	this.overlaps = false;
 	this.connected = false;
