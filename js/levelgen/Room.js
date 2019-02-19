@@ -6,6 +6,8 @@ function Room(template, x, y) {
     this.top = y + 1;
     this.right = x + this.width + 1;
     this.bottom = y + this.height + 1;
+	this.centerX = this.left + floor(this.width/2);
+	this.centerY = this.top + floor(this.height/2);
 
     this.maxDoors = template.maxDoors;
 
