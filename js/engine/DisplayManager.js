@@ -89,9 +89,12 @@ function DisplayManager(square_size, vision, animation_stages) {
                         break;
                 }
             }
-
-            rect(DUNGEON_OFFSET_X - ((player.x - mob.x) * SQUARE_SIZE) + MOB_OFFSET + xoff, DUNGEON_OFFSET_Y - ((player.y - mob.y) * SQUARE_SIZE) + MOB_OFFSET + yoff, MOB_SIZE, MOB_SIZE);
-            strokeRect(DUNGEON_OFFSET_X - ((player.x - mob.x) * SQUARE_SIZE) + MOB_OFFSET + xoff, DUNGEON_OFFSET_Y - ((player.y - mob.y) * SQUARE_SIZE) + MOB_OFFSET + yoff, MOB_SIZE, MOB_SIZE);
+			
+			let drawX = DUNGEON_OFFSET_X - ((player.x - mob.x) * SQUARE_SIZE) + MOB_OFFSET + xoff;
+			let drawY = DUNGEON_OFFSET_Y - ((player.y - mob.y) * SQUARE_SIZE) + MOB_OFFSET + yoff;
+            rect(drawX, drawY, MOB_SIZE, MOB_SIZE);
+            strokeRect(drawX, drawY, MOB_SIZE, MOB_SIZE);
+			drawMobHealth(mob, drawX, drawY); 
         }
 
 
@@ -100,6 +103,24 @@ function DisplayManager(square_size, vision, animation_stages) {
         //     image(m.sprite, DUNGEON_OFFSET_X - ((player.x - m.x) * SQUARE_SIZE) + MOB_OFFSET, DUNGEON_OFFSET_Y - ((player.y - m.y) * SQUARE_SIZE) + MOB_OFFSET, MOB_SIZE, MOB_SIZE);
         // }
     }
+
+	let MOB_HEALTH_OFFSET_Y = MOB_SIZE/3;
+	let MOB_HEALTH_OFFSET_X = MOB_SIZE/20;
+	let MOB_HEALTH_WIDTH = MOB_SIZE + (2 * MOB_HEALTH_OFFSET_X);
+	let MOB_HEALTH_HEIGHT = MOB_SIZE/6;
+	
+	let drawMobHealth = function(mob, drawX, drawY){
+		fill(0,0,0);
+		drawY -= MOB_HEALTH_OFFSET_Y;
+		drawX -= MOB_HEALTH_OFFSET_X;
+		rect(drawX, drawY, MOB_HEALTH_WIDTH, MOB_HEALTH_HEIGHT);
+		fill(255,0,0);
+		//drawY -= MOB_HEALTH_OFFSET_Y;
+		//drawX -= MOB_HEALTH_OFFSET_X;
+		let mobHealthBarLength = MOB_HEALTH_WIDTH * mob.healthPercent();
+		console.log(mobHealthBarLength);
+		rect(drawX, drawY, mobHealthBarLength, MOB_HEALTH_HEIGHT);
+	}
 
     let drawDungeon = function (board, player) {
         fixOffset(player);
