@@ -1,51 +1,82 @@
 const ERR = .5;
 
 function SightLine(board, sx, sy, ex, ey) {
-	this.startx = min(sx, ex) + 1;
-	this.starty = min(sy, ey);
-	this.endx = max(sx, ex);
-	this.endy = max(sy, ey);
-	this.slope = abs(this.endy - this.starty) / abs(this.endx - this.startx);	
-	this.squares = (function(board, startx, starty, endx, endy, slope){
-		let s = [];
-		let x = startx;
-		let y = starty;
-		let e = 0;
-		while (x <= endx){
-			s.push(board[x][y]);
-			e += slope;
-			if(e > ERR && y > endy){
-				y -= 1;
-				e -= 1;
-				s.push(board[x][y]);
-			}
-			x++;
-		}			
-		return s;
-	}(board, this.startx, this.starty, this.endx, this.endy, this.slope));
+	this.startx = sx;
+	this.starty = sy;
+	this.octant = getOctant(ex - sx, ey - sy);
+	this.translatedCoordinates = translate(this.octant, ex - sx, ey - sy);
+	this.endx = this.translatedCoordinates[0];
+	this.endy = this.translatedCoordinates[1];
+	this.slope = abs(this.endy) / abs(this.endx);
+	this.squares = addSquares(board, this.startx, this.starty, this.endx, this.endy, this.slope, this.octant);
+}
+
+function addSquares(board, startx, starty, endx, endy, slope, octant){
+
+	let maxy = -endy;
+	let blocked = false;
+	let s = [];
+	let x = 0;
+	let y = 0;
+	let e = 0;
+	while (x <= endx && !blocked){
+		let current = getTranslatedSquare(board, octant, x, y, startx, starty);
+		if(current.blocking) blocked = true;
+		s.push(current);	
+		e += slope;
+		if(e > ERR && y > maxy){
+			y -= 1;
+			e -= 1;
+			let current = getTranslatedSquare(board, octant, x, y, startx, starty);
+			if(current.blocking) blocked = true;
+			s.push(current);	
+		}
+		x++;
+	}			
+	return s;
+
 }
 
 function getOctant(x, y){
-	if(x>0){
-		if(y>0){
+	if(y>=0){
+		if(x>=0){
 			if(x>=y) return 0;
-			else if(y>x) return 7;
+			else return 1;
+		}
+		else{
+			if(abs(x) < y) return 2;
+			else return 3;
+		}
+	}
+	else{
+		if(x<0){
+			if(abs(x)>=abs(y)) return 4;
+			else return 5;
+		}
+		else{
+			if(x < abs(y)) return 6;
+			else return 7;
 		}
 	}
 }
 
-function trasnlate(octant, x, y){
+function translate(octant, x, y){
 	switch (octant)	{
-		case 0: return new [x, y];
-		case 1: return new [y, x];
-		case 2: return new [y, x * -1];
-		case 3: return new [x * -1, y];
-		case 4: return new [x * -1, y * -1];
-		case 5: return new [y * -1, x * -1];
-		case 6: return new [y * -1, x];
-		case 7: return new [x, y * -1];
-		default: return [-1,-1];
+		case 0: return [x, y];
+		case 1: return [y, x];
+		case 2: return [y, x * -1];
+		case 3: return [x * -1, y];
+		case 4: return [x * -1, y * -1];
+		case 5: return [y * -1, x * -1];
+		case 6: return [y * -1, x];
+		case 7: return [x, y * -1];
+		default: console.log("Invalid octant: " + octant);
 	}
+}
+
+function getTranslatedSquare(board, octant, x, y, sx, sy){
+	let untranslatedCoords = translate(octant, x, y);
+	return board[sx - untranslatedCoords[0]][sy - untranslatedCoords[1]];
 }
 
 SightLine.prototype.findTouching = function (board) {

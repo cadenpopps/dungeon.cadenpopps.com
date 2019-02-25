@@ -34,8 +34,6 @@ function DisplayManager(square_size, vision, animation_stages) {
             drawDungeon(board, player);
             drawMobs(mobs, player);
             drawPlayer(player);
-			stroke(255);
-			line(CENTER_X, CENTER_Y, CENTER_X + (SQUARE_SIZE * DESTINATION_X), CENTER_Y + (SQUARE_SIZE * -DESTINATION_Y), 3);
         }
     }
 
@@ -169,8 +167,6 @@ function DisplayManager(square_size, vision, animation_stages) {
                             fill(0, 0, 0, .6);
                             rect(DUNGEON_OFFSET_X - ((player.x - x) * SQUARE_SIZE), DUNGEON_OFFSET_Y - ((player.y - y) * SQUARE_SIZE), SQUARE_SIZE, SQUARE_SIZE);
                         }
-						stroke(255);
-						strokeRect(DUNGEON_OFFSET_X - ((player.x - x) * SQUARE_SIZE), DUNGEON_OFFSET_Y - ((player.y - y) * SQUARE_SIZE), SQUARE_SIZE, SQUARE_SIZE);
                     }
                 }
             }

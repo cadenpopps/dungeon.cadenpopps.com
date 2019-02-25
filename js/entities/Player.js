@@ -1,6 +1,6 @@
 
-var DESTINATION_X = 4;
-var DESTINATION_Y = 3;
+var DESTINATION_X = 10;
+var DESTINATION_Y = 10;
 
 Player.prototype = Object.create(Entity.prototype);
 
@@ -36,47 +36,59 @@ function Player(pos, hp, str, mag, int) {
             }
         }
         return status;
-    }
+	}
 
-    let updateBoardSight = function (board, x, y) {
+	let updateBoardSight = function (board, x, y) {
 
-        for (var i = 0; i < CONFIG.DUNGEON_SIZE; i++) {
-            for (var j = 0; j < CONFIG.DUNGEON_SIZE; j++) {
-                board[i][j].visible = false;
-            }
-        }
+		for (var i = 0; i < CONFIG.DUNGEON_SIZE; i++) {
+			for (var j = 0; j < CONFIG.DUNGEON_SIZE; j++) {
+				board[i][j].visible = false;
+			}
+		}
 
-        if (DEBUG_SIGHT) {
-            var squarecounter = 0;
-        }
+		if (DEBUG_SIGHT) {
+			var squarecounter = 0;
+		}
 
-        // var dX = eX - sX;
-        // var dY = eY - sY;
-        // var incX = floor(dX / 4);
-        // var incY = floor(dY / 4);
-        // var numInc = 2;
+		// var dX = eX - sX;
+		// var dY = eY - sY;
+		// var incX = floor(dX / 4);
+		// var incY = floor(dY / 4);
+		// var numInc = 2;
 
-		sight(board, x, y, x - DESTINATION_X, y + DESTINATION_Y);
+		let dx = DESTINATION_X;
+		for(let i = 0; i < 12; i++){
+			dx--;
+			sight(board, x, y, x + dx, y + DESTINATION_Y);
+			sight(board, x, y, x - dx, y + DESTINATION_Y);
+			sight(board, x, y, x - dx, y - DESTINATION_Y);
+			sight(board, x, y, x + dx, y - DESTINATION_Y);
+			sight(board, x, y, x + DESTINATION_Y, y + dx);
+			sight(board, x, y, x - DESTINATION_Y, y + dx);
+			sight(board, x, y, x - DESTINATION_Y, y - dx);
+			sight(board, x, y, x + DESTINATION_Y, y - dx);
+		}
 
-//        for (let i = constrainLow(x - CONFIG.PLAYER_VISION_RANGE, 0); i < constrainHigh(x + CONFIG.PLAYER_VISION_RANGE, CONFIG.DUNGEON_SIZE); i++) {
-//            for (let j = constrainLow(y - CONFIG.PLAYER_VISION_RANGE, 0); j < constrainHigh(y + CONFIG.PLAYER_VISION_RANGE, CONFIG.DUNGEON_SIZE); j++) {
-//                if (DEBUG_SIGHT) {
-//                    squarecounter++;
-//                }
-//                sight(board, i, j, x, y);
-//                // board[i][j].distanceFromPlayer = distanceToSquare(i, j);
-//            }
-//        }
 
- //       for (let i = constrainLow(x - CONFIG.PLAYER_VISION_RANGE, 1); i < constrainHigh(x + CONFIG.PLAYER_VISION_RANGE, CONFIG.DUNGEON_SIZE - 1); i++) {
- //           for (let j = constrainLow(y - CONFIG.PLAYER_VISION_RANGE, 1); j < constrainHigh(y + CONFIG.PLAYER_VISION_RANGE, CONFIG.DUNGEON_SIZE - 1); j++) {
- //               if (board[i - 1][j].squareType == FLOOR && board[i - 1][j].visible) {
- //                   board[i][j].discovered = true;
- //                   continue;
- //               }
- //               else if (board[i + 1][j].squareType == FLOOR && board[i + 1][j].visible) {
- //                   board[i][j].discovered = true;
- //                   continue;
+		//        for (let i = constrainLow(x - CONFIG.PLAYER_VISION_RANGE, 0); i < constrainHigh(x + CONFIG.PLAYER_VISION_RANGE, CONFIG.DUNGEON_SIZE); i++) {
+		//            for (let j = constrainLow(y - CONFIG.PLAYER_VISION_RANGE, 0); j < constrainHigh(y + CONFIG.PLAYER_VISION_RANGE, CONFIG.DUNGEON_SIZE); j++) {
+		//                if (DEBUG_SIGHT) {
+		//                    squarecounter++;
+		//                }
+		//                sight(board, i, j, x, y);
+		//                // board[i][j].distanceFromPlayer = distanceToSquare(i, j);
+		//            }
+		//        }
+
+		//       for (let i = constrainLow(x - CONFIG.PLAYER_VISION_RANGE, 1); i < constrainHigh(x + CONFIG.PLAYER_VISION_RANGE, CONFIG.DUNGEON_SIZE - 1); i++) {
+		//           for (let j = constrainLow(y - CONFIG.PLAYER_VISION_RANGE, 1); j < constrainHigh(y + CONFIG.PLAYER_VISION_RANGE, CONFIG.DUNGEON_SIZE - 1); j++) {
+		//               if (board[i - 1][j].squareType == FLOOR && board[i - 1][j].visible) {
+		//                   board[i][j].discovered = true;
+		//                   continue;
+		//               }
+		//               else if (board[i + 1][j].squareType == FLOOR && board[i + 1][j].visible) {
+		//                   board[i][j].discovered = true;
+		//                   continue;
 		//               }
 		//   			else if (board[i][j - 1].squareType == FLOOR && board[i][j - 1].visible) {
 		//   				board[i][j].discovered = true;
@@ -101,6 +113,7 @@ function Player(pos, hp, str, mag, int) {
 		let l = new SightLine(board, x, y, ex, ey);
 		for(let s of l.squares){
 			s.visible = true;
+			s.discovered = true;
 		}
 		//		var blocked = false;
 		//		for (let s of l.touching) {

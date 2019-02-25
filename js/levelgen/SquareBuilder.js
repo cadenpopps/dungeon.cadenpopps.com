@@ -22,8 +22,8 @@ function SquareBuilder(x, y) {
 			case LOOT:
 				return new FloorSquare(this.x, this.y, true);
 			default:
-				console.log(this.squareType);
-				return new Square(this.x, this.y, this.squareType);
+				console.log("Not recognized squaretype: " + this.squareType);
+					return new Square(this.x, this.y, this.squareType);
 		}
 	};
 
