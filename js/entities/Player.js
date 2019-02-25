@@ -1,6 +1,6 @@
 
 var DESTINATION_X = 10;
-var DESTINATION_Y = 10;
+var DESTINATION_Y = -5;
 
 Player.prototype = Object.create(Entity.prototype);
 
@@ -68,7 +68,6 @@ function Player(pos, hp, str, mag, int) {
 			sight(board, x, y, x - DESTINATION_Y, y - dx);
 			sight(board, x, y, x + DESTINATION_Y, y - dx);
 		}
-
 
 		//        for (let i = constrainLow(x - CONFIG.PLAYER_VISION_RANGE, 0); i < constrainHigh(x + CONFIG.PLAYER_VISION_RANGE, CONFIG.DUNGEON_SIZE); i++) {
 		//            for (let j = constrainLow(y - CONFIG.PLAYER_VISION_RANGE, 0); j < constrainHigh(y + CONFIG.PLAYER_VISION_RANGE, CONFIG.DUNGEON_SIZE); j++) {
