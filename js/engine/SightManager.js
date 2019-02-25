@@ -1,5 +1,64 @@
 const ERR = .5;
 
+function playerSight(board, x, y){
+	let px = x;
+	let py = y;
+	//for(let octant = 0; octant < 8; octant ++){
+	//	playerSightTriangle(board, octant, .5, px, py);
+	//}
+	playerSightTriangle(board, 0, 1, px, py);
+}
+
+function playerSightTriangle(board, octant, slope, px, py){
+	let x = 0;
+	while (x <= CONFIG.PLAYER_VISION_RANGE) {
+		let curslope = 0;
+		let y = 0;
+		while(curslope <= slope){
+			let cur = getTranslatedSquare(board, octant, x, y, px, py); 
+			if(cur === undefined){
+				return;
+			}
+			else if(!cur.blocking) cur.visible = true;
+			y++;
+			curslope = y/x;
+		}
+		x++;
+		//if(getTranslatedSquare(board, octant, x, y, startx, starty).blocking) return true;
+		//e += slope;
+		//if(e > ERR && y < endy){
+		//	y += 1;
+		//	e -= 1;
+		//	if(getTranslatedSquare(board, octant, x, y, startx, starty).blocking) return true;
+		//}
+		//x++;
+	}			
+}
+
+function lineOfSight(board, sx, sy, ex, ey){
+	let octant = getOctant(ex - sx, ey - sy);
+	let tc = translateToZero(octant, ex - sx, ey - sy);
+	let slope = abs(ey) / abs(ex);
+	return !checkBlocked(board, sx, sy, tc[0], tc[1], slope, octant);
+}
+
+function checkBlocked(board, startx, starty, endx, endy, slope, octant){
+	let x = 0;
+	let y = 0;
+	let e = 0;
+	while (x <= endx) {
+		if(getTranslatedSquare(board, octant, x, y, startx, starty).blocking) return true;
+		e += slope;
+		if(e > ERR && y < endy){
+			y += 1;
+			e -= 1;
+			if(getTranslatedSquare(board, octant, x, y, startx, starty).blocking) return true;
+		}
+		x++;
+	}			
+	return false;
+}
+
 function SightLine(board, sx, sy, ex, ey) {
 	this.startx = sx;
 	this.starty = sy;
@@ -32,30 +91,6 @@ function addSquares(board, startx, starty, endx, endy, slope, octant){
 		x++;
 	}			
 	return s;
-}
-
-function lineOfSight(board, sx, sy, ex, ey){
-	let octant = getOctant(ex - sx, ey - sy);
-	let tc = translateToZero(octant, ex - sx, ey - sy);
-	let slope = abs(ey) / abs(ex);
-	return !checkBlocked(board, sx, sy, tc[0], tc[1], slope, octant);
-}
-
-function checkBlocked(board, startx, starty, endx, endy, slope, octant){
-	let x = 0;
-	let y = 0;
-	let e = 0;
-	while (x <= endx) {
-		if(getTranslatedSquare(board, octant, x, y, startx, starty).blocking) return true;
-		e += slope;
-		if(e > ERR && y < endy){
-			y += 1;
-			e -= 1;
-			if(getTranslatedSquare(board, octant, x, y, startx, starty).blocking) return true;
-		}
-		x++;
-	}			
-	return false;
 }
 
 function getOctant(x, y){
@@ -105,8 +140,13 @@ function translate(octant, x, y){
 }
 
 function getTranslatedSquare(board, octant, x, y, sx, sy){
-	let untranslatedCoords = translate(octant, x, y);
-	return board[sx + untranslatedCoords[0]][sy - untranslatedCoords[1]];
+	let uc = translate(octant, x, y);
+	let fx = sx + uc[0];
+	let fy = sy - uc[1];
+	if(fx >= 0 && fy >= 0 && fx < CONFIG.DUNGEON_SIZE && fy < CONFIG.DUNGEON_SIZE){
+		return board[fx][fy];
+	}
+	return undefined;
 }
 
 SightLine.prototype.findTouching = function (board) {

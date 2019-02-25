@@ -1,6 +1,6 @@
 
 var DESTINATION_X = 10;
-var DESTINATION_Y = -5;
+var DESTINATION_Y = 10;
 
 Player.prototype = Object.create(Entity.prototype);
 
@@ -50,24 +50,20 @@ function Player(pos, hp, str, mag, int) {
 			var squarecounter = 0;
 		}
 
-		// var dX = eX - sX;
-		// var dY = eY - sY;
-		// var incX = floor(dX / 4);
-		// var incY = floor(dY / 4);
-		// var numInc = 2;
+		playerSight(board, x, y);
 
-		let dx = DESTINATION_X;
-		for(let i = 0; i < 12; i++){
-			dx--;
-			sight(board, x, y, x + dx, y + DESTINATION_Y);
-			sight(board, x, y, x - dx, y + DESTINATION_Y);
-			sight(board, x, y, x - dx, y - DESTINATION_Y);
-			sight(board, x, y, x + dx, y - DESTINATION_Y);
-			sight(board, x, y, x + DESTINATION_Y, y + dx);
-			sight(board, x, y, x - DESTINATION_Y, y + dx);
-			sight(board, x, y, x - DESTINATION_Y, y - dx);
-			sight(board, x, y, x + DESTINATION_Y, y - dx);
-		}
+		//let dx = DESTINATION_X;
+		//for(let i = 0; i < 12; i++){
+		//	dx--;
+		//	sight(board, x, y, x + dx, y + DESTINATION_Y);
+		//	sight(board, x, y, x - dx, y + DESTINATION_Y);
+		//	sight(board, x, y, x - dx, y - DESTINATION_Y);
+		//	sight(board, x, y, x + dx, y - DESTINATION_Y);
+		//	sight(board, x, y, x + DESTINATION_Y, y + dx);
+		//	sight(board, x, y, x - DESTINATION_Y, y + dx);
+		//	sight(board, x, y, x - DESTINATION_Y, y - dx);
+		//	sight(board, x, y, x + DESTINATION_Y, y - dx);
+		//}
 
 		//        for (let i = constrainLow(x - CONFIG.PLAYER_VISION_RANGE, 0); i < constrainHigh(x + CONFIG.PLAYER_VISION_RANGE, CONFIG.DUNGEON_SIZE); i++) {
 		//            for (let j = constrainLow(y - CONFIG.PLAYER_VISION_RANGE, 0); j < constrainHigh(y + CONFIG.PLAYER_VISION_RANGE, CONFIG.DUNGEON_SIZE); j++) {
@@ -109,11 +105,11 @@ function Player(pos, hp, str, mag, int) {
 	}
 
 	let sight = function(board, x, y, ex, ey) {
-		let l = new SightLine(board, x, y, ex, ey);
-		for(let s of l.squares){
-			s.visible = true;
-			s.discovered = true;
-		}
+		//let l = new SightLine(board, x, y, ex, ey);
+		//for(let s of l.squares){
+		//	s.visible = true;
+		//	s.discovered = true;
+		//}
 		//		var blocked = false;
 		//		for (let s of l.touching) {
 		//			if (blocked) {
