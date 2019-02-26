@@ -32,10 +32,10 @@ function Player(pos, hp, str, mag, int) {
                 }
                 else if (board[this.x][this.y].up) {
                     status = STAIR_UP;
-                }
-            }
-        }
-        return status;
+				}
+			}
+		}
+		return status;
 	}
 
 	let updateBoardSight = function (board, x, y) {
@@ -46,24 +46,24 @@ function Player(pos, hp, str, mag, int) {
 			}
 		}
 
-		if (DEBUG_SIGHT) {
-			var squarecounter = 0;
+
+		if(DEBUG_SIGHT){
+			let dx = DESTINATION_X;
+			for(let i = 0; i < 12; i++){
+				dx--;
+				sight(board, x, y, x + dx, y + DESTINATION_Y);
+				sight(board, x, y, x - dx, y + DESTINATION_Y);
+				sight(board, x, y, x - dx, y - DESTINATION_Y);
+				sight(board, x, y, x + dx, y - DESTINATION_Y);
+				sight(board, x, y, x + DESTINATION_Y, y + dx);
+				sight(board, x, y, x - DESTINATION_Y, y + dx);
+				sight(board, x, y, x - DESTINATION_Y, y - dx);
+				sight(board, x, y, x + DESTINATION_Y, y - dx);
+			}
 		}
-
-		playerSight(board, x, y);
-
-		//let dx = DESTINATION_X;
-		//for(let i = 0; i < 12; i++){
-		//	dx--;
-		//	sight(board, x, y, x + dx, y + DESTINATION_Y);
-		//	sight(board, x, y, x - dx, y + DESTINATION_Y);
-		//	sight(board, x, y, x - dx, y - DESTINATION_Y);
-		//	sight(board, x, y, x + dx, y - DESTINATION_Y);
-		//	sight(board, x, y, x + DESTINATION_Y, y + dx);
-		//	sight(board, x, y, x - DESTINATION_Y, y + dx);
-		//	sight(board, x, y, x - DESTINATION_Y, y - dx);
-		//	sight(board, x, y, x + DESTINATION_Y, y - dx);
-		//}
+		else{
+			playerSight(board, x, y);
+		}
 
 		//        for (let i = constrainLow(x - CONFIG.PLAYER_VISION_RANGE, 0); i < constrainHigh(x + CONFIG.PLAYER_VISION_RANGE, CONFIG.DUNGEON_SIZE); i++) {
 		//            for (let j = constrainLow(y - CONFIG.PLAYER_VISION_RANGE, 0); j < constrainHigh(y + CONFIG.PLAYER_VISION_RANGE, CONFIG.DUNGEON_SIZE); j++) {
@@ -97,19 +97,14 @@ function Player(pos, hp, str, mag, int) {
 		//   	}
 
 
-		if (DEBUG_SIGHT) {
-			console.log(squarecounter);
-		}
-
-
 	}
 
 	let sight = function(board, x, y, ex, ey) {
-		//let l = new SightLine(board, x, y, ex, ey);
-		//for(let s of l.squares){
-		//	s.visible = true;
-		//	s.discovered = true;
-		//}
+		let l = new SightLine(board, x, y, ex, ey);
+		for(let s of l.squares){
+			s.visible = true;
+			//s.discovered = true;
+		}
 		//		var blocked = false;
 		//		for (let s of l.touching) {
 		//			if (blocked) {

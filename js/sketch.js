@@ -3,7 +3,7 @@
 
 const DEBUG = true;
 const DEBUG_BOARD = false;
-const DEBUG_SIGHT = false;
+var DEBUG_SIGHT = false;
 const SHOW_TEXTURES = true;
 const SUPER_POWERS = false;
 
@@ -64,37 +64,40 @@ function preload() {
 
 function setup() {
 
-    createCanvas(windowWidth, windowHeight);
+	createCanvas(windowWidth, windowHeight);
 
-    init();
-    loop();
+	init();
+	loop();
 }
 
 function init() {
-    gm = new GameManager();
-    document.addEventListener('contextmenu', function () {
-        console.log("test");
-        gm.clearInputs()
-    });
+	gm = new GameManager();
+	document.addEventListener('contextmenu', function () {
+		console.log("test");
+		gm.clearInputs()
+	});
 }
 
 function draw() {
-    background(10, 10, 10);
-    gm.display();
+	background(10, 10, 10);
+	gm.display();
 }
 
 function mousePressed() {
-    gm.mouse(mouseX, mouseY);
+	gm.mouse(mouseX, mouseY);
 }
 
 function keyDown() {
-    gm.input(ADD_KEY, key.toLowerCase());
+	if(key == 'p'){
+		DEBUG_SIGHT = !DEBUG_SIGHT;
+	}
+	gm.input(ADD_KEY, key.toLowerCase());
 }
 
 function keyUp() {
-    gm.input(REMOVE_KEY, key.toLowerCase());
+	gm.input(REMOVE_KEY, key.toLowerCase());
 }
 
 function windowResized() {
-    resizeCanvas(windowWidth, windowHeight);
+	resizeCanvas(windowWidth, windowHeight);
 }

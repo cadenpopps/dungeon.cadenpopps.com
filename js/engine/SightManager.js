@@ -3,36 +3,73 @@ const ERR = .5;
 function playerSight(board, x, y){
 	let px = x;
 	let py = y;
-	//for(let octant = 0; octant < 8; octant ++){
-	//	playerSightTriangle(board, octant, .5, px, py);
-	//}
-	playerSightTriangle(board, 0, 1, px, py);
+	for(let octant = 0; octant < 1; octant ++){
+		playerSightTriangle(board, octant, 0, 1, px, py, 0, 0, CONFIG.PLAYER_VISION_RANGE);
+	}
 }
 
-function playerSightTriangle(board, octant, slope, px, py){
+function playerSightTriangle(board, octant, slopeStart, slopeEnd, sx, sy, offx, offy, range){
 	let x = 0;
-	while (x <= CONFIG.PLAYER_VISION_RANGE) {
-		let curslope = 0;
-		let y = 0;
-		while(curslope <= slope){
-			let cur = getTranslatedSquare(board, octant, x, y, px, py); 
+	while (x <= range) {
+		let curslope = slopeStart;
+		let y = ceil(x * curslope);
+		while(curslope <= slopeEnd){
+			let cur = getTranslatedSquare(board, octant, x, y, sx, sy); 
 			if(cur === undefined){
 				return;
 			}
-			else if(!cur.blocking) cur.visible = true;
+			else if(!cur.blocking){
+				cur.visible = true;
+			}
+			else{
+				let firstBlocked = [x,y];
+				firstBlocked.visible = true;
+				let nextBlocked = cur; 
+				while(nextBlocked !== undefined && nextBlocked.blocking && curslope < slopeEnd){
+					nextBlocked.visible = true;
+					y++;
+					curslope = slope(offx, offy, x, y);
+					nextBlocked = getTranslatedSquare(board, octant, x, y, sx, sy);
+				}
+
+				if(nextBlocked !== undefined){ 
+					//hits top
+					if(firstBlocked[1] != 0 && (nextBlocked.blocking || curslope == slopeEnd)){
+						nextBlocked.visible = true;
+						// let newSlopeEnd = firstBlocked[1]/(firstBlocked[0] +1); 
+						// playerSightTriangle(board, octant, newSlopeStart, newSlopeEnd, sx + x, sy, x, range - x);
+						let newSlopeEnd = slope(offx, offy, firstBlocked[0] + 1, firstBlocked[1]); 
+						playerSightTriangle(board, octant, slopeStart, newSlopeEnd, sx + x, sy, offx + x, offy, range - x);
+					}
+
+					//starts at bottom
+					else if(firstBlocked[1] == 0 && curslope < slopeEnd){
+						//let newSlopeStart = slope(offx, nextBlocked.x, nextBlocked.y); 
+						//playerSightTriangle(board, octant, newSlopeStart, newSlopeEnd, sx + x, sy - y, x, range - x);
+						let newSlopeStart = slope(offx, offy, nextBlocked.x, nextBlocked.y);
+						playerSightTriangle(board, octant, newSlopeStart, slopeEnd, sx + x, sy - y, offx + x, offy + y, range - x);
+					}
+					else{
+						////top
+						//let newSlopeStart = slope(offx, offy, nextBlocked.x, nextBlocked.y);
+						//playerSightTriangle(board, octant, newSlopeStart, slopeEnd, sx + x, sy - y, offx + x, offy + y, range - x);
+						////bottom
+						//let newSlopeEnd = slope(offx, offy, firstBlocked[0] + 1, firstBlocked[1]); 
+						//playerSightTriangle(board, octant, slopeStart, newSlopeEnd, sx + x, sy, offx + x, offy, range - x);
+					}
+
+					//floats
+				}
+			}
 			y++;
-			curslope = y/x;
+			curslope = slope(offx, offy, x, y); 
 		}
 		x++;
-		//if(getTranslatedSquare(board, octant, x, y, startx, starty).blocking) return true;
-		//e += slope;
-		//if(e > ERR && y < endy){
-		//	y += 1;
-		//	e -= 1;
-		//	if(getTranslatedSquare(board, octant, x, y, startx, starty).blocking) return true;
-		//}
-		//x++;
 	}			
+}
+
+function slope(offx, offy, x, y){
+	return constrainLow((offy + y)/(x + offx), 0);
 }
 
 function lineOfSight(board, sx, sy, ex, ey){
@@ -168,107 +205,107 @@ SightLine.prototype.findTouching = function (board) {
 				}
 				else {
 					j = j - 1;
-                }
-                error = error - (ERR * 2);
-            }
-        }
-    }
-    else {
-        for (var i = this.startx; i >= this.endx; i--) {
-            this.touching.push(board[i][j]);
-            error = error + deltaerr;
-            if (error >= ERR) {
-                if (this.starty < this.endy) {
-                    j = j + 1;
-                }
-                else {
-                    j = j - 1;
-                }
-                error = error - (ERR * 2);
-            }
-        }
-    }
+				}
+				error = error - (ERR * 2);
+			}
+		}
+	}
+	else {
+		for (var i = this.startx; i >= this.endx; i--) {
+			this.touching.push(board[i][j]);
+			error = error + deltaerr;
+			if (error >= ERR) {
+				if (this.starty < this.endy) {
+					j = j + 1;
+				}
+				else {
+					j = j - 1;
+				}
+				error = error - (ERR * 2);
+			}
+		}
+	}
 
-    deltax = this.startx - this.endx;
-    deltay = this.starty - this.endy;
-    deltaerr = abs(deltax / deltay);
-    error = deltaerr - ERR;
-    var a = this.startx;
-    if (this.starty < this.endy) {
-        for (var b = this.starty; b <= this.endy; b++) {
-            this.touching.push(board[a][b]);
-            error = error + deltaerr;
-            if (error >= ERR) {
-                if (this.startx < this.endx) {
-                    a = a + 1;
-                }
-                else {
-                    a = a - 1;
-                }
-                error = error - (ERR * 2);
-            }
-        }
-    }
-    else {
-        for (var b = this.starty; b >= this.endy; b--) {
-            this.touching.push(board[a][b]);
-            error = error + deltaerr;
-            if (error >= ERR) {
-                if (this.startx < this.endx) {
-                    a = a + 1;
-                }
-                else {
-                    a = a - 1;
-                }
-                error = error - (ERR * 2);
-            }
-        }
-    }
+	deltax = this.startx - this.endx;
+	deltay = this.starty - this.endy;
+	deltaerr = abs(deltax / deltay);
+	error = deltaerr - ERR;
+	var a = this.startx;
+	if (this.starty < this.endy) {
+		for (var b = this.starty; b <= this.endy; b++) {
+			this.touching.push(board[a][b]);
+			error = error + deltaerr;
+			if (error >= ERR) {
+				if (this.startx < this.endx) {
+					a = a + 1;
+				}
+				else {
+					a = a - 1;
+				}
+				error = error - (ERR * 2);
+			}
+		}
+	}
+	else {
+		for (var b = this.starty; b >= this.endy; b--) {
+			this.touching.push(board[a][b]);
+			error = error + deltaerr;
+			if (error >= ERR) {
+				if (this.startx < this.endx) {
+					a = a + 1;
+				}
+				else {
+					a = a - 1;
+				}
+				error = error - (ERR * 2);
+			}
+		}
+	}
 };
 
 SightLine.prototype.findStraightTouching = function (board) {
-    if (this.startx == this.endx) {
-        if (this.starty < this.endy) {
-            for (var i = this.starty; i <= this.endy; i++) {
-                this.touching.push(board[this.startx][i]);
-            }
-        }
-        else {
-            for (var i = this.starty; i >= this.endy; i--) {
-                this.touching.push(board[this.startx][i]);
-            }
-        }
-    }
-    else if (this.starty == this.endy) {
-        if (this.startx < this.endx) {
-            for (var i = this.startx; i <= this.endx; i++) {
-                this.touching.push(board[i][this.starty]);
-            }
-        }
-        else {
-            for (var i = this.startx; i >= this.endx; i--) {
-                this.touching.push(board[i][this.starty]);
-            }
-        }
-    }
+	if (this.startx == this.endx) {
+		if (this.starty < this.endy) {
+			for (var i = this.starty; i <= this.endy; i++) {
+				this.touching.push(board[this.startx][i]);
+			}
+		}
+		else {
+			for (var i = this.starty; i >= this.endy; i--) {
+				this.touching.push(board[this.startx][i]);
+			}
+		}
+	}
+	else if (this.starty == this.endy) {
+		if (this.startx < this.endx) {
+			for (var i = this.startx; i <= this.endx; i++) {
+				this.touching.push(board[i][this.starty]);
+			}
+		}
+		else {
+			for (var i = this.startx; i >= this.endx; i--) {
+				this.touching.push(board[i][this.starty]);
+			}
+		}
+	}
 };
 
 SightLine.prototype.cornerCase = function (board) {
-    if (blocking(board[this.startx - 1][this.starty]) && blocking(board[this.startx][this.starty - 1]) && this.endx < this.startx && this.endy < this.starty) {
-        return true;
-    }
-    if (blocking(board[this.startx - 1][this.starty]) && blocking(board[this.startx][this.starty + 1]) && this.endx < this.startx && this.endy > this.starty) {
-        return true;
-    }
-    if (blocking(board[this.startx + 1][this.starty]) && blocking(board[this.startx][this.starty - 1]) && this.endx > this.startx && this.endy < this.starty) {
-        return true;
-    }
-    if (blocking(board[this.startx + 1][this.starty]) && blocking(board[this.startx][this.starty + 1]) && this.endx > this.startx && this.endy > this.starty) {
-        return true;
-    }
+	if (blocking(board[this.startx - 1][this.starty]) && blocking(board[this.startx][this.starty - 1]) && this.endx < this.startx && this.endy < this.starty) {
+		return true;
+	}
+	if (blocking(board[this.startx - 1][this.starty]) && blocking(board[this.startx][this.starty + 1]) && this.endx < this.startx && this.endy > this.starty) {
+		return true;
+	}
+	if (blocking(board[this.startx + 1][this.starty]) && blocking(board[this.startx][this.starty - 1]) && this.endx > this.startx && this.endy < this.starty) {
+		return true;
+	}
+	if (blocking(board[this.startx + 1][this.starty]) && blocking(board[this.startx][this.starty + 1]) && this.endx > this.startx && this.endy > this.starty) {
+		return true;
+	}
 }
 
 function blocking(s) {
-    // return (square.squareType == WALL) || (square.squareType == DOOR && !square.getOpen());
-    return s.squareType == WALL;
+	// return (square.squareType == WALL) || (square.squareType == DOOR && !square.getOpen());
+	return s.squareType == WALL;
 }
