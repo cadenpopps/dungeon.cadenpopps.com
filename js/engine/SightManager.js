@@ -3,73 +3,99 @@ const ERR = .5;
 function playerSight(board, x, y){
 	let px = x;
 	let py = y;
-	for(let octant = 0; octant < 1; octant ++){
-		playerSightTriangle(board, octant, 0, 1, px, py, 0, 0, CONFIG.PLAYER_VISION_RANGE);
+	board[px][py].visible;
+	board[px][py].discovered;
+	for(let octant = 0; octant < 8; octant ++){
+		playerSightTriangle(board, octant, 1, px, py, CONFIG.PLAYER_VISION_RANGE);
 	}
 }
 
-function playerSightTriangle(board, octant, slopeStart, slopeEnd, sx, sy, offx, offy, range){
-	let x = 0;
+function playerSightTriangle(board, octant, slopeEnd, sx, sy, range){
+
+	let x = 1;
+	let slopeStart = 0;
+	let shadows = [];
+
 	while (x <= range) {
 		let curslope = slopeStart;
-		let y = ceil(x * curslope);
+		let y = floor(x * curslope);
 		while(curslope <= slopeEnd){
+			let skip = false;
+			for(let s of shadows){
+				if(curslope > s[0] && curslope < s[1]){
+					skip = true;	
+					break;
+				}
+			}
+			if(skip){
+				y++;
+				curslope = slope(x, y); 
+				continue;
+			}
 			let cur = getTranslatedSquare(board, octant, x, y, sx, sy); 
 			if(cur === undefined){
 				return;
 			}
 			else if(!cur.blocking){
 				cur.visible = true;
+				cur.discovered = true;
+				let above = getTranslatedSquare(board, octant, x, y+1, sx, sy);
+				if(above.blocking){
+					above.visible = true;
+					above.discovered = true;
+				}
 			}
 			else{
 				let firstBlocked = [x,y];
-				firstBlocked.visible = true;
-				let nextBlocked = cur; 
+				let nextBlocked = cur;
+				nextBlocked.visible = true;
+				nextBlocked.discovered = true;
 				while(nextBlocked !== undefined && nextBlocked.blocking && curslope < slopeEnd){
-					nextBlocked.visible = true;
 					y++;
-					curslope = slope(offx, offy, x, y);
+					curslope = slope(x, y);
 					nextBlocked = getTranslatedSquare(board, octant, x, y, sx, sy);
-				}
-
-				if(nextBlocked !== undefined){ 
-					//hits top
-					if(firstBlocked[1] != 0 && (nextBlocked.blocking || curslope == slopeEnd)){
+					if(nextBlocked !== undefined && curslope < slopeEnd){
 						nextBlocked.visible = true;
-						// let newSlopeEnd = firstBlocked[1]/(firstBlocked[0] +1); 
-						// playerSightTriangle(board, octant, newSlopeStart, newSlopeEnd, sx + x, sy, x, range - x);
-						let newSlopeEnd = slope(offx, offy, firstBlocked[0] + 1, firstBlocked[1]); 
-						playerSightTriangle(board, octant, slopeStart, newSlopeEnd, sx + x, sy, offx + x, offy, range - x);
+						nextBlocked.discovered = true;
 					}
-
-					//starts at bottom
-					else if(firstBlocked[1] == 0 && curslope < slopeEnd){
-						//let newSlopeStart = slope(offx, nextBlocked.x, nextBlocked.y); 
-						//playerSightTriangle(board, octant, newSlopeStart, newSlopeEnd, sx + x, sy - y, x, range - x);
-						let newSlopeStart = slope(offx, offy, nextBlocked.x, nextBlocked.y);
-						playerSightTriangle(board, octant, newSlopeStart, slopeEnd, sx + x, sy - y, offx + x, offy + y, range - x);
-					}
-					else{
-						////top
-						//let newSlopeStart = slope(offx, offy, nextBlocked.x, nextBlocked.y);
-						//playerSightTriangle(board, octant, newSlopeStart, slopeEnd, sx + x, sy - y, offx + x, offy + y, range - x);
-						////bottom
-						//let newSlopeEnd = slope(offx, offy, firstBlocked[0] + 1, firstBlocked[1]); 
-						//playerSightTriangle(board, octant, slopeStart, newSlopeEnd, sx + x, sy, offx + x, offy, range - x);
-					}
-
-					//floats
 				}
+				// space bottom
+				if(firstBlocked[1] == 0){
+					slopeStart = slope(x,y+1);
+				}
+				else if(curslope >= slopeEnd){
+					slopeEnd = slope(firstBlocked[0], firstBlocked[1] - .8);
+				}
+				else {
+					let shadowStart = slope(firstBlocked[0], firstBlocked[1] - .8);
+					let shadowEnd = slope(x,y+1);
+					shadows.push([shadowStart, shadowEnd]);
+				}
+
+				//if(firstBlocked[1] != 0){
+				//	let	slopeEnd = slope(firstBlocked[0], firstBlocked[1] - .8);
+				//	ranges[0][1] = slopeEnd;
+				//	//slopeEnd = slope(firstBlocked[0], firstBlocked[1] - .8);
+				//	// let newSlopeEnd = slope(firstBlocked[0], firstBlocked[1]);
+				//	// playerSightTriangle(board, octant, newSlopeEnd, sx + x, sy - y + 1, range - x);
+				//}
+				//if(curslope < slopeEnd){
+				//	let	slopeStart = slope(x,y+1);
+				//	ranges[ranges.length - 1][0] = slopeStart;
+				//}
+				//else{
+				//	ranges.push(
+				//}
 			}
 			y++;
-			curslope = slope(offx, offy, x, y); 
+			curslope = slope(x, y); 
 		}
 		x++;
-	}			
+	}
 }
 
-function slope(offx, offy, x, y){
-	return constrainLow((offy + y)/(x + offx), 0);
+function slope(x, y){
+	return y/x;
 }
 
 function lineOfSight(board, sx, sy, ex, ey){

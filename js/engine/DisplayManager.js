@@ -161,7 +161,7 @@ function DisplayManager(square_size, vision, animation_stages) {
                         // CODE FOR WHEN WE HAVE TEXTURES
                         image(board[x][y].texture, DUNGEON_OFFSET_X - ((player.x - x) * SQUARE_SIZE), DUNGEON_OFFSET_Y - ((player.y - y) * SQUARE_SIZE), SQUARE_SIZE, SQUARE_SIZE);
                         let distFromPlayer = 1 - map(dist(player.x, player.y, x, y) - 2, 0, PLAYER_VISION_RANGE, 1, 0);
-                        fill(0, 0, 0, distFromPlayer);
+                        fill(0, 20 - (distFromPlayer*20), 25 - (distFromPlayer*20), distFromPlayer);
                         rect(DUNGEON_OFFSET_X - ((player.x - x) * SQUARE_SIZE), DUNGEON_OFFSET_Y - ((player.y - y) * SQUARE_SIZE), SQUARE_SIZE, SQUARE_SIZE);
                         if (!board[x][y].visible && board[x][y].discovered) {
                             fill(0, 0, 0, .6);
