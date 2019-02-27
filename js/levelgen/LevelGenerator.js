@@ -58,7 +58,7 @@ function generateLevel(depth) {
 	    	for (let j = 0; j < CONFIG.DUNGEON_SIZE; j++) {
 	    		board[i][j] = new SquareBuilder(i, j);
 	    		board[i][j].squareType = FLOOR; 
-	    		if(oneIn(20)){
+	    		if(oneIn(8)){
 	    			board[i][j].squareType = WALL; 
 	    		}
 	    	}

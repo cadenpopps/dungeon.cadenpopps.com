@@ -36,8 +36,8 @@ function DisplayManager(square_size, vision, animation_stages) {
 			drawPlayer(player);
 
 			stroke(255,0,0);
-			let r = 10;
-			for(let i = 0; i <= 10; i++){
+			let r = 0;
+			for(let i = 0; i <= r; i++){
 				line(CENTER_X, CENTER_Y, CENTER_X + (SQUARE_SIZE * r), CENTER_Y - (SQUARE_SIZE * i), 3);
 			}
 		}
@@ -156,45 +156,45 @@ function DisplayManager(square_size, vision, animation_stages) {
                             case STAIR_UP:
                                 fill(71, 100, 193, distFromPlayer);
                                 break;
-                            case STAIR_DOWN:
-                                fill(72, 52, 173, distFromPlayer);
-                                break;
-                            default:
-                                fill(255, 0, 0, distFromPlayer);
-                                break;
-                        }
-                        rect(DUNGEON_OFFSET_X - ((player.x - x) * SQUARE_SIZE), DUNGEON_OFFSET_Y - ((player.y - y) * SQUARE_SIZE), SQUARE_SIZE, SQUARE_SIZE);
-                    }
-                    else {
-                        // CODE FOR WHEN WE HAVE TEXTURES
-                        image(board[x][y].texture, DUNGEON_OFFSET_X - ((player.x - x) * SQUARE_SIZE), DUNGEON_OFFSET_Y - ((player.y - y) * SQUARE_SIZE), SQUARE_SIZE, SQUARE_SIZE);
-                        let distFromPlayer = 1 - map(dist(player.x, player.y, x, y) - 2, 0, PLAYER_VISION_RANGE, 1, 0);
-                        fill(0, 20 - (distFromPlayer*20), 25 - (distFromPlayer*20), distFromPlayer);
-                        rect(DUNGEON_OFFSET_X - ((player.x - x) * SQUARE_SIZE), DUNGEON_OFFSET_Y - ((player.y - y) * SQUARE_SIZE), SQUARE_SIZE, SQUARE_SIZE);
-                        if (!board[x][y].visible && board[x][y].discovered) {
-                            fill(0, 0, 0, .6);
-                            rect(DUNGEON_OFFSET_X - ((player.x - x) * SQUARE_SIZE), DUNGEON_OFFSET_Y - ((player.y - y) * SQUARE_SIZE), SQUARE_SIZE, SQUARE_SIZE);
-                        }
-                    }
-                }
-            }
-        }
-    }
+							case STAIR_DOWN:
+								fill(72, 52, 173, distFromPlayer);
+								break;
+							default:
+								fill(255, 0, 0, distFromPlayer);
+								break;
+						}
+						rect(DUNGEON_OFFSET_X - ((player.x - x) * SQUARE_SIZE), DUNGEON_OFFSET_Y - ((player.y - y) * SQUARE_SIZE), SQUARE_SIZE, SQUARE_SIZE);
+					}
+					else {
+						// CODE FOR WHEN WE HAVE TEXTURES
+						image(board[x][y].texture, DUNGEON_OFFSET_X - ((player.x - x) * SQUARE_SIZE), DUNGEON_OFFSET_Y - ((player.y - y) * SQUARE_SIZE), SQUARE_SIZE, SQUARE_SIZE);
+						let distFromPlayer = 1 - map(dist(player.x, player.y, x, y) - 2, 0, PLAYER_VISION_RANGE, 1, 0);
+						fill(0, 20 - (distFromPlayer*20), 25 - (distFromPlayer*20), distFromPlayer);
+						rect(DUNGEON_OFFSET_X - ((player.x - x) * SQUARE_SIZE), DUNGEON_OFFSET_Y - ((player.y - y) * SQUARE_SIZE), SQUARE_SIZE, SQUARE_SIZE);
+						if (!board[x][y].visible && board[x][y].discovered) {
+							fill(0, 0, 0, .6);
+							rect(DUNGEON_OFFSET_X - ((player.x - x) * SQUARE_SIZE), DUNGEON_OFFSET_Y - ((player.y - y) * SQUARE_SIZE), SQUARE_SIZE, SQUARE_SIZE);
+						}
+					}
+				}
+			}
+		}
+	}
 
-    let fixOffset = function (player) {
-        let offx = CENTER_X - HALF_SQUARE_SIZE;
-        let offy = CENTER_Y - HALF_SQUARE_SIZE;
+	let fixOffset = function (player) {
+		let offx = CENTER_X - HALF_SQUARE_SIZE;
+		let offy = CENTER_Y - HALF_SQUARE_SIZE;
 
-        if (player.animation < NUMBER_MOVES) {
-            switch (player.animation) {
-                case UP:
-                    offy -= MOVE_OFFSET[player.animationCounter];
-                    break;
-                case RIGHT:
-                    offx += MOVE_OFFSET[player.animationCounter];
-                    break;
-                case DOWN:
-                    offy += MOVE_OFFSET[player.animationCounter];
+		if (player.animation < NUMBER_MOVES) {
+			switch (player.animation) {
+				case UP:
+					offy -= MOVE_OFFSET[player.animationCounter];
+					break;
+				case RIGHT:
+					offx += MOVE_OFFSET[player.animationCounter];
+					break;
+				case DOWN:
+					offy += MOVE_OFFSET[player.animationCounter];
                     break;
                 case LEFT:
                     offx -= MOVE_OFFSET[player.animationCounter];

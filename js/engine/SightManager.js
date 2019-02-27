@@ -20,7 +20,7 @@ function playerSightTriangle(board, octant, sx, sy, range){
 	while (x <= range) {
 		let curslope = slopeStart;
 		let y = floor(x * curslope);
-		while(curslope < slopeEnd){
+		while(curslope <= slopeEnd){
 			let inShadow = false;
 			for(let s of shadows){
 				if(curslope > s[0] && curslope < s[1]){
@@ -44,45 +44,39 @@ function playerSightTriangle(board, octant, sx, sy, range){
 				}
 				else{
 					let firstBlocked = [x,y];
-					let nextBlocked = cur;
-					nextBlocked.visible = true;
+					let lastBlocked = [x,y];
+					cur.visible = true;
+					let nextBlocked = getTranslatedSquare(board, octant, x, y + 1, sx, sy);
 					//nextBlocked.discovered = true;
-					while(nextBlocked !== undefined && nextBlocked.blocking && curslope < slopeEnd){
+					while(nextBlocked !== undefined && nextBlocked.blocking && curslope <= slopeEnd){
+						lastBlocked = [x, y];
+						nextBlocked.visible = true;
 						y++;
 						curslope = slope(x, y);
-						nextBlocked = getTranslatedSquare(board, octant, x, y, sx, sy);
-						if(nextBlocked !== undefined && curslope < slopeEnd){
-							nextBlocked.visible = true;
-							//nextBlocked.discovered = true;
-						}
-					}
-					// space bottom
-					if(firstBlocked[1] == 0){
-						slopeStart = slope(x,y+1);
-					}
-					else if(curslope >= slopeEnd){
-						slopeEnd = slope(firstBlocked[0] + 1, firstBlocked[1] - 1, 1, 0);
-					}
-					else {
-						let shadowStart = slope(firstBlocked[0] + 1, firstBlocked[1] - 1);
-						let shadowEnd = slope(x,y);
-						shadows.push([shadowStart, shadowEnd]);
+						nextBlocked = getTranslatedSquare(board, octant, x, y + 1, sx, sy);
 					}
 
-					//if(firstBlocked[1] != 0){
-					//	let	slopeEnd = slope(firstBlocked[0], firstBlocked[1] - .8);
-					//	ranges[0][1] = slopeEnd;
-					//	//slopeEnd = slope(firstBlocked[0], firstBlocked[1] - .8);
-					//	// let newSlopeEnd = slope(firstBlocked[0], firstBlocked[1]);
-					//	// playerSightTriangle(board, octant, newSlopeEnd, sx + x, sy - y + 1, range - x);
-					//}
-					//if(curslope < slopeEnd){
-					//	let	slopeStart = slope(x,y+1);
-					//	ranges[ranges.length - 1][0] = slopeStart;
-					//}
-					//else{
-					//	ranges.push(
-					//}
+
+					let upLeftSquare = getTranslatedSquare(board, octant, x - 1, y + 1, sx, sy);
+					//cornercase
+					if(firstBlocked[1] == 0){
+						if(upLeftSquare.blocking){
+							slopeStart = slope(upLeftSquare.x, upLeftSquare.y, 0, 1);
+							console.log("test");
+						}
+						else{
+							slopeStart = slope(lastBlocked[0], lastBlocked[1], 0, 1); 
+							console.log(slopeStart);
+						}
+					}
+					else if(y == x || (y == x - 1 && upLeftSquare.blocking)){
+						slopeEnd = slope(firstBlocked[0], firstBlocked[1], 1, 0);
+					}
+					else {
+						let shadowStart = slope(firstBlocked[0], firstBlocked[1], 1, 0);
+						let shadowEnd = (lastBlocked[0], lastBlocked[1], 0, 1)
+						shadows.push([shadowStart, shadowEnd]);
+					}
 				}
 			}
 			y++;
@@ -92,8 +86,8 @@ function playerSightTriangle(board, octant, sx, sy, range){
 	}
 }
 
-function slope(x, y, sx = 0, sy = 0){
-	return (y - sy - .5)/(x - sx + .5);
+function slope(x, y, offx = 0, offy = 0){
+	return (y + offy + .5)/(x + offx + .5);
 }
 
 function lineOfSight(board, sx, sy, ex, ey){
