@@ -79,7 +79,7 @@ function init() {
 }
 
 function draw() {
-	background(10, 10, 10);
+	background(0, 0, 0);
 	gm.display();
 }
 

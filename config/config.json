@@ -21,7 +21,7 @@
     },
     {
         "name": "PLAYER_VISION_RANGE",
-        "val": 27
+        "val": 18
     },
     {
         "name": "IDLE_LOOP_SPEED",
