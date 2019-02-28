@@ -61,5 +61,4 @@ function Player(pos, hp, str, mag, int) {
 			mob.visible = board[mob.x][mob.y].visible;
 		}
 	}
->>>>>>> sight-engine
 }
