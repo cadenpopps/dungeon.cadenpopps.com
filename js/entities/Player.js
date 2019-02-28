@@ -62,7 +62,10 @@ function Player(pos, hp, str, mag, int) {
 			}
 		}
 		else{
+			let startTime = millis();
 			playerSight(board, x, y);
+			let endTime = millis();
+			//console.log(endTime - startTime);
 		}
 
 		//        for (let i = constrainLow(x - CONFIG.PLAYER_VISION_RANGE, 0); i < constrainHigh(x + CONFIG.PLAYER_VISION_RANGE, CONFIG.DUNGEON_SIZE); i++) {

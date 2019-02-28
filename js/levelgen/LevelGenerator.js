@@ -54,15 +54,15 @@ function generateLevel(depth) {
 		board[stairUp.x][stairUp.y].squareType = STAIR_UP;
 		board[stairDown.x][stairDown.y].squareType = STAIR_DOWN;
 
-	    for (var i = 0; i < CONFIG.DUNGEON_SIZE; i++) {
-	    	for (let j = 0; j < CONFIG.DUNGEON_SIZE; j++) {
-	    		board[i][j] = new SquareBuilder(i, j);
-	    		board[i][j].squareType = FLOOR; 
-	    		if(oneIn(8)){
-	    			board[i][j].squareType = WALL; 
-	    		}
-	    	}
-	    }
+	   // for (var i = 0; i < CONFIG.DUNGEON_SIZE; i++) {
+	   // 	for (let j = 0; j < CONFIG.DUNGEON_SIZE; j++) {
+	   // 		board[i][j] = new SquareBuilder(i, j);
+	   // 		board[i][j].squareType = FLOOR; 
+	   // 		if(oneIn(25)){
+	   // 			board[i][j].squareType = WALL; 
+	   // 		}
+	   // 	}
+	   // }
 
 		makeSquares(board);
 
