@@ -1,9 +1,6 @@
 
-
-
 const DEBUG = true;
 const DEBUG_BOARD = false;
-var DEBUG_SIGHT = false;
 const SHOW_TEXTURES = true;
 const SUPER_POWERS = false;
 
@@ -73,7 +70,6 @@ function setup() {
 function init() {
 	gm = new GameManager();
 	document.addEventListener('contextmenu', function () {
-		console.log("test");
 		gm.clearInputs()
 	});
 }
@@ -88,9 +84,6 @@ function mousePressed() {
 }
 
 function keyDown() {
-	if(key == 'p'){
-		DEBUG_SIGHT = !DEBUG_SIGHT;
-	}
 	gm.input(ADD_KEY, key.toLowerCase());
 }
 

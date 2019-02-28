@@ -45,13 +45,7 @@ function Player(pos, hp, str, mag, int) {
 				board[i][j].visible = false;
 			}
 		}
-
-		//let startTime = millis();
 		playerSight(board, x, y);
-		//let time = millis() - startTime;
-		//if(time > 0){
-		//	console.log(time);
-		//}	
 	}
 
 
