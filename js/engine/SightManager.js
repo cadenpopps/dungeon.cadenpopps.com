@@ -4,11 +4,13 @@ function playerSight(board, x, y){
 	let px = x;
 	let py = y;
 	board[px][py].visible = true;
-	//board[px][py].discovered = true;
-	for(let octant = 0; octant < 1; octant ++){
+	board[px][py].discovered = true;
+	for(let octant = 0; octant < 8; octant ++){
 		playerSightTriangle(board, octant, px, py, CONFIG.PLAYER_VISION_RANGE);
 	}
 }
+
+var sightTimer = [];
 
 function playerSightTriangle(board, octant, sx, sy, range){
 	let x = 1;
@@ -16,90 +18,99 @@ function playerSightTriangle(board, octant, sx, sy, range){
 	let slopeEnd = 1;
 	let shadows = [];
 
-	while (x <= range && slopeStart < slopeEnd) {
-		let y = startSquare(x, slopeStart);
-		let curslope = slopeStart;
-		while(curslope <= slopeEnd){
-			let inShadow = false;
-			for(let s of shadows){
-				if(checkInShadow(x, y, s[0], s[1])){
-					inShadow = true;
-					break;
-				}
-			}
-			if(!inShadow){
-				let cur = getTranslatedSquare(board, octant, x, y, sx, sy); 
-				if(cur === undefined){
-					break;
-				}
-				else{
-					cur.visible = true;
-					//cur.discovered = true;
-					if(!cur.blocking){
-						// let above = getTranslatedSquare(board, octant, x, y+1, sx, sy);
-						// if(above !== undefined && above.blocking){
-						// 	//above.visible = true;
-						// 	//above.discovered = true;
-						// }
-					}
-					else{
-						let firstBlocked = {x:x, y:y};
-						let lastBlocked = getBlocked(board, octant, x, y, sx, sy, slopeEnd, cur);
-						lastBlocked = {x:lastBlocked.x - sx, y: sy - lastBlocked.y};
-
-						console.log(firstBlocked.x + "  " + firstBlocked.y + "       " + lastBlocked.x + "  "   + lastBlocked.y);
-
-						tempslope = slope(lastBlocked.x, lastBlocked.y, TOP_LEFT);
-						//let upLeftSquare = getTranslatedSquare(board, octant, x - 1, y + 1, sx, sy);
-						if(firstBlocked.y == 0 && tempslope >= slopeEnd){
-							slopeStart = 1;
-						}
-						else if(firstBlocked.y == 0){
-							slopeStart = slope(lastBlocked.x, lastBlocked.y, TOP_LEFT); 
-						}
-						else if(lastBlocked.y == x || tempslope >= slopeEnd){
-							slopeEnd = slope(firstBlocked.x, firstBlocked.y, BOTTOM_RIGHT);
-						}
-						else {
-							let shadowStart = slope(firstBlocked.x, firstBlocked.y, BOTTOM_RIGHT);
-							let shadowEnd = slope(lastBlocked.x, lastBlocked.y, TOP_LEFT);
-							shadows.push([shadowStart, shadowEnd]);
-						}
+	clearInterval(sightTimer[octant]);
+	sightTimer[octant] = undefined;
+	sightTimer[octant] = setInterval(function(){
+		if (x <= range && slopeStart < slopeEnd) {
+			let y = startSquare(x, slopeStart);
+			let curslope = slopeStart;
+			while(curslope <= slopeEnd){
+				let inShadow = false;
+				for(let s of shadows){
+					if(checkInShadow(x, y, s[0], s[1])){
+						inShadow = true;
 						break;
 					}
 				}
+				if(!inShadow){
+					let cur = getTranslatedSquare(board, octant, x, y, sx, sy); 
+					if(cur === undefined){
+						break;
+					}
+					else{
+						cur.visible = true;
+						cur.discovered = true;
+						if(!cur.blocking){
+							let above = getTranslatedSquare(board, octant, x, y + 1, sx, sy);
+							if(above !== undefined){
+								if(above.blocking){
+									above.visible = true;
+									above.discovered = true;
+								}
+								else if(!above.blocking){
+									above.discovered = true;
+								}
+							}
+						}
+						else{
+							let firstBlocked = {x:x, y:y};
+							let lastBlocked = getBlocked(board, octant, x, y, sx, sy, slopeEnd, firstBlocked);
+
+							console.log(firstBlocked.x + "  " + firstBlocked.y + "       " + lastBlocked.x + "  "   + lastBlocked.y);
+
+							tempslope = slope(lastBlocked.x, lastBlocked.y, TOP_LEFT);
+							//let upLeftSquare = getTranslatedSquare(board, octant, x - 1, y + 1, sx, sy);
+							if(firstBlocked.y == 0 && tempslope >= slopeEnd){
+								slopeStart = 1;
+							}
+							else if(firstBlocked.y == 0){
+								slopeStart = slope(lastBlocked.x, lastBlocked.y, TOP_LEFT); 
+							}
+								else if(lastBlocked.y == x || tempslope >= slopeEnd){
+								slopeEnd = slope(firstBlocked.x, firstBlocked.y, BOTTOM_RIGHT);
+							}
+							else {
+								let shadowStart = slope(firstBlocked.x, firstBlocked.y, BOTTOM_RIGHT);
+								let shadowEnd = slope(lastBlocked.x, lastBlocked.y, TOP_LEFT);
+								shadows.push([shadowStart, shadowEnd]);
+							}
+							break;
+						}
+					}
+				}
+				y++;
+				curslope = slope(x, y, CENTER_SQUARE); 
 			}
-			y++;
-			curslope = slope(x, y, NONE); 
+			x++;
 		}
-		x++;
-	}
+
+	}, 100);
 }
 
-const NONE = 0, TOP_LEFT = 1, BOTTOM_RIGHT = 2, UPPER_BOUND = 3, LOWER_BOUND = 4;
-const PERM = .5;
+const CENTER_SQUARE = 0, TOP_LEFT = 1, BOTTOM_RIGHT = 2, UPPER_BOUND = 3, LOWER_BOUND = 4;
+const PERM = .4;
 
 function slope(x, y, CORNER){
 	switch(CORNER){
-		case NONE:
+		case CENTER_SQUARE:
 			return y/x;
 		case TOP_LEFT:
 			if(x == 0){
 				return 2;
 			}
-			return (y + PERM)/(x - PERM);
+			return (y + .5)/(x - .5);
 		case BOTTOM_RIGHT:
+			return (y - .5)/(x + .5);
+		case UPPER_BOUND:
+			return (y + PERM)/(x - PERM);
+		case LOWER_BOUND:
 			return (y - PERM)/(x + PERM);
-			//case UPPER_BOUND:
-			//	return (y + .2)/(x - .2);
-			//case LOWER_BOUND:
-			//	return (y - .2)/(x + .2);
 	}
 	return 1;
 }
 
 function checkInShadow(x, y, s1, s2){
-	if(slope(x, y, NONE) > s1 && slope(x, y, NONE) <= s2) return true;
+	if(slope(x, y, UPPER_BOUND) > s1 && slope(x, y, UPPER_BOUND) < s2) return true;
 	return false;
 }
 
@@ -109,22 +120,22 @@ function startSquare(x, slopeStart){
 }
 
 function getBlocked(board, octant, x, y, sx, sy, end, lastBlocked){
-	let s = slope(x, y, TOP_LEFT);
-	let nextBlocked = lastBlocked; 
-	while(nextBlocked !== undefined && nextBlocked.blocking && s < end){
-		lastBlocked = nextBlocked;
-		lastBlocked.visible = true;
-		//nextBlocked.discovered = true;
+	let currentBlocked = getTranslatedSquare(board, octant, lastBlocked.x, lastBlocked.y, sx, sy); 
+	console.log(currentBlocked);
+	currentBlocked.visible = true;
+	while(currentBlocked !== undefined && currentBlocked.blocking && slope(lastBlocked.x, lastBlocked.y, CENTER_SQUARE) < end){
+		lastBlocked = {x:x, y:y};
+		currentBlocked.visible = true;
+		currentBlocked.discovered = true;
 
 		leftSquare = getTranslatedSquare(board, octant, x - 1, y, sx, sy);
 		if(leftSquare !== undefined && leftSquare.blocking) {
-			lastBlocked = getBlocked(board, octant, x - 1, y, sx, sy, end, leftSquare); 
+			lastBlocked = getBlocked(board, octant, x - 1, y, sx, sy, end, {x:x - 1, y:y}); 
 			break;
 		}
 		else{
 			y++;
-			s = slope(x, y, TOP_LEFT);
-			nextBlocked = getTranslatedSquare(board, octant, x, y + 1, sx, sy);
+			currentBlocked = getTranslatedSquare(board, octant, x, y, sx, sy);
 		}
 	}
 	return lastBlocked;
