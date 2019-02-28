@@ -109,12 +109,11 @@ function startSquare(x, slopeStart){
 }
 
 function getBlocked(board, octant, x, y, sx, sy, end, lastBlocked){
-	let s = slope(x, y, NONE);
+	let s = slope(x, y, TOP_LEFT);
 	let nextBlocked = lastBlocked; 
 	while(nextBlocked !== undefined && nextBlocked.blocking && s < end){
 		lastBlocked = nextBlocked;
-
-		nextBlocked.visible = true;
+		lastBlocked.visible = true;
 		//nextBlocked.discovered = true;
 
 		leftSquare = getTranslatedSquare(board, octant, x - 1, y, sx, sy);
@@ -124,7 +123,7 @@ function getBlocked(board, octant, x, y, sx, sy, end, lastBlocked){
 		}
 		else{
 			y++;
-			s = slope(x, y, NONE);
+			s = slope(x, y, TOP_LEFT);
 			nextBlocked = getTranslatedSquare(board, octant, x, y + 1, sx, sy);
 		}
 	}
