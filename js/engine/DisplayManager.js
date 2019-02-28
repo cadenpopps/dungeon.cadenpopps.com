@@ -118,7 +118,6 @@ function DisplayManager(square_size, vision, animation_stages) {
 		//drawY -= MOB_HEALTH_OFFSET_Y;
 		//drawX -= MOB_HEALTH_OFFSET_X;
 		let mobHealthBarLength = MOB_HEALTH_WIDTH * mob.healthPercent();
-		console.log(mobHealthBarLength);
 		rect(drawX, drawY, mobHealthBarLength, MOB_HEALTH_HEIGHT);
 	}
 
