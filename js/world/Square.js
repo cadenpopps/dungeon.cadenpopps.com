@@ -4,6 +4,7 @@ function Square(x, y, type) {
     this.y = y;
     this.squareType = type;
     this.squareCode = getSquareCode(this.x, this.y); 
+	this.blocking = true;
 
     this.visible = false;
     this.discovered = false;
@@ -32,6 +33,7 @@ WallSquare.prototype.walkable = function (mobs) {
 FloorSquare.prototype = Object.create(Square.prototype);
 function FloorSquare(x, y, loot) {
     Square.call(this, x, y, FLOOR);
+	this.blocking = false;
     this.texture = TEXTURES[FLOOR]
     this.loot = loot;
 }
@@ -52,6 +54,7 @@ DoorSquare.prototype.walkable = function (mobs, type) {
 }
 DoorSquare.prototype.open = function () {
     this.opened = true;
+	this.blocking = false;
     this.texture = TEXTURES[DOOR][OPEN]
 }
 
@@ -65,6 +68,7 @@ function StairSquare(x, y, up) {
     else {
         Square.call(this, x, y, STAIR_DOWN);
     }
+	this.blocking = false;
     this.up = up;
     this.down = !up;
 }

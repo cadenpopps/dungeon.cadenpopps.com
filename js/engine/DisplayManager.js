@@ -17,40 +17,46 @@ function DisplayManager(square_size, vision, animation_stages) {
 
     let MOVE_OFFSET = [3 * SQUARE_SIZE / 4, SQUARE_SIZE / 2, SQUARE_SIZE / 4, 0];
 
-    let CENTER_X = floor(width / 2);
-    let CENTER_Y = floor(height / 2);
+	let CENTER_X = floor(width / 2);
+	let CENTER_Y = floor(height / 2);
 
-    let PLAYER_OFF_X = CENTER_X - HALF_PLAYER_SIZE;
-    let PLAYER_OFF_Y = CENTER_Y - HALF_PLAYER_SIZE;
+	let PLAYER_OFF_X = CENTER_X - HALF_PLAYER_SIZE;
+	let PLAYER_OFF_Y = CENTER_Y - HALF_PLAYER_SIZE;
 
-    let DUNGEON_OFFSET_X = CENTER_X - HALF_SQUARE_SIZE;
-    let DUNGEON_OFFSET_Y = CENTER_Y - HALF_SQUARE_SIZE;
+	let DUNGEON_OFFSET_X = CENTER_X - HALF_SQUARE_SIZE;
+	let DUNGEON_OFFSET_Y = CENTER_Y - HALF_SQUARE_SIZE;
 
-    this._display = function (board, player, mobs) {
-        if (DEBUG_BOARD) {
-            drawDungeonDebug(board, player);
-        }
-        else {
-            drawDungeon(board, player);
-            drawMobs(mobs, player);
-            drawPlayer(player);
-        }
-    }
+	this._display = function (board, player, mobs) {
+		if (DEBUG_BOARD) {
+			drawDungeonDebug(board, player);
+		}
+		else {
+			drawDungeon(board, player);
+			drawMobs(mobs, player);
+			drawPlayer(player);
 
-    let drawPlayer = function (player) {
-        //TEMPORARY UNTIL WE HAVE ANIMATIONS
-        stroke(0, 0, 0);
-        fill(255, 20, 20);
+			stroke(255,0,0);
+			let r = 0;
+			for(let i = 0; i <= r; i++){
+				line(CENTER_X, CENTER_Y, CENTER_X + (SQUARE_SIZE * r), CENTER_Y - (SQUARE_SIZE * i), 3);
+			}
+		}
+	}
 
-        let xoff = 0;
-        let yoff = 0;
-        if (player.animation == IDLE) {
-            xoff = BOB_OFFSET_X[player.animationCounter];
-            yoff = BOB_OFFSET_Y[player.animationCounter];
-        }
+	let drawPlayer = function (player) {
+		//TEMPORARY UNTIL WE HAVE ANIMATIONS
+		stroke(0, 0, 0);
+		fill(255, 20, 20);
 
-        rect(PLAYER_OFF_X + xoff, PLAYER_OFF_Y + yoff, PLAYER_SIZE, PLAYER_SIZE);
-        strokeRect(PLAYER_OFF_X + xoff, PLAYER_OFF_Y + yoff, PLAYER_SIZE, PLAYER_SIZE);
+		let xoff = 0;
+		let yoff = 0;
+		if (player.animation == IDLE) {
+			xoff = BOB_OFFSET_X[player.animationCounter];
+			yoff = BOB_OFFSET_Y[player.animationCounter];
+		}
+
+		rect(PLAYER_OFF_X + xoff, PLAYER_OFF_Y + yoff, PLAYER_SIZE, PLAYER_SIZE);
+		strokeRect(PLAYER_OFF_X + xoff, PLAYER_OFF_Y + yoff, PLAYER_SIZE, PLAYER_SIZE);
 
 
         //CODE FOR WHEN WE HAVE SPRITES
@@ -123,12 +129,14 @@ function DisplayManager(square_size, vision, animation_stages) {
 
     let drawDungeon = function (board, player) {
         fixOffset(player);
-        for (let x = constrainLow(0, player.x - PLAYER_VISION_RANGE); x < constrainHigh(CONFIG.DUNGEON_SIZE, player.x + PLAYER_VISION_RANGE); x++) {
-            for (let y = constrainLow(0, player.y - PLAYER_VISION_RANGE); y < constrainHigh(CONFIG.DUNGEON_SIZE, player.y + PLAYER_VISION_RANGE); y++) {
+        //for (let x = constrainLow(0, player.x - PLAYER_VISION_RANGE); x < constrainHigh(CONFIG.DUNGEON_SIZE, player.x + PLAYER_VISION_RANGE); x++) {
+        //    for (let y = constrainLow(0, player.y - PLAYER_VISION_RANGE); y < constrainHigh(CONFIG.DUNGEON_SIZE, player.y + PLAYER_VISION_RANGE); y++) {
+        for (let x = 0; x < CONFIG.DUNGEON_SIZE; x++) {
+            for (let y =  0; y < CONFIG.DUNGEON_SIZE; y++) {
                 if (board[x][y].visible || board[x][y].discovered) {
                     if (!SHOW_TEXTURES) {
                         // TEMPORARY UNTIL WE HAVE TEXTURES
-                        let distFromPlayer = map(dist(player.x, player.y, x, y) - 2, 0, PLAYER_VISION_RANGE, 1, .1);
+                        let distFromPlayer = map(dist(player.x, player.y, x, y) - 2, 0, PLAYER_VISION_RANGE/2, 1, .1);
                         switch (board[x][y].squareType) {
                             case WALL:
                                 fill(45, 45, 45, distFromPlayer);
@@ -148,45 +156,46 @@ function DisplayManager(square_size, vision, animation_stages) {
                             case STAIR_UP:
                                 fill(71, 100, 193, distFromPlayer);
                                 break;
-                            case STAIR_DOWN:
-                                fill(72, 52, 173, distFromPlayer);
-                                break;
-                            default:
-                                fill(255, 0, 0, distFromPlayer);
-                                break;
-                        }
-                        rect(DUNGEON_OFFSET_X - ((player.x - x) * SQUARE_SIZE), DUNGEON_OFFSET_Y - ((player.y - y) * SQUARE_SIZE), SQUARE_SIZE, SQUARE_SIZE);
-                    }
-                    else {
-                        // CODE FOR WHEN WE HAVE TEXTURES
-                        image(board[x][y].texture, DUNGEON_OFFSET_X - ((player.x - x) * SQUARE_SIZE), DUNGEON_OFFSET_Y - ((player.y - y) * SQUARE_SIZE), SQUARE_SIZE, SQUARE_SIZE);
-                        let distFromPlayer = 1 - map(dist(player.x, player.y, x, y) - 2, 0, PLAYER_VISION_RANGE, 1, 0);
-                        fill(0, 0, 0, distFromPlayer);
-                        rect(DUNGEON_OFFSET_X - ((player.x - x) * SQUARE_SIZE), DUNGEON_OFFSET_Y - ((player.y - y) * SQUARE_SIZE), SQUARE_SIZE, SQUARE_SIZE);
-                        if (!board[x][y].visible && board[x][y].discovered) {
-                            fill(0, 0, 0, .6);
-                            rect(DUNGEON_OFFSET_X - ((player.x - x) * SQUARE_SIZE), DUNGEON_OFFSET_Y - ((player.y - y) * SQUARE_SIZE), SQUARE_SIZE, SQUARE_SIZE);
-                        }
-                    }
-                }
-            }
-        }
-    }
+							case STAIR_DOWN:
+								fill(72, 52, 173, distFromPlayer);
+								break;
+							default:
+								fill(255, 0, 0, distFromPlayer);
+								break;
+						}
+						rect(DUNGEON_OFFSET_X - ((player.x - x) * SQUARE_SIZE), DUNGEON_OFFSET_Y - ((player.y - y) * SQUARE_SIZE), SQUARE_SIZE, SQUARE_SIZE);
+					}
+					else {
+						// CODE FOR WHEN WE HAVE TEXTURES
+						image(board[x][y].texture, DUNGEON_OFFSET_X - ((player.x - x) * SQUARE_SIZE), DUNGEON_OFFSET_Y - ((player.y - y) * SQUARE_SIZE), SQUARE_SIZE, SQUARE_SIZE);
+						//let distFromPlayer = 1 - map(dist(player.x, player.y, x, y) - 2, 0, PLAYER_VISION_RANGE, 1, 0);
+						let distFromPlayer = 0;
+						fill(0, 20 - (distFromPlayer*20), 25 - (distFromPlayer*20), distFromPlayer);
+						rect(DUNGEON_OFFSET_X - ((player.x - x) * SQUARE_SIZE), DUNGEON_OFFSET_Y - ((player.y - y) * SQUARE_SIZE), SQUARE_SIZE, SQUARE_SIZE);
+						if (!board[x][y].visible && board[x][y].discovered) {
+							fill(0, 0, 0, .6);
+							rect(DUNGEON_OFFSET_X - ((player.x - x) * SQUARE_SIZE), DUNGEON_OFFSET_Y - ((player.y - y) * SQUARE_SIZE), SQUARE_SIZE, SQUARE_SIZE);
+						}
+					}
+				}
+			}
+		}
+	}
 
-    let fixOffset = function (player) {
-        let offx = CENTER_X - HALF_SQUARE_SIZE;
-        let offy = CENTER_Y - HALF_SQUARE_SIZE;
+	let fixOffset = function (player) {
+		let offx = CENTER_X - HALF_SQUARE_SIZE;
+		let offy = CENTER_Y - HALF_SQUARE_SIZE;
 
-        if (player.animation < NUMBER_MOVES) {
-            switch (player.animation) {
-                case UP:
-                    offy -= MOVE_OFFSET[player.animationCounter];
-                    break;
-                case RIGHT:
-                    offx += MOVE_OFFSET[player.animationCounter];
-                    break;
-                case DOWN:
-                    offy += MOVE_OFFSET[player.animationCounter];
+		if (player.animation < NUMBER_MOVES) {
+			switch (player.animation) {
+				case UP:
+					offy -= MOVE_OFFSET[player.animationCounter];
+					break;
+				case RIGHT:
+					offx += MOVE_OFFSET[player.animationCounter];
+					break;
+				case DOWN:
+					offy += MOVE_OFFSET[player.animationCounter];
                     break;
                 case LEFT:
                     offx -= MOVE_OFFSET[player.animationCounter];

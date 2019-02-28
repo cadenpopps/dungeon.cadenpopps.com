@@ -34,42 +34,52 @@ function generateLevel(depth) {
             sparseMaze(board);
             if (DEBUG) {
                 console.log("SPARSING DONE: " + i);
-            }
+			}
 
-            removeDetours(board);
-            if (DEBUG) {
-                console.log("REMOVE DONE: " + i);
-            }
-        }
+			removeDetours(board);
+			if (DEBUG) {
+				console.log("REMOVE DONE: " + i);
+			}
+		}
 
-        fixMaze(board);
-        if (DEBUG) {
-            console.log("FIXING MAZE DONE");
-        }
-
-
-        // console.log(stairUp);
-        // console.log(stairDown);
-
-        board[stairUp.x][stairUp.y].squareType = STAIR_UP;
-        board[stairDown.x][stairDown.y].squareType = STAIR_DOWN;
-
-        makeSquares(board);
+		fixMaze(board);
+		if (DEBUG) {
+			console.log("FIXING MAZE DONE");
+		}
 
 
-        // if (!findPath(board[STAIR_DOWN.x][STAIR_DOWN.y], board[stairUp.x][stairUp.y], board)) {
-        //     return createLevel(_stairUp, _floorNum);
-        // }
+		// console.log(stairUp);
+		// console.log(stairDown);
 
-        return new Level(board, stairUp, stairDown);
+		board[stairUp.x][stairUp.y].squareType = STAIR_UP;
+		board[stairDown.x][stairDown.y].squareType = STAIR_DOWN;
 
-    };
+	   // for (var i = 0; i < CONFIG.DUNGEON_SIZE; i++) {
+	   // 	for (let j = 0; j < CONFIG.DUNGEON_SIZE; j++) {
+	   // 		board[i][j] = new SquareBuilder(i, j);
+	   // 		board[i][j].squareType = FLOOR; 
+	   // 		if(oneIn(25)){
+	   // 			board[i][j].squareType = WALL; 
+	   // 		}
+	   // 	}
+	   // }
 
-    var initBoard = function () {
-        var board = new Array(CONFIG.DUNGEON_SIZE);
-        for (var i = 0; i < CONFIG.DUNGEON_SIZE; i++) {
-            board[i] = new Array(CONFIG.DUNGEON_SIZE);
-            for (let j = 0; j < CONFIG.DUNGEON_SIZE; j++) {
+		makeSquares(board);
+
+
+		// if (!findPath(board[STAIR_DOWN.x][STAIR_DOWN.y], board[stairUp.x][stairUp.y], board)) {
+		//     return createLevel(_stairUp, _floorNum);
+		// }
+
+		return new Level(board, stairUp, stairDown);
+
+	};
+
+	var initBoard = function () {
+		var board = new Array(CONFIG.DUNGEON_SIZE);
+		for (var i = 0; i < CONFIG.DUNGEON_SIZE; i++) {
+			board[i] = new Array(CONFIG.DUNGEON_SIZE);
+			for (let j = 0; j < CONFIG.DUNGEON_SIZE; j++) {
                 board[i][j] = new SquareBuilder(i, j);
             }
         }
