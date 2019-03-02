@@ -58,27 +58,28 @@ function DisplayManager(square_size, vision, animation_stages) {
 		rect(PLAYER_OFF_X + xoff, PLAYER_OFF_Y + yoff, PLAYER_SIZE, PLAYER_SIZE);
 		strokeRect(PLAYER_OFF_X + xoff, PLAYER_OFF_Y + yoff, PLAYER_SIZE, PLAYER_SIZE);
 
+		fill(0,0,0,.3);
+		rect(PLAYER_OFF_X + xoff + 2, PLAYER_OFF_Y + yoff - (PLAYER_SIZE/3), PLAYER_SIZE - 4, (PLAYER_SIZE/3));
+		//CODE FOR WHEN WE HAVE SPRITES
+		// image(player.sprite, PLAYER_OFF_X, PLAYER_OFF_Y, PLAYER_SIZE, PLAYER_SIZE);
+	}
 
-        //CODE FOR WHEN WE HAVE SPRITES
-        // image(player.sprite, PLAYER_OFF_X, PLAYER_OFF_Y, PLAYER_SIZE, PLAYER_SIZE);
-    }
+	let drawMobs = function (mobs, player) {
 
-    let drawMobs = function (mobs, player) {
-
-        //TEMPORARY UNTIL WE HAVE ANIMATIONS
-        stroke(0, 0, 0);
-        fill(0, 255, 0);
-        for (let m in mobs) {
-            let mob = mobs[m];
-            if (mob instanceof Player || !mob.visible) continue;
-            let xoff = 0;
-            let yoff = 0;
-            if (mob.animation == IDLE) {
-                xoff = BOB_OFFSET_X[mob.animationCounter];
-                yoff = BOB_OFFSET_Y[mob.animationCounter];
-            }
-            else if (mob.animation < IDLE && mob.animation >= 0) {
-                switch (mob.animation) {
+		//TEMPORARY UNTIL WE HAVE ANIMATIONS
+		stroke(0, 0, 0);
+		fill(0, 255, 0);
+		for (let m in mobs) {
+			let mob = mobs[m];
+			if (mob instanceof Player || !mob.visible) continue;
+			let xoff = 0;
+			let yoff = 0;
+			if (mob.animation == IDLE) {
+				xoff = BOB_OFFSET_X[mob.animationCounter];
+				yoff = BOB_OFFSET_Y[mob.animationCounter];
+			}
+			else if (mob.animation < IDLE && mob.animation >= 0) {
+				switch (mob.animation) {
                     case UP:
                         yoff += MOVE_OFFSET[mob.animationCounter];
                         break;
@@ -175,6 +176,12 @@ function DisplayManager(square_size, vision, animation_stages) {
 						if (!board[x][y].visible && board[x][y].discovered) {
 							fill(0, 0, 0, .6);
 							rect(DUNGEON_OFFSET_X - ((player.x - x) * SQUARE_SIZE), DUNGEON_OFFSET_Y - ((player.y - y) * SQUARE_SIZE), SQUARE_SIZE, SQUARE_SIZE);
+						}
+						if(y > 0 && board[x][y].blocking && board[x][y].visible && !board[x][y-1].blocking && board[x][y-1].visible){
+							fill(0,0,0,.2);
+							rect(DUNGEON_OFFSET_X - ((player.x - x) * SQUARE_SIZE), DUNGEON_OFFSET_Y - ((player.y - y) * SQUARE_SIZE) - (SQUARE_SIZE/3), SQUARE_SIZE, SQUARE_SIZE/3);
+						}
+						if(x == player.x && y == player.y && board[x][y].visible && board[x][y-1].visible){
 						}
 					}
 				}
