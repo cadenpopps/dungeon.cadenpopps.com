@@ -1,6 +1,6 @@
 function GameManager() {
-
-    let SQUARE_SIZE = 36;
+    
+	let SQUARE_SIZE = 36;
     let PLAYER_VISION_RANGE = CONFIG.PLAYER_VISION_RANGE;
     const ACTIVE_MOB_RANGE = PLAYER_VISION_RANGE + 2;
 

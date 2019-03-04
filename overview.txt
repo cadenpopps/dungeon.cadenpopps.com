@@ -1,8 +1,4 @@
-
-
-Character story to match game-play
-
-Not Implemented - 
+Ideas
     Player
         Inventory
         Combat
@@ -12,6 +8,9 @@ Not Implemented -
         More Square types
             Liquid
             Bookshelf
+			traps
+			hole
+			etc
         More Rooms
         Top level (overworld)
     Engine
@@ -48,19 +47,16 @@ Sounds
         Drip sound
 
 
-Loop - 50fps
+Idle loop runs all the time, updates animations
+	-idle animations update every 8 idle loops (CONFIG.IDLE_ANIMATION_SLOW_FACTOR)
+	-moves time foward???
+	-no turns occur
+	-idle animation can be interrupted by active animation (attack, move, ability, wait, etc)
 
-    Idle loop runs all the time, updates all animations
-        -idle animations update every 8 idle loops (CONFIG.IDLE_ANIMATION_SLOW_FACTOR)
-        -updates level
-        -moves time foward
-        -no turns occur
-        -idle animation can be interrupted by active animation (attack, move, ability, wait, etc)
-
-    Active loops updates player and mobs 
-        -represents a 'turn'
-        -runs when there is input to process
-        -can be queued via input queue
-        -turn speed is dictated by animation length, you may be able to get multiple turns during some enemy animations 
-
+Active loops updates player and mobs 
+	-represents a 'turn'
+	-updates level
+	-runs when there is input to process
+	-can be queued via input queue
+	-can't perform an action if your cooldown counter is > 0
 
