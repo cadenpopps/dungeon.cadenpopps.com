@@ -1,41 +1,39 @@
 function GameManager() {
-    
+
 	let SQUARE_SIZE = 36;
-    let PLAYER_VISION_RANGE = CONFIG.PLAYER_VISION_RANGE;
-    const ACTIVE_MOB_RANGE = PLAYER_VISION_RANGE + 2;
+	let PLAYER_VISION_RANGE = CONFIG.PLAYER_VISION_RANGE;
+	const ACTIVE_MOB_RANGE = PLAYER_VISION_RANGE + 2;
 
-    const ANIMATION_STAGES = CONFIG.ANIMATION_STAGES;
+	const ANIMATION_STAGES = CONFIG.ANIMATION_STAGES;
 
-    let undefined;
-    let idleAnimationCounter = 0;
-    let handleInputTimer = undefined;
+	let undefined;
+	let idleAnimationCounter = 0;
+	let handleInputTimer = undefined;
 
-    const dungeon = new Dungeon();
-    const player = new Player([dungeon.currentStairUp().x, dungeon.currentStairUp().y]);
+	const dungeon = new Dungeon();
+	const player = new Player([dungeon.currentStairUp().x, dungeon.currentStairUp().y]);
+	dungeon.currentMobs()[getSquareCode(player.x - 2, player.y - 2)] = new Mob([player.x - 2, player.y - 2]);
 
-    const dm = new DisplayManager(SQUARE_SIZE, PLAYER_VISION_RANGE, ANIMATION_STAGES);
-    const am = new AudioManager();
+	const dm = new DisplayManager(SQUARE_SIZE, PLAYER_VISION_RANGE, ANIMATION_STAGES);
+	const am = new AudioManager();
 
-    let looping = true;
-    let inputs = [];
-    const VALID_INPUTS = ['w', 'a', 's', 'd'];
+	let looping = true;
+	let inputs = [];
+	const VALID_INPUTS = ['w', 'a', 's', 'd'];
 
-    let aLoop = function (playerMoved) {
-        idleAnimationCounter = CONFIG.IDLE_DELAY;
-        updatePlayer(playerMoved);
-        setTimeout(() => {
-            updateMobs();
-        }, CONFIG.MOB_MOVE_DELAY);
-    }
+	let aLoop = function () {
+		idleAnimationCounter = CONFIG.IDLE_DELAY;
+		updateEntities();
+	}
 
-    let iLoop = function () {
-        if (looping) {
-            updateLevel();
-            updateAnimations();
-            if (inputs.length > 0) {
-                if (!player.busy && handleInputTimer == undefined) {
-                    handleInputTimer = setTimeout(() => {
-                        handleInputs();
+	let iLoop = function () {
+		if (looping) {
+			updateLevel();
+			updateAnimations();
+			if (inputs.length > 0) {
+				if (!player.busy && handleInputTimer == undefined) {
+					handleInputTimer = setTimeout(() => {
+						handleInputs();
                         handleInputTimer = undefined;
                     }, player.currentMoveDelay);
                 }
@@ -125,15 +123,12 @@ function GameManager() {
         }
     }
 
-    let updatePlayer = function (playerMoved) {
-        player.update(dungeon.currentBoard(), dungeon.currentMobs(), playerMoved);
-    }
-
-    let updateMobs = function () {
+    let updateEntities = function () {
+        player.update(dungeon.currentBoard(), dungeon.currentMobs());
         let mobs = dungeon.currentMobs()
         for (let m in mobs) {
             let mob = mobs[m];
-            if (!m instanceof Player && abs(player.x - mob.x) < ACTIVE_MOB_RANGE && abs(player.y - mob.y) < ACTIVE_MOB_RANGE) {
+            if (!(mob instanceof Player) && abs(player.x - mob.x) < ACTIVE_MOB_RANGE && abs(player.y - mob.y) < ACTIVE_MOB_RANGE) {
                 mob.update(dungeon.currentBoard(), dungeon.currentMobs(), player);
             }
         }

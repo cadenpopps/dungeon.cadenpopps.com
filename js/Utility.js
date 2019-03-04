@@ -90,20 +90,31 @@ function getNeighbors(board, square) {
 	return neighbors;
 }
 
+function direction(start, target){
+	if(abs(start[0] - target[0]) >= abs(start[1] - target[1])){
+		if(start[0] < target[0]) return RIGHT;
+		else if(start[0] > target[0]) return LEFT;
+	}
+	else{
+		if(start[1] < target[1]) return DOWN;
+		else if(start[1] > target[1]) return UP;
+	}
+}
+
 function dirToSquare(start, target){
-	if(abs(start.x - target.x) == 1 || abs(start.y - target.y) == 1){
-		if(start.x > target.x){
-			return LEFT;
-		}
-		else if(start.y > target.y){
-			return UP;
-		}
-		else if (start.x < target.x){
-			return RIGHT;
-		}
-		else if(start.y < target.y){
-			return DOWN;
-		}
+	console.log(start);	
+	console.log(target);
+	if(start.x > target.x){
+		return LEFT;
+	}
+	else if(start.y > target.y){
+		return UP;
+	}
+	else if (start.x < target.x){
+		return RIGHT;
+	}
+	else if(start.y < target.y){
+		return DOWN;
 	}
 }
 

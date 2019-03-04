@@ -17,52 +17,59 @@ function Entity(pos, hp = 3, str = 1, mag = 1, int = 1, speed = MEDIUM, animatio
     this.speed = speed;
 
     this.animations = animations;
-    if (this.animations == undefined) {
-        this.animations = CONFIG.DEFAULT_ANIMATIONS;
-    }
-    this.animationCounter = 0;
-    this.animation = IDLE;
-    this.sprite = this.animations[IDLE][this.animationCounter];
-    this.busy = false;
+	if (this.animations == undefined) {
+		this.animations = CONFIG.DEFAULT_ANIMATIONS;
+	}
+	this.animationCounter = 0;
+	this.animation = IDLE;
+	this.sprite = this.animations[IDLE][this.animationCounter];
+	this.busy = false;
 }
 
 Entity.prototype.update = function () {
-    // this.toString();
+	// this.toString();
 }
 
 Entity.prototype.move = function (dir, board, mobs) {
-    let status = 0;
-    switch (dir) {
-        case UP:
-            if (this.y > 0 && board[this.x][this.y - 1].walkable(mobs, this)) {
-                this.y--;
-                status = SUCCESS;
-            }
-            break;
-        case RIGHT:
-            if (this.x < CONFIG.DUNGEON_SIZE && board[this.x + 1][this.y].walkable(mobs, this)) {
-                this.x++;
-                status = SUCCESS;
-            }
-            break;
-        case DOWN:
-            if (this.y < CONFIG.DUNGEON_SIZE && board[this.x][this.y + 1].walkable(mobs, this)) {
-                this.y++;
-                status = SUCCESS;
-            }
-            break;
-        case LEFT:
-            if (this.x > 0 && board[this.x - 1][this.y].walkable(mobs, this)) {
-                this.x--;
-                status = SUCCESS;
-            }
+	let status = 0;
+	switch (dir) {
+		case UP:
+			if (this.y > 0 && board[this.x][this.y - 1].walkable(mobs, this)) {
+				delete mobs[getSquareCode(this.x, this.y)];
+				this.y--;
+				mobs[getSquareCode(this.x, this.y)] = this;
+				status = SUCCESS;
+			}
+			break;
+		case RIGHT:
+			if (this.x < CONFIG.DUNGEON_SIZE && board[this.x + 1][this.y].walkable(mobs, this)) {
+				delete mobs[getSquareCode(this.x, this.y)];
+				this.x++;
+				mobs[getSquareCode(this.x, this.y)] = this;
+				status = SUCCESS;
+			}
+			break;
+		case DOWN:
+			if (this.y < CONFIG.DUNGEON_SIZE && board[this.x][this.y + 1].walkable(mobs, this)) {
+				delete mobs[getSquareCode(this.x, this.y)];
+				this.y++;
+				mobs[getSquareCode(this.x, this.y)] = this;
+				status = SUCCESS;
+			}
+			break;
+		case LEFT:
+			if (this.x > 0 && board[this.x - 1][this.y].walkable(mobs, this)) {
+				delete mobs[getSquareCode(this.x, this.y)];
+				this.x--;
+				mobs[getSquareCode(this.x, this.y)] = this;
+				status = SUCCESS;
+			}
             break;
         default:
             console.log("No direction");
             break;
     }
     if (status != FAIL) {
-        this.updateMobs(mobs, dir);
         this.animation = dir;
         this.animationCounter = 0;
         this.busy = true;
@@ -88,7 +95,6 @@ Entity.prototype.updateMobs = function (mobs, dir) {
 			console.log("No direction");
 			break;
 	}
-	mobs[getSquareCode(this.x, this.y)] = this;
 }
 
 Entity.prototype.healthPercent = function(){

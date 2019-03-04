@@ -1,26 +1,20 @@
-
-var DESTINATION_X = 10;
-var DESTINATION_Y = 10;
-
 Player.prototype = Object.create(Entity.prototype);
 
 function Player(pos, hp, str, mag, int) {
-    Entity.call(this, pos, hp, str, mag, int);
+	Entity.call(this, pos, hp, str, mag, int);
 
-    this.currentMoveDelay = CONFIG.MAX_INPUT_DELAY;
+	this.currentMoveDelay = CONFIG.MAX_INPUT_DELAY;
 
-    this.visibleSquares = [];
+	this.visibleSquares = [];
 
 
-    this.update = function (board, mobs, playerMoved) {
-        if (playerMoved) {
-            updateBoardSight(board, this.x, this.y);
-            updateMobSight(board, mobs);
-        }
-    }
+	this.update = function (board, mobs) {
+		updateBoardSight(board, this.x, this.y);
+		updateMobSight(board, mobs);
+	}
 
-    this.move = function (dir, board, mobs) {
-        let status = Entity.prototype.move.call(this, dir, board, mobs);
+	this.move = function (dir, board, mobs) {
+		let status = Entity.prototype.move.call(this, dir, board, mobs);
 		if (status == SUCCESS) {
 			if (board[this.x][this.y].squareType == DOOR) {
 				board[this.x][this.y].open();
@@ -39,7 +33,6 @@ function Player(pos, hp, str, mag, int) {
 	}
 
 	let updateBoardSight = function (board, x, y) {
-
 		for (var i = 0; i < CONFIG.DUNGEON_SIZE; i++) {
 			for (var j = 0; j < CONFIG.DUNGEON_SIZE; j++) {
 				board[i][j].visible = false;

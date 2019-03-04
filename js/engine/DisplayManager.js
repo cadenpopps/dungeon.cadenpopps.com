@@ -181,8 +181,6 @@ function DisplayManager(square_size, vision, animation_stages) {
 							fill(0,0,0,.2);
 							rect(DUNGEON_OFFSET_X - ((player.x - x) * SQUARE_SIZE), DUNGEON_OFFSET_Y - ((player.y - y) * SQUARE_SIZE) - (SQUARE_SIZE/3), SQUARE_SIZE, SQUARE_SIZE/3);
 						}
-						if(x == player.x && y == player.y && board[x][y].visible && board[x][y-1].visible){
-						}
 					}
 				}
 			}
