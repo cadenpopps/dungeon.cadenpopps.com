@@ -9,6 +9,7 @@ function Player(pos, hp, str, mag, int) {
 
 
 	this.update = function (board, mobs) {
+		Entity.prototype.update.call(this, board, mobs);
 		updateBoardSight(board, this.x, this.y);
 		updateMobSight(board, mobs);
 	}
@@ -27,6 +28,18 @@ function Player(pos, hp, str, mag, int) {
 				else if (board[this.x][this.y].up) {
 					status = STAIR_UP;
 				}
+			}
+		}
+		return status;
+	}
+
+	this.attack = function(board, mobs){
+		let status = 0;
+		for(let m in mobs){
+			let mob = mobs[m];
+			if(abs(this.x - mob.x) <= 1 && abs(this.y - mob.y) <= 1 && !(mob instanceof Player)){
+				Entity.prototype.attack.call(this, mob);
+				status = SUCCESS;
 			}
 		}
 		return status;

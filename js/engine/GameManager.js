@@ -17,9 +17,8 @@ function GameManager() {
 	const dm = new DisplayManager(SQUARE_SIZE, PLAYER_VISION_RANGE, ANIMATION_STAGES);
 	const am = new AudioManager();
 
-	let looping = true;
 	let inputs = [];
-	const VALID_INPUTS = ['w', 'a', 's', 'd'];
+	const VALID_INPUTS = ['w', 'a', 's', 'd', '1'];
 
 	let aLoop = function () {
 		idleAnimationCounter = CONFIG.IDLE_DELAY;
@@ -27,39 +26,40 @@ function GameManager() {
 	}
 
 	let iLoop = function () {
-		if (looping) {
-			updateLevel();
-			updateAnimations();
-			if (inputs.length > 0) {
-				if (!player.busy && handleInputTimer == undefined) {
-					handleInputTimer = setTimeout(() => {
-						handleInputs();
-                        handleInputTimer = undefined;
-                    }, player.currentMoveDelay);
-                }
-            }
-        }
-    }
+		updateLevel();
+		updateAnimations();
+		idleUpdateEntities();
 
-    setInterval(() => {
-        iLoop();
-    }, CONFIG.IDLE_LOOP_SPEED);
+		//this has to be wrong...
+		if (inputs.length > 0) {
+			if (!player.busy && handleInputTimer == undefined) {
+				handleInputTimer = setTimeout(() => {
+					handleInputs();
+					handleInputTimer = undefined;
+				}, player.currentMoveDelay);
+			}
+		}
+	}
 
-    this.display = function () {
-        dm._display(dungeon.currentBoard(), player, dungeon.currentMobs());
-    }
+	setInterval(() => {
+		iLoop();
+	}, CONFIG.IDLE_LOOP_SPEED);
 
-    this.input = function (type, key, mouseY) {
-        if (type == ADD_KEY && inputs.length < 3 && !inputs.includes(key) && VALID_INPUTS.includes(key)) {
-            inputs.unshift(key);
-            if (handleInputTimer == undefined) {
-                handleInputs();
-            }
-        }
-        else if (type == REMOVE_KEY && inputs.includes(key)) {
-            inputs.splice(inputs.indexOf(key), 1);
-            if (inputs.length == 0) {
-                clearTimeout(handleInputTimer);
+	this.display = function () {
+		dm._display(dungeon.currentBoard(), player, dungeon.currentMobs());
+	}
+
+	this.input = function (type, key, mouseY) {
+		if (type == ADD_KEY && inputs.length < 3 && !inputs.includes(key) && VALID_INPUTS.includes(key)) {
+			inputs.unshift(key);
+			if (handleInputTimer == undefined) {
+				handleInputs();
+			}
+		}
+		else if (type == REMOVE_KEY && inputs.includes(key)) {
+			inputs.splice(inputs.indexOf(key), 1);
+			if (inputs.length == 0) {
+				clearTimeout(handleInputTimer);
                 resetMoveDelay();
                 handleInputTimer = undefined;
             }
@@ -99,6 +99,9 @@ function GameManager() {
                 case 'a':
                     returnCode = player.move(LEFT, dungeon.currentBoard(), dungeon.currentMobs());
                     break;
+                case '1':
+                    returnCode = player.attack(dungeon.currentBoard(), dungeon.currentMobs());
+                    break;
                 default:
                     console.log("Invalid input");
                     break;
@@ -114,43 +117,61 @@ function GameManager() {
             else if (returnCode == STAIR_DOWN) {
                 downLevel();
             }
-            else if (returnCode == STAIR_UP) {
-                upLevel();
-            }
-        }
-        else if (typeof inputs[0] == "object") {
-            inputs.splice(0, 1);
-        }
-    }
+			else if (returnCode == STAIR_UP) {
+				upLevel();
+			}
+		}
+		else if (typeof inputs[0] == "object") {
+			inputs.splice(0, 1);
+		}
+	}
 
-    let updateEntities = function () {
-        player.update(dungeon.currentBoard(), dungeon.currentMobs());
-        let mobs = dungeon.currentMobs()
-        for (let m in mobs) {
-            let mob = mobs[m];
-            if (!(mob instanceof Player) && abs(player.x - mob.x) < ACTIVE_MOB_RANGE && abs(player.y - mob.y) < ACTIVE_MOB_RANGE) {
-                mob.update(dungeon.currentBoard(), dungeon.currentMobs(), player);
-            }
-        }
-    }
+	let updateEntities = function () {
+		player.update(dungeon.currentBoard(), dungeon.currentMobs());
+		let mobs = dungeon.currentMobs()
+		for (let m in mobs) {
+			let mob = mobs[m];
+			if(mob.alive){
+				if (!(mob instanceof Player) && abs(player.x - mob.x) < ACTIVE_MOB_RANGE && abs(player.y - mob.y) < ACTIVE_MOB_RANGE) {
+					mob.update(dungeon.currentBoard(), dungeon.currentMobs(), player);
+				}
+			}
+		}
+	}
 
-    let updateLevel = function () {
+	let idleUpdateEntities = function () {
+		let mobs = dungeon.currentMobs()
+		for (let m in mobs) {
+			let mob = mobs[m];
+			if(mob.alive){
+			}
+			else if(!mob.alive && mob.deathCounter > 0){
+				mob.deathCounter--;
+			}
+			else{
+				delete mobs[m];
+			}
+		}
+	}
 
-    }
 
-    let updateAnimations = function () {
-        mobs = dungeon.currentMobs();
-        for (let m in mobs) {
-            let mob = mobs[m];
-            if (player.x - mob.x < ACTIVE_MOB_RANGE && player.y - mob.y < ACTIVE_MOB_RANGE) {
-                mob.animate(idleAnimationCounter);
-            }
-        }
-        idleAnimationCounter++;
-        if (idleAnimationCounter >= CONFIG.IDLE_ANIMATION_SLOW_FACTOR) idleAnimationCounter = 0;
-    }
+	let updateLevel = function () {
 
-    let downLevel = function () {
+	}
+
+	let updateAnimations = function () {
+		mobs = dungeon.currentMobs();
+		for (let m in mobs) {
+			let mob = mobs[m];
+			if (player.x - mob.x < ACTIVE_MOB_RANGE && player.y - mob.y < ACTIVE_MOB_RANGE) {
+				mob.animate(idleAnimationCounter);
+			}
+		}
+		idleAnimationCounter++;
+		if (idleAnimationCounter >= CONFIG.IDLE_ANIMATION_SLOW_FACTOR) idleAnimationCounter = 0;
+	}
+
+	let downLevel = function () {
         if (dungeon.currentLevelIndex < dungeon.levels.length - 1) {
             dm.levelChange();
             setTimeout(() => {

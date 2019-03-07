@@ -16,6 +16,9 @@ function Entity(pos, hp = 3, str = 1, mag = 1, int = 1, speed = MEDIUM, animatio
     this.intelligence = int;
     this.speed = speed;
 
+	this.deathCounter;
+	this.alive = true;
+
     this.animations = animations;
 	if (this.animations == undefined) {
 		this.animations = CONFIG.DEFAULT_ANIMATIONS;
@@ -23,11 +26,21 @@ function Entity(pos, hp = 3, str = 1, mag = 1, int = 1, speed = MEDIUM, animatio
 	this.animationCounter = 0;
 	this.animation = IDLE;
 	this.sprite = this.animations[IDLE][this.animationCounter];
+	this.cooldown = 0;
 	this.busy = false;
 }
 
 Entity.prototype.update = function () {
-	// this.toString();
+	this.updateState();
+}
+
+Entity.prototype.updateState = function(){
+	if(this.currentHealth <= 0) this.die();
+}
+
+Entity.prototype.die = function(){
+	this.deathCounter = 8;
+	this.alive = false;
 }
 
 Entity.prototype.move = function (dir, board, mobs) {
@@ -77,32 +90,17 @@ Entity.prototype.move = function (dir, board, mobs) {
     return status;
 }
 
-Entity.prototype.updateMobs = function (mobs, dir) {
-    switch (dir) {
-		case UP:
-			delete mobs[getSquareCode(this.x, this.y + 1)];
-			break;
-		case RIGHT:
-			delete mobs[getSquareCode(this.x - 1, this.y)];
-			break;
-		case DOWN:
-			delete mobs[getSquareCode(this.x, this.y - 1)];
-			break;
-		case LEFT:
-			delete mobs[getSquareCode(this.x + 1, this.y)];
-			break;
-		default:
-			console.log("No direction");
-			break;
-	}
-}
-
 Entity.prototype.healthPercent = function(){
 	return floor(this.currentHealth/this.health * 100) / 100;
 }
 
-Entity.prototype.attack = function () {
-	console.log("To implement");
+Entity.prototype.takeDamage = function(rawDamage = 0){
+	let finalDamage = constrainLow(rawDamage, 0);	
+	this.currentHealth -= rawDamage;
+}
+
+Entity.prototype.attack = function (target) {
+	target.takeDamage(this.strength);	
 }
 
 Entity.prototype.animate = function (idleTimer) {
@@ -117,11 +115,11 @@ Entity.prototype.animate = function (idleTimer) {
 	if (this.animationCounter < this.animations[this.animation].length) {
 		this.sprite = this.animations[this.animation][this.animationCounter];
 	}
-	else {
+	else{
 		this.animationCounter = 0;
         this.animation = IDLE;
         this.busy = false;
-    }
+	}
 }
 
 Entity.prototype.toString = function EntityToString() {
