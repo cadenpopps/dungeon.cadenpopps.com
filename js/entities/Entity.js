@@ -81,12 +81,12 @@ Entity.prototype.move = function (dir, board, mobs) {
             console.log("No direction");
             break;
     }
-    if (status != FAIL) {
-        this.animation = dir;
-        this.animationCounter = 0;
-        this.busy = true;
-    }
-    return status;
+	if (status != FAIL) {
+		this.animation = dir;
+		this.animationCounter = 0;
+		this.busy = true;
+	}
+	return status;
 }
 
 Entity.prototype.healthPercent = function(){
@@ -99,7 +99,9 @@ Entity.prototype.takeDamage = function(rawDamage = 0){
 }
 
 Entity.prototype.attack = function (target) {
-	target.takeDamage(this.strength);	
+	if(target.alive){
+		target.takeDamage(this.strength);	
+	}
 }
 
 Entity.prototype.animate = function (idleTimer) {
@@ -116,8 +118,8 @@ Entity.prototype.animate = function (idleTimer) {
 	}
 	else{
 		this.animationCounter = 0;
-        this.animation = IDLE;
-        this.busy = false;
+		this.animation = IDLE;
+		this.busy = false;
 	}
 }
 
