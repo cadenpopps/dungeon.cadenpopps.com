@@ -10,7 +10,6 @@ function Entity(pos, hp = 3, str = 1, mag = 1, int = 1, speed = MEDIUM, animatio
     this.y = pos[1];
     this.health = hp;
 	this.currentHealth = hp;
-	this.currentHealth -= 1;
     this.strength = str;
     this.magic = mag;
     this.intelligence = int;
