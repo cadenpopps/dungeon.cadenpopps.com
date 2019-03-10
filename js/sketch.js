@@ -55,6 +55,9 @@ function preload() {
     TEXTURES[DOOR] = [];
     TEXTURES[DOOR][OPEN] = loadImage('/img/textures/doorOpen.png');
     TEXTURES[DOOR][CLOSED] = loadImage('/img/textures/doorClosed.jpg');
+    TEXTURES[LOOT] = [];
+    TEXTURES[LOOT][OPEN] = loadImage('/img/textures/lootOpen.png');
+    TEXTURES[LOOT][CLOSED] = loadImage('/img/textures/lootClosed.png');
 
 
 }
