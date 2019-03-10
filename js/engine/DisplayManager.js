@@ -149,14 +149,14 @@ function DisplayManager(square_size, vision, animation_stages) {
                                 }
                                 break;
                             case DOOR:
-                                fill(90, 50, 30, distFromPlayer);
-                                if (!board[x][y].opened) {
-                                    fill(120, 80, 60, distFromPlayer);
-                                }
-                                break;
-                            case STAIR_UP:
-                                fill(71, 100, 193, distFromPlayer);
-                                break;
+								fill(90, 50, 30, distFromPlayer);
+								if (!board[x][y].opened) {
+									fill(120, 80, 60, distFromPlayer);
+								}
+								break;
+							case STAIR_UP:
+								fill(71, 100, 193, distFromPlayer);
+								break;
 							case STAIR_DOWN:
 								fill(72, 52, 173, distFromPlayer);
 								break;
@@ -168,7 +168,8 @@ function DisplayManager(square_size, vision, animation_stages) {
 					}
 					else {
 						// CODE FOR WHEN WE HAVE TEXTURES
-						image(board[x][y].texture, DUNGEON_OFFSET_X - ((player.x - x) * SQUARE_SIZE), DUNGEON_OFFSET_Y - ((player.y - y) * SQUARE_SIZE), SQUARE_SIZE, SQUARE_SIZE);
+						board[x][y].draw(DUNGEON_OFFSET_X - ((player.x - x) * SQUARE_SIZE), DUNGEON_OFFSET_Y - ((player.y - y) * SQUARE_SIZE), SQUARE_SIZE);
+						//image(board[x][y].texture, DUNGEON_OFFSET_X - ((player.x - x) * SQUARE_SIZE), DUNGEON_OFFSET_Y - ((player.y - y) * SQUARE_SIZE), SQUARE_SIZE, SQUARE_SIZE);
 						//let distFromPlayer = 1 - map(dist(player.x, player.y, x, y) - 2, 0, PLAYER_VISION_RANGE, 1, 0);
 						let distFromPlayer = 0;
 						fill(0, 20 - (distFromPlayer*20), 25 - (distFromPlayer*20), distFromPlayer);
