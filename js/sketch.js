@@ -2,15 +2,13 @@
 const DEBUG = true;
 const DEBUG_BOARD = false;
 const SHOW_TEXTURES = true;
-const SUPER_POWERS = false;
 
 const CONFIG = {};
 
 const ADD_KEY = 0, REMOVE_KEY = 1, MOUSE_CLICK = 2;
 // const MOUSE = 1;
 
-const OPEN = 0;
-const CLOSED = 1;
+const OPEN = 0, CLOSED = 1;
 
 var gm;
 var MUSIC = [];
@@ -27,13 +25,9 @@ function preload() {
     window.DOOR = CONFIG.SQUARE_CONSTANTS.door;
     window.STAIR_DOWN = CONFIG.SQUARE_CONSTANTS.stairDown;
     window.STAIR_UP = CONFIG.SQUARE_CONSTANTS.stairUp;
+    window.STAIR = CONFIG.SQUARE_CONSTANTS.stair;
     window.LOOT = CONFIG.SQUARE_CONSTANTS.loot;
     window.PILLAR = CONFIG.SQUARE_CONSTANTS.pillar;
-
-    if (SUPER_POWERS) {
-        CONFIG.MIN_MOVE_SPEED = 1;
-        CONFIG.MOVE_DELAY_DECREASE = .2;
-    }
 
     let pools = loadJSON('/config/roompool.json');
     CONFIG.ROOMPOOL = pools[0];
@@ -58,7 +52,9 @@ function preload() {
     TEXTURES[LOOT] = [];
     TEXTURES[LOOT][OPEN] = loadImage('/img/textures/lootOpen.png');
     TEXTURES[LOOT][CLOSED] = loadImage('/img/textures/lootClosed.png');
-
+    TEXTURES[STAIR] = [];
+    TEXTURES[STAIR][UP] = loadImage('/img/textures/stairUp.png');
+    TEXTURES[STAIR][DOWN] = loadImage('/img/textures/stairDown.png');
 
 }
 

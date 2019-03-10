@@ -16,6 +16,7 @@
             "stairDown": 3,
             "stairUp": 4,
             "loot": 5,
+            "stair": 6,
             "pillar": -10
         }
     },
