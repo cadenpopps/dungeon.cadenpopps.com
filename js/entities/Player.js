@@ -19,7 +19,7 @@ function Player(pos, hp, str, mag, int) {
 		if (status == SUCCESS) {
 			if (board[this.x][this.y].squareType == DOOR) {
 				board[this.x][this.y].open();
-				status = DOOR;
+				status = SUCCESS;
 			}
 			else if (board[this.x][this.y] instanceof StairSquare) {
 				if (board[this.x][this.y].down) {
@@ -39,7 +39,7 @@ function Player(pos, hp, str, mag, int) {
 			let mob = mobs[m];
 			if(abs(this.x - mob.x) <= 1 && abs(this.y - mob.y) <= 1 && !(mob instanceof Player)){
 				Entity.prototype.attack.call(this, mob);
-				status = SUCCESS;
+				status = ACTION_ATTACK;
 			}
 		}
 		return status;
