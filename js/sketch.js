@@ -79,16 +79,17 @@ function draw() {
 	gm.display();
 }
 
-function mousePressed() {
-	gm.mouse(mouseX, mouseY);
-}
-
 function keyDown() {
-	gm.input(ADD_KEY, key.toLowerCase());
+	gm.input(key.toLowerCase(), true);
 }
 
 function keyUp() {
-	gm.input(REMOVE_KEY, key.toLowerCase());
+	gm.input(key.toLowerCase(), false);
+}
+
+
+function mousePressed() {
+	gm.mouse(mouseX, mouseY);
 }
 
 function windowResized() {

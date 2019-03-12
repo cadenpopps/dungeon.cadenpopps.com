@@ -16,29 +16,33 @@ function GameManager() {
 
 	const dm = new DisplayManager(SQUARE_SIZE, PLAYER_VISION_RANGE, ANIMATION_STAGES);
 	const am = new AudioManager();
+	const im = new InputManager(dungeon, player);
 
-	let inputs = [];
-	const VALID_INPUTS = ['w', 'a', 's', 'd', '1'];
-
-	let aLoop = function () {
+	let aLoop = function (code) {
+		switch(code){
+			case ACTION_STAIR_DOWN:
+				downLevel();
+				break;
+			case ACTION_STAIR_UP:
+				upLevel();
+				break;
+			case ACTION_ATTACK:
+				console.log("Attack");
+			default:
+				break;
+		}
 		idleAnimationCounter = CONFIG.IDLE_DELAY;
 		updateEntities();
+	}
+
+	this.activeLoop = function(code){
+		aLoop(code);
 	}
 
 	let iLoop = function () {
 		updateLevel();
 		updateAnimations();
 		idleUpdateEntities();
-
-		//this has to be wrong...
-		if (inputs.length > 0) {
-			if (!player.busy && handleInputTimer == undefined) {
-				handleInputTimer = setTimeout(() => {
-					handleInputs();
-					handleInputTimer = undefined;
-				}, player.currentMoveDelay);
-			}
-		}
 	}
 
 	setInterval(() => {
@@ -49,81 +53,9 @@ function GameManager() {
 		dm._display(dungeon.currentBoard(), player, dungeon.currentMobs());
 	}
 
-	this.input = function (type, key, mouseY) {
-		if (type == ADD_KEY && inputs.length < 3 && !inputs.includes(key) && VALID_INPUTS.includes(key)) {
-			inputs.unshift(key);
-			if (handleInputTimer == undefined) {
-				handleInputs();
-			}
-		}
-		else if (type == REMOVE_KEY && inputs.includes(key)) {
-			inputs.splice(inputs.indexOf(key), 1);
-			if (inputs.length == 0) {
-				clearTimeout(handleInputTimer);
-                resetMoveDelay();
-                handleInputTimer = undefined;
-            }
-        }
-    }
-
-    this.clearInputs = function () {
-        inputs = [];
-        resetMoveDelay();
-        clearTimeout(handleInputTimer);
-        handleInputTimer = undefined;
-    }
-
-    let resetMoveDelay = function () {
-        player.currentMoveDelay = CONFIG.MAX_MOVE_DELAY;
-    }
-
-    let decreaseMoveDelay = function () {
-        if (player.currentMoveDelay != CONFIG.MIN_MOVE_DELAY) {
-            player.currentMoveDelay = floor(constrainLow(player.currentMoveDelay * CONFIG.MOVE_DELAY_DECREASE, CONFIG.MIN_MOVE_DELAY));
-        }
-    }
-
-    let handleInputs = function () {
-        if (typeof inputs[0] == "string") {
-            let returnCode = 0;
-            switch (inputs[0]) {
-                case 'w':
-                    returnCode = player.move(UP, dungeon.currentBoard(), dungeon.currentMobs());
-                    break;
-                case 'd':
-                    returnCode = player.move(RIGHT, dungeon.currentBoard(), dungeon.currentMobs());
-                    break;
-                case 's':
-                    returnCode = player.move(DOWN, dungeon.currentBoard(), dungeon.currentMobs());
-                    break;
-                case 'a':
-                    returnCode = player.move(LEFT, dungeon.currentBoard(), dungeon.currentMobs());
-                    break;
-                case '1':
-                    returnCode = player.attack(dungeon.currentBoard(), dungeon.currentMobs());
-                    break;
-                default:
-                    console.log("Invalid input");
-                    break;
-            }
-            if (inputs.length > 1) {
-                let newEnd = inputs.splice(0, 1)[0];
-                inputs.push(newEnd);
-            }
-            if (returnCode == SUCCESS || returnCode == DOOR) {
-                decreaseMoveDelay();
-                aLoop(true);
-            }
-            else if (returnCode == STAIR_DOWN) {
-                downLevel();
-            }
-			else if (returnCode == STAIR_UP) {
-				upLevel();
-			}
-		}
-		else if (typeof inputs[0] == "object") {
-			inputs.splice(0, 1);
-		}
+	this.input = function(key, pressed){
+		if(pressed) im.down(key);
+		else im.up(key);
 	}
 
 	let updateEntities = function () {
@@ -212,6 +144,6 @@ function GameManager() {
     }
 
     let _init = (function () {
-        aLoop(true);
+        aLoop();
     }());
 }
