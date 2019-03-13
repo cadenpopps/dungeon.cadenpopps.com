@@ -1,21 +1,25 @@
 
-function DisplayManager(square_size, vision, animation_stages) {
+DisplaySystem.prototype = Object.create(System.prototype);
+function DisplaySystem(square_size, vision, animation_stages) {
+	System.call(this);
 
-    let SQUARE_SIZE = square_size;
-    let HALF_SQUARE_SIZE = SQUARE_SIZE / 2;
+	let player;
 
-    let PLAYER_SIZE = floor(SQUARE_SIZE * .6);
-    let HALF_PLAYER_SIZE = PLAYER_SIZE / 2;
-    let PLAYER_VISION_RANGE = vision;
+	let SQUARE_SIZE = square_size;
+	let HALF_SQUARE_SIZE = SQUARE_SIZE / 2;
 
-    let MOB_SIZE = SQUARE_SIZE * .70;
-    let MOB_OFFSET = (SQUARE_SIZE - MOB_SIZE) / 2;
+	let PLAYER_SIZE = floor(SQUARE_SIZE * .6);
+	let HALF_PLAYER_SIZE = PLAYER_SIZE / 2;
+	let PLAYER_VISION_RANGE = vision;
+
+	let MOB_SIZE = SQUARE_SIZE * .70;
+	let MOB_OFFSET = (SQUARE_SIZE - MOB_SIZE) / 2;
 
 
-    let BOB_OFFSET_X = [0, SQUARE_SIZE / 20, 0, -SQUARE_SIZE / 20];
-    let BOB_OFFSET_Y = [0, SQUARE_SIZE / 30, 0, SQUARE_SIZE / 30];
+	let BOB_OFFSET_X = [0, SQUARE_SIZE / 20, 0, -SQUARE_SIZE / 20];
+	let BOB_OFFSET_Y = [0, SQUARE_SIZE / 30, 0, SQUARE_SIZE / 30];
 
-    let MOVE_OFFSET = [3 * SQUARE_SIZE / 4, SQUARE_SIZE / 2, SQUARE_SIZE / 4, 0];
+	let MOVE_OFFSET = [3 * SQUARE_SIZE / 4, SQUARE_SIZE / 2, SQUARE_SIZE / 4, 0];
 
 	let CENTER_X = floor(width / 2);
 	let CENTER_Y = floor(height / 2);
@@ -26,7 +30,8 @@ function DisplayManager(square_size, vision, animation_stages) {
 	let DUNGEON_OFFSET_X = CENTER_X - HALF_SQUARE_SIZE;
 	let DUNGEON_OFFSET_Y = CENTER_Y - HALF_SQUARE_SIZE;
 
-	this._display = function (board, player, mobs) {
+	this.run = function (board, player, mobs) {
+		background(0, 0, 0);
 		if (DEBUG_BOARD) {
 			drawDungeonDebug(board, player);
 		}

@@ -10,7 +10,6 @@ const ADD_KEY = 0, REMOVE_KEY = 1, MOUSE_CLICK = 2;
 
 const OPEN = 0, CLOSED = 1;
 
-var gm;
 var MUSIC = [];
 var TEXTURES = [];
 
@@ -59,31 +58,27 @@ function preload() {
 }
 
 function setup() {
-
 	createCanvas(windowWidth, windowHeight);
 
 	init();
-	loop();
 }
 
 function init() {
-	gm = new GameManager();
+	let ticksPerSecond = 50;
+	let e = new PoppsEngine(ticksPerSecond);
+	let systems = [];
+	systems[0] = new InputSystem();
+	systems[1] = new DisplaySystem();
+	e.init(systems);
 	document.addEventListener('contextmenu', function () {
 		gm.clearInputs()
 	});
 }
 
-function draw() {
-	background(0, 0, 0);
-	gm.display();
-}
-
 function keyDown() {
-	gm.input(key.toLowerCase(), true);
 }
 
 function keyUp() {
-	gm.input(key.toLowerCase(), false);
 }
 
 
