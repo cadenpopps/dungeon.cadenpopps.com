@@ -1,17 +1,15 @@
 const sys_error = 0, sys_ok = 1;
 function System(){
 	this.run = function(){return system_ok}
-	let objects = [];
-	let componentRequirements = [];
-	let player;
+	this.objects = [];
+	this.componentRequirements = [];
 
 	this.alert = function(object){
-		if(object instanceof Player) player = object;
-		let validObject = true;
-		for(let r of componentRequirements){
-			if(!object.components.includes(r)) validObject = false;
+		let valid = true;
+		for(let r of this.componentRequirements){
+			if(!object.components.includes(r)) valid = false;
 		}
-		if(validObject && !objects.includes(object)) objects.push(object);
-		else if(!validObject && objects.includes(object)) objects.splice(objects.indexOf(object), 1);
+		if(valid && !this.objects.includes(object)) this.objects.push(object);
+		else if(!valid && this.objects.includes(object)) this.objects.splice(this.objects.indexOf(object), 1);
 	}
 }

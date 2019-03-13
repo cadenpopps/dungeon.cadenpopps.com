@@ -5,28 +5,36 @@ const IDLE = 4;
 const NUMBER_MOVES = 4;
 const FAIL = 0, SUCCESS = 1;
 
-function Entity(pos, hp = 3, str = 1, mag = 1, int = 1, speed = MEDIUM, animations = undefined) {
-    this.x = pos[0];
-    this.y = pos[1];
-    this.health = hp;
-	this.currentHealth = hp;
-    this.strength = str;
-    this.magic = mag;
-    this.intelligence = int;
-    this.speed = speed;
+function Entity(x, y, hp = 3, str = 1, mag = 1, int = 1, speed = MEDIUM, animations = undefined) {
 
-	this.deathCounter;
-	this.alive = true;
+	let size = 1;
+	let texture = undefined;
 
-    this.animations = animations;
-	if (this.animations == undefined) {
-		this.animations = CONFIG.DEFAULT_ANIMATIONS;
-	}
-	this.animationCounter = 0;
-	this.animation = IDLE;
-	this.sprite = this.animations[IDLE][this.animationCounter];
-	this.cooldown = 0;
-	this.busy = false;
+	this.components = [component_position, component_display];
+	this.position = new PositionComponent(x, y);
+	this.display = new DisplayComponent(texture, size, size);
+
+    //this.x = pos[0];
+    //this.y = pos[1];
+    //this.health = hp;
+	//this.currentHealth = hp;
+    //this.strength = str;
+    //this.magic = mag;
+    //this.intelligence = int;
+    //this.speed = speed;
+
+	//this.deathCounter;
+	//this.alive = true;
+
+    //this.animations = animations;
+	//if (this.animations == undefined) {
+	//	this.animations = CONFIG.DEFAULT_ANIMATIONS;
+	//}
+	//this.animationCounter = 0;
+	//this.animation = IDLE;
+	//this.sprite = this.animations[IDLE][this.animationCounter];
+	//this.cooldown = 0;
+	//this.busy = false;
 }
 
 Entity.prototype.update = function () {

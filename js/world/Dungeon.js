@@ -1,23 +1,30 @@
-function Dungeon() {
-    this.currentLevelIndex = 0;
-    this.levels = [];
-    this.levels.push(generateLevel(0));
+function Dungeon(engine) {
+	this.currentLevelIndex = 0;
+	this.levels = [];
+	this.levels.push(generateLevel(engine, 0));
+
+	(function(engine, startPos){
+		let px = startPos.x;
+		let py = startPos.y;
+
+		engine.alertSystems(new Player(px, py));
+	})(engine, this.currentStairUp());
 }
 
 Dungeon.prototype.currentLevel = function () {
-    return this.levels[this.currentLevelIndex];
+	return this.levels[this.currentLevelIndex];
 }
 
 Dungeon.prototype.currentBoard = function () {
-    return this.levels[this.currentLevelIndex].board;
+	return this.levels[this.currentLevelIndex].board;
 }
 
 Dungeon.prototype.currentStairUp = function () {
-    return this.levels[this.currentLevelIndex].stairUp;
+	return this.levels[this.currentLevelIndex].stairUp;
 }
 
 Dungeon.prototype.currentStairDown = function () {
-    return this.levels[this.currentLevelIndex].stairDown;
+	return this.levels[this.currentLevelIndex].stairDown;
 }
 
 Dungeon.prototype.currentMobs = function () {

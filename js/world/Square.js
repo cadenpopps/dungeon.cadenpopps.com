@@ -1,11 +1,13 @@
 
 function Square(x, y, type) {
-	this.x = x;
-	this.y = y;
+	this.components = [component_position, component_display];
+	this.position = new PositionComponent(x, y);
+	this.display = new DisplayComponent(undefined, 1, 1);
+
+
 	this.squareType = type;
 	this.squareCode = getSquareCode(this.x, this.y); 
 	this.blocking = true;
-	this.textures = [];
 
 	this.visible = false;
 	this.discovered = false;
@@ -19,22 +21,11 @@ Square.prototype.mobHere = function (mobs) {
 	return this.squareCode in mobs;
 };
 
-Square.prototype.draw = function (x, y, size){
-	if(this.textures.length == 1){
-		image(this.textures[0], x, y, size, size);
-	}
-	else{
-		for(let t of this.textures){
-			image(t, x, y, size, size);
-		}
-	}
-}
-
 
 WallSquare.prototype = Object.create(Square.prototype);
 function WallSquare(x, y) {
 	Square.call(this, x, y, WALL);
-	this.textures.push(TEXTURES[WALL]);
+	this.display.texture = TEXTURES[WALL];
 }
 WallSquare.prototype.walkable = function (mobs) {
 	return false;
@@ -46,9 +37,9 @@ FloorSquare.prototype = Object.create(Square.prototype);
 function FloorSquare(x, y, loot) {
 	Square.call(this, x, y, FLOOR);
 	this.blocking = false;
-	this.textures.push(TEXTURES[FLOOR]);
-	this.loot = loot;
-	if(this.loot) this.textures.push(TEXTURES[LOOT][CLOSED]);
+	this.display.texture = TEXTURES[FLOOR];
+	//this.loot = loot;
+	//if(this.loot) this.display.texture = TEXTURES[LOOT][CLOSED];
 }
 FloorSquare.prototype.walkable = function (mobs) {
     return Square.prototype.walkable.call(this, mobs) && !this.loot;
@@ -59,7 +50,7 @@ FloorSquare.prototype.walkable = function (mobs) {
 DoorSquare.prototype = Object.create(Square.prototype);
 function DoorSquare(x, y) {
 	Square.call(this, x, y, DOOR);
-	this.textures.push(TEXTURES[DOOR][CLOSED]);
+	this.display.texture = TEXTURES[DOOR][CLOSED];
 	this.opened = false;
 }
 DoorSquare.prototype.walkable = function (mobs, type) {
@@ -68,8 +59,7 @@ DoorSquare.prototype.walkable = function (mobs, type) {
 DoorSquare.prototype.open = function () {
 	this.opened = true;
 	this.blocking = false;
-	this.textures.unshift(TEXTURES[FLOOR]);
-	this.textures[this.textures.indexOf(TEXTURES[DOOR][CLOSED])] = TEXTURES[DOOR][OPEN];
+	this.display.texture = TEXTURES[DOOR][OPEN];
 }
 
 
@@ -78,13 +68,11 @@ StairSquare.prototype = Object.create(Square.prototype);
 function StairSquare(x, y, up) {
 	if (up) {
 		Square.call(this, x, y, STAIR_UP);
-		this.textures.push(TEXTURES[FLOOR]);
-		this.textures.push(TEXTURES[STAIR][UP]);
+		this.display.texture = TEXTURES[STAIR][UP];
 	}
 	else {
 		Square.call(this, x, y, STAIR_DOWN);
-		this.textures.push(TEXTURES[FLOOR]);
-		this.textures.push(TEXTURES[STAIR][DOWN]);
+		this.display.texture = TEXTURES[STAIR][DOWN];
 	}
 	this.blocking = false;
 	this.up = up;

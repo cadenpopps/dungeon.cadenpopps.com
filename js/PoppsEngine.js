@@ -6,8 +6,7 @@ function PoppsEngine(tickrate) {
 
 	this.init = function(systemsList){
 		systems = systemsList;
-		let dungeon = new Dungeon();
-		alertAllSystems(new Player([0,0]));
+		let dungeon = new Dungeon(this);
 		setInterval(tick, TICKRATE);
 	}
 
@@ -17,7 +16,7 @@ function PoppsEngine(tickrate) {
 		}
 	}
 
-	let alertAllSystems = function(object){
+	this.alertSystems = function(object){
 		for(let s of systems){
 			s.alert(object);
 		}

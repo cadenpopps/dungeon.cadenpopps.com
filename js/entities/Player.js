@@ -1,7 +1,7 @@
 Player.prototype = Object.create(Entity.prototype);
 
-function Player(pos, hp, str, mag, int) {
-	Entity.call(this, pos, hp, str, mag, int);
+function Player(x, y, hp, str, mag, int) {
+	Entity.call(this, x, y, hp, str, mag, int);
 
 	this.currentMoveDelay = CONFIG.MAX_INPUT_DELAY;
 

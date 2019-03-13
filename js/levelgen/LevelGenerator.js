@@ -1,5 +1,5 @@
 
-function generateLevel(depth) {
+function generateLevel(engine, depth) {
 
     let rooms = [];
     let regions = [];
@@ -520,6 +520,7 @@ function generateLevel(depth) {
         for (var i = 0; i < CONFIG.DUNGEON_SIZE; i++) {
             for (let j = 0; j < CONFIG.DUNGEON_SIZE; j++) {
                 board[i][j] = board[i][j].copy();
+				engine.alertSystems(board[i][j]);
             }
         }
     };
