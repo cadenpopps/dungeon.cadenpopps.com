@@ -3,33 +3,17 @@ InputSystem.prototype = Object.create(System.prototype);
 function InputSystem(){
 	System.call(this);
 
-	let lastAction = "action_none";
+	let lastAction = action_none;
 	let player;
 
-	let key_to_action = {
-		w: "action_walk_up",
-		a: "action_walk_left",
-		s: "action_walk_down",
-		d: "action_walk_right",
-		e: "action_attack"
-	};
-
-	let action_priority = {
-		action_none: 0,
-		action_walk_up: 1,
-		action_walk_left: 1,
-		action_walk_down: 1,
-		action_walk_right: 1,
-		action_attack: 2
-	};
 
 	this.run = function(){
 		let action = determineAction();
-		if(action !== "action_none") assignPlayerAction(player, action);		
+		if(action !== action_none) assignPlayerAction(player, action);		
 	}
 
 	let determineAction = function(){
-		let action = "action_none";
+		let action = action_none;
 		if(keys.length > 0){
 			let highestPriority = action_priority[action];
 			for(let k of keys){

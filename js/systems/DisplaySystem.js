@@ -7,7 +7,52 @@ function DisplaySystem(square_size, vision, animation_stages) {
 	let camera = {
 		x: 0,
 		y: 0,
-		zoom: 1
+		zoom: 1.5
+	}
+
+	let CENTER_X = floor(width / 2);
+	let CENTER_Y = floor(height / 2);
+
+	let GRID_SIZE = 32;
+	let HALF_GRID_SIZE = GRID_SIZE / 2;
+
+	this.run = function () {
+		background(0, 0, 0);
+		for(let o of this.objects){
+			if(o.display.visible){
+				let x = CENTER_X - camera.zoom * (GRID_SIZE * (camera.x - o.position.x));
+				let y = CENTER_Y - camera.zoom * (GRID_SIZE * (camera.y - o.position.y));
+				let w = o.display.width * GRID_SIZE * camera.zoom;
+				let h = o.display.height * GRID_SIZE * camera.zoom;
+				if(o.animations !== undefined){
+					//let a = current animation
+					image(a, x, y, w, h);
+				}
+				else if(o.display.texture !== undefined){
+					let t = o.display.texture;
+					image(t, x, y, w, h);
+				}
+				else {
+					fill(255);
+					rect(x, y, w, h);
+				}
+			}
+		}
+	}
+
+	this.alert = function(object){
+		if(object instanceof Player){
+			camera.x = object.position.x;
+			camera.y = object.position.y;
+			this.objects.push(object);
+			return;
+		}
+		let valid = true;
+		for(let r of this.componentRequirements){
+			if(!object.components.includes(r)) valid = false;
+		}
+		if(valid && !this.objects.includes(object)) this.objects.push(object);
+		else if(!valid && this.objects.includes(object)) this.objects.splice(this.objects.indexOf(object), 1);
 	}
 
 	//let SQUARE_SIZE = square_size;
@@ -31,50 +76,6 @@ function DisplaySystem(square_size, vision, animation_stages) {
 	//
 	//	let DUNGEON_OFFSET_X = CENTER_X - HALF_SQUARE_SIZE;
 	//	let DUNGEON_OFFSET_Y = CENTER_Y - HALF_SQUARE_SIZE;
-
-	let CENTER_X = floor(width / 2);
-	let CENTER_Y = floor(height / 2);
-
-	let GRID_SIZE = 20;
-	let HALF_GRID_SIZE = GRID_SIZE / 2;
-
-	this.run = function () {
-		background(0, 0, 0);
-		for(let o of this.objects){
-			let x = CENTER_X - (GRID_SIZE * (camera.x - o.position.x));
-			let y = CENTER_Y - (GRID_SIZE * (camera.y - o.position.y));
-			let w = o.display.width * GRID_SIZE;
-			let h = o.display.height * GRID_SIZE;
-			if(o.display.texture == undefined && o.display.animations == undefined){
-				fill(255);
-				rect(x, y, w, h);
-			}
-			else if(o.display.animations == undefined){
-				let t = o.display.texture;
-				image(t, x, y, w, h);
-			}
-			else {
-				//let a = current animation
-				image(a, x, y, w, h);
-			}
-		}
-	}
-
-	this.alert = function(object){
-		if(object instanceof Player){
-			camera.x = object.position.x;
-			camera.y = object.position.y;
-			this.objects.push(object);
-			return;
-		}
-		let valid = true;
-		for(let r of this.componentRequirements){
-			if(!object.components.includes(r)) valid = false;
-		}
-		if(valid && !this.objects.includes(object)) this.objects.push(object);
-		else if(!valid && this.objects.includes(object)) this.objects.splice(this.objects.indexOf(object), 1);
-	}
-
 	//		if (DEBUG_BOARD) {
 	//			drawDungeonDebug(board, player);
 	//		}

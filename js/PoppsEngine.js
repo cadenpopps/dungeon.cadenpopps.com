@@ -1,4 +1,4 @@
-function PoppsEngine(tickrate) {
+function PoppsEngine(tickrate, config) {
 
 	const TICKRATE = floor(1000/tickrate);
 
@@ -21,7 +21,15 @@ function PoppsEngine(tickrate) {
 			s.alert(object);
 		}
 	}
+
+	this.message = function(message){
+		for(let s of message.recipients){
+			id_to_system[s].message(message.command);
+		}
+	}
 }
+
+
 
 //let SQUARE_SIZE = 36;
 //let PLAYER_VISION_RANGE = CONFIG.PLAYER_VISION_RANGE;

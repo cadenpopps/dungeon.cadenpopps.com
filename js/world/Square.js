@@ -4,12 +4,10 @@ function Square(x, y, type) {
 	this.position = new PositionComponent(x, y);
 	this.display = new DisplayComponent(undefined, 1, 1);
 
+	//this.squareType = type;
+	//this.squareCode = getSquareCode(this.x, this.y); 
 
-	this.squareType = type;
-	this.squareCode = getSquareCode(this.x, this.y); 
 	this.blocking = true;
-
-	this.visible = false;
 	this.discovered = false;
 }
 

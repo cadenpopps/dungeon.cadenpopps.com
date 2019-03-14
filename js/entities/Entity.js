@@ -12,7 +12,8 @@ function Entity(x, y, hp = 3, str = 1, mag = 1, int = 1, speed = MEDIUM, animati
 
 	this.components = [component_position, component_display];
 	this.position = new PositionComponent(x, y);
-	this.display = new DisplayComponent(texture, size, size);
+	this.display = new DisplayComponent(undefined, size, size);
+//	this.animations = new AnimationComponent(animations);
 
     //this.x = pos[0];
     //this.y = pos[1];
