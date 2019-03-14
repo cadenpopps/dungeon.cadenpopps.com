@@ -1,4 +1,8 @@
 
+//Events
+const event_game_start = 0, event_player_moved = 1;
+
+
 //Actions
 const action_none = -1, action_move_up = 0, action_move_right = 1, action_move_down = 2, action_move_left = 3, action_melee_attack = 4; 
 

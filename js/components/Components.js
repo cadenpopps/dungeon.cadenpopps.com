@@ -15,6 +15,7 @@ function DisplayComponent(texture, width, height){
 	this.width = width;
 	this.height = height;
 	this.visible = false;
+	this.discovered = false;
 }
 
 function AnimationComponent(animations){

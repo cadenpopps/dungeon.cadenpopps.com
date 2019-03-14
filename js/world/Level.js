@@ -1,4 +1,5 @@
 function Level(board, up, down) {
+	this.components = [];
     this.board = board;
     this.stairUp = up;
     this.stairDown = down;

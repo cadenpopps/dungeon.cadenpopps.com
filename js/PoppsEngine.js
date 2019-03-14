@@ -6,25 +6,30 @@ function PoppsEngine(tickrate, config) {
 
 	this.init = function(systemsList){
 		systems = systemsList;
-		let dungeon = new Dungeon(this);
-		setInterval(tick, TICKRATE);
+		startGame(this);
+		setInterval(tick.bind(this), TICKRATE);
 	}
 
 	let tick = function(){
 		for(let s of systems){
-			s.run();
+			s.run(this);
 		}
 	}
 
-	this.alertSystems = function(object){
+	let startGame = function(engine){
+		let dungeon = new Dungeon(engine);
+		engine.sendEvent({eventID:event_game_start});
+	}
+
+	this.updateObjects = function(object){
 		for(let s of systems){
-			s.alert(object);
+			s.updateObjects(object);
 		}
 	}
 
-	this.message = function(message){
-		for(let s of message.recipients){
-			id_to_system[s].message(message.command);
+	this.sendEvent = function(e){
+		for(let s of systems){
+			s.handleEvent(e);
 		}
 	}
 }

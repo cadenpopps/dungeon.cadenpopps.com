@@ -3,11 +3,6 @@ Player.prototype = Object.create(Entity.prototype);
 function Player(x, y, hp, str, mag, int) {
 	Entity.call(this, x, y, hp, str, mag, int);
 
-	this.currentMoveDelay = CONFIG.MAX_INPUT_DELAY;
-
-	this.visibleSquares = [];
-
-
 	this.update = function (board, mobs) {
 		Entity.prototype.update.call(this, board, mobs);
 		updateBoardSight(board, this.x, this.y);

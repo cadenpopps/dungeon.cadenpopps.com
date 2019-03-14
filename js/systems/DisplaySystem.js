@@ -16,10 +16,10 @@ function DisplaySystem(square_size, vision, animation_stages) {
 	let GRID_SIZE = 32;
 	let HALF_GRID_SIZE = GRID_SIZE / 2;
 
-	this.run = function () {
+	this.run = function(engine) {
 		background(0, 0, 0);
 		for(let o of this.objects){
-			if(o.display.visible){
+			if(o.display.visible || o.display.discovered){
 				let x = CENTER_X - camera.zoom * (GRID_SIZE * (camera.x - o.position.x));
 				let y = CENTER_Y - camera.zoom * (GRID_SIZE * (camera.y - o.position.y));
 				let w = o.display.width * GRID_SIZE * camera.zoom;
@@ -31,6 +31,10 @@ function DisplaySystem(square_size, vision, animation_stages) {
 				else if(o.display.texture !== undefined){
 					let t = o.display.texture;
 					image(t, x, y, w, h);
+					if(!o.display.visible && o.display.discovered){
+						fill(0,0,0,.5);
+						rect(x, y, w, h);
+					}
 				}
 				else {
 					fill(255);
@@ -40,19 +44,12 @@ function DisplaySystem(square_size, vision, animation_stages) {
 		}
 	}
 
-	this.alert = function(object){
+	this.updateObjects = function(object){
 		if(object instanceof Player){
 			camera.x = object.position.x;
 			camera.y = object.position.y;
-			this.objects.push(object);
-			return;
 		}
-		let valid = true;
-		for(let r of this.componentRequirements){
-			if(!object.components.includes(r)) valid = false;
-		}
-		if(valid && !this.objects.includes(object)) this.objects.push(object);
-		else if(!valid && this.objects.includes(object)) this.objects.splice(this.objects.indexOf(object), 1);
+		System.prototype.updateObjects.call(this, object);
 	}
 
 	//let SQUARE_SIZE = square_size;

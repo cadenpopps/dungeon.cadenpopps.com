@@ -69,6 +69,7 @@ function init() {
 	let systems = [];
 	systems[0] = new InputSystem();
 	systems[1] = new DisplaySystem();
+	systems[2] = new VisionSystem();
 	e.init(systems);
 	document.addEventListener('contextmenu', function () {
 		gm.clearInputs()

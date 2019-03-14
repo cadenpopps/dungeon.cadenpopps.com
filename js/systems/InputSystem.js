@@ -7,9 +7,9 @@ function InputSystem(){
 	let player;
 
 
-	this.run = function(){
+	this.run = function(engine){
 		let action = determineAction();
-		if(action !== action_none) assignPlayerAction(player, action);		
+		if(action !== action_none) assignPlayerAction(engine, player, action);		
 	}
 
 	let determineAction = function(){
@@ -28,12 +28,16 @@ function InputSystem(){
 		return action;
 	}
 
-	let assignPlayerAction = function(player, action){
+	let assignPlayerAction = function(engine, player, action){
 		player.nextAction = action;	
-		console.log(player);
+		//let e = {
+		//	eventID: event_player_moved,
+		//	data: action
+		//}
+		//engine.sendEvent(e);
 	}
 
-	this.alert = function(obj){
+	this.updateObjects = function(obj){
 		if(obj instanceof Player) player = obj;
 	}
 }
