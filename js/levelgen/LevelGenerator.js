@@ -1,51 +1,31 @@
 
-function generateLevel(engine, depth) {
+function generateLevel(engine, depth, prevStairDown) {
 
-    let rooms = [];
-    let regions = [];
-    let stairUp = createVector(0, 0);
-    let stairDown = createVector(0, 0);
+	let rooms = [];
+	let regions = [];
+	let stairUp = createVector(0, 0);
+	if(prevStairDown != undefined) { stairUp = prevStairDown; }
+	let stairDown = createVector(0, 0);
 
-    var createLevel = function (depth, stairUp) {
+	var createLevel = function (depth, stairUp) {
 
-        let board = initBoard(CONFIG.DUNGEON_SIZE);
+		let board = initBoard(CONFIG.DUNGEON_SIZE);
 
-        genStairs(board);
-        if (DEBUG) {
-            console.log("STAIRS DONE");
-        }
+		genStairs(board);
 
-        genRooms(board);
-        if (DEBUG) {
-            console.log("ROOMS DONE");
-        }
+		genRooms(board);
 
-        genMaze(board);
-        if (DEBUG) {
-            console.log("MAZE DONE");
-        }
+		genMaze(board);
 
         connectRegions(board);
-        if (DEBUG) {
-            console.log("CONNECTING REGIONS DONE");
-        }
 
         for (let i = 0; i < 3; i++) {
             sparseMaze(board);
-            if (DEBUG) {
-                console.log("SPARSING DONE: " + i);
-			}
 
 			removeDetours(board);
-			if (DEBUG) {
-				console.log("REMOVE DONE: " + i);
-			}
 		}
 
 		fixMaze(board);
-		if (DEBUG) {
-			console.log("FIXING MAZE DONE");
-		}
 
 
 		// console.log(stairUp);
@@ -54,15 +34,15 @@ function generateLevel(engine, depth) {
 		board[stairUp.x][stairUp.y].squareType = STAIR_UP;
 		board[stairDown.x][stairDown.y].squareType = STAIR_DOWN;
 
-	   // for (var i = 0; i < CONFIG.DUNGEON_SIZE; i++) {
-	   // 	for (let j = 0; j < CONFIG.DUNGEON_SIZE; j++) {
-	   // 		board[i][j] = new SquareBuilder(i, j);
-	   // 		board[i][j].squareType = FLOOR; 
-	   // 		if(oneIn(25)){
-	   // 			board[i][j].squareType = WALL; 
-	   // 		}
-	   // 	}
-	   // }
+		// for (var i = 0; i < CONFIG.DUNGEON_SIZE; i++) {
+		// 	for (let j = 0; j < CONFIG.DUNGEON_SIZE; j++) {
+		// 		board[i][j] = new SquareBuilder(i, j);
+		// 		board[i][j].squareType = FLOOR; 
+		// 		if(oneIn(25)){
+		// 			board[i][j].squareType = WALL; 
+		// 		}
+		// 	}
+		// }
 
 		makeSquares(board);
 
@@ -71,7 +51,7 @@ function generateLevel(engine, depth) {
 		//     return createLevel(_stairUp, _floorNum);
 		// }
 
-		return new Level(board, stairUp, stairDown);
+		return new Level(board, stairUp, stairDown, depth);
 
 	};
 
@@ -80,18 +60,16 @@ function generateLevel(engine, depth) {
 		for (var i = 0; i < CONFIG.DUNGEON_SIZE; i++) {
 			board[i] = new Array(CONFIG.DUNGEON_SIZE);
 			for (let j = 0; j < CONFIG.DUNGEON_SIZE; j++) {
-                board[i][j] = new SquareBuilder(i, j);
-            }
-        }
-        return board;
-    };
+				board[i][j] = new SquareBuilder(i, j);
+			}
+		}
+		return board;
+	};
 
-    var genDungeon = function () {
-        genStairs();
-        console.log("stairs done");
+	var genDungeon = function () {
+		genStairs();
 
-        genRooms();
-        console.log("rooms done");
+		genRooms();
 
         genMaze();
         console.log("maze done");
@@ -157,10 +135,6 @@ function generateLevel(engine, depth) {
         stairDown.x = stairDownLocation[0] + (floor(stairDownTemplate.width / 2));
         stairDown.y = stairDownLocation[1] + (floor(stairDownTemplate.height / 2));
 
-        if (DEBUG) {
-            console.log("STAIR UP: " + stairUp.x + " " + stairUp.y);
-            console.log("STAIR DOWN: " + stairDown.x + " " + stairDown.y);
-        }
 
     };
 

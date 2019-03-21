@@ -10,24 +10,28 @@ function Entity(x, y, hp = 3, str = 1, mag = 1, int = 1, speed = MEDIUM, animati
 	let size = 1;
 	let texture = undefined;
 
-	this.components = [component_position, component_display];
+	this.components = [component_position, component_direction, component_physical, component_display, component_actions];
 	this.position = new PositionComponent(x, y);
+	this.direction = new DirectionComponent();
+	this.physical = new PhysicalComponent(true, false, size);
 	this.display = new DisplayComponent(undefined, size, size);
-//	this.animations = new AnimationComponent(animations);
+	//	this.animations = new AnimationComponent(animations, this.position);
+	let defaultActions = [action_move_up, action_move_right, action_move_down, action_move_left, action_foward_attack, action_spin_attack];
+	this.actions = new ActionComponent(defaultActions);
 
-    //this.x = pos[0];
-    //this.y = pos[1];
-    //this.health = hp;
+	//this.x = pos[0];
+	//this.y = pos[1];
+	//this.health = hp;
 	//this.currentHealth = hp;
-    //this.strength = str;
-    //this.magic = mag;
-    //this.intelligence = int;
-    //this.speed = speed;
+	//this.strength = str;
+	//this.magic = mag;
+	//this.intelligence = int;
+	//this.speed = speed;
 
 	//this.deathCounter;
 	//this.alive = true;
 
-    //this.animations = animations;
+	//this.animations = animations;
 	//if (this.animations == undefined) {
 	//	this.animations = CONFIG.DEFAULT_ANIMATIONS;
 	//}

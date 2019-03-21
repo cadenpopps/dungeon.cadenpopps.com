@@ -2,36 +2,49 @@ function PoppsEngine(tickrate, config) {
 
 	const TICKRATE = floor(1000/tickrate);
 
-	let systems;
+	this.systems = [];
 
-	this.init = function(systemsList){
-		systems = systemsList;
-		startGame(this);
+	this.init = function(){
+		this.systems.push(new InputSystem());
+		this.systems.push(new DisplaySystem());
+		this.systems.push(new VisionSystem());
+		this.systems.push(new ActionSystem());
+		this.systems.push(new MovementSystem());
+		this.systems.push(new LevelSystem());
+		this.systems.push(new EntitySystem());
+
+		this.sendCommand({commandID:command_generate_level});
+		this.sendEvent({eventID:event_game_start});
+
 		setInterval(tick.bind(this), TICKRATE);
-	}
+	};
 
 	let tick = function(){
-		for(let s of systems){
+		for(let s of this.systems){
 			s.run(this);
 		}
 	}
 
-	let startGame = function(engine){
-		let dungeon = new Dungeon(engine);
-		engine.sendEvent({eventID:event_game_start});
-	}
-
 	this.updateObjects = function(object){
-		for(let s of systems){
+		for(let s of this.systems){
 			s.updateObjects(object);
 		}
 	}
 
 	this.sendEvent = function(e){
-		for(let s of systems){
+		for(let s of this.systems){
 			s.handleEvent(e);
 		}
 	}
+
+	this.sendCommand = function(c){
+		for(let s of this.systems){
+			s.handleCommand(this, c);
+		}
+	}
+
+
+	this.init();
 }
 
 

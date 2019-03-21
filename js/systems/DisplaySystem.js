@@ -3,12 +3,19 @@ DisplaySystem.prototype = Object.create(System.prototype);
 function DisplaySystem(square_size, vision, animation_stages) {
 	System.call(this);
 	this.componentRequirements = [component_position, component_display];
+	this.acceptedEvents = [event_player_moved, event_entity_failed_roll];
 
 	let camera = {
 		x: 0,
 		y: 0,
-		zoom: 1.5
+		shakeOffsetX : 0,
+		shakeOffsetY : 0,
+		zoom: CONFIG.CAMERA_DEFAULT_ZOOM 
 	}
+
+	let cameraZoomTimer = undefined;
+	let cameraMoveTimer = undefined;
+	let cameraShakeTimer = undefined;
 
 	let CENTER_X = floor(width / 2);
 	let CENTER_Y = floor(height / 2);
@@ -19,26 +26,28 @@ function DisplaySystem(square_size, vision, animation_stages) {
 	this.run = function(engine) {
 		background(0, 0, 0);
 		for(let o of this.objects){
-			if(o.display.visible || o.display.discovered){
-				let x = CENTER_X - camera.zoom * (GRID_SIZE * (camera.x - o.position.x));
-				let y = CENTER_Y - camera.zoom * (GRID_SIZE * (camera.y - o.position.y));
+			if(o.display.visible || o.display.discovered > 0){
+				let x = CENTER_X - camera.zoom * (GRID_SIZE * (camera.x + camera.shakeOffsetX - o.position.x));
+				let y = CENTER_Y - camera.zoom * (GRID_SIZE * (camera.y + camera.shakeOffsetY - o.position.y));
 				let w = o.display.width * GRID_SIZE * camera.zoom;
 				let h = o.display.height * GRID_SIZE * camera.zoom;
 				if(o.animations !== undefined){
+					//posiition = animation.position
 					//let a = current animation
 					image(a, x, y, w, h);
 				}
 				else if(o.display.texture !== undefined){
 					let t = o.display.texture;
 					image(t, x, y, w, h);
-					if(!o.display.visible && o.display.discovered){
-						fill(0,0,0,.5);
+					if(!o.display.visible && o.display.discovered > 0){
+						let opacity = 1 - (o.display.discovered/CONFIG.DISCOVERED_MAX) + .3;
+						fill(0,0,0, opacity);
 						rect(x, y, w, h);
 					}
 				}
 				else {
 					fill(255);
-					rect(x, y, w, h);
+					rect(x + (GRID_SIZE / 8), y+ (GRID_SIZE / 8), w - (GRID_SIZE / 4), h - (GRID_SIZE / 4));
 				}
 			}
 		}
@@ -50,6 +59,67 @@ function DisplaySystem(square_size, vision, animation_stages) {
 			camera.y = object.position.y;
 		}
 		System.prototype.updateObjects.call(this, object);
+	}
+
+	this.handleEvent = function(e){
+		if(this.acceptedEvents.includes(e.eventID)){
+			switch(e.eventID){
+				case event_player_moved:
+					centerCamera(camera, e.entity.position);
+					break;
+				case event_entity_failed_roll:
+					if(e.entity instanceof Player) shakeCamera(camera, 35, 1, .25);
+					break;
+			}
+		}
+	}
+
+	let centerCamera = function(camera, position){
+		camera.x = position.x;
+		camera.y = position.y;
+		//if(entity.position.x > camera.x){
+		//	camera.x = floor(camera.x * 40 + 1) / 40;
+		//	cameraMoveTimer = setTimeout(function(){moveCamera(camera, entity, direction)}, CONFIG.CAMERA_MOVE_SPEED);
+		//}
+		//else{
+		//	clearTimeout(cameraMoveTimer);
+		//}
+	}
+
+	let changeZoom = function(camera, speed, zoom){
+		if(zoom > camera.zoom + .01){
+			camera.zoom = floor(camera.zoom * 50 + 1) / 50;
+			cameraZoomTimer = setTimeout(function(){changeZoom(camera, speed,  zoom)}, speed);
+		}
+		else if(zoom < camera.zoom - .01){
+			camera.zoom = floor(camera.zoom * 50 - 1) / 50;
+			cameraZoomTimer = setTimeout(function(){changeZoom(camera, speed, zoom)}, speed);
+		}
+	}
+
+	let shakeCamera = function(camera, speed, shakeAmount, shakeDecreaseAmount){
+		clearTimeout(cameraShakeTimer);
+		if(shakeAmount > 0){
+			let xSign, ySign;
+
+			if(camera.shakeOffsetX == 0) xSign = random([-1, 1]);
+			else if(camera.shakeOffsetX > 0) xSign = random([1, -1, -1]);
+			else xSign = random([-1, 1, 1]);
+
+			if(camera.shakeOffsetY == 0) ySign = random([-1, 1]);
+			else if(camera.shakeOffsetY > 0) ySign = random([1, -1, -1]);
+			else ySign = random([-1, 1, 1]);
+
+			camera.shakeOffsetX = xSign * random(shakeAmount - (shakeDecreaseAmount/2), shakeAmount);
+			camera.shakeOffsetY = ySign * random(shakeAmount - (shakeDecreaseAmount/2), shakeAmount);
+
+			cameraShakeTimer = setTimeout(function(){shakeCamera(camera, speed, shakeAmount - shakeDecreaseAmount, shakeDecreaseAmount)}, speed);
+		}
+		else{
+			camera.shakeOffsetX = 0;
+			camera.shakeOffsetY = 0;
+			cameraShakeTimer = undefined;
+		}
 	}
 
 	//let SQUARE_SIZE = square_size;
@@ -70,8 +140,8 @@ function DisplaySystem(square_size, vision, animation_stages) {
 
 	//	let PLAYER_OFF_X = CENTER_X - HALF_PLAYER_SIZE;
 	//	let PLAYER_OFF_Y = CENTER_Y - HALF_PLAYER_SIZE;
-	//
-	//	let DUNGEON_OFFSET_X = CENTER_X - HALF_SQUARE_SIZE;
+//
+//	let DUNGEON_OFFSET_X = CENTER_X - HALF_SQUARE_SIZE;
 	//	let DUNGEON_OFFSET_Y = CENTER_Y - HALF_SQUARE_SIZE;
 	//		if (DEBUG_BOARD) {
 	//			drawDungeonDebug(board, player);

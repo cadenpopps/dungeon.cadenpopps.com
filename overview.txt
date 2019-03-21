@@ -1,3 +1,9 @@
+Zoom out on sprint
+Zoom in on combat
+
+hud on combat/sprint
+camera shake on event
+
 Ideas
     Player
         Inventory

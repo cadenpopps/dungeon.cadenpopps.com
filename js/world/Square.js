@@ -1,14 +1,9 @@
 
-function Square(x, y, type) {
-	this.components = [component_position, component_display];
+function Square(x, y, type, texture, solid, blocking) {
+	this.components = [component_position, component_display, component_physical];
 	this.position = new PositionComponent(x, y);
-	this.display = new DisplayComponent(undefined, 1, 1);
-
-	//this.squareType = type;
-	//this.squareCode = getSquareCode(this.x, this.y); 
-
-	this.blocking = true;
-	this.discovered = false;
+	this.display = new DisplayComponent(texture, 1, 1);
+	this.physical = new PhysicalComponent(solid, blocking, 1);
 }
 
 Square.prototype.walkable = function (mobs) {
@@ -22,60 +17,33 @@ Square.prototype.mobHere = function (mobs) {
 
 WallSquare.prototype = Object.create(Square.prototype);
 function WallSquare(x, y) {
-	Square.call(this, x, y, WALL);
-	this.display.texture = TEXTURES[WALL];
+	Square.call(this, x, y, WALL, TEXTURES[WALL], true, true);
 }
-WallSquare.prototype.walkable = function (mobs) {
-	return false;
-}
-
-
 
 FloorSquare.prototype = Object.create(Square.prototype);
-function FloorSquare(x, y, loot) {
-	Square.call(this, x, y, FLOOR);
-	this.blocking = false;
-	this.display.texture = TEXTURES[FLOOR];
-	//this.loot = loot;
-	//if(this.loot) this.display.texture = TEXTURES[LOOT][CLOSED];
+function FloorSquare(x, y) {
+	Square.call(this, x, y, FLOOR, TEXTURES[FLOOR], false, false);
 }
-FloorSquare.prototype.walkable = function (mobs) {
-    return Square.prototype.walkable.call(this, mobs) && !this.loot;
-}
-
-
 
 DoorSquare.prototype = Object.create(Square.prototype);
 function DoorSquare(x, y) {
-	Square.call(this, x, y, DOOR);
-	this.display.texture = TEXTURES[DOOR][CLOSED];
+	Square.call(this, x, y, DOOR, TEXTURES[DOOR][CLOSED], true, true);
 	this.opened = false;
-}
-DoorSquare.prototype.walkable = function (mobs, type) {
-	return (this.opened || (type instanceof Player)) && Square.prototype.walkable.call(this, mobs);
 }
 DoorSquare.prototype.open = function () {
 	this.opened = true;
-	this.blocking = false;
+	this.physical.solid = false;
+	this.physical.blocking = false;
 	this.display.texture = TEXTURES[DOOR][OPEN];
 }
-
-
 
 StairSquare.prototype = Object.create(Square.prototype);
 function StairSquare(x, y, up) {
 	if (up) {
-		Square.call(this, x, y, STAIR_UP);
-		this.display.texture = TEXTURES[STAIR][UP];
+		Square.call(this, x, y, STAIR_UP, TEXTURES[STAIR][UP], true, true);
 	}
 	else {
-		Square.call(this, x, y, STAIR_DOWN);
-		this.display.texture = TEXTURES[STAIR][DOWN];
+		Square.call(this, x, y, STAIR_UP, TEXTURES[STAIR][DOWN], true, true);
 	}
-	this.blocking = false;
 	this.up = up;
-	this.down = !up;
-}
-StairSquare.prototype.walkable = function (mobs, type) {
-	return (type instanceof Player) && Square.prototype.walkable.call(this, mobs);
 }

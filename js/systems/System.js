@@ -7,6 +7,8 @@ function System(){
 
 	this.events = [];
 	this.acceptedEvents = [];
+
+	this.acceptedCommands = [];
 }
 
 System.prototype.updateObjects = function(object){
@@ -28,3 +30,5 @@ System.prototype.handleEvent = function(e){
 		}
 	}
 }
+
+System.prototype.handleCommand = function(c){}

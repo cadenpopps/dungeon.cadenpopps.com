@@ -2,29 +2,44 @@
 VisionSystem.prototype = Object.create(System.prototype);
 function VisionSystem (){
 	System.call(this);
-	this.componentRequirements = [component_position, component_display];
+	this.componentRequirements = [component_position,component_physical, component_display];
 	this.acceptedEvents = [event_game_start, event_player_moved];
 
 	let player;
 	let board;
-	let needsUpdate = false;
 
 	this.run = function(engine){
-		if(needsUpdate){
-			console.log("test");
-			needsUpdate = false;
-			player.display.visible = true;
-			board[player.position.x][player.position.y].display.visible = true;
-			board[player.position.x][player.position.y].display.discovered = true;
-			for(let octant = 0; octant < 8; octant ++){
-				playerSightTriangle(board, octant, player.position.x, player.position.y, CONFIG.PLAYER_VISION_RANGE);
+
+	}
+
+	let vision = function(board, player){
+		for(let r of board){
+			for(let s of r){
+				s.display.visible = false;
+				if(s.display.discovered > 0){s.display.discovered--};
 			}
 		}
+		player.display.visible = true;
+		board[player.position.x][player.position.y].display.visible = true;
+		board[player.position.x][player.position.y].display.discovered = CONFIG.DISCOVER_MAX;
+		for(let octant = 0; octant < 8; octant ++){
+			playerSightTriangle(board, octant, player.position.x, player.position.y, CONFIG.PLAYER_VISION_RANGE);
+		}
+	}
+
+	this.updateObjects = function(object){
+		if(object instanceof Player){
+			player = object;
+		}
+		else if(object instanceof Level){
+			board = object.level.board;
+		}
+		System.prototype.updateObjects.call(this, object);
 	}
 
 	this.handleEvent = function(e){
 		if(this.acceptedEvents.includes(e.eventID)){
-			needsUpdate = true;
+			vision(board, player);
 		}
 	}
 
@@ -52,26 +67,26 @@ function VisionSystem (){
 					}
 					else{
 						cur.display.visible = true;
-						cur.display.discovered = true;
-						if(!cur.blocking){
+						cur.display.discovered = CONFIG.DISCOVERED_MAX;
+						if(!cur.physical.blocking){
 							let above = getTranslatedSquare(board, octant, x, y + 1, sx, sy);
 							if(above !== undefined){
-								if(above.blocking){
+								if(above.physical.blocking){
 									above.display.visible = true;
-									above.display.discovered = true;
+									above.display.discovered = CONFIG.DISCOVERED_MAX;
 								}
-								else if(!above.blocking){
-									above.discovered = true;
+								else if(!above.physical.blocking){
+									above.display.discovered = CONFIG.DISCOVERED_MAX;
 								}
 							}
 							let below = getTranslatedSquare(board, octant, x, y - 1, sx, sy);
 							if(below !== undefined){
-								if(below.blocking){
+								if(below.physical.blocking){
 									below.display.visible = true;
-									below.display.discovered = true;
+									below.display.discovered = CONFIG.DISCOVERED_MAX;
 								}
-								else if(!below.blocking){
-									below.display.discovered = true;
+								else if(!below.physical.blocking){
+									below.display.discovered = CONFIG.DISCOVERED_MAX;
 								}
 							}
 						}
@@ -126,14 +141,14 @@ function VisionSystem (){
 
 	let getBlocked = function(board, octant, x, y, sx, sy, end, lastBlocked){
 		let currentBlocked = getTranslatedSquare(board, octant, lastBlocked.x, lastBlocked.y, sx, sy); 
-		currentBlocked.visible = true;
-		currentBlocked.discovered = true;
-		while(currentBlocked !== undefined && currentBlocked.blocking && slope(lastBlocked.x, lastBlocked.y, CENTER_SQUARE) < end){
+		currentBlocked.display.visible = true;
+		currentBlocked.display.discovered = CONFIG.DISCOVERED_MAX;
+		while(currentBlocked !== undefined && currentBlocked.physical.blocking && slope(lastBlocked.x, lastBlocked.y, CENTER_SQUARE) < end){
 			lastBlocked = {x:x, y:y};
-			currentBlocked.visible = true;
-			currentBlocked.discovered = true;
+			currentBlocked.display.visible = true;
+			currentBlocked.display.discovered = CONFIG.DISCOVERED_MAX;
 			leftSquare = getTranslatedSquare(board, octant, x - 1, y, sx, sy);
-			if(leftSquare !== undefined && leftSquare.blocking) {
+			if(leftSquare !== undefined && leftSquare.physical.blocking) {
 				lastBlocked = getBlocked(board, octant, x - 1, y, sx, sy, end, {x:x - 1, y:y}); 
 				break;
 			}
@@ -174,14 +189,5 @@ function VisionSystem (){
 		return[ x * xxcomp[octant] + y * xycomp[octant], x * yxcomp[octant] + y * yycomp[octant]];
 	}
 
-	this.updateObjects = function(object){
-		if(object instanceof Player){
-			player = object;
-		}
-		else if(object instanceof Level){
-			board = object.board;
-		}
-		System.prototype.updateObjects.call(this, object);
-	}
 
 }

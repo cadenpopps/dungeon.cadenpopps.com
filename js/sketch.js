@@ -47,13 +47,13 @@ function preload() {
     TEXTURES[WALL] = loadImage('/img/textures/wall0.jpg');
     TEXTURES[DOOR] = [];
     TEXTURES[DOOR][OPEN] = loadImage('/img/textures/doorOpen.png');
-    TEXTURES[DOOR][CLOSED] = loadImage('/img/textures/doorClosed.jpg');
-    TEXTURES[LOOT] = [];
-    TEXTURES[LOOT][OPEN] = loadImage('/img/textures/lootOpen.png');
-    TEXTURES[LOOT][CLOSED] = loadImage('/img/textures/lootClosed.png');
-    TEXTURES[STAIR] = [];
-    TEXTURES[STAIR][UP] = loadImage('/img/textures/stairUp.png');
-    TEXTURES[STAIR][DOWN] = loadImage('/img/textures/stairDown.png');
+	TEXTURES[DOOR][CLOSED] = loadImage('/img/textures/doorClosed.jpg');
+	TEXTURES[LOOT] = [];
+	TEXTURES[LOOT][OPEN] = loadImage('/img/textures/lootOpen.png');
+	TEXTURES[LOOT][CLOSED] = loadImage('/img/textures/lootClosed.png');
+	TEXTURES[STAIR] = [];
+	TEXTURES[STAIR][UP] = loadImage('/img/textures/stairUp.png');
+	TEXTURES[STAIR][DOWN] = loadImage('/img/textures/stairDown.png');
 
 }
 
@@ -66,11 +66,6 @@ function setup() {
 function init() {
 	let ticksPerSecond = 50;
 	let e = new PoppsEngine(ticksPerSecond);
-	let systems = [];
-	systems[0] = new InputSystem();
-	systems[1] = new DisplaySystem();
-	systems[2] = new VisionSystem();
-	e.init(systems);
 	document.addEventListener('contextmenu', function () {
 		gm.clearInputs()
 	});

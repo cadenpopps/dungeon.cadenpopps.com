@@ -1,32 +1,9 @@
 Player.prototype = Object.create(Entity.prototype);
-
 function Player(x, y, hp, str, mag, int) {
 	Entity.call(this, x, y, hp, str, mag, int);
 
-	this.update = function (board, mobs) {
-		Entity.prototype.update.call(this, board, mobs);
-		updateBoardSight(board, this.x, this.y);
-		updateMobSight(board, mobs);
-	}
-
-	this.move = function (dir, board, mobs) {
-		let status = Entity.prototype.move.call(this, dir, board, mobs);
-		if (status == SUCCESS) {
-			if (board[this.x][this.y].squareType == DOOR) {
-				board[this.x][this.y].open();
-				status = SUCCESS;
-			}
-			else if (board[this.x][this.y] instanceof StairSquare) {
-				if (board[this.x][this.y].down) {
-					status = STAIR_DOWN;
-				}
-				else if (board[this.x][this.y].up) {
-					status = STAIR_UP;
-				}
-			}
-		}
-		return status;
-	}
+	this.components.push(component_sprint);
+	this.sprint = new SprintComponent(2);
 
 	this.attack = function(board, mobs){
 		let status = 0;
