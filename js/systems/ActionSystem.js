@@ -17,20 +17,12 @@ function ActionSystem (){
 			}
 			else if(o.actions.nextAction != action_none){
 				switch(o.actions.nextAction){
-					case action_move_up:
-						moveCommand(engine, action_move_up, o);
-						break;
-					case action_move_right:
-						moveCommand(engine, action_move_right, o);
-						break;
-					case action_move_down:
-						moveCommand(engine, action_move_down, o);
-						break;
-					case action_move_left:
-						moveCommand(engine, action_move_left, o);
+					case action_move_up: case action_move_right: case action_move_down: case action_move_left:
+						moveCommand(engine, o, o.actions.nextAction);
 						break;
 					case action_roll:
-						rollCommand(engine, action_move_left, o);
+						console.log(action_roll + o.direction.direction);
+						rollCommand(engine, o, direction_to_action[action_roll + o.direction.direction]);
 						break;
 				}
 				o.actions.nextAction = action_none;
@@ -39,14 +31,14 @@ function ActionSystem (){
 	}
 
 
-	let moveCommand = function(engine, action, object){
+	let moveCommand = function(engine, object, action){
 		object.actions.lastAction = action;
 		engine.sendCommand({commandID: command_move_entity, "entity": object, "direction": action});
 	}
 
-	let rollCommand = function(engine, action, object){
+	let rollCommand = function(engine, object, action){
 		object.actions.lastAction = action;
-		engine.sendCommand({commandID: command_roll_entity, "entity": object});
+		engine.sendCommand({commandID: command_roll_entity, "entity": object, "direction": action});
 	}
 
 	this.handleEvent = function(e){
@@ -56,7 +48,7 @@ function ActionSystem (){
 					addCooldowns(action_move, e.entity);
 					break;
 				case event_entity_sprinted:
-					addCooldowns(action_move_sprint, e.entity);
+					addCooldowns(action_sprint, e.entity);
 					break;
 				case event_entity_rolled:
 					addCooldowns(action_roll, e.entity);

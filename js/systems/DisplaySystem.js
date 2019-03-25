@@ -14,7 +14,6 @@ function DisplaySystem(square_size, vision, animation_stages) {
 	}
 
 	let cameraZoomTimer = undefined;
-	let cameraMoveTimer = undefined;
 	let cameraShakeTimer = undefined;
 
 	let CENTER_X = floor(width / 2);
@@ -26,15 +25,27 @@ function DisplaySystem(square_size, vision, animation_stages) {
 	this.run = function(engine) {
 		background(0, 0, 0);
 		for(let o of this.objects){
+			if(o instanceof Player && o.animation.animation != animation_idle) { 
+				centerCamera(camera, o.position, o.animation.offsetX, o.animation.offsetY); 
+				// if(o.animation.animation == animation_idle){ cameraMoving = false; }
+				// else{ centerCamera(camera, o.position, o.animation) };
+			}
 			if(o.display.visible || o.display.discovered > 0){
 				let x = CENTER_X - camera.zoom * (GRID_SIZE * (camera.x + camera.shakeOffsetX - o.position.x));
 				let y = CENTER_Y - camera.zoom * (GRID_SIZE * (camera.y + camera.shakeOffsetY - o.position.y));
 				let w = o.display.width * GRID_SIZE * camera.zoom;
 				let h = o.display.height * GRID_SIZE * camera.zoom;
-				if(o.animations !== undefined){
-					//posiition = animation.position
-					//let a = current animation
-					image(a, x, y, w, h);
+				if(o.components.includes(component_animation)){
+					x += GRID_SIZE * o.animation.offsetX;
+					y += GRID_SIZE * o.animation.offsetY;
+					let s = o.animation.sprite;
+					if(s == undefined){
+						fill(255);
+						rect(x + (GRID_SIZE / 8), y+ (GRID_SIZE / 8), w - (GRID_SIZE / 4), h - (GRID_SIZE / 4));
+					}
+					else{
+						image(a, x, y, w, h);
+					}
 				}
 				else if(o.display.texture !== undefined){
 					let t = o.display.texture;
@@ -49,24 +60,19 @@ function DisplaySystem(square_size, vision, animation_stages) {
 					fill(255);
 					rect(x + (GRID_SIZE / 8), y+ (GRID_SIZE / 8), w - (GRID_SIZE / 4), h - (GRID_SIZE / 4));
 				}
+
 			}
 		}
 	}
 
 	this.updateObjects = function(object){
-		if(object instanceof Player){
-			camera.x = object.position.x;
-			camera.y = object.position.y;
-		}
+		if(object instanceof Player){ centerCamera(camera, object.position); }
 		System.prototype.updateObjects.call(this, object);
 	}
 
 	this.handleEvent = function(e){
 		if(this.acceptedEvents.includes(e.eventID)){
 			switch(e.eventID){
-				case event_player_moved:
-					centerCamera(camera, e.entity.position);
-					break;
 				case event_entity_failed_roll:
 					if(e.entity instanceof Player) shakeCamera(camera, 35, 1, .25);
 					break;
@@ -74,9 +80,9 @@ function DisplaySystem(square_size, vision, animation_stages) {
 		}
 	}
 
-	let centerCamera = function(camera, position){
-		camera.x = position.x;
-		camera.y = position.y;
+	let centerCamera = function(camera, position, offsetX = 0, offsetY = 0){
+		camera.x = position.x + offsetX;
+		camera.y = position.y + offsetY;
 		//if(entity.position.x > camera.x){
 		//	camera.x = floor(camera.x * 40 + 1) / 40;
 		//	cameraMoveTimer = setTimeout(function(){moveCamera(camera, entity, direction)}, CONFIG.CAMERA_MOVE_SPEED);

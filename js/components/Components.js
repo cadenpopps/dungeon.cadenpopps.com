@@ -7,7 +7,7 @@ function PositionComponent(x, y){
 }
 
 function DirectionComponent(){
-	this.direction = DOWN;
+	this.direction = direction_down;
 }
 
 function PhysicalComponent(solid, blocking, size){
@@ -28,8 +28,13 @@ function DisplayComponent(texture, width, height){
 	this.discovered = 0;
 }
 
-function AnimationComponent(animations, position){
-
+function AnimationComponent(animations){
+	this.offsetX = 0;
+	this.offsetY = 0;
+	this.stage = 0;
+	this.sprite = undefined;
+	this.animation = animation_idle;
+	this.animations = animations;
 }
 
 function ActionComponent(actions){

@@ -12,6 +12,7 @@ function PoppsEngine(tickrate, config) {
 		this.systems.push(new MovementSystem());
 		this.systems.push(new LevelSystem());
 		this.systems.push(new EntitySystem());
+		this.systems.push(new AnimationSystem());
 
 		this.sendCommand({commandID:command_generate_level});
 		this.sendEvent({eventID:event_game_start});

@@ -37,7 +37,7 @@ function MovementSystem(){
 					move(engine, board, c.entity, c.direction, this.objects);
 					break;
 				case command_roll_entity:
-					roll(engine, board, c.entity, this.objects);
+					roll(engine, board, c.entity, c.direction, this.objects);
 					break;
 			}
 		}
@@ -73,7 +73,6 @@ function MovementSystem(){
 			if(entity.components.includes(component_sprint) && !entity.sprint.sprinting) {
 				if(entity.sprint.moveCounter == entity.sprint.moveThreshold){
 					entity.sprint.sprinting = true;
-					engine.sendEvent({"eventID": event_player_startSprint});
 				}
 				else{
 					entity.sprint.moveCounter++;
@@ -95,7 +94,7 @@ function MovementSystem(){
 		}
 	}
 
-	let roll = function(engine, board, entity, objects){
+	let roll = function(engine, board, entity, direction, objects){
 		let t1 = {
 			x: entity.position.x,
 			y: entity.position.y
@@ -104,20 +103,20 @@ function MovementSystem(){
 			y: entity.position.y
 		}
 
-		switch (entity.direction.direction) {
-			case direction_up:
+		switch (direction) {
+			case action_roll_up:
 				t1.y -= 2;
 				t2.y -= 1;
 				break;
-			case direction_right:
+			case action_roll_right:
 				t1.x += 2;
 				t2.x += 1;
 				break;
-			case direction_down:
+			case action_roll_down:
 				t1.y += 2;
 				t2.y += 1;
 				break;
-			case direction_left:
+			case action_roll_left:
 				t1.x -= 2;
 				t2.x -= 1;
 				break;

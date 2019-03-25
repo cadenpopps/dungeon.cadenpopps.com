@@ -1,7 +1,7 @@
 [
     {
         "name": "DUNGEON_SIZE",
-        "val": 65
+        "val": 45
     },
     {
 		"name": "ROOM_TRIES",
@@ -22,7 +22,7 @@
 	},
 	{
 		"name": "DISCOVERED_MAX",
-		"val": 400
+		"val": 600
 	},
 	{
 		"name": "CAMERA_MOVE_SPEED",
@@ -45,8 +45,8 @@
 		"val": 18
 	},
 	{
-		"name": "IDLE_LOOP_SPEED",
-		"val": 20
+		"name": "ANIMATION_SPEED",
+		"val": 1
 	},
 	{
 		"name": "IDLE_ANIMATION_SLOW_FACTOR",
@@ -61,70 +61,7 @@
         "val": 100
     },
     {
-        "name": "INPUT_DELAY",
-        "val": 160
-    },
-    {
-        "name": "INPUT_DELAY_SLOW",
-        "val": 300
-    },
-    {
-        "name": "INPUT_DELAY_FAST",
-        "val": 105
-    },
-    {
-        "name": "INPUT_DELAY_SPRINT",
-        "val": 65
-    },
-    {
-        "name": "MAX_MOVE_DELAY",
-        "val": 130
-    },
-    {
-        "name": "MIN_MOVE_DELAY",
-        "val": 12
-    },
-    {
-        "name": "MOVE_DELAY_DECREASE",
-        "val": 0.72
-    },
-    {
         "name": "LEVEL_CHANGE_ANIMATION_TIME",
         "val": 500
-    },
-    {
-        "name": "DEFAULT_ANIMATIONS",
-        "val": [
-            [
-                0,
-                0,
-                0,
-                0
-            ],
-            [
-                0,
-                0,
-                0,
-                0
-            ],
-            [
-                0,
-                0,
-                0,
-                0
-            ],
-            [
-                0,
-                0,
-                0,
-                0
-            ],
-            [
-                0,
-                0,
-                0,
-                0
-            ]
-        ]
     }
 ]
