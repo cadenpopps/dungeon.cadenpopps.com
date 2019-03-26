@@ -1,21 +1,15 @@
 
-const UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
-const SLOW = 1, MEDIUM = 2, FAST = 3;
-const IDLE = 4;
-const NUMBER_MOVES = 4;
-const FAIL = 0, SUCCESS = 1;
-
-function Entity(x, y, hp = 3, str = 1, mag = 1, int = 1, speed = MEDIUM, animations = undefined) {
+function Entity(x, y, hp = 3, str = 1, mag = 1, int = 1, animations = undefined) {
 
 	let size = 1;
 	let texture = undefined;
 
-	this.components = [component_position, component_direction, component_physical, component_display, component_actions];
+	this.components = [component_position, component_direction, component_physical, component_display, component_actions, component_animation];
 	this.position = new PositionComponent(x, y);
 	this.direction = new DirectionComponent();
 	this.physical = new PhysicalComponent(true, false, size);
 	this.display = new DisplayComponent(undefined, size, size);
-	//	this.animations = new AnimationComponent(animations, this.position);
+	this.animation = new AnimationComponent(animations);
 	let defaultActions = [action_move_up, action_move_right, action_move_down, action_move_left, action_foward_attack, action_spin_attack];
 	this.actions = new ActionComponent(defaultActions);
 

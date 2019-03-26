@@ -14,39 +14,95 @@ var MUSIC = [];
 var TEXTURES = [];
 
 function preload() {
-    let settings = loadJSON('/config/config.json');
-    for (let s of settings) {
-        CONFIG[s.name] = s.val;
-    }
+	let settings = loadJSON('/config/config.json');
+	for (let s of settings) {
+		CONFIG[s.name] = s.val;
+	}
 
-    window.FLOOR = CONFIG.SQUARE_CONSTANTS.floor;
-    window.WALL = CONFIG.SQUARE_CONSTANTS.wall;
-    window.DOOR = CONFIG.SQUARE_CONSTANTS.door;
-    window.STAIR_DOWN = CONFIG.SQUARE_CONSTANTS.stairDown;
-    window.STAIR_UP = CONFIG.SQUARE_CONSTANTS.stairUp;
-    window.STAIR = CONFIG.SQUARE_CONSTANTS.stair;
-    window.LOOT = CONFIG.SQUARE_CONSTANTS.loot;
-    window.PILLAR = CONFIG.SQUARE_CONSTANTS.pillar;
+	CONFIG.DEFAULT_ANIMATIONS = {};
+	CONFIG.DEFAULT_ANIMATIONS[animation_idle] = [
+		{ox: 0, oy: 0, sprite: undefined},
+		{ox: 0, oy: 0, sprite: undefined}, 
+		{ox: 0, oy: 0, sprite: undefined}, 
+		{ox: 0, oy: 0, sprite: undefined}
+	];
+	CONFIG.DEFAULT_ANIMATIONS[animation_move_up] = [
+		{ox: 0, oy: .75, sprite: undefined}, 
+		{ox: 0, oy: .5,  sprite: undefined}, 
+		{ox: 0, oy: .25, sprite: undefined}, 
+		{ox: 0, oy: 0,   sprite: undefined}
+	];
+	CONFIG.DEFAULT_ANIMATIONS[animation_move_right] = [
+		{ox: -.75, oy: 0, sprite: undefined}, 
+		{ox: -.5, oy: 0, sprite: undefined}, 
+		{ox: -.25, oy: 0, sprite: undefined}, 
+		{ox: 0, oy: 0, sprite: undefined}
+	];
+	CONFIG.DEFAULT_ANIMATIONS[animation_move_down] = [
+		{ox: 0, oy: -.75, sprite: undefined}, 
+		{ox: 0, oy: -.5, sprite: undefined}, 
+		{ox: 0, oy: -.25, sprite: undefined}, 
+		{ox: 0, oy: 0, sprite: undefined}
+	];
+	CONFIG.DEFAULT_ANIMATIONS[animation_move_left] = [
+		{ox: .75, oy: 0, sprite: undefined}, 
+		{ox: .5, oy: 0, sprite: undefined}, 
+		{ox: .25, oy: 0, sprite: undefined}, 
+		{ox: 0, oy: 0, sprite: undefined}
+	];
+	CONFIG.DEFAULT_ANIMATIONS[animation_roll_up] = [
+		{ox: .75, oy: 0, sprite: undefined}, 
+		{ox: .5, oy: 0, sprite: undefined}, 
+		{ox: .25, oy: 0, sprite: undefined}, 
+		{ox: 0, oy: 0, sprite: undefined}
+	];
+	CONFIG.DEFAULT_ANIMATIONS[animation_roll_right] = [
+		{ox: .75, oy: 0, sprite: undefined}, 
+		{ox: .5, oy: 0, sprite: undefined}, 
+		{ox: .25, oy: 0, sprite: undefined}, 
+		{ox: 0, oy: 0, sprite: undefined}
+	];
+	CONFIG.DEFAULT_ANIMATIONS[animation_roll_down] = [
+		{ox: .75, oy: 0, sprite: undefined}, 
+		{ox: .5, oy: 0, sprite: undefined}, 
+		{ox: .25, oy: 0, sprite: undefined}, 
+		{ox: 0, oy: 0, sprite: undefined}
+	];
+	CONFIG.DEFAULT_ANIMATIONS[animation_roll_left] = [
+		{ox: .75, oy: 0, sprite: undefined}, 
+		{ox: .5, oy: 0, sprite: undefined}, 
+		{ox: .25, oy: 0, sprite: undefined}, 
+		{ox: 0, oy: 0, sprite: undefined}
+	];
 
-    let pools = loadJSON('/config/roompool.json');
-    CONFIG.ROOMPOOL = pools[0];
-    CONFIG.STAIRROOMPOOL = pools[1];
+	window.FLOOR = CONFIG.SQUARE_CONSTANTS.floor;
+	window.WALL = CONFIG.SQUARE_CONSTANTS.wall;
+	window.DOOR = CONFIG.SQUARE_CONSTANTS.door;
+	window.STAIR_DOWN = CONFIG.SQUARE_CONSTANTS.stairDown;
+	window.STAIR_UP = CONFIG.SQUARE_CONSTANTS.stairUp;
+	window.STAIR = CONFIG.SQUARE_CONSTANTS.stair;
+	window.LOOT = CONFIG.SQUARE_CONSTANTS.loot;
+	window.PILLAR = CONFIG.SQUARE_CONSTANTS.pillar;
 
-    MUSIC.push(loadAudio('/audio/music/001_0100.wav'));
-    MUSIC.push(loadAudio('/audio/music/002_0001.wav'));
-    MUSIC.push(loadAudio('/audio/music/003_0101.wav'));
-    MUSIC.push(loadAudio('/audio/music/004_1101.wav'));
-    MUSIC.push(loadAudio('/audio/music/005_1121.wav'));
-    MUSIC.push(loadAudio('/audio/music/006_2121.wav'));
-    MUSIC.push(loadAudio('/audio/music/007_0200.wav'));
-    MUSIC.push(loadAudio('/audio/music/008_0201.wav'));
-    MUSIC.push(loadAudio('/audio/music/009_1201.wav'));
-    MUSIC.push(loadAudio('/audio/music/010_1221.wav'));
+	let pools = loadJSON('/config/roompool.json');
+	CONFIG.ROOMPOOL = pools[0];
+	CONFIG.STAIRROOMPOOL = pools[1];
 
-    TEXTURES[FLOOR] = loadImage('/img/textures/floor0.jpg');
-    TEXTURES[WALL] = loadImage('/img/textures/wall0.jpg');
-    TEXTURES[DOOR] = [];
-    TEXTURES[DOOR][OPEN] = loadImage('/img/textures/doorOpen.png');
+	MUSIC.push(loadAudio('/audio/music/001_0100.wav'));
+	MUSIC.push(loadAudio('/audio/music/002_0001.wav'));
+	MUSIC.push(loadAudio('/audio/music/003_0101.wav'));
+	MUSIC.push(loadAudio('/audio/music/004_1101.wav'));
+	MUSIC.push(loadAudio('/audio/music/005_1121.wav'));
+	MUSIC.push(loadAudio('/audio/music/006_2121.wav'));
+	MUSIC.push(loadAudio('/audio/music/007_0200.wav'));
+	MUSIC.push(loadAudio('/audio/music/008_0201.wav'));
+	MUSIC.push(loadAudio('/audio/music/009_1201.wav'));
+	MUSIC.push(loadAudio('/audio/music/010_1221.wav'));
+
+	TEXTURES[FLOOR] = loadImage('/img/textures/floor0.jpg');
+	TEXTURES[WALL] = loadImage('/img/textures/wall0.jpg');
+	TEXTURES[DOOR] = [];
+	TEXTURES[DOOR][OPEN] = loadImage('/img/textures/doorOpen.png');
 	TEXTURES[DOOR][CLOSED] = loadImage('/img/textures/doorClosed.jpg');
 	TEXTURES[LOOT] = [];
 	TEXTURES[LOOT][OPEN] = loadImage('/img/textures/lootOpen.png');
