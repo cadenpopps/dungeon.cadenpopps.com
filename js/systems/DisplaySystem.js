@@ -2,8 +2,9 @@
 DisplaySystem.prototype = Object.create(System.prototype);
 function DisplaySystem(square_size, vision, animation_stages) {
 	System.call(this);
+
 	this.componentRequirements = [component_position, component_display];
-	this.acceptedEvents = [event_player_moved, event_entity_failed_roll];
+	this.acceptedEvents = [event_player_moved, event_entity_failed_roll, event_up_level, event_down_level];
 
 	let camera = {
 		x: 0,
@@ -12,6 +13,8 @@ function DisplaySystem(square_size, vision, animation_stages) {
 		shakeOffsetY : 0,
 		zoom: CONFIG.CAMERA_DEFAULT_ZOOM 
 	}
+
+	let player;
 
 	let cameraZoomTimer = undefined;
 	let cameraMoveTimer = undefined;
@@ -26,30 +29,33 @@ function DisplaySystem(square_size, vision, animation_stages) {
 	this.run = function(engine) {
 		background(0, 0, 0);
 		for(let o of this.objects){
-			if(o.display.visible || o.display.discovered > 0){
-				let x = CENTER_X - camera.zoom * (GRID_SIZE * (camera.x + camera.shakeOffsetX - o.position.x));
-				let y = CENTER_Y - camera.zoom * (GRID_SIZE * (camera.y + camera.shakeOffsetY - o.position.y));
-				let w = o.display.width * GRID_SIZE * camera.zoom;
-				let h = o.display.height * GRID_SIZE * camera.zoom;
-				if(o.animations !== undefined){
-					//posiition = animation.position
-					//let a = current animation
-					image(a, x, y, w, h);
-				}
-				else if(o.display.texture !== undefined){
-					let t = o.display.texture;
-					image(t, x, y, w, h);
-					if(!o.display.visible && o.display.discovered > 0){
-						let opacity = 1 - (o.display.discovered/CONFIG.DISCOVERED_MAX) + .3;
-						fill(0,0,0, opacity);
-						rect(x, y, w, h);
-					}
-				}
-				else {
-					fill(255);
-					rect(x + (GRID_SIZE / 8), y+ (GRID_SIZE / 8), w - (GRID_SIZE / 4), h - (GRID_SIZE / 4));
-				}
+			if((o.display.visible || o.display.discovered > 0) && !(o instanceof Player)){ draw(o); }
+		}
+		draw(player);
+	}
+
+	let draw = function(o){
+		let x = CENTER_X - camera.zoom * (GRID_SIZE * (camera.x + camera.shakeOffsetX - o.position.x));
+		let y = CENTER_Y - camera.zoom * (GRID_SIZE * (camera.y + camera.shakeOffsetY - o.position.y));
+		let w = o.display.width * GRID_SIZE * camera.zoom;
+		let h = o.display.height * GRID_SIZE * camera.zoom;
+		if(o.animations !== undefined){
+			//posiition = animation.position
+			//let a = current animation
+			image(a, x, y, w, h);
+		}
+		else if(o.display.texture !== undefined){
+			let t = o.display.texture;
+			image(t, x, y, w, h);
+			if(!o.display.visible && o.display.discovered > 0){
+				let opacity = 1 - (o.display.discovered/CONFIG.DISCOVERED_MAX) + .3;
+				fill(0,0,0, opacity);
+				rect(x, y, w, h);
 			}
+		}
+		else {
+			fill(255);
+			rect(x + (GRID_SIZE / 8), y+ (GRID_SIZE / 8), w - (GRID_SIZE / 4), h - (GRID_SIZE / 4));
 		}
 	}
 
@@ -57,15 +63,16 @@ function DisplaySystem(square_size, vision, animation_stages) {
 		if(object instanceof Player){
 			camera.x = object.position.x;
 			camera.y = object.position.y;
+			player = object;
 		}
 		System.prototype.updateObjects.call(this, object);
 	}
 
-	this.handleEvent = function(e){
+	this.handleEvent = function(engine, e){
 		if(this.acceptedEvents.includes(e.eventID)){
 			switch(e.eventID){
-				case event_player_moved:
-					centerCamera(camera, e.entity.position);
+				case event_up_level: case event_down_level: case event_player_moved:
+					centerCamera(camera, player.position);
 					break;
 				case event_entity_failed_roll:
 					if(e.entity instanceof Player) shakeCamera(camera, 35, 1, .25);

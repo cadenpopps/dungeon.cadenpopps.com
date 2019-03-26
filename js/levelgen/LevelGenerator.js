@@ -66,46 +66,6 @@ function generateLevel(engine, depth, prevStairDown) {
 		return board;
 	};
 
-	var genDungeon = function () {
-		genStairs();
-
-		genRooms();
-
-        genMaze();
-        console.log("maze done");
-
-        connectRegions();
-        console.log("regions done");
-
-        sparseMaze();
-        removeDetours();
-        sparseMaze();
-        removeDetours();
-        // sparseMaze();
-
-        // console.log("sparse done");
-
-        // for (var i = 0; i < 3; i++) {
-        // 	removeDetours();
-        // 	sparseMaze();
-        // }
-        // console.log("detours removed");
-
-        fixMaze();
-        // console.log("maze fixed");
-
-
-
-        board[stairUp.x][stairUp.y].squareType = STAIR_DOWN;
-        board[stairDown.x][stairDown.y].squareType = STAIR_DOWN;
-
-        // populate();
-
-        // rooms = null;
-        // regions = null;
-
-    };
-
     var genStairs = function (board) {
 
         let stairDownTemplate = random(CONFIG.STAIRROOMPOOL);
@@ -494,7 +454,6 @@ function generateLevel(engine, depth, prevStairDown) {
         for (var i = 0; i < CONFIG.DUNGEON_SIZE; i++) {
             for (let j = 0; j < CONFIG.DUNGEON_SIZE; j++) {
                 board[i][j] = board[i][j].copy();
-				engine.updateObjects(board[i][j]);
             }
         }
     };

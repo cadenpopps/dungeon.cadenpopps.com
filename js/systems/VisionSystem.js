@@ -3,7 +3,7 @@ VisionSystem.prototype = Object.create(System.prototype);
 function VisionSystem (){
 	System.call(this);
 	this.componentRequirements = [component_position,component_physical, component_display];
-	this.acceptedEvents = [event_game_start, event_player_moved];
+	this.acceptedEvents = [event_game_start, event_player_moved, event_down_level, event_up_level];
 
 	let player;
 	let board;
@@ -28,16 +28,12 @@ function VisionSystem (){
 	}
 
 	this.updateObjects = function(object){
-		if(object instanceof Player){
-			player = object;
-		}
-		else if(object instanceof Level){
-			board = object.level.board;
-		}
+		if(object instanceof Player){ player = object; }
+		else if(object instanceof Level){ board = object.level.board; }
 		System.prototype.updateObjects.call(this, object);
 	}
 
-	this.handleEvent = function(e){
+	this.handleEvent = function(engine, e){
 		if(this.acceptedEvents.includes(e.eventID)){
 			vision(board, player);
 		}

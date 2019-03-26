@@ -23,12 +23,10 @@ System.prototype.updateObjects = function(object){
 	else if(!valid && this.objects.includes(object)) this.objects.splice(this.objects.indexOf(object), 1);
 }
 
-System.prototype.handleEvent = function(e){
-	for(let a of this.acceptedEvents){
-		if(e.eventID == a){
-			this.events.push(e);
-		}
-	}
+System.prototype.clearObjects = function(){
+	this.objects = [];
 }
 
-System.prototype.handleCommand = function(c){}
+System.prototype.handleEvent = function(engine, e){}
+
+System.prototype.handleCommand = function(engine, c){}

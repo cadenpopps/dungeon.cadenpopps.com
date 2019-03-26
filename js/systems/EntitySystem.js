@@ -9,7 +9,7 @@ function EntitySystem (){
 	this.run = function(engine){
 	}
 
-	this.handleEvent = function(e){
+	this.handleEvent = function(engine, e){
 		if(this.acceptedEvents.includes(e.eventID)){
 			switch(e.eventID){
 			}

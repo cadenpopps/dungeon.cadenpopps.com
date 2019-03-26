@@ -26,10 +26,6 @@ function MovementSystem(){
 		System.prototype.updateObjects.call(this, object);
 	}
 
-	this.handleEvent = function(e){
-
-	}
-
 	this.handleCommand = function(engine, c){
 		if(this.acceptedCommands.includes(c.commandID)){
 			switch(c.commandID){
@@ -161,24 +157,15 @@ function MovementSystem(){
 				}
 			}
 			if(square instanceof StairSquare && entity instanceof Player){
-				if(square.up){
-					engine.sendEvent('eventID: event_up_level');
-					engine.sendCommand('commandID: command_update_level');
-				}
-				else{
-					engine.sendCommand('commandID: command_generate_level');
-					engine.sendEvent('eventID: event_down_level');
-					engine.sendCommand('commandID: command_update_level');
-				}
-				return true;
+				if(square.up){ engine.sendCommand({commandID: command_up_level}); }
+				else{ engine.sendCommand({commandID: command_down_level}); }
+				return false;
 			}
 			if(square instanceof DoorSquare && (entity instanceof Player || square.opened)){
 				square.open();
 				return true;
 			}
-			else if(!square.physical.solid){
-				return true;
-			}
+			else if(!square.physical.solid){ return true; }
 		}
 		return false;
 	}

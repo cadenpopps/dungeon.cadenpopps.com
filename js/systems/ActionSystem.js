@@ -32,6 +32,9 @@ function ActionSystem (){
 					case action_roll:
 						rollCommand(engine, action_move_left, o);
 						break;
+					case action_floor:
+						engine.sendCommand({ commandID: command_down_level });
+						break;
 				}
 				o.actions.nextAction = action_none;
 			}
@@ -49,7 +52,7 @@ function ActionSystem (){
 		engine.sendCommand({commandID: command_roll_entity, "entity": object});
 	}
 
-	this.handleEvent = function(e){
+	this.handleEvent = function(engine, e){
 		if(this.acceptedEvents.includes(e.eventID)){
 			switch(e.eventID){
 				case event_entity_moved:

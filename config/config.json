@@ -1,7 +1,7 @@
 [
     {
         "name": "DUNGEON_SIZE",
-        "val": 65
+        "val": 35
     },
     {
 		"name": "ROOM_TRIES",
@@ -22,7 +22,7 @@
 	},
 	{
 		"name": "DISCOVERED_MAX",
-		"val": 400
+		"val": 800
 	},
 	{
 		"name": "CAMERA_MOVE_SPEED",

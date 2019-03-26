@@ -13,7 +13,7 @@ function PoppsEngine(tickrate, config) {
 		this.systems.push(new LevelSystem());
 		this.systems.push(new EntitySystem());
 
-		this.sendCommand({commandID:command_generate_level});
+		this.sendCommand({commandID:command_init});
 		this.sendEvent({eventID:event_game_start});
 
 		setInterval(tick.bind(this), TICKRATE);
@@ -33,7 +33,7 @@ function PoppsEngine(tickrate, config) {
 
 	this.sendEvent = function(e){
 		for(let s of this.systems){
-			s.handleEvent(e);
+			s.handleEvent(this, e);
 		}
 	}
 
@@ -43,6 +43,11 @@ function PoppsEngine(tickrate, config) {
 		}
 	}
 
+	this.clearObjects = function(){
+		for(let s of this.systems){
+			System.prototype.clearObjects.call(s);
+		}
+	}
 
 	this.init();
 }
