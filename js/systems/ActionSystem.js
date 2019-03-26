@@ -23,9 +23,6 @@ function ActionSystem (){
 					case action_roll:
 						rollCommand(engine, o, direction_to_action[action_roll + o.direction.direction]);
 						break;
-					case action_floor:
-						engine.sendCommand({ commandID: command_down_level });
-						break;
 				}
 				o.actions.nextAction = action_none;
 			}

@@ -18,6 +18,7 @@ function DisplaySystem(square_size, vision, animation_stages) {
 
 	let cameraZoomTimer = undefined;
 	let cameraShakeTimer = undefined;
+	let cameraMoving = false;
 
 	let CENTER_X = floor(width / 2);
 	let CENTER_Y = floor(height / 2);
@@ -30,8 +31,8 @@ function DisplaySystem(square_size, vision, animation_stages) {
 		for(let o of this.objects){
 			if((o.display.visible || o.display.discovered > 0) && !(o instanceof Player)){ draw(o); }
 		}
-		console.log(player.animation);
-		if(player.animation.animation != animation_idle){
+		if(cameraMoving){
+			if(player.animation.animation == animation_idle){ cameraMoving = false; }
 			centerCamera(camera, player.position, player.animation.offsetX, player.animation.offsetY); 
 		}
 		draw(player);
@@ -80,8 +81,8 @@ function DisplaySystem(square_size, vision, animation_stages) {
 	this.handleEvent = function(engine, e){
 		if(this.acceptedEvents.includes(e.eventID)){
 			switch(e.eventID){
-				case event_up_level: case event_down_level:
-					centerCamera(camera, player.position);
+				case event_up_level: case event_down_level: case event_player_moved:
+					cameraMoving = true;
 					break;
 				case event_entity_failed_roll:
 					if(e.entity instanceof Player) shakeCamera(camera, 35, 1, .25);

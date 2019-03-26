@@ -45,7 +45,7 @@ function AnimationSystem (){
 	this.handleEvent = function(engine, e){
 		if(this.acceptedEvents.includes(e.eventID)){
 			switch(e.eventID){
-				case event_entity_moved: case event_entity_sprinted: case event_entity_rolled: case event_entity_failed_rolled:
+				case event_entity_moved: case event_entity_sprinted: case event_entity_rolled: case event_entity_failed_roll:
 					startAnimation(e.entity, e.direction);
 					break;
 			}

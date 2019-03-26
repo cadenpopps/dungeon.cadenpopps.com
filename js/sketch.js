@@ -27,52 +27,52 @@ function preload() {
 		{ox: 0, oy: 0, sprite: undefined}
 	];
 	CONFIG.DEFAULT_ANIMATIONS[animation_move_up] = [
-		{ox: 0, oy: .75, sprite: undefined}, 
-		{ox: 0, oy: .5,  sprite: undefined}, 
+		{ox: 0, oy: .65, sprite: undefined}, 
+		{ox: 0, oy: .45,  sprite: undefined}, 
 		{ox: 0, oy: .25, sprite: undefined}, 
-		{ox: 0, oy: 0,   sprite: undefined}
+		{ox: 0, oy: .10,   sprite: undefined}
 	];
 	CONFIG.DEFAULT_ANIMATIONS[animation_move_right] = [
-		{ox: -.75, oy: 0, sprite: undefined}, 
-		{ox: -.5, oy: 0, sprite: undefined}, 
+		{ox: -.65, oy: 0, sprite: undefined}, 
+		{ox: -.45, oy: 0, sprite: undefined}, 
 		{ox: -.25, oy: 0, sprite: undefined}, 
-		{ox: 0, oy: 0, sprite: undefined}
+		{ox: -.10, oy: 0, sprite: undefined}
 	];
 	CONFIG.DEFAULT_ANIMATIONS[animation_move_down] = [
-		{ox: 0, oy: -.75, sprite: undefined}, 
-		{ox: 0, oy: -.5, sprite: undefined}, 
+		{ox: 0, oy: -.65, sprite: undefined}, 
+		{ox: 0, oy: -.45, sprite: undefined}, 
 		{ox: 0, oy: -.25, sprite: undefined}, 
-		{ox: 0, oy: 0, sprite: undefined}
+		{ox: 0, oy: -.10, sprite: undefined}
 	];
 	CONFIG.DEFAULT_ANIMATIONS[animation_move_left] = [
-		{ox: .75, oy: 0, sprite: undefined}, 
-		{ox: .5, oy: 0, sprite: undefined}, 
+		{ox: .65, oy: 0, sprite: undefined}, 
+		{ox: .45, oy: 0, sprite: undefined}, 
 		{ox: .25, oy: 0, sprite: undefined}, 
-		{ox: 0, oy: 0, sprite: undefined}
+		{ox: .10, oy: 0, sprite: undefined}
 	];
 	CONFIG.DEFAULT_ANIMATIONS[animation_roll_up] = [
-		{ox: .75, oy: 0, sprite: undefined}, 
-		{ox: .5, oy: 0, sprite: undefined}, 
-		{ox: .25, oy: 0, sprite: undefined}, 
-		{ox: 0, oy: 0, sprite: undefined}
+		{ox: 0, oy: 1.3, sprite: undefined}, 
+		{ox: 0, oy: .9, sprite: undefined}, 
+		{ox: 0, oy: .5, sprite: undefined}, 
+		{ox: 0, oy: .2, sprite: undefined}
 	];
 	CONFIG.DEFAULT_ANIMATIONS[animation_roll_right] = [
-		{ox: .75, oy: 0, sprite: undefined}, 
-		{ox: .5, oy: 0, sprite: undefined}, 
-		{ox: .25, oy: 0, sprite: undefined}, 
-		{ox: 0, oy: 0, sprite: undefined}
+		{ox: -1.3, oy: 0, sprite: undefined}, 
+		{ox: -.9, oy: 0, sprite: undefined}, 
+		{ox: -.5, oy: 0, sprite: undefined}, 
+		{ox: -.2, oy: 0, sprite: undefined}
 	];
 	CONFIG.DEFAULT_ANIMATIONS[animation_roll_down] = [
-		{ox: .75, oy: 0, sprite: undefined}, 
-		{ox: .5, oy: 0, sprite: undefined}, 
-		{ox: .25, oy: 0, sprite: undefined}, 
-		{ox: 0, oy: 0, sprite: undefined}
+		{ox: 0, oy: -1.3, sprite: undefined}, 
+		{ox: 0, oy: -.9, sprite: undefined}, 
+		{ox: 0, oy: -.5, sprite: undefined}, 
+		{ox: 0, oy: -.2, sprite: undefined}
 	];
 	CONFIG.DEFAULT_ANIMATIONS[animation_roll_left] = [
-		{ox: .75, oy: 0, sprite: undefined}, 
+		{ox: 1.3, oy: 0, sprite: undefined}, 
+		{ox: .9, oy: 0, sprite: undefined}, 
 		{ox: .5, oy: 0, sprite: undefined}, 
-		{ox: .25, oy: 0, sprite: undefined}, 
-		{ox: 0, oy: 0, sprite: undefined}
+		{ox: .2, oy: 0, sprite: undefined}
 	];
 
 	window.FLOOR = CONFIG.SQUARE_CONSTANTS.floor;
