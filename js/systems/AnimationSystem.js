@@ -42,7 +42,7 @@ function AnimationSystem (){
 		entity.animation.sprite = entity.animation.animations[entity.animation.animation][entity.animation.stage].sprite;
 	}
 
-	this.handleEvent = function(e){
+	this.handleEvent = function(engine, e){
 		if(this.acceptedEvents.includes(e.eventID)){
 			switch(e.eventID){
 				case event_entity_moved: case event_entity_sprinted: case event_entity_rolled: case event_entity_failed_rolled:

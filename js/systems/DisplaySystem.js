@@ -30,8 +30,9 @@ function DisplaySystem(square_size, vision, animation_stages) {
 		for(let o of this.objects){
 			if((o.display.visible || o.display.discovered > 0) && !(o instanceof Player)){ draw(o); }
 		}
+		console.log(player.animation);
 		if(player.animation.animation != animation_idle){
-			centerCamera(camera, o.position, o.animation.offsetX, o.animation.offsetY); 
+			centerCamera(camera, player.position, player.animation.offsetX, player.animation.offsetY); 
 		}
 		draw(player);
 	}
