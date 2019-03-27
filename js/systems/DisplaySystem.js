@@ -29,7 +29,9 @@ function DisplaySystem(square_size, vision, animation_stages) {
 	this.run = function(engine) {
 		background(0, 0, 0);
 		for(let o of this.objects){
-			if((o.display.visible || o.display.discovered > 0) && !(o instanceof Player)){ draw(o); }
+			if((o.display.visible 
+				// || o.display.discovered > 0
+			) && !(o instanceof Player)){ draw(o); }
 		}
 		if(cameraMoving){
 			if(player.animation.animation == animation_idle){ cameraMoving = false; }

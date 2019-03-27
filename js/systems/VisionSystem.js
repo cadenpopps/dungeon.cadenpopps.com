@@ -8,9 +8,7 @@ function VisionSystem (){
 	let player;
 	let board;
 
-	this.run = function(engine){
-
-	}
+	this.run = function(engine){ }
 
 	let vision = function(board, player){
 		for(let r of board){
@@ -21,8 +19,8 @@ function VisionSystem (){
 		}
 		player.display.visible = true;
 		board[player.position.x][player.position.y].display.visible = true;
-		board[player.position.x][player.position.y].display.discovered = CONFIG.DISCOVER_MAX;
-		for(let octant = 0; octant < 8; octant ++){
+		board[player.position.x][player.position.y].display.discovered = CONFIG.DISCOVERED_MAX;
+		for(let octant = 0; octant < 1; octant ++){
 			playerSightTriangle(board, octant, player.position.x, player.position.y, CONFIG.PLAYER_VISION_RANGE);
 		}
 	}
@@ -49,55 +47,27 @@ function VisionSystem (){
 			let y = startSquare(x, slopeStart);
 			let curslope = slopeStart;
 			while(curslope <= slopeEnd){
-				let inShadow = false;
-				for(let s of shadows){
-					if(checkInShadow(x, y, s[0], s[1])){
-						inShadow = true;
-						break;
-					}
-				}
-				if(!inShadow){
+				if(!inShadow(x, y, shadows)){
 					let cur = getTranslatedSquare(board, octant, x, y, sx, sy); 
-					if(cur === undefined){
-						break;
-					}
+					if(cur === undefined){ break; }
 					else{
 						cur.display.visible = true;
 						cur.display.discovered = CONFIG.DISCOVERED_MAX;
-						if(!cur.physical.blocking){
-							let above = getTranslatedSquare(board, octant, x, y + 1, sx, sy);
-							if(above !== undefined){
-								if(above.physical.blocking){
-									above.display.visible = true;
-									above.display.discovered = CONFIG.DISCOVERED_MAX;
-								}
-								else if(!above.physical.blocking){
-									above.display.discovered = CONFIG.DISCOVERED_MAX;
-								}
-							}
-							let below = getTranslatedSquare(board, octant, x, y - 1, sx, sy);
-							if(below !== undefined){
-								if(below.physical.blocking){
-									below.display.visible = true;
-									below.display.discovered = CONFIG.DISCOVERED_MAX;
-								}
-								else if(!below.physical.blocking){
-									below.display.discovered = CONFIG.DISCOVERED_MAX;
-								}
-							}
-						}
-						else{
+						if(cur.physical.blocking){
 							let firstBlocked = {x:x, y:y};
-							let lastBlocked = getBlocked(board, octant, x, y, sx, sy, slopeEnd, firstBlocked);
+							let lastBlocked = getBlocked(board, octant, x, y, sx, sy, slopeEnd, shadows);
+
+							console.log(firstBlocked);
+							console.log(lastBlocked);
 
 							if(firstBlocked.y == 0 && slope(lastBlocked.x, lastBlocked.y, TOP_LEFT) >= slopeEnd){
 								slopeStart = 1;
 							}
-							else if(firstBlocked.y == 0){
-								slopeStart = slope(lastBlocked.x, lastBlocked.y, TOP_LEFT); 
+							else if(firstBlocked.y == yStart){
+								slopeStart = slope(lastBlocked.x, lastBlocked.y, CENTER_SQUARE);
 							}
 							else if(lastBlocked.y == x || slope(lastBlocked.x, lastBlocked.y, TOP_LEFT) >= slopeEnd){
-								slopeEnd = slope(firstBlocked.x, firstBlocked.y, BOTTOM_RIGHT);
+								slopeEnd = slope(firstBlocked.x, firstBlocked.y, CENTER_SQUARE);
 							}
 							else {
 								let shadowStart = slope(firstBlocked.x, firstBlocked.y, BOTTOM_RIGHT);
@@ -135,34 +105,53 @@ function VisionSystem (){
 		return 1;
 	}
 
-	let getBlocked = function(board, octant, x, y, sx, sy, end, lastBlocked){
-		let currentBlocked = getTranslatedSquare(board, octant, lastBlocked.x, lastBlocked.y, sx, sy); 
-		currentBlocked.display.visible = true;
-		currentBlocked.display.discovered = CONFIG.DISCOVERED_MAX;
-		while(currentBlocked !== undefined && currentBlocked.physical.blocking && slope(lastBlocked.x, lastBlocked.y, CENTER_SQUARE) < end){
+	let getBlocked = function(board, octant, x, y, sx, sy, slopeEnd, shadows){
+		let lastBlocked = {x:x, y:y};
+
+		y++;
+		let currentBlocked = getTranslatedSquare(board, octant, x, y, sx, sy); 
+
+		while(currentBlocked !== undefined && currentBlocked.physical.blocking && slope(x, y, BOTTOM_RIGHT) < slopeEnd && !inShadow(x, y, shadows)){
 			lastBlocked = {x:x, y:y};
 			currentBlocked.display.visible = true;
 			currentBlocked.display.discovered = CONFIG.DISCOVERED_MAX;
-			leftSquare = getTranslatedSquare(board, octant, x - 1, y, sx, sy);
-			if(leftSquare !== undefined && leftSquare.physical.blocking) {
-				lastBlocked = getBlocked(board, octant, x - 1, y, sx, sy, end, {x:x - 1, y:y}); 
-				break;
-			}
-			else{
-				y++;
-				currentBlocked = getTranslatedSquare(board, octant, x, y, sx, sy);
-			}
+
+			y++;
+			currentBlocked = getTranslatedSquare(board, octant, x, y, sx, sy);
 		}
 		return lastBlocked;
 	}
 
-	let checkInShadow = function(x, y, s1, s2){
-		if(slope(x, y, LOWER_BOUND) > s1 && slope(x, y, UPPER_BOUND) < s2) return true;
+	// let getBlocked = function(board, octant, x, y, sx, sy, end, lastBlocked){
+	// 	let currentBlocked = getTranslatedSquare(board, octant, lastBlocked.x, lastBlocked.y, sx, sy); 
+	// 	currentBlocked.display.visible = true;
+	// 	currentBlocked.display.discovered = CONFIG.DISCOVERED_MAX;
+	// 	while(currentBlocked !== undefined && currentBlocked.physical.blocking && slope(lastBlocked.x, lastBlocked.y, CENTER_SQUARE) < end){
+	// 		lastBlocked = {x:x, y:y};
+	// 		currentBlocked.display.visible = true;
+	// 		currentBlocked.display.discovered = CONFIG.DISCOVERED_MAX;
+	// 		leftSquare = getTranslatedSquare(board, octant, x - 1, y, sx, sy);
+	// 		if(leftSquare !== undefined && leftSquare.physical.blocking) {
+	// 			lastBlocked = getBlocked(board, octant, x - 1, y, sx, sy, end, {x:x - 1, y:y}); 
+	// 			break;
+	// 		}
+	// 		else{
+	// 			y++;
+	// 			currentBlocked = getTranslatedSquare(board, octant, x, y, sx, sy);
+	// 		}
+	// 	}
+	// 	return lastBlocked;
+	// }
+
+	let inShadow = function(x, y, shadows){
+		for(let s of shadows){
+			if(slope(x, y, LOWER_BOUND) >= s[0] && slope(x, y, UPPER_BOUND) <= s[1]) return true;
+		}
 		return false;
 	}
 
 	let startSquare = function(x, slopeStart){
-		if(slopeStart == 0) return 0;
+		if(slopeStart == 0) return 0; 
 		return ceil(x * slopeStart);
 	}
 
@@ -184,6 +173,5 @@ function VisionSystem (){
 	let translate = function(octant, x, y){
 		return[ x * xxcomp[octant] + y * xycomp[octant], x * yxcomp[octant] + y * yycomp[octant]];
 	}
-
 
 }
