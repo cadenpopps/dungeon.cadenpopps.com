@@ -20,7 +20,7 @@ function VisionSystem (){
 		player.display.visible = true;
 		board[player.position.x][player.position.y].display.visible = true;
 		board[player.position.x][player.position.y].display.discovered = CONFIG.DISCOVERED_MAX;
-		for(let octant = 0; octant < 1; octant ++){
+		for(let octant = 0; octant < 8; octant ++){
 			playerSightTriangle(board, octant, player.position.x, player.position.y, CONFIG.PLAYER_VISION_RANGE);
 		}
 	}
@@ -44,10 +44,10 @@ function VisionSystem (){
 		let shadows = [];
 
 		while (x <= range && slopeStart < slopeEnd) {
-			let y = startSquare(x, slopeStart);
-			let curslope = slopeStart;
-			while(curslope <= slopeEnd){
-				if(!inShadow(x, y, shadows)){
+			let y = 0;
+			let curslope = 0;
+			while(curslope <= 1){
+				if(!inShadow(x, y, shadows, slopeStart, slopeEnd)){
 					let cur = getTranslatedSquare(board, octant, x, y, sx, sy); 
 					if(cur === undefined){ break; }
 					else{
@@ -57,17 +57,22 @@ function VisionSystem (){
 							let firstBlocked = {x:x, y:y};
 							let lastBlocked = getBlocked(board, octant, x, y, sx, sy, slopeEnd, shadows);
 
-							console.log(firstBlocked);
-							console.log(lastBlocked);
+							console.log("\n\n\n\n");
+							console.log("First: " + firstBlocked.x + "   " + firstBlocked.y);
+							console.log("Last:  " + lastBlocked.x + "   " + lastBlocked.y);
 
-							if(firstBlocked.y == 0 && slope(lastBlocked.x, lastBlocked.y, TOP_LEFT) >= slopeEnd){
+							if(slope(firstBlocked.x, firstBlocked.y, BOTTOM_RIGHT) <= slopeStart && slope(lastBlocked.x, lastBlocked.y, TOP_LEFT) >= slopeEnd){
+								console.log("both");
 								slopeStart = 1;
+								curslope = 1;
 							}
-							else if(firstBlocked.y == yStart){
-								slopeStart = slope(lastBlocked.x, lastBlocked.y, CENTER_SQUARE);
+							else if(slope(firstBlocked.x, firstBlocked.y, BOTTOM_RIGHT) <= slopeStart){
+								console.log("start");
+								slopeStart = slope(lastBlocked.x, lastBlocked.y, TOP_LEFT);
 							}
-							else if(lastBlocked.y == x || slope(lastBlocked.x, lastBlocked.y, TOP_LEFT) >= slopeEnd){
-								slopeEnd = slope(firstBlocked.x, firstBlocked.y, CENTER_SQUARE);
+							else if(slope(lastBlocked.x, lastBlocked.y, TOP_LEFT) >= slopeEnd){
+								console.log("end");
+								slopeEnd = slope(firstBlocked.x, firstBlocked.y, BOTTOM_RIGHT);
 							}
 							else {
 								let shadowStart = slope(firstBlocked.x, firstBlocked.y, BOTTOM_RIGHT);
@@ -143,9 +148,10 @@ function VisionSystem (){
 	// 	return lastBlocked;
 	// }
 
-	let inShadow = function(x, y, shadows){
+	let inShadow = function(x, y, shadows, slopeStart, slopeEnd){
+		if(slope(x, y, BOTTOM_RIGHT) >= slopeEnd || slope(x, y, TOP_LEFT) <= slopeStart) return true;
 		for(let s of shadows){
-			if(slope(x, y, LOWER_BOUND) >= s[0] && slope(x, y, UPPER_BOUND) <= s[1]) return true;
+			if(slope(x, y, BOTTOM_RIGHT) >= s[0] && slope(x, y, TOP_LEFT) <= s[1]) return true;
 		}
 		return false;
 	}

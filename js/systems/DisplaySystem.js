@@ -30,7 +30,7 @@ function DisplaySystem(square_size, vision, animation_stages) {
 		background(0, 0, 0);
 		for(let o of this.objects){
 			if((o.display.visible 
-				// || o.display.discovered > 0
+				 || o.display.discovered > 0
 			) && !(o instanceof Player)){ draw(o); }
 		}
 		if(cameraMoving){
