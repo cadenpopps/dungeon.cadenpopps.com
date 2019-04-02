@@ -61,7 +61,7 @@ function DisplaySystem(square_size, vision, animation_stages) {
 			let t = o.display.texture;
 			image(t, x, y, w, h);
 			if(!o.display.visible && o.display.discovered > 0){
-				let opacity = 1 - (o.display.discovered/CONFIG.DISCOVERED_MAX) + .3;
+				let opacity = 1 - (o.display.discovered/CONFIG.DISCOVERED_MAX) + .4;
 				fill(0,0,0, opacity);
 				rect(x, y, w, h);
 			}

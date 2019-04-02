@@ -11,6 +11,7 @@ function VisionSystem (){
 	this.run = function(engine){ }
 
 	let vision = function(board, player){
+		let startTime = millis();
 		for(let r of board){
 			for(let s of r){
 				s.display.visible = false;
@@ -23,6 +24,7 @@ function VisionSystem (){
 		for(let octant = 0; octant < 8; octant ++){
 			playerSightTriangle(board, octant, player.position.x, player.position.y, CONFIG.PLAYER_VISION_RANGE);
 		}
+		console.log(millis() - startTime);
 	}
 
 	this.updateObjects = function(object){
@@ -39,47 +41,26 @@ function VisionSystem (){
 
 	let playerSightTriangle = function(board, octant, sx, sy, range){
 		let x = 1;
-		let slopeStart = 0;
-		let slopeEnd = 1;
 		let shadows = [];
+		let squaresVisible = true;
 
-		while (x <= range && slopeStart < slopeEnd) {
+		while (x <= range && squaresVisible) {
+			squaresVisible = false;
 			let y = 0;
 			let curslope = 0;
 			while(curslope <= 1){
-				if(!inShadow(x, y, shadows, slopeStart, slopeEnd)){
+				if(!inShadow(x, y, shadows)){
+					squaresVisible = true;
 					let cur = getTranslatedSquare(board, octant, x, y, sx, sy); 
 					if(cur === undefined){ break; }
-					else{
-						cur.display.visible = true;
-						cur.display.discovered = CONFIG.DISCOVERED_MAX;
-						if(cur.physical.blocking){
-							let firstBlocked = {x:x, y:y};
-							let lastBlocked = getBlocked(board, octant, x, y, sx, sy, slopeEnd, shadows);
-
-							console.log("\n\n\n\n");
-							console.log("First: " + firstBlocked.x + "   " + firstBlocked.y);
-							console.log("Last:  " + lastBlocked.x + "   " + lastBlocked.y);
-
-							if(slope(firstBlocked.x, firstBlocked.y, BOTTOM_RIGHT) <= slopeStart && slope(lastBlocked.x, lastBlocked.y, TOP_LEFT) >= slopeEnd){
-								console.log("both");
-								slopeStart = 1;
-								curslope = 1;
-							}
-							else if(slope(firstBlocked.x, firstBlocked.y, BOTTOM_RIGHT) <= slopeStart){
-								console.log("start");
-								slopeStart = slope(lastBlocked.x, lastBlocked.y, TOP_LEFT);
-							}
-							else if(slope(lastBlocked.x, lastBlocked.y, TOP_LEFT) >= slopeEnd){
-								console.log("end");
-								slopeEnd = slope(firstBlocked.x, firstBlocked.y, BOTTOM_RIGHT);
-							}
-							else {
-								let shadowStart = slope(firstBlocked.x, firstBlocked.y, BOTTOM_RIGHT);
-								let shadowEnd = slope(lastBlocked.x, lastBlocked.y, TOP_LEFT);
-								shadows.push([shadowStart, shadowEnd]);
-							}
-						}
+					cur.display.visible = true;
+					cur.display.discovered = CONFIG.DISCOVERED_MAX;
+					if(cur.physical.blocking){
+						let firstBlocked = getFirstBlocked(board, octant, x, y, sx, sy, shadows);
+						let lastBlocked = getBlocked(board, octant, x, y, sx, sy, shadows);
+						let shadowStart = slope(firstBlocked.x, firstBlocked.y, BOTTOM_RIGHT);
+						let shadowEnd = slope(lastBlocked.x, lastBlocked.y, TOP_LEFT);
+						shadows.push([shadowStart, shadowEnd]);
 					}
 				}
 				y++;
@@ -101,7 +82,7 @@ function VisionSystem (){
 				}
 				return (y + .5)/(x - .5);
 			case BOTTOM_RIGHT:
-				return (y - .5)/(x + .5);
+				return max(0, (y - .5)/(x + .5));
 			case UPPER_BOUND:
 				return (y + PERM)/(x - PERM);
 			case LOWER_BOUND:
@@ -110,16 +91,35 @@ function VisionSystem (){
 		return 1;
 	}
 
-	let getBlocked = function(board, octant, x, y, sx, sy, slopeEnd, shadows){
-		let lastBlocked = {x:x, y:y};
+	let getFirstBlocked = function(board, octant, x, y, sx, sy, shadows){
+		let firstBlocked = {x:x, y:y};
 
-		y++;
 		let currentBlocked = getTranslatedSquare(board, octant, x, y, sx, sy); 
 
-		while(currentBlocked !== undefined && currentBlocked.physical.blocking && slope(x, y, BOTTOM_RIGHT) < slopeEnd && !inShadow(x, y, shadows)){
+		while(currentBlocked !== undefined && currentBlocked.physical.blocking && slope(x, y, CENTER_SQUARE) > 0){
+			firstBlocked = {x:x, y:y};
+			if(!inShadow(x, y, shadows)){
+				currentBlocked.display.visible = true;
+				currentBlocked.display.discovered = CONFIG.DISCOVERED_MAX;
+			}
+
+			y--;
+			currentBlocked = getTranslatedSquare(board, octant, x, y, sx, sy);
+		}
+		return firstBlocked;
+	}
+
+	let getBlocked = function(board, octant, x, y, sx, sy, shadows){
+		let lastBlocked = {x:x, y:y};
+
+		let currentBlocked = getTranslatedSquare(board, octant, x, y, sx, sy); 
+
+		while(currentBlocked !== undefined && currentBlocked.physical.blocking && slope(x, y, BOTTOM_RIGHT) < 1){
 			lastBlocked = {x:x, y:y};
-			currentBlocked.display.visible = true;
-			currentBlocked.display.discovered = CONFIG.DISCOVERED_MAX;
+			if(!inShadow(x, y, shadows)){
+				currentBlocked.display.visible = true;
+				currentBlocked.display.discovered = CONFIG.DISCOVERED_MAX;
+			}
 
 			y++;
 			currentBlocked = getTranslatedSquare(board, octant, x, y, sx, sy);
@@ -127,31 +127,12 @@ function VisionSystem (){
 		return lastBlocked;
 	}
 
-	// let getBlocked = function(board, octant, x, y, sx, sy, end, lastBlocked){
-	// 	let currentBlocked = getTranslatedSquare(board, octant, lastBlocked.x, lastBlocked.y, sx, sy); 
-	// 	currentBlocked.display.visible = true;
-	// 	currentBlocked.display.discovered = CONFIG.DISCOVERED_MAX;
-	// 	while(currentBlocked !== undefined && currentBlocked.physical.blocking && slope(lastBlocked.x, lastBlocked.y, CENTER_SQUARE) < end){
-	// 		lastBlocked = {x:x, y:y};
-	// 		currentBlocked.display.visible = true;
-	// 		currentBlocked.display.discovered = CONFIG.DISCOVERED_MAX;
-	// 		leftSquare = getTranslatedSquare(board, octant, x - 1, y, sx, sy);
-	// 		if(leftSquare !== undefined && leftSquare.physical.blocking) {
-	// 			lastBlocked = getBlocked(board, octant, x - 1, y, sx, sy, end, {x:x - 1, y:y}); 
-	// 			break;
-	// 		}
-	// 		else{
-	// 			y++;
-	// 			currentBlocked = getTranslatedSquare(board, octant, x, y, sx, sy);
-	// 		}
-	// 	}
-	// 	return lastBlocked;
-	// }
-
-	let inShadow = function(x, y, shadows, slopeStart, slopeEnd){
-		if(slope(x, y, BOTTOM_RIGHT) >= slopeEnd || slope(x, y, TOP_LEFT) <= slopeStart) return true;
+	let inShadow = function(x, y, shadows){
+		let BR = slope(x, y, BOTTOM_RIGHT), TL = slope(x, y, TOP_LEFT);
 		for(let s of shadows){
-			if(slope(x, y, BOTTOM_RIGHT) >= s[0] && slope(x, y, TOP_LEFT) <= s[1]) return true;
+			if( BR >= s[0] && TL <= s[1]) return true;
+			else if( BR >= s[0] && BR <= s[1] && TL >= s[1]) { BR = s[1]; }
+			else if( BR <= s[0] && TL >= s[0] && TL <= s[1]) { TL = s[0]; }
 		}
 		return false;
 	}
