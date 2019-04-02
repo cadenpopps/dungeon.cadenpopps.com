@@ -62,6 +62,10 @@ function VisionSystem (){
 						let shadowEnd = slope(lastBlocked.x, lastBlocked.y, TOP_LEFT);
 						shadows.push([shadowStart, shadowEnd]);
 					}
+					else{
+						let above = getTranslatedSquare(board, octant, x, y + 1, sx, sy); 
+						if(above !== undefined ){ above.display.discovered = CONFIG.DISCOVERED_MAX; }
+					}
 				}
 				y++;
 				curslope = slope(x, y, CENTER_SQUARE); 
