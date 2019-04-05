@@ -1,15 +1,11 @@
-const sys_error = 0, sys_ok = 1;
 function System(){
-	this.run = function(){return system_ok}
-
 	this.objects = [];
 	this.componentRequirements = [];
-
-	this.events = [];
 	this.acceptedEvents = [];
-
 	this.acceptedCommands = [];
 }
+
+System.prototype.run = function(){}
 
 System.prototype.updateObjects = function(object){
 	let valid = true;
