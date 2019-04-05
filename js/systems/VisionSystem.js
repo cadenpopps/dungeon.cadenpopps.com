@@ -11,7 +11,6 @@ function VisionSystem (){
 	this.run = function(engine){ }
 
 	let vision = function(board, player){
-		let startTime = millis();
 		for(let r of board){
 			for(let s of r){
 				s.display.visible = false;
@@ -24,7 +23,6 @@ function VisionSystem (){
 		for(let octant = 0; octant < 8; octant ++){
 			playerSightTriangle(board, octant, player.position.x, player.position.y, CONFIG.PLAYER_VISION_RANGE);
 		}
-		console.log(millis() - startTime);
 	}
 
 	this.updateObjects = function(object){

@@ -17,6 +17,8 @@ function PoppsEngine(tickrate, config) {
 		this.sendCommand({commandID:command_init});
 		this.sendEvent({eventID:event_game_start});
 
+		$(window).resize(this.sendEvent.bind(this, {eventID: event_window_resized}));
+
 		setInterval(tick.bind(this), TICKRATE);
 	};
 

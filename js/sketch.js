@@ -115,7 +115,6 @@ function preload() {
 
 function setup() {
 	createCanvas(windowWidth, windowHeight);
-
 	init();
 }
 
@@ -127,17 +126,5 @@ function init() {
 	});
 }
 
-function keyDown() {
-}
-
-function keyUp() {
-}
-
-
-function mousePressed() {
-	gm.mouse(mouseX, mouseY);
-}
-
-function windowResized() {
-	resizeCanvas(windowWidth, windowHeight);
-}
+function keyDown() { } 
+function keyUp() { }

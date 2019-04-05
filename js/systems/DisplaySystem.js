@@ -4,7 +4,7 @@ function DisplaySystem(square_size, vision, animation_stages) {
 	System.call(this);
 
 	this.componentRequirements = [component_position, component_display];
-	this.acceptedEvents = [event_player_moved, event_entity_failed_roll, event_up_level, event_down_level];
+	this.acceptedEvents = [event_window_resized, event_player_moved, event_entity_failed_roll, event_up_level, event_down_level];
 
 	let camera = {
 		x: 0,
@@ -57,18 +57,15 @@ function DisplaySystem(square_size, vision, animation_stages) {
 				image(a, x, y, w, h);
 			}
 		}
-		else if(o.display.texture !== undefined){
+		else{
 			let t = o.display.texture;
 			image(t, x, y, w, h);
 			if(!o.display.visible && o.display.discovered > 0){
-				let opacity = 1 - (o.display.discovered/CONFIG.DISCOVERED_MAX) + .4;
+				let opacity = min(1, 1 - (o.display.discovered/CONFIG.DISCOVERED_MAX) + .4);
+				if(opacity == 1) { o.display.discovered = 0; }
 				fill(0,0,0, opacity);
 				rect(x, y, w, h);
 			}
-		}
-		else {
-			fill(255);
-			rect(x + (GRID_SIZE / 8), y+ (GRID_SIZE / 8), w - (GRID_SIZE / 4), h - (GRID_SIZE / 4));
 		}
 	}
 
@@ -89,6 +86,8 @@ function DisplaySystem(square_size, vision, animation_stages) {
 				case event_entity_failed_roll:
 					if(e.entity instanceof Player) shakeCamera(camera, 35, 1, .25);
 					break;
+				case event_window_resized:
+					resize();
 			}
 		}
 	}
@@ -139,6 +138,12 @@ function DisplaySystem(square_size, vision, animation_stages) {
 			camera.shakeOffsetY = 0;
 			cameraShakeTimer = undefined;
 		}
+	}
+
+	let resize = function(){
+		resizeCanvas(window.innerWidth, window.innerHeight);
+		CENTER_X = floor(width / 2);
+		CENTER_Y = floor(height / 2);
 	}
 
 	//let SQUARE_SIZE = square_size;

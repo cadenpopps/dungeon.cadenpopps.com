@@ -5,7 +5,7 @@ const command_move_entity = 0, command_roll_entity = 1, command_generate_level =
 const UP = 0, DOWN = 1;
 
 //events
-const event_game_start = 0, event_player_moved = 1, event_entity_moved = 2, event_entity_sprinted = 3, event_player_startsprint = 4, event_player_stopsprint = 5, event_entity_rolled = 6, event_entity_failed_roll= 7, event_open_door = 8, event_down_level = 9, event_up_level = 10;
+const event_game_start = 0, event_player_moved = 1, event_entity_moved = 2, event_entity_sprinted = 3, event_player_startsprint = 4, event_player_stopsprint = 5, event_entity_rolled = 6, event_entity_failed_roll= 7, event_open_door = 8, event_down_level = 9, event_up_level = 10, event_window_resized = 11;
 
 //direction
 const direction_up = 0, direction_right = 1, direction_down = 2, direction_left = 3;
