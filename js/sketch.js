@@ -12,6 +12,7 @@ const OPEN = 0, CLOSED = 1;
 
 var MUSIC = [];
 var TEXTURES = [];
+var IMAGES = [];
 
 function preload() {
 	let settings = loadJSON('/config/config.json');
@@ -111,6 +112,7 @@ function preload() {
 	TEXTURES[STAIR][UP] = loadImage('/img/textures/stairUp.png');
 	TEXTURES[STAIR][DOWN] = loadImage('/img/textures/stairDown.png');
 
+	IMAGES[HEART] = loadImage('/img/icons/healthIndicator.png');
 }
 
 function setup() {

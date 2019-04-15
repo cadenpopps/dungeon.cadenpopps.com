@@ -4,10 +4,11 @@ function Entity(x, y, hp = 3, str = 1, mag = 1, int = 1, animations = undefined)
 	let size = 1;
 	let texture = undefined;
 
-	this.components = [component_position, component_direction, component_physical, component_display, component_actions, component_animation];
+	this.components = [component_position, component_health, component_direction, component_physical, component_display, component_actions, component_animation];
 	this.position = new PositionComponent(x, y);
 	this.direction = new DirectionComponent();
 	this.physical = new PhysicalComponent(true, false, size);
+	this.health = new HealthComponent(3);
 	this.display = new DisplayComponent(undefined, size, size);
 	this.animation = new AnimationComponent(animations);
 	let defaultActions = [action_move_up, action_move_right, action_move_down, action_move_left, action_foward_attack, action_spin_attack];

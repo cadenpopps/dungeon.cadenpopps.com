@@ -38,6 +38,7 @@ function DisplaySystem(square_size, vision, animation_stages) {
 			centerCamera(camera, player.position, player.animation.offsetX, player.animation.offsetY); 
 		}
 		draw(player);
+		drawHealth(player);
 	}
 
 	let draw = function(o){
@@ -67,6 +68,10 @@ function DisplaySystem(square_size, vision, animation_stages) {
 				rect(x, y, w, h);
 			}
 		}
+	}
+
+	let drawHealth = function(player){
+		image(IMAGES[HEART], 0, 0, 50, 50);
 	}
 
 	this.updateObjects = function(object){

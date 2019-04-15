@@ -1,9 +1,13 @@
 
-const component_position = 0, component_movement = 1, component_display = 2, component_animation = 3, component_actions = 4, component_physical = 5, component_sprint = 6, component_direction = 7, component_level = 8;
-
 function PositionComponent(x, y){
 	this.x = x;
 	this.y = y;
+}
+
+function HealthComponent(h){
+	this.maxHealth = h;
+	this.health = h;
+	this.healthPercent = 1;
 }
 
 function DirectionComponent(){

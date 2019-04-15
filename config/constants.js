@@ -1,8 +1,15 @@
+//constants
+const UP = 0, DOWN = 1;
+
+//Image constants
+const HEART = 0;
+
 //Commands
 const command_move_entity = 0, command_roll_entity = 1, command_generate_level = 2, command_generate_player = 3, command_init = 4, command_clear_objects = 5, command_down_level = 6, command_up_level = 7;
 
-//constants
-const UP = 0, DOWN = 1;
+//components
+const component_position = 0, component_movement = 1, component_display = 2, component_animation = 3, component_actions = 4, component_physical = 5, component_sprint = 6, component_direction = 7, component_level = 8, component_health = 9;
+
 
 //events
 const event_game_start = 0, event_player_moved = 1, event_entity_moved = 2, event_entity_sprinted = 3, event_player_startsprint = 4, event_player_stopsprint = 5, event_entity_rolled = 6, event_entity_failed_roll= 7, event_open_door = 8, event_down_level = 9, event_up_level = 10, event_window_resized = 11;
