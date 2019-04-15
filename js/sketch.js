@@ -112,7 +112,7 @@ function preload() {
 	TEXTURES[STAIR][UP] = loadImage('/img/textures/stairUp.png');
 	TEXTURES[STAIR][DOWN] = loadImage('/img/textures/stairDown.png');
 
-	IMAGES[HEART] = loadImage('/img/icons/healthIndicator.png');
+	IMAGES[HEART] = loadImage('/img/icons/heart.png');
 }
 
 function setup() {

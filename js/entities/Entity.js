@@ -14,10 +14,6 @@ function Entity(x, y, hp = 3, str = 1, mag = 1, int = 1, animations = undefined)
 	let defaultActions = [action_move_up, action_move_right, action_move_down, action_move_left, action_foward_attack, action_spin_attack];
 	this.actions = new ActionComponent(defaultActions);
 
-	//this.x = pos[0];
-	//this.y = pos[1];
-	//this.health = hp;
-	//this.currentHealth = hp;
 	//this.strength = str;
 	//this.magic = mag;
 	//this.intelligence = int;

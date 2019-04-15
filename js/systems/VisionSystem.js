@@ -7,6 +7,7 @@ function VisionSystem (){
 
 	let player;
 	let board;
+	let entities = [];
 
 	this.run = function(engine){ }
 
@@ -23,12 +24,18 @@ function VisionSystem (){
 		for(let octant = 0; octant < 8; octant ++){
 			playerSightTriangle(board, octant, player.position.x, player.position.y, CONFIG.PLAYER_VISION_RANGE);
 		}
+
+		for(let e of entities){
+			if(board[e.position.x][e.position.y].display.visible){ e.display.visible = true; }
+		}
 	}
 
 	this.updateObjects = function(object){
 		if(object instanceof Player){ player = object; }
 		else if(object instanceof Level){ board = object.level.board; }
-		System.prototype.updateObjects.call(this, object);
+		else if(object instanceof Mob){ 
+			entities.push(object);
+		}
 	}
 
 	this.handleEvent = function(engine, e){

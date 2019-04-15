@@ -83,8 +83,9 @@ function MovementSystem(){
 			}
 
 			let eventID = event_entity_moved;
-			if(entity.sprint.sprinting){eventID = event_entity_sprinted;}
-
+			if(entity.components.includes(component_sprint) && entity.sprint.sprinting) {
+				eventID = event_entity_sprinted;
+			}
 			engine.sendEvent({"eventID": eventID, "entity": entity, "direction": direction});
 
 		}

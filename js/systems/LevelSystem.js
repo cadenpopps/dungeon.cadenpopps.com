@@ -26,17 +26,20 @@ function LevelSystem (){
 			switch(c.commandID){
 				case command_down_level:
 					currentDepth++;
-					if(currentDepth == levels.length){ newLevel(engine, currentDepth); }
+					if(currentDepth == levels.length){
+						newLevel(engine, currentDepth); 
+						engine.sendEvent({ eventID: event_new_level });
+					}
 					fixPlayerPosition(levels[currentDepth].level.stairUp);
 					updateLevel(engine);
-					engine.sendEvent({ eventID: event_down_level });
+					engine.sendEvent({ eventID: event_down_level, level: currentDepth });
 					break;
 				case command_up_level:
 					if(currentDepth > 0){
 						currentDepth--; 
 						fixPlayerPosition(levels[currentDepth].level.stairDown);
 						updateLevel(engine);
-						engine.sendEvent({ eventID: event_up_level });
+						engine.sendEvent({ eventID: event_up_level, level: currentDepth });
 					}
 					break;
 				case command_init:
@@ -54,6 +57,7 @@ function LevelSystem (){
 		let level = newLevel(engine, 0);
 		engine.sendCommand({ commandID:command_generate_player, x:level.level.stairUp.x, y:level.level.stairUp.y });
 		updateLevel(engine);
+		engine.sendEvent({ eventID: event_new_level });
 	}
 
 	let newLevel = function(engine, depth){
@@ -66,7 +70,6 @@ function LevelSystem (){
 
 	let updateLevel = function(engine){
 		engine.clearObjects();
-		if(levels.length > 0){ engine.updateObjects(player); }
 		let level = levels[currentDepth];
 		engine.updateObjects(level);
 		for (var i = 0; i < CONFIG.DUNGEON_SIZE; i++) {

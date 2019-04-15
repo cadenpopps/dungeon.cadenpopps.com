@@ -1,7 +1,7 @@
 Mob.prototype = Object.create(Entity.prototype);
 
-function Mob(pos, hp, str, mag, int) {
-	Entity.call(this, pos, hp, str, mag, int);
+function Mob(x, y, hp, str, mag, int) {
+	Entity.call(this, x, y, hp, str, mag, int, CONFIG.DEFAULT_ANIMATIONS);
 	this.visible = false;
 }
 
