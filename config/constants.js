@@ -1,5 +1,5 @@
 //constants
-const UP = 0, DOWN = 1;
+const UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
 
 //Image constants
 const HEART = 0;

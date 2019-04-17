@@ -18,6 +18,7 @@ Square.prototype.mobHere = function (mobs) {
 WallSquare.prototype = Object.create(Square.prototype);
 function WallSquare(x, y) {
 	Square.call(this, x, y, WALL, TEXTURES[WALL], true, true);
+	this.walkable = function(mobs){return false;}
 }
 
 FloorSquare.prototype = Object.create(Square.prototype);

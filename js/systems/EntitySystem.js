@@ -3,16 +3,19 @@ EntitySystem.prototype = Object.create(System.prototype);
 function EntitySystem (){
 	System.call(this);
 
+	this.componentRequirements = [component_actions];
+
 	this.acceptedEvents = [event_new_level, event_down_level, event_up_level];
 	this.acceptedCommands = [command_generate_player];
 
 	let levels = [];
 	let player;
+	let board;
 
 	this.run = function(engine){
 		for(let e of this.objects){
 			if(e instanceof Mob){
-				e.actions.nextAction = randomInt(0, 4);
+				let b = getBehavior(e, player);
 			}
 		}
 	}
@@ -56,4 +59,27 @@ function EntitySystem (){
 		}
 		engine.updateObjects(player);
 	}
+
+	this.updateObjects = function(object){
+		if(object instanceof Level){ board = object.level.board; }
+		System.prototype.updateObjects.call(this, object);
+	}
+
+
+
+	//MOB BEHAVIOR
+
+	let getBehavior = function(mob, player){
+		if(abs(mob.position.x - player.position.x) < CONFIG.PLAYER_VISION_RANGE && abs(mob.position.y - player.position.y) < CONFIG.PLAYER_VISION_RANGE){
+			if(abs(mob.position.x - player.position.x) > 1 || abs(mob.position.y - player.position.y) > 1){
+				let path = findMobPath(board, mob, player);
+				let dir = dirToSquare(board[mob.position.x][mob.position.y], path[1]);
+				mob.actions.nextAction = action_move + dir;
+			}
+			else{
+			}
+		}
+	}
+
+
 }

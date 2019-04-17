@@ -2,9 +2,14 @@ function getSquareCode(x, y) {
 	return x + (y * CONFIG.DUNGEON_SIZE)
 }
 
+function findMobPath(board, mob, player){
+	return findPath(board, board[mob.position.x][mob.position.y], board[player.position.x][player.position.y]);
+}
+
 const LARGE_VALUE = 2147483647;
 
 function findPath(board, start, end) {
+
 	let searched = [];
 	let searching = [];
 	let cameFrom = {};
@@ -20,8 +25,8 @@ function findPath(board, start, end) {
 
 	searching.push(start);
 	distFromStart[start] = 0;
-	finalCost[start] = nodeDistance(start, end);
-	cameFrom[getSquareCode(start.x, start.y)] = -1;
+	finalCost[start] = squareDistance(start, end);
+	cameFrom[getSquareCode(start.position.x, start.position.y)] = -1;
 
 	while (searching.length > 0) {
 		let current = searching[0];
@@ -51,7 +56,7 @@ function findPath(board, start, end) {
 					continue;
 				}
 
-				cameFrom[n.squareCode] = current.squareCode;
+				cameFrom[getSquareCode(n.position.x, n.position.y)] = getSquareCode(current.position.x, current.position.y);
 				distFromStart[n] = estimatedDistFromStart;
 				finalCost[n] = distFromStart[n] + squareDistance(start, end);
 			}
@@ -61,12 +66,12 @@ function findPath(board, start, end) {
 }
 
 function squareDistance(start, end) {
-	return abs(start.x - end.x) + abs(start.y - end.y);
+	return abs(start.position.x - end.position.x) + abs(start.position.y - end.position.y);
 }
 
 function makePath(board, cameFrom, last) {
 	let path = [];
-	let current = getSquareCode(last.x, last.y);
+	let current = getSquareCode(last.position.x, last.position.y);
 	while (cameFrom[current] > 0) {
 		path.unshift(getSquareFromCode(board, current));
 		current = cameFrom[current];
@@ -83,10 +88,10 @@ const PATHFINDING = -1;
 
 function getNeighbors(board, square) {
 	neighbors = [];
-	if (square.x > 0 && board[square.x - 1][square.y].walkable(board, PATHFINDING)) neighbors.push(board[square.x - 1][square.y]);
-	if (square.y > 0 && board[square.x][square.y - 1].walkable(board, PATHFINDING)) neighbors.push(board[square.x][square.y - 1]);
-	if (square.x < CONFIG.DUNGEON_SIZE - 1 && board[square.x + 1][square.y].walkable(board, PATHFINDING)) neighbors.push(board[square.x + 1][square.y]);
-	if (square.y < CONFIG.DUNGEON_SIZE - 1 && board[square.x][square.y + 1].walkable(board, PATHFINDING)) neighbors.push(board[square.x][square.y + 1]);
+	if (square.position.x > 0 && board[square.position.x - 1][square.position.y].walkable(board, PATHFINDING)) neighbors.push(board[square.position.x - 1][square.position.y]);
+	if (square.position.y > 0 && board[square.position.x][square.position.y - 1].walkable(board, PATHFINDING)) neighbors.push(board[square.position.x][square.position.y - 1]);
+	if (square.position.x < CONFIG.DUNGEON_SIZE - 1 && board[square.position.x + 1][square.position.y].walkable(board, PATHFINDING)) neighbors.push(board[square.position.x + 1][square.position.y]);
+	if (square.position.y < CONFIG.DUNGEON_SIZE - 1 && board[square.position.x][square.position.y + 1].walkable(board, PATHFINDING)) neighbors.push(board[square.position.x][square.position.y + 1]);
 	return neighbors;
 }
 
@@ -102,19 +107,22 @@ function direction(start, target){
 }
 
 function dirToSquare(start, target){
-	console.log(start);	
+	console.log(start);
 	console.log(target);
-	if(start.x > target.x){
+	if(start.position.x > target.position.x){
 		return LEFT;
 	}
-	else if(start.y > target.y){
+	else if(start.position.y > target.position.y){
 		return UP;
 	}
-	else if (start.x < target.x){
+	else if (start.position.x < target.position.x){
 		return RIGHT;
 	}
-	else if(start.y < target.y){
+	else if(start.position.y < target.position.y){
 		return DOWN;
+	}
+	else{
+		return -1;
 	}
 }
 
