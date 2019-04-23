@@ -15,7 +15,8 @@ function EntitySystem (){
 	this.run = function(engine){
 		for(let e of this.objects){
 			if(e instanceof Mob){
-				let b = getBehavior(e, player);
+				let action = getBehavior(e, player);
+				e.actions.nextAction = action;
 			}
 		}
 	}
@@ -73,8 +74,13 @@ function EntitySystem (){
 		if(abs(mob.position.x - player.position.x) < CONFIG.PLAYER_VISION_RANGE && abs(mob.position.y - player.position.y) < CONFIG.PLAYER_VISION_RANGE){
 			if(abs(mob.position.x - player.position.x) > 1 || abs(mob.position.y - player.position.y) > 1){
 				let path = findMobPath(board, mob, player);
-				let dir = dirToSquare(board[mob.position.x][mob.position.y], path[1]);
-				mob.actions.nextAction = action_move + dir;
+				if(path !== false){
+					let dir = dirToSquare(board[mob.position.x][mob.position.y], path[1]);
+					return action_move + dir;
+				}
+				else{
+					return action_none;
+				}
 			}
 			else{
 			}

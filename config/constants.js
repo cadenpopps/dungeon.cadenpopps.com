@@ -1,5 +1,6 @@
 //constants
 const UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
+const entity_player = 0, entity_mob = 1;
 
 //Image constants
 const HEART = 0;

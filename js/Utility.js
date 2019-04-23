@@ -88,11 +88,52 @@ const PATHFINDING = -1;
 
 function getNeighbors(board, square) {
 	neighbors = [];
-	if (square.position.x > 0 && board[square.position.x - 1][square.position.y].walkable(board, PATHFINDING)) neighbors.push(board[square.position.x - 1][square.position.y]);
-	if (square.position.y > 0 && board[square.position.x][square.position.y - 1].walkable(board, PATHFINDING)) neighbors.push(board[square.position.x][square.position.y - 1]);
-	if (square.position.x < CONFIG.DUNGEON_SIZE - 1 && board[square.position.x + 1][square.position.y].walkable(board, PATHFINDING)) neighbors.push(board[square.position.x + 1][square.position.y]);
-	if (square.position.y < CONFIG.DUNGEON_SIZE - 1 && board[square.position.x][square.position.y + 1].walkable(board, PATHFINDING)) neighbors.push(board[square.position.x][square.position.y + 1]);
+	if (square.position.x > 0 && walkable(entity_mob, board[square.position.x - 1][square.position.y])) {
+		neighbors.push(board[square.position.x - 1][square.position.y]);
+	}
+	if (square.position.y > 0 && walkable(entity_mob, board[square.position.x][square.position.y - 1])) {
+		neighbors.push(board[square.position.x][square.position.y - 1]);
+	}
+	if (square.position.x < CONFIG.DUNGEON_SIZE - 1 && walkable(entity_mob, board[square.position.x + 1][square.position.y])) {
+		neighbors.push(board[square.position.x + 1][square.position.y]);
+	}
+	if (square.position.y < CONFIG.DUNGEON_SIZE - 1 && walkable(entity_mob, board[square.position.x][square.position.y + 1])) {
+		neighbors.push(board[square.position.x][square.position.y + 1]);
+	}
+	// if (square.position.x > 0 && board[square.position.x - 1][square.position.y].walkable(board, PATHFINDING)) neighbors.push(board[square.position.x - 1][square.position.y]);
+	// if (square.position.y > 0 && board[square.position.x][square.position.y - 1].walkable(board, PATHFINDING)) neighbors.push(board[square.position.x][square.position.y - 1]);
+	// if (square.position.x < CONFIG.DUNGEON_SIZE - 1 && board[square.position.x + 1][square.position.y].walkable(board, PATHFINDING)) neighbors.push(board[square.position.x + 1][square.position.y]);
+	// if (square.position.y < CONFIG.DUNGEON_SIZE - 1 && board[square.position.x][square.position.y + 1].walkable(board, PATHFINDING)) neighbors.push(board[square.position.x][square.position.y + 1]);
 	return neighbors;
+}
+
+function walkable(entityType, square){
+	if(entityType == entity_player){ 
+		return playerWalkable(square); 
+	}
+	else if(entityType == entity_mob){ 
+		return mobWalkable(square); 
+	}
+}
+
+function playerWalkable(square){
+	if(square instanceof WallSquare){
+		return false;	
+	}
+	return true;
+}
+
+function mobWalkable(square){
+	if(square instanceof WallSquare){
+		return false;	
+	}
+	else if(square instanceof DoorSquare && !square.opened){
+		return false;	
+	}
+	else if(square instanceof StairSquare){
+		return false;	
+	}
+	return true;
 }
 
 function direction(start, target){
@@ -107,8 +148,6 @@ function direction(start, target){
 }
 
 function dirToSquare(start, target){
-	console.log(start);
-	console.log(target);
 	if(start.position.x > target.position.x){
 		return LEFT;
 	}
@@ -122,7 +161,7 @@ function dirToSquare(start, target){
 		return DOWN;
 	}
 	else{
-		return -1;
+		throw new Error("Cannot determine direction from square" + start + " to " + target);
 	}
 }
 

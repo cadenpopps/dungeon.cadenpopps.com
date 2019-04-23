@@ -62,7 +62,7 @@ function MovementSystem(){
 				break;
 		}
 
-		let allowed = walkable(engine, target, entity, board, objects);
+		let allowed = currentlyWalkable(target, entity, board, objects);
 
 		if (allowed) {
 			entity.direction.direction = action_to_direction[direction];
@@ -79,6 +79,7 @@ function MovementSystem(){
 			entity.position.y = target.y;
 
 			if(entity instanceof Player) {
+				playerWalkEvents(engine, board[target.x][target.y]);
 				engine.sendEvent({"eventID": event_player_moved, "entity": entity});
 			}
 
@@ -122,8 +123,8 @@ function MovementSystem(){
 				break;
 		}
 
-		let t1Allowed = walkable(engine, t1, entity, board, objects);
-		let t2Allowed = walkable(engine, t2, entity, board, objects);
+		let t1Allowed = currentlyWalkable(t1, entity, board, objects);
+		let t2Allowed = currentlyWalkable(t2, entity, board, objects);
 
 		if (t2Allowed) {
 			let eventID;
@@ -139,6 +140,8 @@ function MovementSystem(){
 			}
 
 			if(entity instanceof Player) {
+				playerWalkEvents(engine, board[t1.x][t1.y]);
+				playerWalkEvents(engine, board[t2.x][t2.y]);
 				engine.sendEvent({"eventID": event_player_moved, "entity": entity});
 			}
 
@@ -148,25 +151,27 @@ function MovementSystem(){
 		else {engine.sendEvent({"eventID": event_entity_failed_roll, "entity": entity, "direction": direction});}
 	}
 
-	let walkable = function(engine, target, entity, board, objects){
+	let currentlyWalkable = function(target, entity, board, objects){
 		if(target.x > 0 && target.x < CONFIG.DUNGEON_SIZE && target.y > 0 && target.y < CONFIG.DUNGEON_SIZE){
-			let square = board[target.x][target.y];
+			let type = (entity instanceof Player) ? entity_player : entity_mob;
+			if(!walkable(type, board[target.x][target.y])){ return false; }
 			for(let o of objects){
 				if(o.position.x == target.x && o.position.y == target.y && o.physical.solid){
 					return false;
 				}
 			}
-			if(square instanceof StairSquare && entity instanceof Player){
-				if(square.up){ engine.sendCommand({commandID: command_up_level}); }
-				else{ engine.sendCommand({commandID: command_down_level}); }
-				return false;
-			}
-			if(square instanceof DoorSquare && (entity instanceof Player || square.opened)){
-				square.open();
-				return true;
-			}
-			else if(!square.physical.solid){ return true; }
+			return true;
 		}
 		return false;
+	}
+
+	let playerWalkEvents = function(engine, square){
+		if(square instanceof StairSquare){
+			if(square.up){ engine.sendCommand({commandID: command_up_level}); }
+			else{ engine.sendCommand({commandID: command_down_level}); }
+		}
+		if(square instanceof DoorSquare){
+			square.open();
+		}
 	}
 }

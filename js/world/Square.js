@@ -6,19 +6,9 @@ function Square(x, y, type, texture, solid, blocking) {
 	this.physical = new PhysicalComponent(solid, blocking, 1);
 }
 
-Square.prototype.walkable = function (mobs) {
-	return (!this.mobHere(mobs));
-};
-
-Square.prototype.mobHere = function (mobs) {
-	return this.squareCode in mobs;
-};
-
-
 WallSquare.prototype = Object.create(Square.prototype);
 function WallSquare(x, y) {
 	Square.call(this, x, y, WALL, TEXTURES[WALL], true, true);
-	this.walkable = function(mobs){return false;}
 }
 
 FloorSquare.prototype = Object.create(Square.prototype);
