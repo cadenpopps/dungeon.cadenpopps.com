@@ -8,6 +8,16 @@ function HealthComponent(h){
 	this.maxHealth = h;
 	this.health = h;
 	this.healthPercent = 1;
+
+	this.changeHealth = function(h){
+		this.health = h;
+		this.healthPercent = this.health / this.maxHealth;
+	}
+
+	this.changeMaxHealth = function(h){
+		this.maxHealth = h;
+		this.healthPercent = this.health / this.maxHealth;
+	}
 }
 
 function DirectionComponent(){

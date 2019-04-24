@@ -26,29 +26,42 @@ function DisplaySystem(square_size, vision, animation_stages) {
 	let HEART_SIZE = 32;
 	let HEART_OFFSET = 12;
 
+	let HEALTH_BAR_OFFSET = 6;
+	let HEALTH_BAR_HEIGHT = 4;
+
 	let GRID_SIZE = 32;
 	let HALF_GRID_SIZE = GRID_SIZE / 2;
 
 	this.run = function(engine) {
 		background(0, 0, 0);
 		for(let o of this.objects){
-			if((o.display.visible 
-				|| o.display.discovered > 0
-			) && !(o instanceof Player)){ draw(o); }
+			let x = CENTER_X - camera.zoom * (GRID_SIZE * (camera.x + camera.shakeOffsetX - o.position.x));
+			let y = CENTER_Y - camera.zoom * (GRID_SIZE * (camera.y + camera.shakeOffsetY - o.position.y));
+			let w = o.display.width * GRID_SIZE * camera.zoom;
+			let h = o.display.height * GRID_SIZE * camera.zoom;
+			if(o.display.visible || o.display.discovered > 0){
+				drawTexture(o, x, y, w, h); 
+			}
 		}
+		for(let o of this.objects){
+			let x = CENTER_X - camera.zoom * (GRID_SIZE * (camera.x + camera.shakeOffsetX - o.position.x));
+			let y = CENTER_Y - camera.zoom * (GRID_SIZE * (camera.y + camera.shakeOffsetY - o.position.y));
+			let w = o.display.width * GRID_SIZE * camera.zoom;
+			if(!(o instanceof Player) && o.components.includes(component_health)){
+				drawMobHealth(o, x, y, w);
+			}
+			else if(o instanceof Player){
+				drawPlayerHealth(o);
+			}
+		}
+		drawLights();
 		if(cameraMoving){
 			if(player.animation.animation == animation_idle){ cameraMoving = false; }
 			centerCamera(camera, player.position, player.animation.offsetX, player.animation.offsetY); 
 		}
-		draw(player);
-		drawHealth(player);
 	}
 
-	let draw = function(o){
-		let x = CENTER_X - camera.zoom * (GRID_SIZE * (camera.x + camera.shakeOffsetX - o.position.x));
-		let y = CENTER_Y - camera.zoom * (GRID_SIZE * (camera.y + camera.shakeOffsetY - o.position.y));
-		let w = o.display.width * GRID_SIZE * camera.zoom;
-		let h = o.display.height * GRID_SIZE * camera.zoom;
+	let drawTexture = function(o, x, y, w, h){
 		if(o.components.includes(component_animation)){
 			x += GRID_SIZE * o.animation.offsetX;
 			y += GRID_SIZE * o.animation.offsetY;
@@ -73,10 +86,38 @@ function DisplaySystem(square_size, vision, animation_stages) {
 		}
 	}
 
-	let drawHealth = function(player){
+	let drawPlayerHealth = function(player){
 		for(let i = 0; i < player.health.health; i++){
 			image(IMAGES[HEART], HEART_OFFSET + i * HEART_SIZE, HEART_OFFSET, HEART_SIZE, HEART_SIZE);
 		}
+	}
+
+	let drawMobHealth = function(mob, x, y, w){
+		xoff = GRID_SIZE * mob.animation.offsetX;
+		yoff = GRID_SIZE * mob.animation.offsetY;
+		w = w - (GRID_SIZE / 4);
+		fill(0,0,0);
+		rect(xoff + x + (GRID_SIZE / 8) - .5, yoff + y - HEALTH_BAR_OFFSET - .5, w + 1, HEALTH_BAR_HEIGHT + 1);
+		fill(40,0,0);
+		rect(xoff + x + (GRID_SIZE / 8), yoff + y - HEALTH_BAR_OFFSET, w, HEALTH_BAR_HEIGHT);
+		w = w * mob.health.healthPercent;
+		fill(50, 220, 120);
+		rect(xoff + x + (GRID_SIZE / 8), yoff + y - HEALTH_BAR_OFFSET, w, HEALTH_BAR_HEIGHT);
+	}
+
+	let drawLights = function(){
+		fill(0, 0, 255, .033);
+		rect(0,0,width,height);
+	
+		// radgrad.addColorStop(0, 'rgba(255,0,0,1)');
+		// radgrad.addColorStop(0.8, 'rgba(228,0,0,.9)');
+		// radgrad.addColorStop(1, 'rgba(228,0,0,0)');
+
+		// // draw shape
+		// canvas.fillStyle = radgrad;
+		// canvas.fillRect(width/2,height/2,150,150);
+		// fill(255, 250, 0, .1);
+		// ellipse(width/2,height/2,20,20);
 	}
 
 	this.updateObjects = function(object){
@@ -98,7 +139,6 @@ function DisplaySystem(square_size, vision, animation_stages) {
 					break;
 				case event_window_resized:
 					resize();
-		console.log(this.objects);
 			}
 		}
 	}
