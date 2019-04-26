@@ -45,6 +45,10 @@
 		"val": 18
 	},
 	{
+		"name": "LIGHT_RANGE",
+		"val": 10
+	},
+	{
 		"name": "ANIMATION_SPEED",
 		"val": 1
 	},

@@ -20,6 +20,9 @@ function DisplaySystem(square_size, vision, animation_stages) {
 	let cameraShakeTimer = undefined;
 	let cameraMoving = false;
 
+	let lightOffset = lightOffsetScale = 12;
+	let lightOffsetSpeed = 800;
+
 	let CENTER_X = floor(width / 2);
 	let CENTER_Y = floor(height / 2);
 
@@ -33,8 +36,21 @@ function DisplaySystem(square_size, vision, animation_stages) {
 	let HALF_GRID_SIZE = GRID_SIZE / 2;
 
 	this.run = function(engine) {
-		background(0, 0, 0);
-		for(let o of this.objects){
+		background(0);
+		lightOffset = osc(millis() / lightOffsetSpeed, lightOffsetScale, lightOffsetScale);
+		fill(shadow_red_min + lightOffset, shadow_green_min + lightOffset, shadow_blue_max - lightOffset, shadow_intensity);
+		rect(0, 0, width, height);
+		drawTextures(this.objects); 
+		drawLights(this.objects);
+		drawHealth(this.objects);
+		if(cameraMoving){
+			if(player.animation.animation == animation_idle){ cameraMoving = false; }
+			centerCamera(camera, player.position, player.animation.offsetX, player.animation.offsetY); 
+		}
+	}
+
+	let drawTextures = function(objects){
+		for(let o of objects){
 			let x = CENTER_X - camera.zoom * (GRID_SIZE * (camera.x + camera.shakeOffsetX - o.position.x));
 			let y = CENTER_Y - camera.zoom * (GRID_SIZE * (camera.y + camera.shakeOffsetY - o.position.y));
 			let w = o.display.width * GRID_SIZE * camera.zoom;
@@ -42,22 +58,6 @@ function DisplaySystem(square_size, vision, animation_stages) {
 			if(o.display.visible || o.display.discovered > 0){
 				drawTexture(o, x, y, w, h); 
 			}
-		}
-		for(let o of this.objects){
-			let x = CENTER_X - camera.zoom * (GRID_SIZE * (camera.x + camera.shakeOffsetX - o.position.x));
-			let y = CENTER_Y - camera.zoom * (GRID_SIZE * (camera.y + camera.shakeOffsetY - o.position.y));
-			let w = o.display.width * GRID_SIZE * camera.zoom;
-			if(!(o instanceof Player) && o.components.includes(component_health)){
-				drawMobHealth(o, x, y, w);
-			}
-			else if(o instanceof Player){
-				drawPlayerHealth(o);
-			}
-		}
-		drawLights();
-		if(cameraMoving){
-			if(player.animation.animation == animation_idle){ cameraMoving = false; }
-			centerCamera(camera, player.position, player.animation.offsetX, player.animation.offsetY); 
 		}
 	}
 
@@ -86,6 +86,51 @@ function DisplaySystem(square_size, vision, animation_stages) {
 		}
 	}
 
+	let drawLights = function(objects){
+		// let st = millis();
+		// for(let o of objects){
+		// 	if(o.display.discovered && o.components.includes(component_light)){
+		// 		lightSquare(o);
+		// 	}
+		// }
+		// console.log(millis() - st);
+		
+		for(let k = 0; k < 10; k++){
+			let l = (k / light_max) * light_scale;
+			console.log("rgba(" + constrainHigh(light_red + l - lightOffset, light_red_max) + ", " + constrainHigh(light_green + l - lightOffset, light_green_max) + ", " + constrainLow(light_blue - l + lightOffset, light_blue_min) + ", " + light_intensity * (k/light_max) + ")");
+		}
+	}
+
+	let lightSquare = function(o){
+
+		let x = CENTER_X - camera.zoom * (GRID_SIZE * (camera.x + camera.shakeOffsetX - o.position.x));
+		let y = CENTER_Y - camera.zoom * (GRID_SIZE * (camera.y + camera.shakeOffsetY - o.position.y));
+		let w = o.display.width * GRID_SIZE * camera.zoom;
+		let h = o.display.height * GRID_SIZE * camera.zoom;
+
+		let l = (o.light.lightLevel / light_max) * light_scale;
+		let s = (o.light.lightLevel / light_max) * shadow_scale;
+
+		fill(constrainHigh(light_red + l - lightOffset, light_red_max), constrainHigh(light_green + l - lightOffset, light_green_max), constrainLow(light_blue - l + lightOffset, light_blue_min), light_intensity * (o.light.lightLevel/light_max));
+		rect(x, y, w, h);
+		fill(constrainLow(shadow_red - s + lightOffset, shadow_red_min), constrainLow(shadow_green - s + lightOffset, shadow_green_min), constrainHigh(shadow_blue + s - lightOffset, shadow_blue_max), shadow_intensity * ((light_max - o.light.lightLevel) / light_max));
+		rect(x, y, w, h);
+	}
+
+	let drawHealth = function(objects){
+		for(let o of objects){
+			let x = CENTER_X - camera.zoom * (GRID_SIZE * (camera.x + camera.shakeOffsetX - o.position.x));
+			let y = CENTER_Y - camera.zoom * (GRID_SIZE * (camera.y + camera.shakeOffsetY - o.position.y));
+			let w = o.display.width * GRID_SIZE * camera.zoom;
+			if(!(o instanceof Player) && o.components.includes(component_health)){
+				drawMobHealth(o, x, y, w);
+			}
+			else if(o instanceof Player){
+				drawPlayerHealth(o);
+			}
+		}
+	}
+
 	let drawPlayerHealth = function(player){
 		for(let i = 0; i < player.health.health; i++){
 			image(IMAGES[HEART], HEART_OFFSET + i * HEART_SIZE, HEART_OFFSET, HEART_SIZE, HEART_SIZE);
@@ -105,20 +150,6 @@ function DisplaySystem(square_size, vision, animation_stages) {
 		rect(xoff + x + (GRID_SIZE / 8), yoff + y - HEALTH_BAR_OFFSET, w, HEALTH_BAR_HEIGHT);
 	}
 
-	let drawLights = function(){
-		fill(0, 0, 255, .033);
-		rect(0,0,width,height);
-	
-		// radgrad.addColorStop(0, 'rgba(255,0,0,1)');
-		// radgrad.addColorStop(0.8, 'rgba(228,0,0,.9)');
-		// radgrad.addColorStop(1, 'rgba(228,0,0,0)');
-
-		// // draw shape
-		// canvas.fillStyle = radgrad;
-		// canvas.fillRect(width/2,height/2,150,150);
-		// fill(255, 250, 0, .1);
-		// ellipse(width/2,height/2,20,20);
-	}
 
 	this.updateObjects = function(object){
 		if(object instanceof Player){

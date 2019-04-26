@@ -42,6 +42,10 @@ function DisplayComponent(texture, width, height){
 	this.discovered = 0;
 }
 
+function LightComponent(){
+	this.lightLevel = 0;
+}
+
 function AnimationComponent(animations){
 	this.offsetX = 0;
 	this.offsetY = 0;

@@ -1,6 +1,11 @@
 //constants
 const UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
 const entity_player = 0, entity_mob = 1;
+const light_max = light_range = 8, light_intensity = .12, light_scale = 40, light_red = 100, light_green = 70, light_blue = 50;
+const shadow_intensity = .2, shadow_scale = 40, shadow_red = 70, shadow_green = 50, shadow_blue = 100;
+const light_red_max = 255, light_green_max = 235, light_blue_min = 0, shadow_red_min = 0, shadow_green_min = 0, shadow_blue_max = 220;
+
+const light_fill_styles = [];
 
 //Image constants
 const HEART = 0;
@@ -9,7 +14,7 @@ const HEART = 0;
 const command_move_entity = 0, command_roll_entity = 1, command_generate_level = 2, command_generate_player = 3, command_init = 4, command_clear_objects = 5, command_down_level = 6, command_up_level = 7;
 
 //components
-const component_position = 0, component_movement = 1, component_display = 2, component_animation = 3, component_actions = 4, component_physical = 5, component_sprint = 6, component_direction = 7, component_level = 8, component_health = 9;
+const component_position = 0, component_movement = 1, component_display = 2, component_animation = 3, component_actions = 4, component_physical = 5, component_sprint = 6, component_direction = 7, component_level = 8, component_health = 9, component_light = 10;
 
 
 //events
