@@ -27,9 +27,8 @@ function VisionSystem (){
 			playerSightTriangle(board, octant, player.position.x, player.position.y, CONFIG.PLAYER_VISION_RANGE);
 		}
 		for(let octant = 0; octant < 8; octant++){
-			lightTriangle(board, octant, player.position.x, player.position.y, light_range);
+			lightTriangle(board, octant, player.position.x, player.position.y, light_max);
 		}
-
 		for(let e of entities){
 			if(board[e.position.x][e.position.y].display.visible){ e.display.visible = true; }
 		}
@@ -65,8 +64,8 @@ function VisionSystem (){
 					if(cur === undefined){ break; }
 					cur.light.lightLevel = range - x;
 					if(cur.physical.blocking){
-						let firstBlocked = getFirstBlocked(board, octant, x, y, sx, sy, shadows);
-						let lastBlocked = getBlocked(board, octant, x, y, sx, sy, shadows);
+						let firstBlocked = getFirstBlockedLight(board, octant, x, y, sx, sy, shadows, range);
+						let lastBlocked = getBlockedLight(board, octant, x, y, sx, sy, shadows, range);
 						let shadowStart = slope(firstBlocked.x, firstBlocked.y, BOTTOM_RIGHT);
 						let shadowEnd = slope(lastBlocked.x, lastBlocked.y, TOP_LEFT);
 						shadows.push([shadowStart, shadowEnd]);
@@ -83,6 +82,40 @@ function VisionSystem (){
 			}
 			x++;
 		}
+	}
+
+	let getFirstBlockedLight = function(board, octant, x, y, sx, sy, shadows, range){
+		let firstBlocked = {x:x, y:y};
+
+		let currentBlocked = getTranslatedSquare(board, octant, x, y, sx, sy); 
+
+		while(currentBlocked !== undefined && currentBlocked.physical.blocking && slope(x, y, CENTER_SQUARE) > 0){
+			firstBlocked = {x:x, y:y};
+			if(!inShadow(x, y, shadows)){
+				currentBlocked.light.lightLevel = range - x;
+			}
+
+			y--;
+			currentBlocked = getTranslatedSquare(board, octant, x, y, sx, sy);
+		}
+		return firstBlocked;
+	}
+
+	let getBlockedLight = function(board, octant, x, y, sx, sy, shadows, range){
+		let lastBlocked = {x:x, y:y};
+
+		let currentBlocked = getTranslatedSquare(board, octant, x, y, sx, sy); 
+
+		while(currentBlocked !== undefined && currentBlocked.physical.blocking && slope(x, y, BOTTOM_RIGHT) < 1){
+			lastBlocked = {x:x, y:y};
+			if(!inShadow(x, y, shadows)){
+				currentBlocked.light.lightLevel = range - x;
+			}
+
+			y++;
+			currentBlocked = getTranslatedSquare(board, octant, x, y, sx, sy);
+		}
+		return lastBlocked;
 	}
 
 	let playerSightTriangle = function(board, octant, sx, sy, range){

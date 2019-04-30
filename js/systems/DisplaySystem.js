@@ -20,8 +20,7 @@ function DisplaySystem(square_size, vision, animation_stages) {
 	let cameraShakeTimer = undefined;
 	let cameraMoving = false;
 
-	let lightOffset = lightOffsetScale = 12;
-	let lightOffsetSpeed = 800;
+	let lightOffset = 0, lightOffsetScale = .02, lightOffsetSpeed = 600;
 
 	let CENTER_X = floor(width / 2);
 	let CENTER_Y = floor(height / 2);
@@ -37,7 +36,7 @@ function DisplaySystem(square_size, vision, animation_stages) {
 
 	this.run = function(engine) {
 		background(0);
-		lightOffset = osc(millis() / lightOffsetSpeed, lightOffsetScale, lightOffsetScale);
+		lightOffset = osc(millis() / lightOffsetSpeed, 0, lightOffsetScale);
 		drawTextures(this.objects); 
 		drawLights(this.objects);
 		drawHealth(this.objects);
@@ -75,36 +74,37 @@ function DisplaySystem(square_size, vision, animation_stages) {
 		else{
 			let t = o.display.texture;
 			image(t, x, y, w, h);
-			if(!o.display.visible && o.display.discovered > 0){
-				let opacity = min(1, 1 - (o.display.discovered/CONFIG.DISCOVERED_MAX) + .4);
-				if(opacity == 1) { o.display.discovered = 0; }
-				fill(0,0,0, opacity);
-				rect(x, y, w, h);
-			}
+			// if(!o.display.visible && o.display.discovered > 0){
+				// let opacity = min(1, 1 - (o.display.discovered/CONFIG.DISCOVERED_MAX) + .4);
+				// if(opacity == 1) { o.display.discovered = 0; }
+				// fill(0,0,0, opacity);
+				// rect(x, y, w, h);
+			// }
 		}
 	}
 
 	let drawLights = function(objects){
-		//shadow tint
-		fill(light_red + lightOffset, light_green + lightOffset, light_blue - lightOffset, light_intensity);
-		rect(0, 0, width, height);
-		let st = millis();
+		// let st = millis();
+		let lightFill = "rgba(" + light_red + "," + light_green + "," + light_blue + "," + (lightOffset + light_intensity) + ")";
 		for(let o of objects){
 			if(o.display.discovered && o.components.includes(component_light)){
+				canvas.fillStyle = lightFill;
 				lightSquare(o);
 			}
 		}
 		// console.log(millis() - st);
 	}
 
-	let lightSquare = function(o){
+	let lightSquare = function(o) {
 		let x = CENTER_X - camera.zoom * (GRID_SIZE * (camera.x + camera.shakeOffsetX - o.position.x));
 		let y = CENTER_Y - camera.zoom * (GRID_SIZE * (camera.y + camera.shakeOffsetY - o.position.y));
 		let w = o.display.width * GRID_SIZE * camera.zoom;
 		let h = o.display.height * GRID_SIZE * camera.zoom;
 
-		fill(shadow_red, shadow_green, shadow_blue, constrainHigh(shadow_intensity * (light_max - o.light.lightLevel), shadow_max));
-		console.log(shadow_intensity * (light_max - o.light.lightLevel));
+		rect(x, y, w, h);
+		canvas.fillStyle = light_level_to_shadow[o.light.lightLevel];
+		// fill(shadow_red, shadow_green, shadow_blue, constrainHigh(shadow_intensity * (light_max - o.light.lightLevel), shadow_max));
+		// console.log(shadow_intensity * (light_max - o.light.lightLevel));
 		rect(x, y, w, h);
 	}
 
