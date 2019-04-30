@@ -1,9 +1,8 @@
 //constants
 const UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
 const entity_player = 0, entity_mob = 1;
-const light_max = light_range = 8, light_intensity = .12, light_scale = 40, light_red = 100, light_green = 70, light_blue = 50;
-const shadow_intensity = .2, shadow_scale = 40, shadow_red = 70, shadow_green = 50, shadow_blue = 100;
-const light_red_max = 255, light_green_max = 235, light_blue_min = 0, shadow_red_min = 0, shadow_green_min = 0, shadow_blue_max = 220;
+const light_max = light_range = 9, light_intensity = .05, light_red = 255, light_green = 200, light_blue = 30;
+const shadow_intensity = .07, shadow_red = 10, shadow_green = 0, shadow_blue = 30, shadow_max = .4;
 
 const light_fill_styles = [];
 

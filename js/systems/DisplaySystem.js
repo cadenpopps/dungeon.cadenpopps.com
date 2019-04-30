@@ -38,8 +38,6 @@ function DisplaySystem(square_size, vision, animation_stages) {
 	this.run = function(engine) {
 		background(0);
 		lightOffset = osc(millis() / lightOffsetSpeed, lightOffsetScale, lightOffsetScale);
-		fill(shadow_red_min + lightOffset, shadow_green_min + lightOffset, shadow_blue_max - lightOffset, shadow_intensity);
-		rect(0, 0, width, height);
 		drawTextures(this.objects); 
 		drawLights(this.objects);
 		drawHealth(this.objects);
@@ -87,33 +85,26 @@ function DisplaySystem(square_size, vision, animation_stages) {
 	}
 
 	let drawLights = function(objects){
-		// let st = millis();
-		// for(let o of objects){
-		// 	if(o.display.discovered && o.components.includes(component_light)){
-		// 		lightSquare(o);
-		// 	}
-		// }
-		// console.log(millis() - st);
-		
-		for(let k = 0; k < 10; k++){
-			let l = (k / light_max) * light_scale;
-			console.log("rgba(" + constrainHigh(light_red + l - lightOffset, light_red_max) + ", " + constrainHigh(light_green + l - lightOffset, light_green_max) + ", " + constrainLow(light_blue - l + lightOffset, light_blue_min) + ", " + light_intensity * (k/light_max) + ")");
+		//shadow tint
+		fill(light_red + lightOffset, light_green + lightOffset, light_blue - lightOffset, light_intensity);
+		rect(0, 0, width, height);
+		let st = millis();
+		for(let o of objects){
+			if(o.display.discovered && o.components.includes(component_light)){
+				lightSquare(o);
+			}
 		}
+		// console.log(millis() - st);
 	}
 
 	let lightSquare = function(o){
-
 		let x = CENTER_X - camera.zoom * (GRID_SIZE * (camera.x + camera.shakeOffsetX - o.position.x));
 		let y = CENTER_Y - camera.zoom * (GRID_SIZE * (camera.y + camera.shakeOffsetY - o.position.y));
 		let w = o.display.width * GRID_SIZE * camera.zoom;
 		let h = o.display.height * GRID_SIZE * camera.zoom;
 
-		let l = (o.light.lightLevel / light_max) * light_scale;
-		let s = (o.light.lightLevel / light_max) * shadow_scale;
-
-		fill(constrainHigh(light_red + l - lightOffset, light_red_max), constrainHigh(light_green + l - lightOffset, light_green_max), constrainLow(light_blue - l + lightOffset, light_blue_min), light_intensity * (o.light.lightLevel/light_max));
-		rect(x, y, w, h);
-		fill(constrainLow(shadow_red - s + lightOffset, shadow_red_min), constrainLow(shadow_green - s + lightOffset, shadow_green_min), constrainHigh(shadow_blue + s - lightOffset, shadow_blue_max), shadow_intensity * ((light_max - o.light.lightLevel) / light_max));
+		fill(shadow_red, shadow_green, shadow_blue, constrainHigh(shadow_intensity * (light_max - o.light.lightLevel), shadow_max));
+		console.log(shadow_intensity * (light_max - o.light.lightLevel));
 		rect(x, y, w, h);
 	}
 
