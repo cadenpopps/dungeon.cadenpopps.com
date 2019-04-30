@@ -113,6 +113,11 @@ function preload() {
 	TEXTURES[STAIR][DOWN] = loadImage('/img/textures/stairDown.png');
 
 	IMAGES[HEART] = loadImage('/img/icons/heart.png');
+
+
+	for(let i = 0; i <= light_max; i++){
+		light_level_to_shadow[i] = "rgba(" + shadow_red + "," + shadow_green + "," + shadow_blue + "," + (constrainHigh(floor(shadow_intensity * (light_max - i) * 100) / 100, shadow_max)) + ")";
+	}
 }
 
 function setup() {
