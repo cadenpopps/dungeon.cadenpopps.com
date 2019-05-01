@@ -85,7 +85,7 @@ function DisplaySystem(square_size, vision, animation_stages) {
 
 	let drawLights = function(objects){
 		// let st = millis();
-		let lightFill = "rgba(" + light_red + "," + light_green + "," + light_blue + "," + (lightOffset + light_intensity) + ")";
+	let lightFill = light_fill_string + (lightOffset + light_intensity) + ")";
 		for(let o of objects){
 			if(o.display.discovered && o.components.includes(component_light)){
 				canvas.fillStyle = lightFill;
