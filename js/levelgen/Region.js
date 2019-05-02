@@ -1,7 +1,24 @@
 function Region(room) {
-    this.connected = false;
-    this.rooms = [];
-    this.addRoom(room);
+    this.connectors = room.getConnectors();
+}
+
+Region.prototype.removeWorstConnectors = function (regions) {
+	let best = this.connectors.slice(0,5);
+	for(let i = 0; i < best.length; i++){
+		best[i].dist = getConnectorDistance(best[i], this, regions);
+	}
+	for(let i = this.connectors.length - 1; i >=0; i--){
+		let d = getConnectorDistance(this.connectors[i], this, regions);
+		for(let j = 0; j < best.length; j++){
+			if(d < best[j].dist){
+				this.connectors[i].dist = d;
+				best[j] = this.connectors[i];
+				break;
+			}
+		}
+	}
+
+	this.connectors = best;
 }
 
 Region.prototype.addRoom = function (room) {

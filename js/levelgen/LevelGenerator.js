@@ -20,10 +20,12 @@ function generateLevel(depth) {
 			console.log("ROOMS DONE");
 		}
 
-		// genNodes(board);
-		// if (DEBUG) {
-		// 	console.log("MAZE DONE");
-		// }
+		genNodes(board);
+		if (DEBUG) {
+			console.log("MAZE DONE");
+		}
+
+		connectRegions(board);
 
 		// connectRooms(board);
 		// if (DEBUG) {
@@ -157,14 +159,7 @@ function generateLevel(depth) {
 			let roomy = randomInt(1, HALF_DUNGEON - floor(template.height / 2)) * 2;
 
 			let newRoom = new Room(template, roomx, roomy);
-			let valid = true;
-
-			for (let r of rooms) {
-				if (newRoom.overlaps(r)) {
-					valid = false;
-					break;
-				}
-			}
+			let valid = newRoomValid(newRoom);
 
 			if (valid) {
 				rooms.push(newRoom);
@@ -175,39 +170,64 @@ function generateLevel(depth) {
 		}
 	};
 
-	var newRoomValid = function(){
-		
+	var newRoomValid = function(newRoom){
+		for (let r of rooms) {
+			//for hitboxes, another loop over both hitboxes checking same thing
+			if (!(r.left > newRoom.right || r.top > newRoom.bottom || r.right < newRoom.left || r.bottom < newRoom.top)){
+				return false;
+			}
+		}
+		return true;
 	}
 
 	var genNodes = function (board) {
-
 		for (let x = 1; x < CONFIG.DUNGEON_SIZE - 1; x++) {
 			for (let y = 1; y < CONFIG.DUNGEON_SIZE - 1; y++) {
 				if (x % 2 == 1 && y % 2 == 1 && !board[x][y].roomSquare) {
-					// board[x][y].squareType = FLOOR;
+					board[x][y].squareType = FLOOR;
 					board[x][y].nodeSquare = true;
 				}
 			}
 		}
 	};
 
-	var connectRooms = function (board) {
-
-		let connectedRooms = [];
-		let unconnectedRooms= rooms.slice();
-
-		let firstRoom = random(unconnectedRooms);
-		unconnectedRooms.splice(unconnectedRooms.indexOf(firstRoom),1);
-		connectedRooms.push(firstRoom);
-
-		while(unconnectedRooms.length > 0){
-			let closestRooms = findClosestRooms(connectedRooms, unconnectedRooms);
-			if(connectClosestRooms(board, closestRooms)){
-				unconnectedRooms.splice(unconnectedRooms.indexOf(closestRooms[1]),1);
-				connectedRooms.push(closestRooms[0]);
+	var connectRegions = function(board){
+		while(regions.length > 1){
+			for(let r of regions){
+				r.removeWorstConnectors(regions);
+				for(let c of r.connectors){
+					board[c.x][c.y].squareType = DOOR;
+				}
 			}
+			for(let i = regions.length - 1; i >= 0; i--){
+				//choose a connector to expand
+				//expand 
+					//figure out where to expand to
+					//find path to expand point
+					//add node/door to connectors, check if you now overlap another region
+				//if you now overlap another region, remove this region, and add all connectors to another region.
+			}
+			//make a move with each region, add a new node/door to the connector list. if it connects to another region now, remove this region and add this regions connectors to other connectors
 		}
 	}
+
+	// var connectRooms = function (board) {
+
+	// 	let connectedRooms = [];
+	// 	let unconnectedRooms= rooms.slice();
+
+	// 	let firstRoom = random(unconnectedRooms);
+	// 	unconnectedRooms.splice(unconnectedRooms.indexOf(firstRoom),1);
+	// 	connectedRooms.push(firstRoom);
+
+	// 	while(unconnectedRooms.length > 0){
+	// 		let closestRooms = findClosestRooms(connectedRooms, unconnectedRooms);
+	// 		if(connectClosestRooms(board, closestRooms)){
+	// 			unconnectedRooms.splice(unconnectedRooms.indexOf(closestRooms[1]),1);
+	// 			connectedRooms.push(closestRooms[0]);
+	// 		}
+	// 	}
+	// }
 
 	var findClosestRooms = function(connected, unconnected){
 		let connectedRoom = connected[0];

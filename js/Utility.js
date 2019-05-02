@@ -4,6 +4,25 @@ function getSquareCode(x, y) {
 
 const LARGE_VALUE = 2147483647;
 
+function getSquareDistance(s1, s2){
+	return abs(s1.x - s2.x) + abs(s1.y - s2.y);
+}
+
+function getConnectorDistance(s1, currentRegion, regions){
+	let lowestDist = LARGE_VALUE;
+	for(let r of regions){
+		if(r != currentRegion){
+			for(let s2 of r.connectors){
+				let d = getSquareDistance(s1, s2); 
+				if(d < lowestDist){
+					lowestDist = d;
+				}
+			}
+		}
+	}
+	return lowestDist;
+}
+
 function findPath(board, start, end) {
 	let searched = [];
 	let searching = [];
