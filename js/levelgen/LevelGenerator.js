@@ -20,15 +20,15 @@ function generateLevel(depth) {
 			console.log("ROOMS DONE");
 		}
 
-		genNodes(board);
-		if (DEBUG) {
-			console.log("MAZE DONE");
-		}
+		// genNodes(board);
+		// if (DEBUG) {
+		// 	console.log("MAZE DONE");
+		// }
 
-		connectRooms(board);
-		if (DEBUG) {
-			console.log("ROOMS CONNECTED");
-		}
+		// connectRooms(board);
+		// if (DEBUG) {
+		// 	console.log("ROOMS CONNECTED");
+		// }
 
 		// connectRegions(board);
 		// if (DEBUG) {
@@ -86,11 +86,15 @@ function generateLevel(depth) {
 		let stairDownTemplate = random(CONFIG.STAIRROOMPOOL);
 		let stairUpTemplate = random(CONFIG.STAIRROOMPOOL);
 
-		let stairUpLocation;
-		stairUpLocation = randomInt(8);
-		if (stairUpLocation == 4) stairUpLocation = 8;
-		let stairDownLocation = sectorToCoordinates(genStairDownSector(stairUpLocation), stairDownTemplate);
-		stairUpLocation = sectorToCoordinates(getSectorCoords(stairUpLocation), stairUpTemplate);
+
+		// Sectors:
+		// 0 X 1
+		// X X X
+		// 3 X 2
+
+		let stairUpLocation = randomInt(4);
+		let stairDownLocation = sectorToCoordinates((stairUpLocation + 2) % 4, stairDownTemplate);
+		stairUpLocation = sectorToCoordinates(stairUpLocation, stairUpTemplate);
 
 		let stairUpRoom = new Room(stairUpTemplate, stairUpLocation[0], stairUpLocation[1]);
 		let stairDownRoom = new Room(stairDownTemplate, stairDownLocation[0], stairDownLocation[1]);
@@ -116,65 +120,29 @@ function generateLevel(depth) {
 
 	};
 
-	var genStairDownSector = function (stairUpSector) {
-		let coordinates = [];
-		if (stairUpSector % 2 == 0) {
-			let availableSectors = [];
-			let row = (floor(stairUpSector / 3) + 2) % 4;
-			let col = ((stairUpSector % 3) + 2) % 4;
-			for (let i = 0; i < 9; i++) {
-				if (floor(i / 3) == row || (i % 3) == col) {
-					availableSectors.push(i);
-				}
-			}
-			coordinates = getSectorCoords(random(availableSectors));
-		}
-		else {
-			if ((stairUpSector - 1) % 6 == 0) {
-				let row = (stairUpSector + 1) % 4;
-				return getSectorCoords((row * 3) + randomInt(3));
-			}
-			else {
-				let col = (stairUpSector - 1) % 4;
-				return getSectorCoords(col + (3 * randomInt(3)));
-			}
-		}
-		return coordinates;
-	}
-
-	var getSectorCoords = function (num) {
-		switch (num) {
-			case 0:
-				return [0, 0];
-			case 1:
-				return [0, 1];
-			case 2:
-				return [0, 2];
-			case 3:
-				return [1, 0];
-			case 9:
-				return [1, 1];
-			case 5:
-				return [1, 2];
-			case 6:
-				return [2, 0];
-			case 7:
-				return [2, 1];
-			case 8:
-				return [2, 2];
-			default:
-				return [-1, -1];
-		}
-	}
-
 	var sectorToCoordinates = function (sector, template) {
-		let x = sector[0] + 1;
-		let y = sector[1] + 1;
-		let translationScale = floor((CONFIG.DUNGEON_SIZE - 10) / 3);
-		x = (x * translationScale) + randomInt(-3, 3) - floor(template.width / 2);
-		y = (y * translationScale) + randomInt(-3, 3) - floor(template.height / 2);
-		x += (x) % 2;
-		y += (y) % 2
+		let x, y;
+		switch(sector){
+			case 0:
+				x = y = floor(CONFIG.DUNGEON_SIZE / 4);	
+				break;
+			case 1:
+				x = floor(3 * CONFIG.DUNGEON_SIZE / 4);	
+				y = floor(CONFIG.DUNGEON_SIZE / 4);	
+				break;
+			case 2:
+				x = y = floor(3 * CONFIG.DUNGEON_SIZE / 4);	
+				break;
+			case 3:
+				x = floor(CONFIG.DUNGEON_SIZE / 4);	
+				y = floor(3 * CONFIG.DUNGEON_SIZE / 4);	
+				break;
+
+		}
+		x += randomInt(-4, 4) - floor(template.width/2);
+		y += randomInt(-4, 4) - floor(template.height/2);
+		x += x % 2;
+		y += y % 2
 		return [x, y];
 	}
 
@@ -185,8 +153,8 @@ function generateLevel(depth) {
 
 			let template = random(CONFIG.ROOMPOOL);
 
-			let roomx = randomInt(3, HALF_DUNGEON - floor(template.width / 2) - 1) * 2;
-			let roomy = randomInt(3, HALF_DUNGEON - floor(template.height / 2) - 1) * 2;
+			let roomx = randomInt(1, HALF_DUNGEON - floor(template.width / 2)) * 2;
+			let roomy = randomInt(1, HALF_DUNGEON - floor(template.height / 2)) * 2;
 
 			let newRoom = new Room(template, roomx, roomy);
 			let valid = true;
@@ -206,6 +174,10 @@ function generateLevel(depth) {
 
 		}
 	};
+
+	var newRoomValid = function(){
+		
+	}
 
 	var genNodes = function (board) {
 
