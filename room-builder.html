@@ -1,0 +1,48 @@
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<!--css-->
+		<link rel="stylesheet" type="text/css" href="/room_builder/css/index.css" />
+		<!--libraries-->
+		<script type="text/javascript" src="http://js.cadenpopps.com/popps.js?v=0"></script>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+		<script language="javascript" type="text/javascript" src="/room_builder/js/sketch.js"></script>
+		<script language="javascript" type="text/javascript" src="/room_builder/js/Room.js"></script>
+		<script language="javascript" type="text/javascript" src="/room_builder/js/Square.js"></script>
+		<script language="javascript" type="text/javascript" src="/room_builder/js/ButtonHandler.js"></script>
+	</head>
+
+	<body>
+
+		<div id="control-panel">
+			<div id="room-info-container">
+				<div id="width" class="info">Width: </div>
+				<div id="height" class="info">Height: </div>
+			</div>
+			<div id="size-container">
+				<div id="width-buttons-container" class="size-buttons-container">
+					<div id="decrement-width" class="size-button">−</div>
+					<span class="size-buttons-label">W</span>
+					<div id="increment-width" class="size-button">+</div>
+				</div>
+				<div id="height-buttons-container" class="size-buttons-container">
+					<div id="decrement-height" class="size-button">−</div>
+					<span class="size-buttons-label">H</span>
+					<div id="increment-height" class="size-button">+</div>
+				</div>
+			</div>
+			<div id="square-type-container">
+				<img src="/room_builder/img/wall.png" id="wall" class="square-type"></img>
+				<img src="/room_builder/img/floor.png" id="floor" class="square-type"></img>
+				<img src="/room_builder/img/loot.png" id="loot" class="square-type"></img>
+			</div>
+			<div id="save-button">Save Room</div>
+		</div>
+
+		<canvas id="canvas"></canvas>
+
+	</body>
+
+</html>
