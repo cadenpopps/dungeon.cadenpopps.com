@@ -27,7 +27,7 @@ function LevelSystem (){
 				case command_down_level:
 					currentDepth++;
 					if(currentDepth == levels.length){
-						newLevel(engine, currentDepth); 
+						newLevel(CONFIG.DUNGEON_SIZE, currentDepth); 
 						engine.sendEvent({ eventID: event_new_level });
 					}
 					fixPlayerPosition(levels[currentDepth].level.stairUp);
@@ -63,7 +63,7 @@ function LevelSystem (){
 	let newLevel = function(engine, depth){
 		let stair = undefined;
 		if(depth > 0){ stair = levels[depth - 1].level.stairDown }
-		let level = generateLevel(engine, depth, stair);
+		let level = generateLevel(CONFIG.DUNGEON_SIZE, depth);
 		levels.push(level);
 		return level; 
 	}
