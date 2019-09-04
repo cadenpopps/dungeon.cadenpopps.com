@@ -1,7 +1,7 @@
 function Dungeon(engine) {
 	this.currentLevelIndex = 0;
 	this.levels = [];
-	this.levels.push(generateLevel(engine, 0));
+	this.levels.push(generateLevel(CONFIG.DUNGEON_SIZE, 0));
 	engine.updateObjects(this.levels[0]);
 
 	(function(engine, startPos){

@@ -16,15 +16,19 @@ function VisionSystem (){
 			for(let s of r){
 				s.display.visible = false;
 				if(s.display.discovered > 0){s.display.discovered--};
+				if(s.components.includes(component_light)){ s.light.lightLevel = 0; }
 			}
 		}
 		player.display.visible = true;
 		board[player.position.x][player.position.y].display.visible = true;
 		board[player.position.x][player.position.y].display.discovered = CONFIG.DISCOVERED_MAX;
-		for(let octant = 0; octant < 8; octant ++){
+		board[player.position.x][player.position.y].light.lightLevel = light_max;
+		for(let octant = 0; octant < 8; octant++){
 			playerSightTriangle(board, octant, player.position.x, player.position.y, CONFIG.PLAYER_VISION_RANGE);
 		}
-
+		for(let octant = 0; octant < 8; octant++){
+			lightTriangle(board, octant, player.position.x, player.position.y, light_max);
+		}
 		for(let e of entities){
 			if(board[e.position.x][e.position.y].display.visible){ e.display.visible = true; }
 		}
@@ -42,6 +46,76 @@ function VisionSystem (){
 		if(this.acceptedEvents.includes(e.eventID)){
 			vision(board, player);
 		}
+	}
+
+	let lightTriangle = function(board, octant, sx, sy, range){
+		let x = 1;
+		let shadows = [];
+		let squaresVisible = true;
+
+		while (x <= range && squaresVisible) {
+			squaresVisible = false;
+			let y = 0;
+			let curslope = 0;
+			while(curslope <= 1){
+				if(!inShadow(x, y, shadows)){
+					squaresVisible = true;
+					let cur = getTranslatedSquare(board, octant, x, y, sx, sy); 
+					if(cur === undefined){ break; }
+					cur.light.lightLevel = range - x;
+					if(cur.physical.blocking){
+						let firstBlocked = getFirstBlockedLight(board, octant, x, y, sx, sy, shadows, range);
+						let lastBlocked = getBlockedLight(board, octant, x, y, sx, sy, shadows, range);
+						let shadowStart = slope(firstBlocked.x, firstBlocked.y, BOTTOM_RIGHT);
+						let shadowEnd = slope(lastBlocked.x, lastBlocked.y, TOP_LEFT);
+						shadows.push([shadowStart, shadowEnd]);
+					}
+					else{
+						let above = getTranslatedSquare(board, octant, x, y + 1, sx, sy); 
+						if(above !== undefined ){ 
+							// above.display.discovered = CONFIG.DISCOVERED_MAX;
+						}
+					}
+				}
+				y++;
+				curslope = slope(x, y, CENTER_SQUARE); 
+			}
+			x++;
+		}
+	}
+
+	let getFirstBlockedLight = function(board, octant, x, y, sx, sy, shadows, range){
+		let firstBlocked = {x:x, y:y};
+
+		let currentBlocked = getTranslatedSquare(board, octant, x, y, sx, sy); 
+
+		while(currentBlocked !== undefined && currentBlocked.physical.blocking && slope(x, y, CENTER_SQUARE) > 0){
+			firstBlocked = {x:x, y:y};
+			if(!inShadow(x, y, shadows)){
+				currentBlocked.light.lightLevel = range - x;
+			}
+
+			y--;
+			currentBlocked = getTranslatedSquare(board, octant, x, y, sx, sy);
+		}
+		return firstBlocked;
+	}
+
+	let getBlockedLight = function(board, octant, x, y, sx, sy, shadows, range){
+		let lastBlocked = {x:x, y:y};
+
+		let currentBlocked = getTranslatedSquare(board, octant, x, y, sx, sy); 
+
+		while(currentBlocked !== undefined && currentBlocked.physical.blocking && slope(x, y, BOTTOM_RIGHT) < 1){
+			lastBlocked = {x:x, y:y};
+			if(!inShadow(x, y, shadows)){
+				currentBlocked.light.lightLevel = range - x;
+			}
+
+			y++;
+			currentBlocked = getTranslatedSquare(board, octant, x, y, sx, sy);
+		}
+		return lastBlocked;
 	}
 
 	let playerSightTriangle = function(board, octant, sx, sy, range){
@@ -78,6 +152,7 @@ function VisionSystem (){
 			x++;
 		}
 	}
+
 	const CENTER_SQUARE = 0, TOP_LEFT = 1, BOTTOM_RIGHT = 2, UPPER_BOUND = 3, LOWER_BOUND = 4;
 	const PERM = .5;
 

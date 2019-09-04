@@ -76,15 +76,6 @@ function preload() {
 		{ox: .2, oy: 0, sprite: undefined}
 	];
 
-	window.FLOOR = CONFIG.SQUARE_CONSTANTS.floor;
-	window.WALL = CONFIG.SQUARE_CONSTANTS.wall;
-	window.DOOR = CONFIG.SQUARE_CONSTANTS.door;
-	window.STAIR_DOWN = CONFIG.SQUARE_CONSTANTS.stairDown;
-	window.STAIR_UP = CONFIG.SQUARE_CONSTANTS.stairUp;
-	window.STAIR = CONFIG.SQUARE_CONSTANTS.stair;
-	window.LOOT = CONFIG.SQUARE_CONSTANTS.loot;
-	window.PILLAR = CONFIG.SQUARE_CONSTANTS.pillar;
-
 	let pools = loadJSON('/config/roompool.json');
 	CONFIG.ROOMPOOL = pools[0];
 	CONFIG.STAIRROOMPOOL = pools[1];
@@ -108,11 +99,15 @@ function preload() {
 	TEXTURES[LOOT] = [];
 	TEXTURES[LOOT][OPEN] = loadImage('/img/textures/lootOpen.png');
 	TEXTURES[LOOT][CLOSED] = loadImage('/img/textures/lootClosed.png');
-	TEXTURES[STAIR] = [];
-	TEXTURES[STAIR][UP] = loadImage('/img/textures/stairUp.png');
-	TEXTURES[STAIR][DOWN] = loadImage('/img/textures/stairDown.png');
+	TEXTURES[STAIR_UP] = loadImage('/img/textures/stairUp.png');
+	TEXTURES[STAIR_DOWN] = loadImage('/img/textures/stairDown.png');
 
 	IMAGES[HEART] = loadImage('/img/icons/heart.png');
+
+
+	for(let i = 0; i <= light_max; i++){
+		light_level_to_shadow[i] = "rgba(" + shadow_red + "," + shadow_green + "," + shadow_blue + "," + (constrainHigh(floor(shadow_intensity * (light_max - i) * 100) / 100, shadow_max)) + ")";
+	}
 }
 
 function setup() {
