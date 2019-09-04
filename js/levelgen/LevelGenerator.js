@@ -1,5 +1,3 @@
-const FLOOR = 0, WALL = 1, NODE = 2, DOOR = 3;
-
 function generateLevel(size, depth){
 
 	let startTime = millis();
@@ -17,7 +15,7 @@ function generateLevel(size, depth){
 	placeRoomsOnLevel(level, rooms);
 	markNodeSquares(level);
 	connectRooms(level, rooms, size);
-	finalizeLevel(level);
+	finalizeLevel(level, stairUp, stairDown);
 
 	console.log("Milliseconds: " + (millis() - startTime));
 
@@ -324,7 +322,10 @@ function fillBetweenNodes(level, node1, node2){
 	level[node1.x + ((node2.x - node1.x) / 2)][node1.y + ((node2.y - node1.y) / 2)] = FLOOR;
 }
 
-function finalizeLevel(level){
+function finalizeLevel(level, stairUp, stairDown){
+	level[stairUp.x][stairUp.y] = STAIR_UP;
+	level[stairDown.x][stairDown.y] = STAIR_DOWN;
+
 	for(let i = 0; i < level.length; i++){
 		for(let j = 0; j < level.length; j++){
 			if(level[i][j] instanceof Node){
