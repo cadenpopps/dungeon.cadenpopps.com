@@ -2,4 +2,4 @@ img/
 .git/
 audio/
 dat/
-/* room-builder/ */
+room_builder/

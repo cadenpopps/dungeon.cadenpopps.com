@@ -7,10 +7,13 @@ const light_level_to_shadow = new Array(light_max);
 
 const light_fill_string = "rgba(" + light_red + "," + light_green + "," + light_blue + ",";
 
-//Image constants
+//square constants
+const FLOOR = 0, WALL = 1, DOOR = 2, STAIR_DOWN = 3, STAIR_UP = 4, LOOT = 5; 
+
+//image constants
 const HEART = 0;
 
-//Commands
+//commands
 const command_move_entity = 0, command_roll_entity = 1, command_generate_level = 2, command_generate_player = 3, command_init = 4, command_clear_objects = 5, command_down_level = 6, command_up_level = 7;
 
 //components
