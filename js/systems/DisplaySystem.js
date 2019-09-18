@@ -4,7 +4,6 @@ function DisplaySystem(square_size, vision, animation_stages) {
 	System.call(this);
 
 	this.componentRequirements = [component_position, component_display];
-	this.acceptedEvents = [event_window_resized, event_player_moved, event_entity_failed_roll, event_up_level, event_down_level];
 
 	let camera = {
 		x: 0,
@@ -75,17 +74,17 @@ function DisplaySystem(square_size, vision, animation_stages) {
 			let t = o.display.texture;
 			image(t, x, y, w, h);
 			// if(!o.display.visible && o.display.discovered > 0){
-				// let opacity = min(1, 1 - (o.display.discovered/CONFIG.DISCOVERED_MAX) + .4);
-				// if(opacity == 1) { o.display.discovered = 0; }
-				// fill(0,0,0, opacity);
-				// rect(x, y, w, h);
+			// let opacity = min(1, 1 - (o.display.discovered/CONFIG.DISCOVERED_MAX) + .4);
+			// if(opacity == 1) { o.display.discovered = 0; }
+			// fill(0,0,0, opacity);
+			// rect(x, y, w, h);
 			// }
 		}
 	}
 
 	let drawLights = function(objects){
 		// let st = millis();
-	let lightFill = light_fill_string + (lightOffset + light_intensity) + ")";
+		let lightFill = light_fill_string + (lightOffset + light_intensity) + ")";
 		for(let o of objects){
 			if(o.display.discovered && o.components.includes(component_light)){
 				canvas.fillStyle = lightFill;
@@ -142,26 +141,26 @@ function DisplaySystem(square_size, vision, animation_stages) {
 	}
 
 
-	this.updateObjects = function(object){
+	this.addObject = function(object){
 		if(object instanceof Player){
-			centerCamera(camera, object.position);
 			player = object;
 		}
-		System.prototype.updateObjects.call(this, object);
+		System.prototype.addObject.call(this, object);
 	}
 
-	this.handleEvent = function(engine, e){
-		if(this.acceptedEvents.includes(e.eventID)){
-			switch(e.eventID){
-				case event_up_level: case event_down_level: case event_player_moved:
-					cameraMoving = true;
-					break;
-				case event_entity_failed_roll:
-					if(e.entity instanceof Player) shakeCamera(camera, 35, 1, .25);
-					break;
-				case event_window_resized:
-					resize();
-			}
+	this.handleEvent = function(engine, eventID){
+		switch(eventID){
+			case event_start_game:
+				centerCamera(camera, player.position);
+				break;
+			case event_up_level: case event_down_level: case event_player_moved:
+				cameraMoving = true;
+				break;
+			case event_entity_failed_roll:
+				if(e.entity instanceof Player) shakeCamera(camera, 35, 1, .25);
+				break;
+			case event_window_resized:
+				resize();
 		}
 	}
 

@@ -7,7 +7,7 @@ function InputSystem(){
 
 	this.run = function(engine){
 		let action = determineAction();
-		assignPlayerAction(engine, player, action);		
+		assignPlayerAction(player, action);		
 	}
 
 	let determineAction = function(){
@@ -17,16 +17,9 @@ function InputSystem(){
 			for(let k of keys){
 				let a = key_to_action[k];
 				let priority = action_priority[a];
-				if(player.actions.lastAction == a) priority -= .1;
+				if(player.actions.lastAction == a) priority-=.1;
 				if(priority > highestPriority){
-					let skip = false;
-					for(let c of player.actions.cooldowns){
-						if(c.action == a){
-							skip = true;
-							break;
-						}
-					}
-					if(!skip){
+					if(player.actions.cooldowns[a] == 0){
 						action = a;
 						highestPriority = priority;
 					}
@@ -36,16 +29,16 @@ function InputSystem(){
 		return action;
 	}
 
-	let assignPlayerAction = function(engine, player, action){
-		if(cancelSprintTimeout == undefined && player.sprint.moveCounter > 0 && action != action_roll && action != action_move_up && action != action_move_right && action != action_move_down && action != action_move_left){
-			cancelSprintTimeout = setTimeout(function(){
-				decreasePlayerSprint(player);
-			}, CONFIG.PLAYER_SPRINT_REDUCTION_SPEED);
-		}
-		else if(cancelSprintTimeout != undefined && (action == action_roll || action == action_move_up || action == action_move_right || action == action_move_down || action == action_move_left)){
-			clearTimeout(cancelSprintTimeout);
-			cancelSprintTimeout = undefined;
-		}
+	let assignPlayerAction = function(player, action){
+		// if(cancelSprintTimeout == undefined && player.sprint.moveCounter > 0 && action != action_roll && action != action_move_up && action != action_move_right && action != action_move_down && action != action_move_left){
+		// 	cancelSprintTimeout = setTimeout(function(){
+		// 		decreasePlayerSprint(player);
+		// 	}, CONFIG.PLAYER_SPRINT_REDUCTION_SPEED);
+		// }
+		// else if(cancelSprintTimeout != undefined && (action == action_roll || action == action_move_up || action == action_move_right || action == action_move_down || action == action_move_left)){
+		// 	clearTimeout(cancelSprintTimeout);
+		// 	cancelSprintTimeout = undefined;
+		// }
 		player.actions.nextAction = action;	
 	}
 
@@ -62,7 +55,10 @@ function InputSystem(){
 		}
 	}
 
-	this.updateObjects = function(obj){
-		if(obj instanceof Player) player = obj;
+	this.addObject = function(object){
+		if(object instanceof Player) {
+			player = object;
+		}
 	}
 }
+

@@ -1,5 +1,3 @@
-const FLOOR = 0, WALL = 1, DOOR = 2, STAIR_DOWN = 3, STAIR_UP = 4, LOOT = 5; 
-
 function Square(x, y, type, texture, solid, blocking) {
 	this.components = [component_position, component_display, component_physical, component_light];
 	this.position = new PositionComponent(x, y);
@@ -33,10 +31,10 @@ DoorSquare.prototype.open = function () {
 StairSquare.prototype = Object.create(Square.prototype);
 function StairSquare(x, y, up) {
 	if (up) {
-		Square.call(this, x, y, STAIR_UP, TEXTURES[STAIR_UP], true, true);
+		Square.call(this, x, y, STAIR_UP, TEXTURES[STAIR_UP], true, false);
 	}
 	else {
-		Square.call(this, x, y, STAIR_UP, TEXTURES[STAIR_DOWN], true, true);
+		Square.call(this, x, y, STAIR_UP, TEXTURES[STAIR_DOWN], true, false);
 	}
 	this.up = up;
 }

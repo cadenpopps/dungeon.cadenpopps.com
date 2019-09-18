@@ -3,9 +3,6 @@ LevelSystem.prototype = Object.create(System.prototype);
 function LevelSystem (){
 	System.call(this);
 
-	this.acceptedEvents = [];
-	this.acceptedCommands = [command_init, command_generate_level, command_down_level, command_up_level];
-
 	let currentDepth = 0;
 	let levels = [];
 	let player;
@@ -14,74 +11,59 @@ function LevelSystem (){
 
 	}
 
-	this.handleEvent = function(engine, e){
-		if(this.acceptedEvents.includes(e.eventID)){
-			switch(e.eventID){
-			}
+	this.handleEvent = function(engine, eventID){
+		switch(eventID){
+			case event_down_level:
+				handleDownLevel(engine);
+				break;
+			case event_up_level:
+				handleUpLevel(engine);
+				break;
+			case event_new_game:
+				handleNewGame(engine);
+				break;
 		}
 	}
 
-	this.handleCommand = function(engine, c){
-		if(this.acceptedCommands.includes(c.commandID)){
-			switch(c.commandID){
-				case command_down_level:
-					currentDepth++;
-					if(currentDepth == levels.length){
-						newLevel(CONFIG.DUNGEON_SIZE, currentDepth); 
-						engine.sendEvent({ eventID: event_new_level });
-					}
-					fixPlayerPosition(levels[currentDepth].level.stairUp);
-					updateLevel(engine);
-					engine.sendEvent({ eventID: event_down_level, level: currentDepth });
-					break;
-				case command_up_level:
-					if(currentDepth > 0){
-						currentDepth--; 
-						fixPlayerPosition(levels[currentDepth].level.stairDown);
-						updateLevel(engine);
-						engine.sendEvent({ eventID: event_up_level, level: currentDepth });
-					}
-					break;
-				case command_init:
-					newDungeon(engine);
-					break;
-			}
-		}
-	}
-
-	this.updateObjects = function(object){
+	this.addObject = function(object){
 		if(object instanceof Player){ player = object; }
 	}
 
-	let newDungeon = function(engine){
-		let level = newLevel(engine, 0);
-		engine.sendCommand({ commandID:command_generate_player, x:level.level.stairUp.x, y:level.level.stairUp.y });
+	let handleNewGame = function(engine){
+		newLevel(engine, 0);
 		updateLevel(engine);
-		engine.sendEvent({ eventID: event_new_level });
+		engine.sendEvent(event_first_level_initiated);
 	}
 
 	let newLevel = function(engine, depth){
-		let stair = undefined;
-		if(depth > 0){ stair = levels[depth - 1].level.stairDown }
 		let level = generateLevel(CONFIG.DUNGEON_SIZE, depth);
 		levels.push(level);
+		engine.sendEvent(event_new_level);
 		return level; 
 	}
 
-	let updateLevel = function(engine){
-		engine.clearObjects();
-		let level = levels[currentDepth];
-		engine.updateObjects(level);
-		for (var i = 0; i < CONFIG.DUNGEON_SIZE; i++) {
-			for (let j = 0; j < CONFIG.DUNGEON_SIZE; j++) {
-				engine.updateObjects(level.level.board[i][j]);
-			}
+	let handleDownLevel = function(engine){
+		currentDepth++;
+		if(currentDepth == levels.length){
+			newLevel(engine, currentDepth); 
+		}
+		updateLevel(engine);
+	}
+
+	let handleUpLevel = function(engine){
+		if(currentDepth > 0){
+			currentDepth--; 
+			updateLevel(engine);
 		}
 	}
 
-	let fixPlayerPosition = function(stair){
-		player.position.x = stair.x;
-		player.position.y = stair.y;
+	let updateLevel = function(engine){
+		let level = levels[currentDepth];
+		engine.addObject(level);
+		for (var i = 0; i < CONFIG.DUNGEON_SIZE; i++) {
+			for (let j = 0; j < CONFIG.DUNGEON_SIZE; j++) {
+				engine.addObject(level.level.board[i][j]);
+			}
+		}
 	}
-
 }

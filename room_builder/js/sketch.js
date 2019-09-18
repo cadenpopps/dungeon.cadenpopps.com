@@ -94,5 +94,5 @@ function saveRoom() {
 	json.squares = room.squaresToJSON();
 	json.doors = room.doors;
 
-	console.log(JSON.stringify(json));
+	alert(JSON.stringify(json));
 }
