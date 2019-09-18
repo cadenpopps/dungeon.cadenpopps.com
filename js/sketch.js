@@ -25,31 +25,51 @@ function preload() {
 		{ox: 0, oy: 0, sprite: undefined},
 		{ox: 0, oy: 0, sprite: undefined}, 
 		{ox: 0, oy: 0, sprite: undefined}, 
+		{ox: 0, oy: 0, sprite: undefined}, 
+		{ox: 0, oy: 0, sprite: undefined}, 
+		{ox: 0, oy: 0, sprite: undefined},
+		{ox: 0, oy: 0, sprite: undefined},
 		{ox: 0, oy: 0, sprite: undefined}
 	];
 	CONFIG.DEFAULT_ANIMATIONS[animation_move_up] = [
-		{ox: 0, oy: .65, sprite: undefined}, 
-		{ox: 0, oy: .45,  sprite: undefined}, 
-		{ox: 0, oy: .25, sprite: undefined}, 
-		{ox: 0, oy: .10,   sprite: undefined}
+		{ox: 0, oy: .95, sprite: undefined}, 
+		{ox: 0, oy: .9, sprite: undefined}, 
+		{ox: 0, oy: .8, sprite: undefined}, 
+		{ox: 0, oy: .6, sprite: undefined},
+		{ox: 0, oy: .4, sprite: undefined}, 
+		{ox: 0, oy: .2, sprite: undefined}, 
+		{ox: 0, oy: .1, sprite: undefined}, 
+		{ox: 0, oy: .05, sprite: undefined}
 	];
 	CONFIG.DEFAULT_ANIMATIONS[animation_move_right] = [
-		{ox: -.65, oy: 0, sprite: undefined}, 
-		{ox: -.45, oy: 0, sprite: undefined}, 
-		{ox: -.25, oy: 0, sprite: undefined}, 
-		{ox: -.10, oy: 0, sprite: undefined}
+		{ox: -.95, oy: 0, sprite: undefined}, 
+		{ox: -.9,  oy: 0, sprite: undefined}, 
+		{ox: -.8,  oy: 0, sprite: undefined}, 
+		{ox: -.6,  oy: 0, sprite: undefined}, 
+		{ox: -.4,  oy: 0, sprite: undefined}, 
+		{ox: -.2,  oy: 0, sprite: undefined}, 
+		{ox: -.1,  oy: 0, sprite: undefined}, 
+		{ox: -.05, oy: 0, sprite: undefined}
 	];
 	CONFIG.DEFAULT_ANIMATIONS[animation_move_down] = [
-		{ox: 0, oy: -.65, sprite: undefined}, 
-		{ox: 0, oy: -.45, sprite: undefined}, 
-		{ox: 0, oy: -.25, sprite: undefined}, 
-		{ox: 0, oy: -.10, sprite: undefined}
+		{ox: 0, oy: -.95, sprite: undefined}, 
+		{ox: 0, oy: -.9,  sprite: undefined}, 
+		{ox: 0, oy: -.8,  sprite: undefined}, 
+		{ox: 0, oy: -.6,  sprite: undefined}, 
+		{ox: 0, oy: -.4,  sprite: undefined}, 
+		{ox: 0, oy: -.2,  sprite: undefined}, 
+		{ox: 0, oy: -.1,  sprite: undefined}, 
+		{ox: 0, oy: -.05, sprite: undefined}
 	];
 	CONFIG.DEFAULT_ANIMATIONS[animation_move_left] = [
-		{ox: .65, oy: 0, sprite: undefined}, 
-		{ox: .45, oy: 0, sprite: undefined}, 
-		{ox: .25, oy: 0, sprite: undefined}, 
-		{ox: .10, oy: 0, sprite: undefined}
+		{ox: .95, oy: 0, sprite: undefined}, 
+		{ox: .9,  oy: 0, sprite: undefined}, 
+		{ox: .8,  oy: 0, sprite: undefined}, 
+		{ox: .6,  oy: 0, sprite: undefined}, 
+		{ox: .4,  oy: 0, sprite: undefined}, 
+		{ox: .2,  oy: 0, sprite: undefined}, 
+		{ox: .1,  oy: 0, sprite: undefined}, 
+		{ox: .05, oy: 0, sprite: undefined}
 	];
 	CONFIG.DEFAULT_ANIMATIONS[animation_roll_up] = [
 		{ox: 0, oy: 1.3, sprite: undefined}, 

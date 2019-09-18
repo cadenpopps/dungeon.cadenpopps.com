@@ -52,14 +52,19 @@ function AnimationComponent(animations){
 	this.stage = 0;
 	this.sprite = undefined;
 	this.animation = animation_idle;
+	this.newAnimation = false;
 	this.animations = animations;
 }
 
 function ActionComponent(actions){
 	this.busy = 0;
-	this.cooldowns = [];
 	this.availible = actions;
+	this.cooldowns = {};
+	for(let a of actions){
+		this.cooldowns[a] = 0;
+	}
 	this.nextAction = action_none;
+	this.currentAction = action_none;
 	this.lastAction = action_none;
 }
 

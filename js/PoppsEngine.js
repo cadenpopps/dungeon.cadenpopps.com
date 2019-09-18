@@ -14,10 +14,10 @@ function PoppsEngine(tickrate, config) {
 		this.systems.push(new EntitySystem());
 		this.systems.push(new AnimationSystem());
 
-		this.sendCommand({commandID:command_init});
-		this.sendEvent({eventID:event_game_start});
+		$(window).resize(this.sendEvent.bind(this, event_window_resized));
 
-		$(window).resize(this.sendEvent.bind(this, {eventID: event_window_resized}));
+		this.sendEvent(event_new_game);
+		this.sendEvent(event_start_game);
 
 		setInterval(tick.bind(this), TICKRATE);
 	};
@@ -28,21 +28,15 @@ function PoppsEngine(tickrate, config) {
 		}
 	}
 
-	this.updateObjects = function(object){
-		for(let s of this.systems){
-			s.updateObjects(object);
-		}
-	}
-
 	this.sendEvent = function(e){
 		for(let s of this.systems){
 			s.handleEvent(this, e);
 		}
 	}
 
-	this.sendCommand = function(c){
+	this.addObject = function(object){
 		for(let s of this.systems){
-			s.handleCommand(this, c);
+			s.addObject(object);
 		}
 	}
 

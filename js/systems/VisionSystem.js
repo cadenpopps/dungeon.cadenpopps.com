@@ -1,15 +1,15 @@
-
 VisionSystem.prototype = Object.create(System.prototype);
 function VisionSystem (){
 	System.call(this);
-	this.componentRequirements = [component_position,component_physical, component_display];
-	this.acceptedEvents = [event_game_start, event_player_moved, event_down_level, event_up_level];
+	this.componentRequirements = [component_position, component_physical, component_display];
 
 	let player;
 	let board;
 	let entities = [];
 
-	this.run = function(engine){ }
+	this.run = function(engine){ 
+		vision(board, player); 
+	}
 
 	let vision = function(board, player){
 		for(let r of board){
@@ -34,18 +34,18 @@ function VisionSystem (){
 		}
 	}
 
-	this.updateObjects = function(object){
+	this.addObject = function(object){
 		if(object instanceof Player){ player = object; }
 		else if(object instanceof Level){ board = object.level.board; }
-		else if(object instanceof Mob){ 
-			entities.push(object);
-		}
+		else if(object instanceof Mob){ entities.push(object); }
 	}
 
-	this.handleEvent = function(engine, e){
-		if(this.acceptedEvents.includes(e.eventID)){
-			vision(board, player);
-		}
+	this.handleEvent = function(engine, eventID){
+		// switch (eventID){
+		// 	case event_player_moved: case event_down_level: case event_up_level:
+		// 		vision(board, player);
+		// 		break;
+		// }
 	}
 
 	let lightTriangle = function(board, octant, sx, sy, range){

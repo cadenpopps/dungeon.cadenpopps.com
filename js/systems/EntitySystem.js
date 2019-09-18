@@ -5,10 +5,9 @@ function EntitySystem (){
 
 	this.componentRequirements = [component_actions];
 
-	this.acceptedEvents = [event_new_level, event_down_level, event_up_level];
-	this.acceptedCommands = [command_generate_player];
-
 	let levels = [];
+	let currentLevel = 0;
+	let entities = [];
 	let player;
 	let board;
 
@@ -21,52 +20,62 @@ function EntitySystem (){
 		}
 	}
 
-	this.handleEvent = function(engine, e){
-		if(this.acceptedEvents.includes(e.eventID)){
-			switch(e.eventID){
-				case event_new_level:
-					generateEnemies(engine);
-					updateEntities(engine, levels.length - 1);
-					break;
-				case event_up_level: event_down_level:
-					updateEntities(engine, e.level);
-					break;
-			}
+	this.handleEvent = function(engine, eventID){
+		switch(eventID){
+			case event_first_level_initiated:
+				generatePlayer(engine);
+				generateEnemies(engine);
+				updateEntities(engine);
+				fixPlayerPosition(levels[0].stairUp);
+				break;
+			case event_new_level:
+				generateEnemies(engine);
+				break;
+			case event_up_level: 
+				currentLevel--;	
+				fixPlayerPosition(levels[currentLevel].stairDown);
+				updateEntities(engine);
+				break;
+			case event_down_level:
+				currentLevel++;
+				fixPlayerPosition(levels[currentLevel].stairUp);
+				updateEntities(engine);
+				break;
 		}
 	}
 
-	this.handleCommand = function(engine, c){
-		if(this.acceptedCommands.includes(c.commandID)){
-			switch(c.commandID){
-				case command_generate_player:
-					generatePlayer(engine, c.x, c.y);
-					break;
-			}
-		}
-	}
-
-	let generatePlayer = function(engine, x, y){
-		player = new Player(x, y, 10, 3, 3, 3);
+	let generatePlayer = function(engine){
+		player = new Player(0, 0, 10, 3, 3, 3);
+		engine.sendEvent(event_player_generated);
 	}
 
 	let generateEnemies = function(engine){
-		levels[levels.length - 1] = [];
-		levels[levels.length - 1].push(new Mob(player.position.x - 2, player.position.y - 2));
+		entities.push([]);
+		// entities[entities.length - 1].push(new Mob(player.position.x - 2, player.position.y - 2));
 	}
 
-	let updateEntities = function(engine, level){
-		for(let e of levels[level]){
-			engine.updateObjects(e);
+	let fixPlayerPosition = function(stair){
+		player.position.x = stair.x;
+		player.position.y = stair.y;
+	}
+
+	let updateEntities = function(engine){
+		for(let e of entities[currentLevel]){
+			engine.addObject(e);
 		}
-		engine.updateObjects(player);
+		if(player !== undefined) {
+			engine.addObject(player);
+		}
 	}
 
-	this.updateObjects = function(object){
-		if(object instanceof Level){ board = object.level.board; }
-		System.prototype.updateObjects.call(this, object);
+	this.addObject = function(object){
+		if(object instanceof Level){ 
+			levels.push(object);
+		}
+		else{
+			System.prototype.addObject.call(this, object);
+		}
 	}
-
-
 
 	//MOB BEHAVIOR
 

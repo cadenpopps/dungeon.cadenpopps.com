@@ -14,14 +14,14 @@ const FLOOR = 0, WALL = 1, DOOR = 2, STAIR_DOWN = 3, STAIR_UP = 4, LOOT = 5;
 const HEART = 0;
 
 //commands
-const command_move_entity = 0, command_roll_entity = 1, command_generate_level = 2, command_generate_player = 3, command_init = 4, command_clear_objects = 5, command_down_level = 6, command_up_level = 7;
+// const command_move_entity = 0, command_roll_entity = 1, command_generate_level = 2, command_generate_player = 3, command_init = 4, command_clear_objects = 5, command_down_level = 6, command_up_level = 7;
 
 //components
 const component_position = 0, component_movement = 1, component_display = 2, component_animation = 3, component_actions = 4, component_physical = 5, component_sprint = 6, component_direction = 7, component_level = 8, component_health = 9, component_light = 10;
 
 
 //events
-const event_game_start = 0, event_player_moved = 1, event_entity_moved = 2, event_entity_sprinted = 3, event_player_startsprint = 4, event_player_stopsprint = 5, event_entity_rolled = 6, event_entity_failed_roll= 7, event_open_door = 8, event_down_level = 9, event_up_level = 10, event_window_resized = 11, event_new_level = 12;
+const event_new_game = 0, event_start_game = 1, event_first_level_initiated = 2, event_player_generated = 3, event_down_level = 4, event_up_level = 5, event_new_level = 6, event_player_moved = 7, event_entity_moved = 8, event_entity_sprinted = 9, event_player_startsprint = 10, event_player_stopsprint = 11, event_entity_rolled = 12, event_entity_failed_roll= 13, event_open_door = 14, event_window_resized = 15;
 
 //direction
 const direction_up = 0, direction_right = 1, direction_down = 2, direction_left = 3;
@@ -52,16 +52,23 @@ action_priority[action_foward_attack] = 2;
 action_priority[action_spin_attack] = 2;
 action_priority[action_roll] = 3;
 
-const action_length = [];
-action_length[action_move] = 9;
-action_length[action_sprint] = 4;
-action_length[action_foward_attack] = 10;
-action_length[action_spin_attack] = 10;
-action_length[action_roll] = 6;
-action_length[action_failed_roll] = 25;
+// const action_length = [];
+// action_length[action_move_up] = 5;
+// action_length[action_move_right] = 5;
+// action_length[action_move_down] = 5;
+// action_length[action_move_left] = 5;
+// action_length[action_sprint] = 0;
+// action_length[action_sprint] = 4;
+// action_length[action_foward_attack] = 10;
+// action_length[action_spin_attack] = 10;
+// action_length[action_roll] = 6;
+// action_length[action_failed_roll] = 25;
 
 const action_cooldown = [];
-action_cooldown[action_move] = 0;
+action_cooldown[action_move_up] = 5;
+action_cooldown[action_move_right] = 5;
+action_cooldown[action_move_down] = 5;
+action_cooldown[action_move_left] = 5;
 action_cooldown[action_sprint] = 0;
 action_cooldown[action_foward_attack] = 10;
 action_cooldown[action_spin_attack] = 10;

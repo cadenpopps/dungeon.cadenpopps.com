@@ -1,22 +1,17 @@
 function System(){
 	this.objects = [];
 	this.componentRequirements = [];
-	this.acceptedEvents = [];
-	this.acceptedCommands = [];
 }
 
 System.prototype.run = function(){}
 
-System.prototype.updateObjects = function(object){
-	let valid = true;
+System.prototype.addObject = function(object){
 	for(let r of this.componentRequirements){
 		if(!object.components.includes(r)){
-			valid = false;
-			break;
+			return;
 		}
 	}
-	if(valid && !this.objects.includes(object)) this.objects.push(object);
-	else if(!valid && this.objects.includes(object)) this.objects.splice(this.objects.indexOf(object), 1);
+	this.objects.push(object);
 }
 
 System.prototype.clearObjects = function(){
@@ -24,5 +19,3 @@ System.prototype.clearObjects = function(){
 }
 
 System.prototype.handleEvent = function(engine, e){}
-
-System.prototype.handleCommand = function(engine, c){}
