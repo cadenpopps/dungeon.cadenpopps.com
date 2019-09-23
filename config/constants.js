@@ -65,10 +65,10 @@ action_priority[action_roll] = 3;
 // action_length[action_failed_roll] = 25;
 
 const action_cooldown = [];
-action_cooldown[action_move_up] = 5;
-action_cooldown[action_move_right] = 5;
-action_cooldown[action_move_down] = 5;
-action_cooldown[action_move_left] = 5;
+action_cooldown[action_move_up] = 4;
+action_cooldown[action_move_right] = 4;
+action_cooldown[action_move_down] = 4;
+action_cooldown[action_move_left] = 4;
 action_cooldown[action_sprint] = 0;
 action_cooldown[action_foward_attack] = 10;
 action_cooldown[action_spin_attack] = 10;

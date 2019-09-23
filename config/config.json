@@ -1,15 +1,15 @@
 [
     {
         "name": "DUNGEON_SIZE",
-        "val": 55
+        "val": 75
     },
     {
 		"name": "ROOM_TRIES",
-		"val": 100
+		"val": 50
 	},
 	{
 		"name": "DISCOVERED_MAX",
-		"val": 600
+		"val": 500
 	},
 	{
 		"name": "CAMERA_MOVE_SPEED",
@@ -53,6 +53,6 @@
     },
     {
         "name": "LEVEL_CHANGE_ANIMATION_TIME",
-        "val": 500
+        "val": 200
     }
 ]

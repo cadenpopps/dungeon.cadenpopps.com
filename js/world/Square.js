@@ -28,6 +28,16 @@ DoorSquare.prototype.open = function () {
 	this.display.texture = TEXTURES[DOOR][OPEN];
 }
 
+LootSquare.prototype = Object.create(Square.prototype);
+function LootSquare(x, y) {
+	Square.call(this, x, y, LOOT, TEXTURES[LOOT][CLOSED], true, false);
+	this.opened = false;
+}
+LootSquare.prototype.open = function () {
+	this.opened = true;
+	this.display.texture = TEXTURES[LOOT][OPEN];
+}
+
 StairSquare.prototype = Object.create(Square.prototype);
 function StairSquare(x, y, up) {
 	if (up) {

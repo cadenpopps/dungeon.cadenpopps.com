@@ -356,7 +356,7 @@ function finalizeLevel(level, stairUp, stairDown){
 					level[i][j] = new StairSquare(i, j, false);
 					break;
 				case LOOT:
-					level[i][j] = new FloorSquare(i, j, true);
+					level[i][j] = new LootSquare(i, j);
 					break;
 				default:
 					console.log("Not recognized squaretype: " + level[i][j]);

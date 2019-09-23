@@ -73,12 +73,12 @@ function DisplaySystem(square_size, vision, animation_stages) {
 		else{
 			let t = o.display.texture;
 			image(t, x, y, w, h);
-			// if(!o.display.visible && o.display.discovered > 0){
-			// let opacity = min(1, 1 - (o.display.discovered/CONFIG.DISCOVERED_MAX) + .4);
-			// if(opacity == 1) { o.display.discovered = 0; }
-			// fill(0,0,0, opacity);
-			// rect(x, y, w, h);
-			// }
+			if(!o.display.visible && o.display.discovered > 0){
+				let opacity = min(1, 1 - (o.display.discovered/CONFIG.DISCOVERED_MAX) + .2);
+				// if(opacity == 1) { o.display.discovered = 0; }
+				fill(0,0,0, opacity);
+				rect(x, y, w, h);
+			}
 		}
 	}
 

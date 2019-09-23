@@ -7,9 +7,7 @@ function VisionSystem (){
 	let board;
 	let entities = [];
 
-	this.run = function(engine){ 
-		vision(board, player); 
-	}
+	this.run = function(engine){ }
 
 	let vision = function(board, player){
 		for(let r of board){
@@ -41,11 +39,11 @@ function VisionSystem (){
 	}
 
 	this.handleEvent = function(engine, eventID){
-		// switch (eventID){
-		// 	case event_player_moved: case event_down_level: case event_up_level:
-		// 		vision(board, player);
-		// 		break;
-		// }
+		switch (eventID){
+			case event_start_game: case event_player_moved: case event_down_level: case event_up_level:
+				vision(board, player);
+				break;
+		}
 	}
 
 	let lightTriangle = function(board, octant, sx, sy, range){

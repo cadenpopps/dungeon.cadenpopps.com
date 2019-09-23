@@ -162,11 +162,11 @@ function MovementSystem(){
 	}
 
 	let playerWalkable = function(square){
-		return !(square instanceof WallSquare);
+		return (!square.physical.solid || square instanceof DoorSquare || square instanceof StairSquare);
 	}
 
 	let mobWalkable = function(square){
-		return !(square instanceof WallSquare || (square instanceof DoorSquare && !square.opened) || square instanceof StairSquare)
+		return !(square.physical.solid);
 	}
 
 	let squareIsOccupied = function(square, objects){
