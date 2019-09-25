@@ -15,6 +15,7 @@ function PoppsEngine(tickrate, config) {
 		this.systems.push(new AnimationSystem());
 
 		$(window).resize(this.sendEvent.bind(this, event_window_resized));
+		window.Utility = new Utility();
 
 		this.sendEvent(event_new_game);
 		this.sendEvent(event_start_game);

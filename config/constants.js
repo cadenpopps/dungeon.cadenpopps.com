@@ -1,10 +1,11 @@
 //constants
 const UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
 const entity_player = 0, entity_mob = 1;
+
+// lights
 const light_max = light_range = 8, light_intensity = .07, light_red = 230, light_green = 150, light_blue = 0;
 const shadow_intensity = .08, shadow_red = 10, shadow_green = 5, shadow_blue = 25, shadow_max = .6;
 const light_level_to_shadow = new Array(light_max);
-
 const light_fill_string = "rgba(" + light_red + "," + light_green + "," + light_blue + ",";
 
 //square constants
@@ -13,15 +14,11 @@ const FLOOR = 0, WALL = 1, DOOR = 2, STAIR_DOWN = 3, STAIR_UP = 4, LOOT = 5;
 //image constants
 const HEART = 0;
 
-//commands
-// const command_move_entity = 0, command_roll_entity = 1, command_generate_level = 2, command_generate_player = 3, command_init = 4, command_clear_objects = 5, command_down_level = 6, command_up_level = 7;
-
 //components
-const component_position = 0, component_movement = 1, component_display = 2, component_animation = 3, component_actions = 4, component_physical = 5, component_sprint = 6, component_direction = 7, component_level = 8, component_health = 9, component_light = 10;
-
+const component_position = 0, component_movement = 1, component_display = 2, component_animation = 3, component_actions = 4, component_physical = 5, component_sprint = 6, component_direction = 7, component_map = 8, component_health = 9, component_light = 10, component_strength = 11, component_intelligence = 12, component_magic = 13, component_level = 14, component_depth = 15, component_stair = 16;
 
 //events
-const event_new_game = 0, event_start_game = 1, event_first_level_initiated = 2, event_player_generated = 3, event_down_level = 4, event_up_level = 5, event_new_level = 6, event_player_moved = 7, event_entity_moved = 8, event_entity_sprinted = 9, event_player_startsprint = 10, event_player_stopsprint = 11, event_entity_rolled = 12, event_entity_failed_roll= 13, event_open_door = 14, event_window_resized = 15;
+const event_new_game = 0, event_start_game = 1, event_first_level_initiated = 2, event_player_generated = 3, event_down_level = 4, event_up_level = 5, event_new_level = 6, event_player_moved = 7, event_entity_moved = 8, event_player_start_sprinting = 9, event_player_stop_sprinting = 10, event_open_door = 11, event_window_resized = 12;
 
 //direction
 const direction_up = 0, direction_right = 1, direction_down = 2, direction_left = 3;
@@ -65,10 +62,10 @@ action_priority[action_roll] = 3;
 // action_length[action_failed_roll] = 25;
 
 const action_cooldown = [];
-action_cooldown[action_move_up] = 4;
-action_cooldown[action_move_right] = 4;
-action_cooldown[action_move_down] = 4;
-action_cooldown[action_move_left] = 4;
+action_cooldown[action_move_up] = 6;
+action_cooldown[action_move_right] = 6;
+action_cooldown[action_move_down] = 6;
+action_cooldown[action_move_left] = 6;
 action_cooldown[action_sprint] = 0;
 action_cooldown[action_foward_attack] = 10;
 action_cooldown[action_spin_attack] = 10;

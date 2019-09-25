@@ -43,16 +43,16 @@ function InputSystem(){
 	}
 
 	let decreasePlayerSprint = function(player){
-		player.sprint.moveCounter--;
-		player.sprint.sprinting = false;
-		if(player.sprint.moveCounter == 0){
-			cancelSprintTimeout = undefined;
-		}
-		else{
-			cancelSprintTimeout = setTimeout(function(){
-				decreasePlayerSprint(player);
-			}, CONFIG.PLAYER_SPRINT_REDUCTION_SPEED);
-		}
+		// player.sprint.moveCounter--;
+		// player.sprint.sprinting = false;
+		// if(player.sprint.moveCounter == 0){
+		// 	cancelSprintTimeout = undefined;
+		// }
+		// else{
+		// 	cancelSprintTimeout = setTimeout(function(){
+		// 		decreasePlayerSprint(player);
+		// 	}, CONFIG.PLAYER_SPRINT_REDUCTION_SPEED);
+		// }
 	}
 
 	this.addObject = function(object){

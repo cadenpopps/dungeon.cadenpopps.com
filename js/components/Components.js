@@ -1,23 +1,23 @@
-
 function PositionComponent(x, y){
 	this.x = x;
 	this.y = y;
 }
 
-function HealthComponent(h){
-	this.maxHealth = h;
-	this.health = h;
-	this.healthPercent = 1;
+function HealthComponent(initialHealth){
+	this.maxHealth = initialHealth;
+	this.health = initialHealth;
+}
 
-	this.changeHealth = function(h){
-		this.health = h;
-		this.healthPercent = this.health / this.maxHealth;
-	}
+function StrengthComponent(initialStrength){
+	this.strength = initialStrength;
+}
 
-	this.changeMaxHealth = function(h){
-		this.maxHealth = h;
-		this.healthPercent = this.health / this.maxHealth;
-	}
+function IntelligenceComponent(initialIntelligence){
+	this.intelligence = initialIntelligence;
+}
+
+function MagicComponent(initialMagic){
+	this.magic = initialMagic;
 }
 
 function DirectionComponent(){
@@ -68,15 +68,21 @@ function ActionComponent(actions){
 	this.lastAction = action_none;
 }
 
-function SprintComponent(moveThreshold){
-	this.moveThreshold = moveThreshold;
-	this.moveCounter = 0;
+function SprintComponent(movesBeforeSprinting){
+	this.movesBeforeSprinting = movesBeforeSprinting;
+	this.sprintCounter = 0;
 	this.sprinting = false;
 }
 
-function LevelComponent(board, stairUp, stairDown, depth){
-	this.board = board;
-	this.stairUp = stairUp;
-	this.stairDown = stairDown;
+function MapComponent(map){
+	this.map = map;
+}
+
+function DepthComponent(depth){
 	this.depth = depth;
+}
+
+function StairComponent(x, y){
+	this.x = x;
+	this.y = y;
 }

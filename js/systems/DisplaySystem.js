@@ -47,11 +47,11 @@ function DisplaySystem(square_size, vision, animation_stages) {
 
 	let drawTextures = function(objects){
 		for(let o of objects){
-			let x = CENTER_X - camera.zoom * (GRID_SIZE * (camera.x + camera.shakeOffsetX - o.position.x));
-			let y = CENTER_Y - camera.zoom * (GRID_SIZE * (camera.y + camera.shakeOffsetY - o.position.y));
-			let w = o.display.width * GRID_SIZE * camera.zoom;
-			let h = o.display.height * GRID_SIZE * camera.zoom;
 			if(o.display.visible || o.display.discovered > 0){
+				let x = CENTER_X - camera.zoom * (GRID_SIZE * (camera.x + camera.shakeOffsetX - o.position.x));
+				let y = CENTER_Y - camera.zoom * (GRID_SIZE * (camera.y + camera.shakeOffsetY - o.position.y));
+				let w = o.display.width * GRID_SIZE * camera.zoom;
+				let h = o.display.height * GRID_SIZE * camera.zoom;
 				drawTexture(o, x, y, w, h); 
 			}
 		}
@@ -72,7 +72,13 @@ function DisplaySystem(square_size, vision, animation_stages) {
 		}
 		else{
 			let t = o.display.texture;
-			image(t, x, y, w, h);
+			if(t == undefined){
+				fill(255, 100, 100);
+				rect(x, y, w, h);
+			}
+			else{
+				image(t, x, y, w, h);
+			}
 			if(!o.display.visible && o.display.discovered > 0){
 				let opacity = min(1, 1 - (o.display.discovered/CONFIG.DISCOVERED_MAX) + .2);
 				// if(opacity == 1) { o.display.discovered = 0; }
@@ -109,14 +115,16 @@ function DisplaySystem(square_size, vision, animation_stages) {
 
 	let drawHealth = function(objects){
 		for(let o of objects){
-			let x = CENTER_X - camera.zoom * (GRID_SIZE * (camera.x + camera.shakeOffsetX - o.position.x));
-			let y = CENTER_Y - camera.zoom * (GRID_SIZE * (camera.y + camera.shakeOffsetY - o.position.y));
-			let w = o.display.width * GRID_SIZE * camera.zoom;
-			if(!(o instanceof Player) && o.components.includes(component_health)){
-				drawMobHealth(o, x, y, w);
-			}
-			else if(o instanceof Player){
-				drawPlayerHealth(o);
+			if(o.display.visible || o.display.discovered > 0){
+				let x = CENTER_X - camera.zoom * (GRID_SIZE * (camera.x + camera.shakeOffsetX - o.position.x));
+				let y = CENTER_Y - camera.zoom * (GRID_SIZE * (camera.y + camera.shakeOffsetY - o.position.y));
+				let healthBarWidth = o.display.width * GRID_SIZE * camera.zoom;
+				if(!(o instanceof Player) && o.components.includes(component_health)){
+					drawMobHealth(o, x, y, healthBarWidth);
+				}
+				else if(o instanceof Player){
+					drawPlayerHealth(o);
+				}
 			}
 		}
 	}
@@ -127,19 +135,16 @@ function DisplaySystem(square_size, vision, animation_stages) {
 		}
 	}
 
-	let drawMobHealth = function(mob, x, y, w){
+	let drawMobHealth = function(mob, x, y, healthBarWidth){
 		xoff = GRID_SIZE * mob.animation.offsetX;
 		yoff = GRID_SIZE * mob.animation.offsetY;
-		w = w - (GRID_SIZE / 4);
-		fill(0,0,0);
-		rect(xoff + x + (GRID_SIZE / 8) - .5, yoff + y - HEALTH_BAR_OFFSET - .5, w + 1, HEALTH_BAR_HEIGHT + 1);
+		healthBarWidth = healthBarWidth - (GRID_SIZE / 4);
 		fill(40,0,0);
-		rect(xoff + x + (GRID_SIZE / 8), yoff + y - HEALTH_BAR_OFFSET, w, HEALTH_BAR_HEIGHT);
-		w = w * mob.health.healthPercent;
+		rect(xoff + x + (GRID_SIZE / 8), yoff + y - HEALTH_BAR_OFFSET, healthBarWidth, HEALTH_BAR_HEIGHT);
+		healthBarWidth = healthBarWidth * Utility.getHealthPercent(mob);
 		fill(50, 220, 120);
-		rect(xoff + x + (GRID_SIZE / 8), yoff + y - HEALTH_BAR_OFFSET, w, HEALTH_BAR_HEIGHT);
+		rect(xoff + x + (GRID_SIZE / 8), yoff + y - HEALTH_BAR_OFFSET, healthBarWidth, HEALTH_BAR_HEIGHT);
 	}
-
 
 	this.addObject = function(object){
 		if(object instanceof Player){
@@ -155,9 +160,6 @@ function DisplaySystem(square_size, vision, animation_stages) {
 				break;
 			case event_up_level: case event_down_level: case event_player_moved:
 				cameraMoving = true;
-				break;
-			case event_entity_failed_roll:
-				if(e.entity instanceof Player) shakeCamera(camera, 35, 1, .25);
 				break;
 			case event_window_resized:
 				resize();

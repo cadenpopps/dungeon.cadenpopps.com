@@ -4,14 +4,14 @@ function MovementSystem(){
 	System.call(this);
 
 	this.componentRequirements = [component_position, component_physical, component_actions];
+	let map;
 	let currentLevel = 0;
-	let board;
 
 	this.run = function(engine){
 		for(let o of this.objects){
 			switch(o.actions.currentAction){
 				case action_move_up: case action_move_right: case action_move_down: case action_move_left:
-					move(engine, board, o, this.objects);
+					move(engine, map, o, this.objects);
 					break;
 			}
 		}
@@ -30,54 +30,53 @@ function MovementSystem(){
 
 	this.addObject = function(object){
 		if(object instanceof Level){
-			board = object.level.board;
+			map = object.map.map;
 		}
 		System.prototype.addObject.call(this, object);
 	}
 
-	let move = function(engine, board, entity, objects){
-		let target = {
-			x: entity.position.x,
-			y: entity.position.y
-		}
+	let move = function(engine, map, entity, objects){
+		let targetX = entity.position.x;
+		let targetY = entity.position.y;
+
 		switch (entity.actions.currentAction) {
 			case action_move_up:
-				target.y--;
+				targetY--;
 				break;
 			case action_move_right:
-				target.x++;
+				targetX++;
 				break;
 			case action_move_down:
-				target.y++;
+				targetY++;
 				break;
 			case action_move_left:
-				target.x--;
+				targetX--;
 				break;
 			default:
 				console.log("No direction");
 				break;
 		}
 
-		let allowed = currentlyWalkable(board[target.x][target.y], entity, objects);
+		let allowed = Utility.walkable(map[targetX][targetY], entity, objects);
 
 		if (allowed) {
 			entity.direction.direction = action_to_direction[direction];
-			if(entity.components.includes(component_sprint) && !entity.sprint.sprinting) {
-				if(entity.sprint.moveCounter == entity.sprint.moveThreshold){
-					entity.sprint.sprinting = true;
-				}
-				else{
-					entity.sprint.moveCounter++;
-				}
-			}
+			// if(entity.components.includes(component_sprint) && !entity.sprint.sprinting) {
+			// 	if(entity.sprint.moveCounter == entity.sprint.moveThreshold){
+			// 		entity.sprint.sprinting = true;
+			// 	}
+			// 	else{
+			// 		entity.sprint.moveCounter++;
+			// 	}
+			// }
 
-			entity.position.x = target.x;
-			entity.position.y = target.y;
+			entity.position.x = targetX;
+			entity.position.y = targetY;
 
 			entity.animation.newAnimation = true;
 			entity.animation.animation = action_to_animation[entity.actions.currentAction];
 			if(entity instanceof Player) {
-				playerWalkEvents(engine, board[target.x][target.y]);
+				playerWalkEvents(engine, entity, map[targetX][targetY]);
 			}
 		}
 		else{
@@ -88,7 +87,7 @@ function MovementSystem(){
 		entity.actions.currentAction = action_none;
 	}
 
-	let roll = function(engine, board, entity, direction, objects){
+	let roll = function(engine, map, entity, direction, objects){
 		let t1 = {
 			x: entity.position.x,
 			y: entity.position.y
@@ -119,8 +118,8 @@ function MovementSystem(){
 				break;
 		}
 
-		let t1Allowed = currentlyWalkable(board[t1.x][t1.y], entity, objects);
-		let t2Allowed = currentlyWalkable(board[t2.x][t2.y], entity, objects);
+		let t1Allowed = Utility.walkable(map[t1.x][t1.y], entity, objects);
+		let t2Allowed = Utility.walkable(map[t2.x][t2.y], entity, objects);
 
 		if (t2Allowed) {
 			let eventID;
@@ -136,8 +135,8 @@ function MovementSystem(){
 			}
 
 			if(entity instanceof Player) {
-				playerWalkEvents(engine, board[t1.x][t1.y]);
-				playerWalkEvents(engine, board[t2.x][t2.y]);
+				playerWalkEvents(engine, map[t1.x][t1.y]);
+				playerWalkEvents(engine, map[t2.x][t2.y]);
 				// engine.sendEvent({"eventID": event_player_moved, "entity": entity});
 			}
 
@@ -149,36 +148,7 @@ function MovementSystem(){
 		}
 	}
 
-	let currentlyWalkable = function(square, entity, objects){
-		return squareInBounds(square) && squareIsWalkable(square, entity) && !squareIsOccupied(square, objects);
-	}
-
-	let squareInBounds = function(square){
-		return square.position.x >= 0 && square.position.x < CONFIG.DUNGEON_SIZE && square.position.y >= 0 && square.position.y < CONFIG.DUNGEON_SIZE;
-	}
-
-	let squareIsWalkable = function(square, entity){
-		return (entity instanceof Player) ? playerWalkable(square) : mobWalkable(square);
-	}
-
-	let playerWalkable = function(square){
-		return (!square.physical.solid || square instanceof DoorSquare || square instanceof StairSquare);
-	}
-
-	let mobWalkable = function(square){
-		return !(square.physical.solid);
-	}
-
-	let squareIsOccupied = function(square, objects){
-		for(let o of objects){
-			if(o.position.x == square.position.x && o.position.y == square.position.y && o.physical.solid){
-				return true;
-			}
-		}
-		return false;
-	}
-
-	let playerWalkEvents = function(engine, square){
+	let playerWalkEvents = function(engine, player, square){
 		if(square instanceof StairSquare){
 			if(square.up && currentLevel > 0){ 
 				engine.clearObjects();
@@ -192,6 +162,9 @@ function MovementSystem(){
 		else if(square instanceof DoorSquare){
 			square.open();
 		}
+
+		if(player.sprint.sprinting){ engine.sendEvent(event_player_start_sprinting); }
+
 		engine.sendEvent(event_player_moved);
 	}
 }

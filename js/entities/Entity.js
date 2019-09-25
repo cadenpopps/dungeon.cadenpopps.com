@@ -1,137 +1,17 @@
-
-function Entity(x, y, hp = 3, str = 1, mag = 1, int = 1, animations = undefined) {
-
-	let size = 1;
-	let texture = undefined;
-
-	this.components = [component_position, component_health, component_direction, component_physical, component_display, component_actions, component_animation];
+function Entity(x, y, initialDepth = 0, initialHealth = 3, initialStrength = 1, initialMagic = 1, initialIntelligence = 1, size = 1, animations = CONFIG.DEFAULT_ANIMATIONS) {
+	// let size = 1;
+	// let texture = undefined;
+	this.components = [component_position, component_depth, component_health, component_strength, component_magic, component_intelligence, component_direction, component_physical, component_display, component_actions, component_animation];
 	this.position = new PositionComponent(x, y);
+	this.depth = new DepthComponent(initialDepth);
 	this.direction = new DirectionComponent();
 	this.physical = new PhysicalComponent(true, false, size);
-	this.health = new HealthComponent(3);
+	this.health = new HealthComponent(initialHealth);
+	this.strength = new StrengthComponent(initialStrength);
+	this.magic = new MagicComponent(initialMagic);
+	this.intelligence = new IntelligenceComponent(initialIntelligence);
 	this.display = new DisplayComponent(undefined, size, size);
 	this.animation = new AnimationComponent(animations);
 	let defaultActions = [action_move_up, action_move_right, action_move_down, action_move_left, action_foward_attack, action_spin_attack];
 	this.actions = new ActionComponent(defaultActions);
-
-	//this.strength = str;
-	//this.magic = mag;
-	//this.intelligence = int;
-	//this.speed = speed;
-
-	//this.deathCounter;
-	//this.alive = true;
-
-	//this.animations = animations;
-	//if (this.animations == undefined) {
-	//	this.animations = CONFIG.DEFAULT_ANIMATIONS;
-	//}
-	//this.animationCounter = 0;
-	//this.animation = IDLE;
-	//this.sprite = this.animations[IDLE][this.animationCounter];
-	//this.cooldown = 0;
-	//this.busy = false;
-}
-
-Entity.prototype.update = function () {
-	this.updateState();
-}
-
-Entity.prototype.updateState = function(){
-	if(this.currentHealth <= 0) this.die();
-}
-
-Entity.prototype.die = function(){
-	this.deathCounter = 8;
-	this.alive = false;
-}
-
-Entity.prototype.move = function (dir, board, mobs) {
-	let status = 0;
-	switch (dir) {
-		case UP:
-			if (this.y > 0 && board[this.x][this.y - 1].walkable(mobs, this)) {
-				delete mobs[getSquareCode(this.x, this.y)];
-				this.y--;
-				mobs[getSquareCode(this.x, this.y)] = this;
-				status = SUCCESS;
-			}
-			break;
-		case RIGHT:
-			if (this.x < CONFIG.DUNGEON_SIZE && board[this.x + 1][this.y].walkable(mobs, this)) {
-				delete mobs[getSquareCode(this.x, this.y)];
-				this.x++;
-				mobs[getSquareCode(this.x, this.y)] = this;
-				status = SUCCESS;
-			}
-			break;
-		case DOWN:
-			if (this.y < CONFIG.DUNGEON_SIZE && board[this.x][this.y + 1].walkable(mobs, this)) {
-				delete mobs[getSquareCode(this.x, this.y)];
-				this.y++;
-				mobs[getSquareCode(this.x, this.y)] = this;
-				status = SUCCESS;
-			}
-			break;
-		case LEFT:
-			if (this.x > 0 && board[this.x - 1][this.y].walkable(mobs, this)) {
-				delete mobs[getSquareCode(this.x, this.y)];
-				this.x--;
-				mobs[getSquareCode(this.x, this.y)] = this;
-				status = SUCCESS;
-			}
-            break;
-        default:
-            console.log("No direction");
-            break;
-    }
-	if (status != FAIL) {
-		this.animation = dir;
-		this.animationCounter = 0;
-		this.busy = true;
-	}
-	return status;
-}
-
-Entity.prototype.healthPercent = function(){
-	return floor(this.currentHealth/this.health * 100) / 100;
-}
-
-Entity.prototype.takeDamage = function(rawDamage = 0){
-	let finalDamage = constrainLow(rawDamage, 0);	
-	this.currentHealth -= rawDamage;
-}
-
-Entity.prototype.attack = function (target) {
-	if(target.alive){
-		target.takeDamage(this.strength);	
-	}
-}
-
-Entity.prototype.animate = function (idleTimer) {
-	if (this.animation == IDLE) {
-		if (idleTimer == 0) {
-			this.animationCounter++;
-		}
-	}
-	else {
-		this.animationCounter++;
-	}
-	if (this.animationCounter < this.animations[this.animation].length) {
-		this.sprite = this.animations[this.animation][this.animationCounter];
-	}
-	else{
-		this.animationCounter = 0;
-		this.animation = IDLE;
-		this.busy = false;
-	}
-}
-
-Entity.prototype.toString = function EntityToString() {
-    console.log("x: " + this.x);
-    console.log("y: " + this.y);
-    console.log("health: " + this.health);
-    console.log("strength: " + this.strength);
-    console.log("magic: " + this.magic);
-    console.log("intelligence: " + this.intelligence);
 }

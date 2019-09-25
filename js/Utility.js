@@ -1,10 +1,71 @@
+function Utility(){
+	this.getSquareNeighbors = function(x, y, map){
+		neighbors = [];
+		if (x > 0 && walkable(entity_mob, map[x - 1][y])) {
+			neighbors.push(map[x - 1][y]);
+		}
+		if (y > 0 && walkable(entity_mob, map[x][y - 1])) {
+			neighbors.push(map[x][y - 1]);
+		}
+		if (x < CONFIG.DUNGEON_SIZE - 1 && walkable(entity_mob, map[x + 1][y])) {
+			neighbors.push(map[x + 1][y]);
+		}
+		if (y < CONFIG.DUNGEON_SIZE - 1 && walkable(entity_mob, map[x][y + 1])) {
+			neighbors.push(map[x][y + 1]);
+		}
+		return neighbors;
+	}
+
+	this.getHealthPercent = function(entity){
+		return entity.health.health / entity.health.maxHealth;
+	}
+
+	this.findMobPath = function(board, mob, player){
+		return findPath(board, board[mob.position.x][mob.position.y], board[player.position.x][player.position.y]);
+	}
+
+	this.walkable = function(square, entity, objects){
+		return this.squareInBounds(square) && squareIsWalkable(square, entity) && !squareIsOccupied(square, objects);
+	}
+
+	this.positionInBounds = function(x, y){
+		return x >= 0 && x < CONFIG.DUNGEON_SIZE && y >= 0 && y < CONFIG.DUNGEON_SIZE;
+	}
+
+	this.squareInBounds = function(square){
+		return square.position.x >= 0 && square.position.x < CONFIG.DUNGEON_SIZE && square.position.y >= 0 && square.position.y < CONFIG.DUNGEON_SIZE;
+	}
+
+	let squareIsWalkable = function(square, entity){
+		return (entity instanceof Player) ? playerWalkable(square) : mobWalkable(square);
+	}
+
+	let playerWalkable = function(square){
+		return (!square.physical.solid || square instanceof DoorSquare || square instanceof StairSquare);
+	}
+
+	let mobWalkable = function(square){
+		return !(square.physical.solid);
+	}
+
+	let squareIsOccupied = function(square, objects){
+		for(let o of objects){
+			if(o.position.x == square.position.x && o.position.y == square.position.y && o.physical.solid){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	this.isMovementAction = function(action){
+		return action == action_move_up || action == action_move_right || action == action_move_down || action == action_move_left;
+	}
+}
+
 function getSquareCode(x, y) {
 	return x + (y * CONFIG.DUNGEON_SIZE)
 }
 
-function findMobPath(board, mob, player){
-	return findPath(board, board[mob.position.x][mob.position.y], board[player.position.x][player.position.y]);
-}
 
 const LARGE_VALUE = 2147483647;
 

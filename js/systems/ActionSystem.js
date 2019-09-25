@@ -1,4 +1,3 @@
-
 ActionSystem.prototype = Object.create(System.prototype);
 function ActionSystem (){
 	System.call(this);
@@ -8,29 +7,49 @@ function ActionSystem (){
 	this.run = function(engine){
 		for(let object of this.objects){
 			let actions = object.actions;
-			for(let c in actions.cooldowns){
-				if(actions.cooldowns[c] > 0) actions.cooldowns[c]--;
-			}
 			if(actions.busy > 0){
 				actions.busy--;
 			}
-			else if(actions.nextAction != action_none){
-				if(actions.cooldowns[actions.nextAction] == 0){
-					setCurrentAction(object);
-				}
+			else{
+				setCurrentAction(object, engine);
 			}
 		}
 	}
 
-	let setCurrentAction = function(object){
+	let setCurrentAction = function(object, engine){
 		object.actions.currentAction = object.actions.nextAction;
 		object.actions.nextAction = action_none;
 		addCooldowns(object, object.actions.currentAction);
+		if(object.components.includes(component_sprint)){
+			handleSprinting(object, engine);
+		}
+	}
+
+	let handleSprinting = function(object, engine){
+		if(!object.sprint.sprinting && Utility.isMovementAction(object.actions.currentAction)){
+			object.sprint.sprintCounter++;
+			if(object.sprint.sprintCounter == object.sprint.movesBeforeSprinting){
+				object.sprint.sprinting = true;	
+				object.sprint.sprintCounter = 0;
+				if(object instanceof Player){
+					engine.sendEvent(event_player_start_sprinting);
+				}
+			}
+		}
+		else if(object.sprint.sprinting && !Utility.isMovementAction(object.actions.currentAction)){
+			object.sprint.sprinting = false;	
+			if(object instanceof Player){
+				engine.sendEvent(event_player_stop_sprinting);
+			}
+		}
+		else if(object.sprint.sprinting){
+			object.actions.busy--;
+		}
 	}
 
 	let addCooldowns = function(object, action){
 		object.actions.busy = action_cooldown[action];
-		object.actions.cooldowns[action] = action_cooldown[action];
+		// object.actions.cooldowns[action] = action_cooldown[action];
 	}
 
 	this.handleEvent = function(engine, eventID){

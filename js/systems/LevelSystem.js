@@ -38,7 +38,6 @@ function LevelSystem (){
 	let newLevel = function(engine, depth){
 		let level = generateLevel(CONFIG.DUNGEON_SIZE, depth);
 		levels.push(level);
-		engine.sendEvent(event_new_level);
 		return level; 
 	}
 
@@ -46,8 +45,12 @@ function LevelSystem (){
 		currentDepth++;
 		if(currentDepth == levels.length){
 			newLevel(engine, currentDepth); 
+			updateLevel(engine);
+			engine.sendEvent(event_new_level);
 		}
-		updateLevel(engine);
+		else{
+			updateLevel(engine);
+		}
 	}
 
 	let handleUpLevel = function(engine){
@@ -62,7 +65,7 @@ function LevelSystem (){
 		engine.addObject(level);
 		for (var i = 0; i < CONFIG.DUNGEON_SIZE; i++) {
 			for (let j = 0; j < CONFIG.DUNGEON_SIZE; j++) {
-				engine.addObject(level.level.board[i][j]);
+				engine.addObject(level.map.map[i][j]);
 			}
 		}
 	}
