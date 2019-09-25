@@ -27,7 +27,7 @@ function DisplaySystem(square_size, vision, animation_stages) {
 	let HEART_SIZE = 32;
 	let HEART_OFFSET = 12;
 
-	let HEALTH_BAR_OFFSET = 6;
+	let HEALTH_BAR_OFFSET = 3;
 	let HEALTH_BAR_HEIGHT = 4;
 
 	let GRID_SIZE = 32;
@@ -63,7 +63,12 @@ function DisplaySystem(square_size, vision, animation_stages) {
 			y += GRID_SIZE * o.animation.offsetY;
 			let s = o.animation.sprite;
 			if(s == undefined){
-				fill(255);
+				if(o instanceof Player){
+					fill(255);
+				}
+				else{
+					fill(255, 150, 100);
+				}
 				rect(x + (GRID_SIZE / 8), y+ (GRID_SIZE / 8), w - (GRID_SIZE / 4), h - (GRID_SIZE / 4));
 			}
 			else{
