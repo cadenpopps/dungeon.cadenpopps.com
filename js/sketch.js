@@ -1,9 +1,9 @@
-
 const DEBUG = true;
 const DEBUG_BOARD = false;
 const SHOW_TEXTURES = true;
 
 const CONFIG = {};
+const PLAYER_CONFIG = {};
 
 const ADD_KEY = 0, REMOVE_KEY = 1, MOUSE_CLICK = 2;
 // const MOUSE = 1;
@@ -20,81 +20,10 @@ function preload() {
 		CONFIG[s.name] = s.val;
 	}
 
-	CONFIG.DEFAULT_ANIMATIONS = {};
-	CONFIG.DEFAULT_ANIMATIONS[animation_idle] = [
-		{ox: 0, oy: 0, sprite: undefined},
-		{ox: 0, oy: 0, sprite: undefined}, 
-		{ox: 0, oy: 0, sprite: undefined}, 
-		{ox: 0, oy: 0, sprite: undefined}, 
-		{ox: 0, oy: 0, sprite: undefined}, 
-		{ox: 0, oy: 0, sprite: undefined},
-		{ox: 0, oy: 0, sprite: undefined},
-		{ox: 0, oy: 0, sprite: undefined}
-	];
-	CONFIG.DEFAULT_ANIMATIONS[animation_move_up] = [
-		{ox: 0, oy: .95, sprite: undefined}, 
-		{ox: 0, oy: .9, sprite: undefined}, 
-		{ox: 0, oy: .8, sprite: undefined}, 
-		{ox: 0, oy: .6, sprite: undefined},
-		{ox: 0, oy: .4, sprite: undefined}, 
-		{ox: 0, oy: .2, sprite: undefined}, 
-		{ox: 0, oy: .1, sprite: undefined}, 
-		{ox: 0, oy: .05, sprite: undefined}
-	];
-	CONFIG.DEFAULT_ANIMATIONS[animation_move_right] = [
-		{ox: -.95, oy: 0, sprite: undefined}, 
-		{ox: -.9,  oy: 0, sprite: undefined}, 
-		{ox: -.8,  oy: 0, sprite: undefined}, 
-		{ox: -.6,  oy: 0, sprite: undefined}, 
-		{ox: -.4,  oy: 0, sprite: undefined}, 
-		{ox: -.2,  oy: 0, sprite: undefined}, 
-		{ox: -.1,  oy: 0, sprite: undefined}, 
-		{ox: -.05, oy: 0, sprite: undefined}
-	];
-	CONFIG.DEFAULT_ANIMATIONS[animation_move_down] = [
-		{ox: 0, oy: -.95, sprite: undefined}, 
-		{ox: 0, oy: -.9,  sprite: undefined}, 
-		{ox: 0, oy: -.8,  sprite: undefined}, 
-		{ox: 0, oy: -.6,  sprite: undefined}, 
-		{ox: 0, oy: -.4,  sprite: undefined}, 
-		{ox: 0, oy: -.2,  sprite: undefined}, 
-		{ox: 0, oy: -.1,  sprite: undefined}, 
-		{ox: 0, oy: -.05, sprite: undefined}
-	];
-	CONFIG.DEFAULT_ANIMATIONS[animation_move_left] = [
-		{ox: .95, oy: 0, sprite: undefined}, 
-		{ox: .9,  oy: 0, sprite: undefined}, 
-		{ox: .8,  oy: 0, sprite: undefined}, 
-		{ox: .6,  oy: 0, sprite: undefined}, 
-		{ox: .4,  oy: 0, sprite: undefined}, 
-		{ox: .2,  oy: 0, sprite: undefined}, 
-		{ox: .1,  oy: 0, sprite: undefined}, 
-		{ox: .05, oy: 0, sprite: undefined}
-	];
-	CONFIG.DEFAULT_ANIMATIONS[animation_roll_up] = [
-		{ox: 0, oy: 1.3, sprite: undefined}, 
-		{ox: 0, oy: .9, sprite: undefined}, 
-		{ox: 0, oy: .5, sprite: undefined}, 
-		{ox: 0, oy: .2, sprite: undefined}
-	];
-	CONFIG.DEFAULT_ANIMATIONS[animation_roll_right] = [
-		{ox: -1.3, oy: 0, sprite: undefined}, 
-		{ox: -.9, oy: 0, sprite: undefined}, 
-		{ox: -.5, oy: 0, sprite: undefined}, 
-		{ox: -.2, oy: 0, sprite: undefined}
-	];
-	CONFIG.DEFAULT_ANIMATIONS[animation_roll_down] = [
-		{ox: 0, oy: -1.3, sprite: undefined}, 
-		{ox: 0, oy: -.9, sprite: undefined}, 
-		{ox: 0, oy: -.5, sprite: undefined}, 
-		{ox: 0, oy: -.2, sprite: undefined}
-	];
-	CONFIG.DEFAULT_ANIMATIONS[animation_roll_left] = [
-		{ox: 1.3, oy: 0, sprite: undefined}, 
-		{ox: .9, oy: 0, sprite: undefined}, 
-		{ox: .5, oy: 0, sprite: undefined}, 
-		{ox: .2, oy: 0, sprite: undefined}
-	];
+	let playerConfig = loadJSON('/config/player_config.json');
+	for (let s in playerConfig) {
+		PLAYER_CONFIG[s] = playerConfig[s];
+	}
 
 	let pools = loadJSON('/config/roompool.json');
 	CONFIG.ROOMPOOL = pools[0];

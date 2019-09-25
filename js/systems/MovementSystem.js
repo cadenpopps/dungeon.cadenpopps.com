@@ -10,7 +10,7 @@ function MovementSystem(){
 	this.run = function(engine){
 		for(let o of this.objects){
 			switch(o.actions.currentAction){
-				case action_move_up: case action_move_right: case action_move_down: case action_move_left:
+				case action_move_up: case action_move_right: case action_move_down: case action_move_left: case action_sprint_up: case action_sprint_right: case action_sprint_down: case action_sprint_left:
 					move(engine, map, o, this.objects);
 					break;
 			}
@@ -40,16 +40,16 @@ function MovementSystem(){
 		let targetY = entity.position.y;
 
 		switch (entity.actions.currentAction) {
-			case action_move_up:
+			case action_move_up: case action_sprint_up:
 				targetY--;
 				break;
-			case action_move_right:
+			case action_move_right: case action_sprint_right:
 				targetX++;
 				break;
-			case action_move_down:
+			case action_move_down: case action_sprint_down:
 				targetY++;
 				break;
-			case action_move_left:
+			case action_move_left: case action_sprint_left:
 				targetX--;
 				break;
 			default:

@@ -44,17 +44,20 @@ function EntitySystem (){
 	}
 
 	let generatePlayer = function(engine, position){
-		player = new Player(position.x, position.y, 10, 3, 3, 3);
+		let animations = Utility.convertAnimationsFromConfig(PLAYER_CONFIG.animations);
+		player = new Player(position.x, position.y, 10, 3, 3, 3, animations);
 		engine.sendEvent(event_player_generated);
 	}
 
 	let generateEnemies = function(engine, depth){
+		let animations = Utility.convertAnimationsFromConfig(PLAYER_CONFIG.animations);
+
 		entities[depth] = [];
 		let numEntities = depth + 7;
 
 		while(numEntities > 0){
 			let entityPosition = findValidEntitySquare(levels[depth].map.map);			
-			entities[depth].push(new Mob(entityPosition.x, entityPosition.y, depth));
+			entities[depth].push(new Mob(entityPosition.x, entityPosition.y, depth, 10, 10, 10, 10, 1, animations));
 			numEntities--;
 		}
 	}

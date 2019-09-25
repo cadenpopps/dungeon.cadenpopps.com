@@ -1,4 +1,4 @@
-function Entity(x, y, initialDepth = 0, initialHealth = 3, initialStrength = 1, initialMagic = 1, initialIntelligence = 1, size = 1, animations = CONFIG.DEFAULT_ANIMATIONS) {
+function Entity(x, y, initialDepth = 0, initialHealth = 3, initialStrength = 1, initialMagic = 1, initialIntelligence = 1, size = 1, animations) {
 	// let size = 1;
 	// let texture = undefined;
 	this.components = [component_position, component_depth, component_health, component_strength, component_magic, component_intelligence, component_direction, component_physical, component_display, component_actions, component_animation];

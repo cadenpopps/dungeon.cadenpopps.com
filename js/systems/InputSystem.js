@@ -17,16 +17,21 @@ function InputSystem(){
 			for(let k of keys){
 				let a = key_to_action[k];
 				let priority = action_priority[a];
-				if(player.actions.lastAction == a) priority-=.1;
+				if(actionEqualsLastAction(player.actions.lastAction, a)) priority-=.1;
 				if(priority > highestPriority){
-					if(player.actions.cooldowns[a] == 0){
-						action = a;
-						highestPriority = priority;
-					}
+					action = a;
+					highestPriority = priority;
 				}
 			}
 		}
 		return action;
+	}
+
+	let actionEqualsLastAction = function(lastAction, a){
+		if(!Utility.isMovementAction(lastAction)){
+			lastAction = Utility.convertSprintToMovement(lastAction);
+		}
+		return lastAction == a;
 	}
 
 	let assignPlayerAction = function(player, action){
@@ -40,19 +45,6 @@ function InputSystem(){
 		// 	cancelSprintTimeout = undefined;
 		// }
 		player.actions.nextAction = action;	
-	}
-
-	let decreasePlayerSprint = function(player){
-		// player.sprint.moveCounter--;
-		// player.sprint.sprinting = false;
-		// if(player.sprint.moveCounter == 0){
-		// 	cancelSprintTimeout = undefined;
-		// }
-		// else{
-		// 	cancelSprintTimeout = setTimeout(function(){
-		// 		decreasePlayerSprint(player);
-		// 	}, CONFIG.PLAYER_SPRINT_REDUCTION_SPEED);
-		// }
 	}
 
 	this.addObject = function(object){

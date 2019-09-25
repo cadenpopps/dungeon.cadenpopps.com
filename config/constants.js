@@ -26,6 +26,21 @@ const direction_up = 0, direction_right = 1, direction_down = 2, direction_left 
 //animations
 const animation_idle = 0, animation_move_up = 1, animation_move_right = 2, animation_move_down = 3, animation_move_left = 4, animation_sprint_up = 5, animation_sprint_right = 6, animation_sprint_down = 7, animation_sprint_left = 8, animation_roll_up = 9, animation_roll_right = 10, animation_roll_down = 11, animation_roll_left = 12;
 
+const animation_strings_to_constants = [];
+animation_strings_to_constants["animation_idle"] = animation_idle;
+animation_strings_to_constants["animation_move_up"] = animation_move_up;
+animation_strings_to_constants["animation_move_right"] = animation_move_right;
+animation_strings_to_constants["animation_move_down"] = animation_move_down;
+animation_strings_to_constants["animation_move_left"] = animation_move_left;
+animation_strings_to_constants["animation_sprint_up"] = animation_sprint_up;
+animation_strings_to_constants["animation_sprint_right"] = animation_sprint_right;
+animation_strings_to_constants["animation_sprint_down"] = animation_sprint_down;
+animation_strings_to_constants["animation_sprint_left"] = animation_sprint_left;
+// paul["animation_roll_up"] = animation_roll_up;
+// paul["animation_roll_right"] = animation_roll_right;
+// paul["animation_roll_down"] = animation_roll_down;
+// paul["animation_roll_left"] = animation_roll_left;
+
 //Actions
 const action_none = -1, action_move = 0, action_move_up = 0, action_move_right = 1, action_move_down = 2, action_move_left = 3, action_sprint = 4, action_sprint_up = 4, action_sprint_right = 5, action_sprint_down = 6, action_sprint_left = 8, action_roll = 9, action_roll_up = 9, action_roll_right = 10, action_roll_down = 11, action_roll_left = 12, action_foward_attack = 13, action_spin_attack = 14,  action_failed_roll = 15; 
 
@@ -66,17 +81,20 @@ action_cooldown[action_move_up] = 6;
 action_cooldown[action_move_right] = 6;
 action_cooldown[action_move_down] = 6;
 action_cooldown[action_move_left] = 6;
-action_cooldown[action_sprint] = 0;
+action_cooldown[action_sprint_up] = 4;
+action_cooldown[action_sprint_right] = 4;
+action_cooldown[action_sprint_down] = 4;
+action_cooldown[action_sprint_left] = 4;
 action_cooldown[action_foward_attack] = 10;
 action_cooldown[action_spin_attack] = 10;
 action_cooldown[action_roll] = 10;
 action_cooldown[action_failed_roll] = 0;
 
 const action_to_direction = [];
-action_to_direction[action_move_up] = direction_up;
-action_to_direction[action_move_right] = direction_right;
-action_to_direction[action_move_down] = direction_down;
-action_to_direction[action_move_left] = direction_left;
+// action_to_direction[action_move_up] = direction_up;
+// action_to_direction[action_move_right] = direction_right;
+// action_to_direction[action_move_down] = direction_down;
+// action_to_direction[action_move_left] = direction_left;
 
 const direction_to_action = [];
 direction_to_action[action_move + direction_up] = action_move_up;

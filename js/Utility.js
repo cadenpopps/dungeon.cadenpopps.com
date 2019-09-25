@@ -60,6 +60,48 @@ function Utility(){
 	this.isMovementAction = function(action){
 		return action == action_move_up || action == action_move_right || action == action_move_down || action == action_move_left;
 	}
+
+	this.convertMovementToSprint = function(entity){
+		switch(entity.actions.currentAction){
+			case action_move_up:
+				entity.actions.currentAction = action_sprint_up;
+				break;
+			case action_move_right:
+				entity.actions.currentAction = action_sprint_right;
+				break;
+			case action_move_down:
+				entity.actions.currentAction = action_sprint_down;
+				break;
+			case action_move_left:
+				entity.actions.currentAction = action_sprint_left;
+				break;
+		}
+	}
+
+	this.convertSprintToMovement = function(action){
+		switch(action){
+			case action_sprint_up:
+				return action_move_up;
+				break;
+			case action_sprint_right:
+				return action_move_right;
+				break;
+			case action_sprint_down:
+				return action_move_down;
+				break;
+			case action_sprint_left:
+				return action_move_left;
+				break;
+		}
+	}
+
+	this.convertAnimationsFromConfig = function(animations){
+		let animationsArray = [];
+		for(let a in animations){
+			animationsArray[animation_strings_to_constants[a]] = animations[a];	
+		}
+		return animationsArray;
+	}
 }
 
 function getSquareCode(x, y) {

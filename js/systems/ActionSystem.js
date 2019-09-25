@@ -6,9 +6,8 @@ function ActionSystem (){
 
 	this.run = function(engine){
 		for(let object of this.objects){
-			let actions = object.actions;
-			if(actions.busy > 0){
-				actions.busy--;
+			if(object.actions.busy > 0){
+				object.actions.busy--;
 			}
 			else{
 				setCurrentAction(object, engine);
@@ -19,10 +18,10 @@ function ActionSystem (){
 	let setCurrentAction = function(object, engine){
 		object.actions.currentAction = object.actions.nextAction;
 		object.actions.nextAction = action_none;
-		addCooldowns(object, object.actions.currentAction);
 		if(object.components.includes(component_sprint)){
 			handleSprinting(object, engine);
 		}
+		addCooldowns(object, object.actions.currentAction);
 	}
 
 	let handleSprinting = function(object, engine){
@@ -42,8 +41,8 @@ function ActionSystem (){
 				engine.sendEvent(event_player_stop_sprinting);
 			}
 		}
-		else if(object.sprint.sprinting){
-			object.actions.busy--;
+		else if(object.sprint.sprinting && Utility.isMovementAction(object.actions.currentAction)){
+			Utility.convertMovementToSprint(object);
 		}
 	}
 
