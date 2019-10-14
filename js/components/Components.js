@@ -20,13 +20,19 @@ function MagicComponent(initialMagic){
 	this.magic = initialMagic;
 }
 
-function DirectionComponent(){
-	this.direction = direction_down;
+function CombatComponent(strength, magic, intelligence){
+	this.meleeAttackPower = strength;
+	this.magicAttackPower = (magic * intelligence) / 2;
+	this.meleeDefensePower = (strength * intelligence) / 8;
+	this.magicDefensePower = (strength * magic) / 8;
 }
 
-function PhysicalComponent(solid, blocking, size){
+function DirectionComponent(direction){
+	this.direction = direction;
+}
+
+function PhysicalComponent(solid, size){
 	this.solid = solid;
-	this.blocking = blocking;
 	this.size = size;
 }
 
@@ -34,12 +40,13 @@ function MovementComponent(speed){
 	this.speed = speed;
 }
 
-function DisplayComponent(texture, width, height){
+function DisplayComponent(texture, width, height, opaque){
 	this.texture = texture;
 	this.width = width;
 	this.height = height;
 	this.visible = false;
 	this.discovered = 0;
+	this.opaque = opaque;
 }
 
 function LightComponent(){
@@ -52,17 +59,13 @@ function AnimationComponent(animations){
 	this.stage = 0;
 	this.sprite = undefined;
 	this.animation = animation_idle;
-	this.newAnimation = false;
 	this.animations = animations;
 }
 
-function ActionComponent(actions){
+function ActionComponent(actions, speed){
 	this.busy = 0;
+	this.speed = speed;
 	this.availible = actions;
-	this.cooldowns = {};
-	for(let a of actions){
-		this.cooldowns[a] = 0;
-	}
 	this.nextAction = action_none;
 	this.currentAction = action_none;
 	this.lastAction = action_none;
@@ -85,4 +88,10 @@ function DepthComponent(depth){
 function StairComponent(x, y){
 	this.x = x;
 	this.y = y;
+}
+
+function AIComponent(actions, minRange, maxRange){
+	this.actions = actions;
+	this.minRange = minRange;
+	this.maxRange = maxRange;
 }

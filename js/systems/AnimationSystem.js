@@ -1,5 +1,5 @@
 AnimationSystem.prototype = Object.create(System.prototype);
-function AnimationSystem (){
+function AnimationSystem (CONFIG){
 	System.call(this);
 
 	this.componentRequirements = [component_animation];
@@ -8,11 +8,11 @@ function AnimationSystem (){
 	let idle_animation_counter = 0;
 
 	this.run = function(engine){
-		for(let o of this.objects){
-			if(o.animation.newAnimation){
-				startAnimation(o);	
-			}
-		}
+		// for(let o of this.objects){
+		// 	if(o.animation.newAnimation){
+		// 		startAnimation(o);	
+		// 	}
+		// }
 		if(animation_counter == CONFIG.ANIMATION_SPEED){
 			animation_counter = 0;
 			if(idle_animation_counter == CONFIG.IDLE_ANIMATION_SLOW_FACTOR){
@@ -20,6 +20,7 @@ function AnimationSystem (){
 			}
 			for(let o of this.objects){
 				o.animation.stage++;
+				// console.log(o);
 				if(o.animation.stage == o.animation.animations[o.animation.animation].length){
 					startIdleAnimation(o);
 				}
@@ -33,12 +34,6 @@ function AnimationSystem (){
 			idle_animation_counter++;
 		}
 		animation_counter++;
-	}
-
-	let startAnimation = function(entity){
-		entity.animation.stage = 0;
-		entity.animation.newAnimation = false;
-		updateAnimation(entity);
 	}
 
 	let startIdleAnimation = function(entity){
@@ -55,13 +50,16 @@ function AnimationSystem (){
 		entity.animation.sprite = entity.animation.animations[entity.animation.animation][entity.animation.stage].sprite;
 	}
 
-	this.handleEvent = function(engine, e){
-		// if(this.acceptedEvents.includes(e.eventID)){
-		// 	switch(e.eventID){
-		// 		case event_entity_moved: case event_entity_sprinted: case event_entity_rolled: case event_entity_failed_roll:
-		// 			startAnimation(e.entity, e.direction);
-		// 			break;
-		// 	}
-		// }
+	this.handleEvent = function(engine, eventID, data){
+		switch(eventID){
+			case event_new_animation:
+				startAnimation(data);
+				break;
+		}
+	}
+
+	let startAnimation = function(object){
+		object.animation.stage = 0;
+		updateAnimation(object);
 	}
 }

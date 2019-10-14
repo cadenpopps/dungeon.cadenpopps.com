@@ -12,12 +12,16 @@ function InputSystem(){
 
 	let determineAction = function(){
 		let action = action_none;
+
 		if(keys.length > 0){
 			let highestPriority = 0;
 			for(let k of keys){
 				let a = key_to_action[k];
+				if(a == action_melee_attack_front){ a += player.direction.direction + 1; }
 				let priority = action_priority[a];
-				if(actionEqualsLastAction(player.actions.lastAction, a)) priority-=.1;
+				if(actionEqualsLastAction(player, a)) {
+					priority -= .1;
+				}
 				if(priority > highestPriority){
 					action = a;
 					highestPriority = priority;
@@ -27,11 +31,11 @@ function InputSystem(){
 		return action;
 	}
 
-	let actionEqualsLastAction = function(lastAction, a){
-		if(!Utility.isMovementAction(lastAction)){
-			lastAction = Utility.convertSprintToMovement(lastAction);
-		}
-		return lastAction == a;
+	let actionEqualsLastAction = function(player, a){
+		let failed = Utility.isSprintAction(player.actions.failedAction) ? sprint_to_movement[player.actions.failedAction] : player.actions.failedAction;
+		let last = Utility.isSprintAction(player.actions.lastAction) ? sprint_to_movement[player.actions.lastAction] : player.actions.lastAction;
+
+		return failed == a || last == a;
 	}
 
 	let assignPlayerAction = function(player, action){

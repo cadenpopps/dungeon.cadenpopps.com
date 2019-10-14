@@ -1,6 +1,5 @@
-
 LevelSystem.prototype = Object.create(System.prototype);
-function LevelSystem (){
+function LevelSystem (CONFIG, ROOM_POOL, STAIR_ROOM_POOL, TEXTURES){
 	System.call(this);
 
 	let currentDepth = 0;
@@ -11,7 +10,7 @@ function LevelSystem (){
 
 	}
 
-	this.handleEvent = function(engine, eventID){
+	this.handleEvent = function(engine, eventID, data){
 		switch(eventID){
 			case event_down_level:
 				handleDownLevel(engine);
@@ -36,12 +35,13 @@ function LevelSystem (){
 	}
 
 	let newLevel = function(engine, depth){
-		let level = generateLevel(CONFIG.DUNGEON_SIZE, depth);
+		let level = generateLevel(CONFIG, depth, ROOM_POOL, STAIR_ROOM_POOL, TEXTURES);
 		levels.push(level);
 		return level; 
 	}
 
 	let handleDownLevel = function(engine){
+		engine.clearObjects();
 		currentDepth++;
 		if(currentDepth == levels.length){
 			newLevel(engine, currentDepth); 
@@ -54,6 +54,7 @@ function LevelSystem (){
 	}
 
 	let handleUpLevel = function(engine){
+		engine.clearObjects();
 		if(currentDepth > 0){
 			currentDepth--; 
 			updateLevel(engine);

@@ -1,21 +1,35 @@
-function PoppsEngine(tickrate, config) {
+function PoppsEngine(data) {
 
-	const TICKRATE = floor(1000/tickrate);
+	const TICKRATE = floor(1000/60);
+	// const TICKRATE = floor(1000/20);
+
+	const CONFIG = data.config;
+	const ROOM_POOL = data.room_pool;
+	const STAIR_ROOM_POOL = data.stair_room_pool;
+	const TEXTURES = data.textures;
+	const PLAYER_DATA = data.player_data;
+	const ENTITY_DATA = data.entity_data;
+
+	// let music = data.music;
+	// let sounds = data.sounds;
 
 	this.systems = [];
 
 	this.init = function(){
 		this.systems.push(new InputSystem());
-		this.systems.push(new DisplaySystem());
-		this.systems.push(new VisionSystem());
+		this.systems.push(new DisplaySystem(CONFIG.DISPLAY_SETTINGS, CONFIG.VISION_SETTINGS, TEXTURES));
+		this.systems.push(new VisionSystem(CONFIG.VISION_SETTINGS));
 		this.systems.push(new ActionSystem());
 		this.systems.push(new MovementSystem());
-		this.systems.push(new LevelSystem());
-		this.systems.push(new EntitySystem());
-		this.systems.push(new AnimationSystem());
+		this.systems.push(new LevelSystem(CONFIG.LEVEL_SETTINGS, ROOM_POOL, STAIR_ROOM_POOL, TEXTURES));
+		this.systems.push(new EntitySystem(PLAYER_DATA, ENTITY_DATA));
+		this.systems.push(new AnimationSystem(CONFIG.ANIMATION_SETTINGS));
+		this.systems.push(new CombatSystem());
+		this.systems.push(new HealthSystem());
+		this.systems.push(new AISystem());
 
 		$(window).resize(this.sendEvent.bind(this, event_window_resized));
-		window.Utility = new Utility();
+		Utility = new Utility(CONFIG);
 
 		this.sendEvent(event_new_game);
 		this.sendEvent(event_start_game);
@@ -29,15 +43,21 @@ function PoppsEngine(tickrate, config) {
 		}
 	}
 
-	this.sendEvent = function(e){
+	this.sendEvent = function(e, data){
 		for(let s of this.systems){
-			s.handleEvent(this, e);
+			s.handleEvent(this, e, data);
 		}
 	}
 
 	this.addObject = function(object){
 		for(let s of this.systems){
 			s.addObject(object);
+		}
+	}
+
+	this.removeObject = function(object){
+		for(let s of this.systems){
+			s.removeObject(object);
 		}
 	}
 

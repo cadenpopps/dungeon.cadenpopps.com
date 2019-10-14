@@ -1,16 +1,45 @@
-function Utility(){
+function Utility(CONFIG){
+
+	this.entityActionSuccessful = function(entity){
+		entity.actions.busy = action_length[entity.actions.currentAction];
+
+		entity.animation.newAnimation = true;
+		entity.animation.animation = action_to_animation[entity.actions.currentAction];
+
+		entity.actions.failedAction = action_none;
+		entity.actions.lastAction = entity.actions.currentAction;
+		entity.actions.currentAction = action_none;
+	}
+
+	this.entityActionFailed = function(entity){
+		entity.actions.lastAction = action_none;
+		entity.actions.failedAction = entity.actions.currentAction;
+		entity.actions.currentAction = action_none;
+	}
+
+	this.entityDistance = function(e1, e2, dist) {
+		return abs(e1.position.x - e2.position.x) < dist && abs(e1.position.y - e2.position.y) < dist;
+	}
+
+	this.getDirectionToEntity = function(e1, e2) {
+		if(e1.position.y > e2.position.y){ return direction_up; }
+		if(e1.position.x < e2.position.x){ return direction_right;}
+		if(e1.position.y < e2.position.y){ return direction_down; }
+		if(e1.position.x > e2.position.x){ return direction_left; }
+	}
+
 	this.getSquareNeighbors = function(x, y, map){
 		neighbors = [];
-		if (x > 0 && walkable(entity_mob, map[x - 1][y])) {
+		if (x > 0) {
 			neighbors.push(map[x - 1][y]);
 		}
-		if (y > 0 && walkable(entity_mob, map[x][y - 1])) {
+		if (y > 0) {
 			neighbors.push(map[x][y - 1]);
 		}
-		if (x < CONFIG.DUNGEON_SIZE - 1 && walkable(entity_mob, map[x + 1][y])) {
+		if (x < CONFIG.LEVEL_SETTINGS.DUNGEON_SIZE) {
 			neighbors.push(map[x + 1][y]);
 		}
-		if (y < CONFIG.DUNGEON_SIZE - 1 && walkable(entity_mob, map[x][y + 1])) {
+		if (y < CONFIG.LEVEL_SETTINGS.DUNGEON_SIZE - 1) {
 			neighbors.push(map[x][y + 1]);
 		}
 		return neighbors;
@@ -28,12 +57,16 @@ function Utility(){
 		return this.squareInBounds(square) && squareIsWalkable(square, entity) && !squareIsOccupied(square, objects);
 	}
 
+	this.positionOnScreen = function(x, y, w, h){
+		return x > -w && x < width + w && y > -h && y < height + h;
+	}
+
 	this.positionInBounds = function(x, y){
-		return x >= 0 && x < CONFIG.DUNGEON_SIZE && y >= 0 && y < CONFIG.DUNGEON_SIZE;
+		return x >= 0 && x < CONFIG.LEVEL_SETTINGS.DUNGEON_SIZE && y >= 0 && y < CONFIG.LEVEL_SETTINGS.DUNGEON_SIZE;
 	}
 
 	this.squareInBounds = function(square){
-		return square.position.x >= 0 && square.position.x < CONFIG.DUNGEON_SIZE && square.position.y >= 0 && square.position.y < CONFIG.DUNGEON_SIZE;
+		return square.position.x >= 0 && square.position.x < CONFIG.LEVEL_SETTINGS.DUNGEON_SIZE && square.position.y >= 0 && square.position.y < CONFIG.LEVEL_SETTINGS.DUNGEON_SIZE;
 	}
 
 	let squareIsWalkable = function(square, entity){
@@ -41,7 +74,7 @@ function Utility(){
 	}
 
 	let playerWalkable = function(square){
-		return (!square.physical.solid || square instanceof DoorSquare || square instanceof StairSquare);
+		return (!square.physical.solid || square instanceof DoorSquare || square instanceof StairUpSquare || square instanceof StairDownSquare);
 	}
 
 	let mobWalkable = function(square){
@@ -59,6 +92,10 @@ function Utility(){
 
 	this.isMovementAction = function(action){
 		return action == action_move_up || action == action_move_right || action == action_move_down || action == action_move_left;
+	}
+
+	this.isSprintAction = function(action){
+		return action == action_sprint_up || action == action_sprint_right || action == action_sprint_down || action == action_sprint_left;
 	}
 
 	this.convertMovementToSprint = function(entity){
@@ -102,11 +139,24 @@ function Utility(){
 		}
 		return animationsArray;
 	}
+
+	this.convertActionsFromConfig = function(actions){
+		let actionsArray = [];
+		for(let i = 0; i < actions.length; i++){
+			actionsArray[i] = action_strings_to_constants[actions[i]];	
+		}
+		return actionsArray;
+	}
+
+	this.getSquareCode = function(x, y) {
+		return x + (y * CONFIG.LEVEL_SETTINGS.DUNGEON_SIZE)
+	}
+
+	this.getSquareFromCode = function(board, code) {
+		return board[code % CONFIG.LEVEL_SETTINGS.DUNGEON_SIZE][floor(code / CONFIG.LEVEL_SETTINGS.DUNGEON_SIZE)];
+	}
 }
 
-function getSquareCode(x, y) {
-	return x + (y * CONFIG.DUNGEON_SIZE)
-}
 
 
 const LARGE_VALUE = 2147483647;
@@ -119,8 +169,8 @@ function findPath(board, start, end) {
 	let distFromStart = {};
 	let finalCost = {};
 
-	for (let i = 0; i < CONFIG.DUNGEON_SIZE; i++) {
-		for (let j = 0; j < CONFIG.DUNGEON_SIZE; j++) {
+	for (let i = 0; i < board.length; i++) {
+		for (let j = 0; j < board[0].length; j++) {
 			distFromStart[board[i][j]] = LARGE_VALUE;
 			finalCost[board[i][j]] = LARGE_VALUE;
 		}
@@ -129,7 +179,7 @@ function findPath(board, start, end) {
 	searching.push(start);
 	distFromStart[start] = 0;
 	finalCost[start] = squareDistance(start, end);
-	cameFrom[getSquareCode(start.position.x, start.position.y)] = -1;
+	cameFrom[Utility.getSquareCode(start.position.x, start.position.y)] = -1;
 
 	while (searching.length > 0) {
 		let current = searching[0];
@@ -159,7 +209,7 @@ function findPath(board, start, end) {
 					continue;
 				}
 
-				cameFrom[getSquareCode(n.position.x, n.position.y)] = getSquareCode(current.position.x, current.position.y);
+				cameFrom[Utility.getSquareCode(n.position.x, n.position.y)] = Utility.getSquareCode(current.position.x, current.position.y);
 				distFromStart[n] = estimatedDistFromStart;
 				finalCost[n] = distFromStart[n] + squareDistance(start, end);
 			}
@@ -174,18 +224,15 @@ function squareDistance(start, end) {
 
 function makePath(board, cameFrom, last) {
 	let path = [];
-	let current = getSquareCode(last.position.x, last.position.y);
+	let current = Utility.getSquareCode(last.position.x, last.position.y);
 	while (cameFrom[current] > 0) {
-		path.unshift(getSquareFromCode(board, current));
+		path.unshift(Utility.getSquareFromCode(board, current));
 		current = cameFrom[current];
 	}
-	path.unshift(getSquareFromCode(board, current));
+	path.unshift(Utility.getSquareFromCode(board, current));
 	return path;
 }
 
-function getSquareFromCode(board, code) {
-	return board[code % CONFIG.DUNGEON_SIZE][floor(code / CONFIG.DUNGEON_SIZE)];
-}
 
 const PATHFINDING = -1;
 
@@ -197,46 +244,23 @@ function getNeighbors(board, square) {
 	if (square.position.y > 0 && walkable(entity_mob, board[square.position.x][square.position.y - 1])) {
 		neighbors.push(board[square.position.x][square.position.y - 1]);
 	}
-	if (square.position.x < CONFIG.DUNGEON_SIZE - 1 && walkable(entity_mob, board[square.position.x + 1][square.position.y])) {
+	if (square.position.x < board.length - 1 && walkable(entity_mob, board[square.position.x + 1][square.position.y])) {
 		neighbors.push(board[square.position.x + 1][square.position.y]);
 	}
-	if (square.position.y < CONFIG.DUNGEON_SIZE - 1 && walkable(entity_mob, board[square.position.x][square.position.y + 1])) {
+	if (square.position.y < board.length - 1 && walkable(entity_mob, board[square.position.x][square.position.y + 1])) {
 		neighbors.push(board[square.position.x][square.position.y + 1]);
 	}
 	// if (square.position.x > 0 && board[square.position.x - 1][square.position.y].walkable(board, PATHFINDING)) neighbors.push(board[square.position.x - 1][square.position.y]);
 	// if (square.position.y > 0 && board[square.position.x][square.position.y - 1].walkable(board, PATHFINDING)) neighbors.push(board[square.position.x][square.position.y - 1]);
-	// if (square.position.x < CONFIG.DUNGEON_SIZE - 1 && board[square.position.x + 1][square.position.y].walkable(board, PATHFINDING)) neighbors.push(board[square.position.x + 1][square.position.y]);
-	// if (square.position.y < CONFIG.DUNGEON_SIZE - 1 && board[square.position.x][square.position.y + 1].walkable(board, PATHFINDING)) neighbors.push(board[square.position.x][square.position.y + 1]);
+	// if (square.position.x < board.length - 1 && board[square.position.x + 1][square.position.y].walkable(board, PATHFINDING)) neighbors.push(board[square.position.x + 1][square.position.y]);
+	// if (square.position.y < board.length - 1 && board[square.position.x][square.position.y + 1].walkable(board, PATHFINDING)) neighbors.push(board[square.position.x][square.position.y + 1]);
 	return neighbors;
 }
 
-function walkable(entityType, square){
-	if(entityType == entity_player){ 
-		return playerWalkable(square); 
-	}
-	else if(entityType == entity_mob){ 
-		return mobWalkable(square); 
-	}
-}
+function walkable(e, i){
 
-function playerWalkable(square){
-	if(square instanceof WallSquare){
-		return false;	
-	}
 	return true;
-}
 
-function mobWalkable(square){
-	if(square instanceof WallSquare){
-		return false;	
-	}
-	else if(square instanceof DoorSquare && !square.opened){
-		return false;	
-	}
-	else if(square instanceof StairSquare){
-		return false;	
-	}
-	return true;
 }
 
 function direction(start, target){

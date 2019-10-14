@@ -1,6 +1,5 @@
-
 DisplaySystem.prototype = Object.create(System.prototype);
-function DisplaySystem(square_size, vision, animation_stages) {
+function DisplaySystem(DISPLAY_SETTINGS, VISION_SETTINGS) {
 	System.call(this);
 
 	this.componentRequirements = [component_position, component_display];
@@ -10,7 +9,7 @@ function DisplaySystem(square_size, vision, animation_stages) {
 		y: 0,
 		shakeOffsetX : 0,
 		shakeOffsetY : 0,
-		zoom: CONFIG.CAMERA_DEFAULT_ZOOM 
+		zoom: DISPLAY_SETTINGS.CAMERA_DEFAULT_ZOOM
 	}
 
 	let player;
@@ -35,7 +34,7 @@ function DisplaySystem(square_size, vision, animation_stages) {
 
 	this.run = function(engine) {
 		background(0);
-		lightOffset = osc(millis() / lightOffsetSpeed, 0, lightOffsetScale);
+		// lightOffset = osc(millis() / lightOffsetSpeed, 0, lightOffsetScale);
 		drawTextures(this.objects); 
 		drawLights(this.objects);
 		drawHealth(this.objects);
@@ -43,6 +42,12 @@ function DisplaySystem(square_size, vision, animation_stages) {
 			if(player.animation.animation == animation_idle){ cameraMoving = false; }
 			centerCamera(camera, player.position, player.animation.offsetX, player.animation.offsetY); 
 		}
+
+		// canvas.translate(width/2, height/2);
+		// canvas.rotate(45 * Math.PI / 180);
+		// fill(255, 0, 0);
+		// rect(0, 0, 200, 200);
+		// canvas.setTransform();
 	}
 
 	let drawTextures = function(objects){
@@ -52,7 +57,9 @@ function DisplaySystem(square_size, vision, animation_stages) {
 				let y = CENTER_Y - camera.zoom * (GRID_SIZE * (camera.y + camera.shakeOffsetY - o.position.y));
 				let w = o.display.width * GRID_SIZE * camera.zoom;
 				let h = o.display.height * GRID_SIZE * camera.zoom;
-				drawTexture(o, x, y, w, h); 
+				if(Utility.positionOnScreen(x, y, w, h)){
+					drawTexture(o, x, y, w, h); 
+				}
 			}
 		}
 	}
@@ -85,9 +92,8 @@ function DisplaySystem(square_size, vision, animation_stages) {
 				image(t, x, y, w, h);
 			}
 			if(!o.display.visible && o.display.discovered > 0){
-				let opacity = min(1, 1 - (o.display.discovered/CONFIG.DISCOVERED_MAX) + .2);
-				// if(opacity == 1) { o.display.discovered = 0; }
-				fill(0,0,0, opacity);
+				// let opacity = min(1, 1 - (o.display.discovered/VISION_SETTINGS.DISCOVERED_MAX) + .2);
+				fill(5, 10, 0, .2);
 				rect(x, y, w, h);
 			}
 		}
@@ -136,7 +142,7 @@ function DisplaySystem(square_size, vision, animation_stages) {
 
 	let drawPlayerHealth = function(player){
 		for(let i = 0; i < player.health.health; i++){
-			image(IMAGES[HEART], HEART_OFFSET + i * HEART_SIZE, HEART_OFFSET, HEART_SIZE, HEART_SIZE);
+			// image(IMAGES[HEART], HEART_OFFSET + i * HEART_SIZE, HEART_OFFSET, HEART_SIZE, HEART_SIZE);
 		}
 	}
 
@@ -158,7 +164,7 @@ function DisplaySystem(square_size, vision, animation_stages) {
 		System.prototype.addObject.call(this, object);
 	}
 
-	this.handleEvent = function(engine, eventID){
+	this.handleEvent = function(engine, eventID, data){
 		switch(eventID){
 			case event_start_game:
 				centerCamera(camera, player.position);
@@ -168,6 +174,7 @@ function DisplaySystem(square_size, vision, animation_stages) {
 				break;
 			case event_window_resized:
 				resize();
+				break;
 		}
 	}
 
@@ -176,7 +183,7 @@ function DisplaySystem(square_size, vision, animation_stages) {
 		camera.y = position.y + offsetY;
 		//if(entity.position.x > camera.x){
 		//	camera.x = floor(camera.x * 40 + 1) / 40;
-		//	cameraMoveTimer = setTimeout(function(){moveCamera(camera, entity, direction)}, CONFIG.CAMERA_MOVE_SPEED);
+		//	cameraMoveTimer = setTimeout(function(){moveCamera(camera, entity, direction)}, DISPLAY_SETTINGS.CAMERA_MOVE_SPEED);
 		//}
 		//else{
 		//	clearTimeout(cameraMoveTimer);

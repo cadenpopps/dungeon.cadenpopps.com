@@ -1,7 +1,7 @@
 VisionSystem.prototype = Object.create(System.prototype);
-function VisionSystem (){
+function VisionSystem (CONFIG){
 	System.call(this);
-	this.componentRequirements = [component_position, component_physical, component_display];
+	this.componentRequirements = [component_position, component_display];
 
 	let player;
 	let map;
@@ -15,9 +15,10 @@ function VisionSystem (){
 		else if(object instanceof Mob){ entities.push(object); }
 	}
 
-	this.handleEvent = function(engine, eventID){
+	this.handleEvent = function(engine, eventID, data){
 		switch (eventID){
 			case event_start_game: case event_player_moved: case event_down_level: case event_up_level:
+				let st = millis();
 				vision(map, player);
 				break;
 		}
@@ -63,7 +64,7 @@ function VisionSystem (){
 					let cur = getTranslatedSquare(map, octant, x, y, sx, sy); 
 					if(cur === undefined){ break; }
 					cur.light.lightLevel = range - x;
-					if(cur.physical.blocking){
+					if(cur.display.opaque){
 						let firstBlocked = getFirstBlockedLight(map, octant, x, y, sx, sy, shadows, range);
 						let lastBlocked = getBlockedLight(map, octant, x, y, sx, sy, shadows, range);
 						let shadowStart = slope(firstBlocked.x, firstBlocked.y, BOTTOM_RIGHT);
@@ -89,7 +90,7 @@ function VisionSystem (){
 
 		let currentBlocked = getTranslatedSquare(map, octant, x, y, sx, sy); 
 
-		while(currentBlocked !== undefined && currentBlocked.physical.blocking && slope(x, y, CENTER_SQUARE) > 0){
+		while(currentBlocked !== undefined && currentBlocked.display.opaque && slope(x, y, CENTER_SQUARE) > 0){
 			firstBlocked = {x:x, y:y};
 			if(!inShadow(x, y, shadows)){
 				currentBlocked.light.lightLevel = range - x;
@@ -106,7 +107,7 @@ function VisionSystem (){
 
 		let currentBlocked = getTranslatedSquare(map, octant, x, y, sx, sy); 
 
-		while(currentBlocked !== undefined && currentBlocked.physical.blocking && slope(x, y, BOTTOM_RIGHT) < 1){
+		while(currentBlocked !== undefined && currentBlocked.display.opaque && slope(x, y, BOTTOM_RIGHT) < 1){
 			lastBlocked = {x:x, y:y};
 			if(!inShadow(x, y, shadows)){
 				currentBlocked.light.lightLevel = range - x;
@@ -134,7 +135,7 @@ function VisionSystem (){
 					if(cur === undefined){ break; }
 					cur.display.visible = true;
 					cur.display.discovered = CONFIG.DISCOVERED_MAX;
-					if(cur.physical.blocking){
+					if(cur.display.opaque){
 						let firstBlocked = getFirstBlocked(map, octant, x, y, sx, sy, shadows);
 						let lastBlocked = getBlocked(map, octant, x, y, sx, sy, shadows);
 						let shadowStart = slope(firstBlocked.x, firstBlocked.y, BOTTOM_RIGHT);
@@ -180,7 +181,7 @@ function VisionSystem (){
 
 		let currentBlocked = getTranslatedSquare(map, octant, x, y, sx, sy); 
 
-		while(currentBlocked !== undefined && currentBlocked.physical.blocking && slope(x, y, CENTER_SQUARE) > 0){
+		while(currentBlocked !== undefined && currentBlocked.display.opaque && slope(x, y, CENTER_SQUARE) > 0){
 			firstBlocked = {x:x, y:y};
 			if(!inShadow(x, y, shadows)){
 				currentBlocked.display.visible = true;
@@ -198,7 +199,7 @@ function VisionSystem (){
 
 		let currentBlocked = getTranslatedSquare(map, octant, x, y, sx, sy); 
 
-		while(currentBlocked !== undefined && currentBlocked.physical.blocking && slope(x, y, BOTTOM_RIGHT) < 1){
+		while(currentBlocked !== undefined && currentBlocked.display.opaque && slope(x, y, BOTTOM_RIGHT) < 1){
 			lastBlocked = {x:x, y:y};
 			if(!inShadow(x, y, shadows)){
 				currentBlocked.display.visible = true;

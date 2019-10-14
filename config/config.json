@@ -1,58 +1,21 @@
-[
-    {
-        "name": "DUNGEON_SIZE",
-        "val": 75
-    },
-    {
-		"name": "ROOM_TRIES",
-		"val": 50
+{
+	"LEVEL_SETTINGS": {
+		"DUNGEON_SIZE": 75,
+		"ROOM_TRIES": 50
 	},
-	{
-		"name": "DISCOVERED_MAX",
-		"val": 500
+	"DISPLAY_SETTINGS": {
+		"CAMERA_MOVE_SPEED": 2,
+		"CAMERA_DEFAULT_ZOOM": 1.7,
+		"CAMERA_SPRINT_ZOOM": 1.48
 	},
-	{
-		"name": "CAMERA_MOVE_SPEED",
-		"val": 2
+	"VISION_SETTINGS": {
+		"PLAYER_VISION_RANGE": 18,
+		"DISCOVERED_MAX": 500,
+		"LIGHT_RANGE": 10
 	},
-	{
-		"name": "CAMERA_DEFAULT_ZOOM",
-		"val": 1.5
-	},
-	{
-		"name": "CAMERA_SPRINT_ZOOM",
-		"val": 1.42
-	},
-	{
-		"name": "PLAYER_SPRINT_REDUCTION_SPEED",
-		"val": 200
-	},
-	{
-		"name": "PLAYER_VISION_RANGE",
-		"val": 18
-	},
-	{
-		"name": "LIGHT_RANGE",
-		"val": 10
-	},
-	{
-		"name": "ANIMATION_SPEED",
-		"val": 1
-	},
-	{
-		"name": "IDLE_ANIMATION_SLOW_FACTOR",
-		"val": 8
-	},
-	{
-		"name": "IDLE_DELAY",
-		"val": 15
-	},
-    {
-        "name": "MOB_MOVE_DELAY",
-        "val": 100
-    },
-    {
-        "name": "LEVEL_CHANGE_ANIMATION_TIME",
-        "val": 200
-    }
-]
+	"ANIMATION_SETTINGS": {
+		"ANIMATION_SPEED": 1,
+		"IDLE_ANIMATION_SLOW_FACTOR": 8,
+		"IDLE_DELAY": 15
+	}
+}

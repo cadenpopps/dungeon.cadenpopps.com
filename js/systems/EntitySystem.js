@@ -1,6 +1,5 @@
-
 EntitySystem.prototype = Object.create(System.prototype);
-function EntitySystem (){
+function EntitySystem (PLAYER_DATA, ENTITY_DATA){
 	System.call(this);
 
 	this.componentRequirements = [component_actions];
@@ -14,13 +13,13 @@ function EntitySystem (){
 	this.run = function(engine){
 		for(let e of this.objects){
 			if(e instanceof Mob){
-				let action = getMobBehavior(e, player);
-				e.actions.nextAction = action;
+				// let action = getMobBehavior(e, player);
+				// e.actions.nextAction = action;
 			}
 		}
 	}
 
-	this.handleEvent = function(engine, eventID){
+	this.handleEvent = function(engine, eventID, data){
 		switch(eventID){
 			case event_first_level_initiated:
 				generatePlayer(engine, levels[0].stairUp);
@@ -44,20 +43,28 @@ function EntitySystem (){
 	}
 
 	let generatePlayer = function(engine, position){
-		let animations = Utility.convertAnimationsFromConfig(PLAYER_CONFIG.animations);
-		player = new Player(position.x, position.y, 10, 3, 3, 3, animations);
+		let animations = Utility.convertAnimationsFromConfig(PLAYER_DATA.animations);
+		let actions = Utility.convertActionsFromConfig(PLAYER_DATA.actions);
+		let config = PLAYER_DATA;
+		let playerClass = PLAYER_DATA.classes.warrior;
+		player = new Player(position.x, position.y, config, playerClass, actions, animations);
 		engine.sendEvent(event_player_generated);
 	}
 
 	let generateEnemies = function(engine, depth){
-		let animations = Utility.convertAnimationsFromConfig(PLAYER_CONFIG.animations);
+		let animations = Utility.convertAnimationsFromConfig(ENTITY_DATA.skeleton.animations);
+		let actions = Utility.convertActionsFromConfig(ENTITY_DATA.skeleton.actions);
 
 		entities[depth] = [];
 		let numEntities = depth + 7;
 
+		//near player
+		let config = ENTITY_DATA.skeleton;
+		entities[depth].push(new Mob(player.position.x - 2, player.position.y - 2, depth, config, actions, animations));
+
 		while(numEntities > 0){
 			let entityPosition = findValidEntitySquare(levels[depth].map.map);			
-			entities[depth].push(new Mob(entityPosition.x, entityPosition.y, depth, 10, 10, 10, 10, 1, animations));
+			entities[depth].push(new Mob(entityPosition.x, entityPosition.y, depth, config, actions, animations));
 			numEntities--;
 		}
 	}
@@ -106,7 +113,7 @@ function EntitySystem (){
 
 	let getMobBehavior = function(mob, player){
 		let map = levels[currentDepth].map.map;
-		if(abs(mob.position.x - player.position.x) < CONFIG.PLAYER_VISION_RANGE && abs(mob.position.y - player.position.y) < CONFIG.PLAYER_VISION_RANGE){
+		if(abs(mob.position.x - player.position.x) < 20 && abs(mob.position.y - player.position.y) < 20){
 			if(abs(mob.position.x - player.position.x) > 1 || abs(mob.position.y - player.position.y) > 1){
 				let path = Utility.findMobPath(map, mob, player);
 				if(path !== false){

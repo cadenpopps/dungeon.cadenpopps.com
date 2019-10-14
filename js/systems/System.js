@@ -14,6 +14,12 @@ System.prototype.addObject = function(object){
 	this.objects.push(object);
 }
 
+System.prototype.removeObject = function(object){
+	if(this.objects.includes(object)){
+		this.objects.splice(this.objects.indexOf(object), 1);
+	}
+}
+
 System.prototype.clearObjects = function(){
 	this.objects = [];
 }

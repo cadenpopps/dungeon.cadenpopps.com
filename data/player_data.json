@@ -1,24 +1,43 @@
 {
+	"size": 1,
+	"sprint_threshhold": 3,
+	"speed": 10,
 	"classes": {
 		"warrior": {
-			"bHealth": 60,
-			"bStrength": 8,
-			"bIntelligence": 5,
-			"bMagic": 2
+			"health": 60,
+			"strength": 8,
+			"magic": 2,
+			"intelligence": 5
 		},
 		"rogue": {
-			"bHealth": 40,
-			"bStrength": 3,
-			"bIntelligence": 10,
-			"bMagic": 5
+			"health": 40,
+			"strength": 3,
+			"magic": 5,
+			"intelligence": 10
 		},
 		"mage": {
-			"bHealth": 50,
-			"bStrength": 2,
-			"bIntelligence": 5,
-			"bMagic": 10
+			"health": 50,
+			"strength": 2,
+			"magic": 10,
+			"intelligence": 5
 		}
 	},
+	"actions": [
+		"action_none",
+		"action_move_up",
+		"action_move_right",
+		"action_move_down",
+		"action_move_left",
+		"action_sprint_up",
+		"action_sprint_right",
+		"action_sprint_down",
+		"action_sprint_left",
+		"action_melee_attack_up",
+		"action_melee_attack_right",
+		"action_melee_attack_down",
+		"action_melee_attack_left",
+		"action_melee_attack_spin"
+	],
 	"animations": {
 		"animation_idle": [
 			{"ox": 0, "oy": 0, "sprite": null},
@@ -109,6 +128,59 @@
 			{"ox": 0.2,  "oy": 0, "sprite": null}, 
 			{"ox": 0.1,  "oy": 0, "sprite": null}, 
 			{"ox": 0.05, "oy": 0, "sprite": null}
+		],
+		"animation_melee_attack_up": [
+			{"ox": 0, "oy": -0.1, "sprite": null}, 
+			{"ox": 0, "oy": -0.2, "sprite": null}, 
+			{"ox": 0, "oy": -0.4, "sprite": null}, 
+			{"ox": 0, "oy": -0.8, "sprite": null}, 
+			{"ox": 0, "oy": -0.8, "sprite": null}, 
+			{"ox": 0, "oy": -0.4, "sprite": null}, 
+			{"ox": 0, "oy": -0.2, "sprite": null}, 
+			{"ox": 0, "oy": -0.1, "sprite": null}
+		],
+		"animation_melee_attack_right": [
+			{"ox": 0.1, "oy": 0, "sprite": null}, 
+			{"ox": 0.2, "oy": 0, "sprite": null}, 
+			{"ox": 0.4, "oy": 0, "sprite": null}, 
+			{"ox": 0.8, "oy": 0, "sprite": null}, 
+			{"ox": 0.8, "oy": 0, "sprite": null}, 
+			{"ox": 0.4, "oy": 0, "sprite": null}, 
+			{"ox": 0.2, "oy": 0, "sprite": null}, 
+			{"ox": 0.1, "oy": 0, "sprite": null}
+		],
+		"animation_melee_attack_down": [
+			{"ox": 0, "oy": 0.1, "sprite": null}, 
+			{"ox": 0, "oy": 0.2, "sprite": null}, 
+			{"ox": 0, "oy": 0.4, "sprite": null}, 
+			{"ox": 0, "oy": 0.8, "sprite": null}, 
+			{"ox": 0, "oy": 0.8, "sprite": null}, 
+			{"ox": 0, "oy": 0.4, "sprite": null}, 
+			{"ox": 0, "oy": 0.2, "sprite": null}, 
+			{"ox": 0, "oy": 0.1, "sprite": null}
+		],
+		"animation_melee_attack_left": [
+			{"ox": -0.1, "oy": 0, "sprite": null}, 
+			{"ox": -0.2, "oy": 0, "sprite": null}, 
+			{"ox": -0.4, "oy": 0, "sprite": null}, 
+			{"ox": -0.8, "oy": 0, "sprite": null}, 
+			{"ox": -0.8, "oy": 0, "sprite": null}, 
+			{"ox": -0.4, "oy": 0, "sprite": null}, 
+			{"ox": -0.2, "oy": 0, "sprite": null}, 
+			{"ox": -0.1, "oy": 0, "sprite": null}
+		],
+		"animation_melee_attack_spin": [
+			{"ox": 0, "oy": 0.3, "sprite": null}, 
+			{"ox": 0, "oy": 0.5, "sprite": null}, 
+			{"ox": 0.3, "oy": 0.3, "sprite": null}, 
+			{"ox": 0.5, "oy": 0, "sprite": null}, 
+			{"ox": 0.3, "oy": -0.3, "sprite": null}, 
+			{"ox": 0, "oy": -0.5, "sprite": null}, 
+			{"ox": -0.3, "oy": -0.3, "sprite": null}, 
+			{"ox": -0.5, "oy": 0, "sprite": null}, 
+			{"ox": -0.3, "oy": 0.3, "sprite": null}, 
+			{"ox": 0, "oy": 0.5, "sprite": null},
+			{"ox": 0, "oy": 0.3, "sprite": null}
 		]
 	}
 }

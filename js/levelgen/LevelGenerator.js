@@ -1,4 +1,4 @@
-function generateLevel(size, depth){
+function generateLevel(CONFIG, depth, ROOM_POOL, STAIR_ROOM_POOL, TEXTURES){
 
 	let startTime = millis();
 
@@ -8,16 +8,16 @@ function generateLevel(size, depth){
 	let stairUp = {x:0, y:0, sector:0};
 	let stairDown = {x:0, y:0, sector:0};
 
-	level = initLevel(size);
-	rooms.push(generateStairUpRoom(stairUp, size));
-	rooms.push(generateStairDownRoom(stairUp, stairDown, size));
-	generateOtherRooms(level, rooms, size);
+	level = initLevel(CONFIG.DUNGEON_SIZE);
+	rooms.push(generateStairUpRoom(stairUp, CONFIG.DUNGEON_SIZE, STAIR_ROOM_POOL));
+	rooms.push(generateStairDownRoom(stairUp, stairDown, CONFIG.DUNGEON_SIZE, STAIR_ROOM_POOL));
+	generateOtherRooms(level, rooms, CONFIG.DUNGEON_SIZE, CONFIG.ROOM_TRIES, ROOM_POOL);
 	placeRoomsOnLevel(level, rooms);
 	markNodeSquares(level);
-	connectRooms(level, rooms, size);
-	finalizeLevel(level, stairUp, stairDown);
+	connectRooms(level, rooms, CONFIG.DUNGEON_SIZE);
+	finalizeLevel(level, stairUp, stairDown, TEXTURES);
 
-	console.log("Milliseconds: " + (millis() - startTime));
+	// console.log("Milliseconds: " + (millis() - startTime));
 
 	return new Level(level, stairUp, stairDown, depth);
 }
@@ -33,16 +33,16 @@ function initLevel(size){
 	return level;
 }
 
-function generateStairUpRoom(stairUp, size){
+function generateStairUpRoom(stairUp, size, STAIR_ROOM_POOL){
 	stairUp.sector = randomInt(8);
 	sectorToCoordinates(stairUp, size);	
-	return new Room(random(CONFIG.STAIRROOMPOOL), stairUp.x, stairUp.y);
+	return new Room(random(STAIR_ROOM_POOL), stairUp.x, stairUp.y);
 }
 
-function generateStairDownRoom(stairUp, stairDown, size){
+function generateStairDownRoom(stairUp, stairDown, size, STAIR_ROOM_POOL){
 	stairDown.sector = (stairUp.sector + 4) % 8;
 	sectorToCoordinates(stairDown, size);	
-	return new Room(random(CONFIG.STAIRROOMPOOL), stairDown.x, stairDown.y);
+	return new Room(random(STAIR_ROOM_POOL), stairDown.x, stairDown.y);
 }
 
 function sectorToCoordinates(stair, size){
@@ -85,14 +85,14 @@ function sectorToCoordinates(stair, size){
 	}
 }
 
-function generateOtherRooms(level, rooms, size){
-	for(let i = 0; i < CONFIG.ROOM_TRIES; i++){
-		tryRoom(level, rooms, size);
+function generateOtherRooms(level, rooms, size, ROOM_TRIES, ROOM_POOL){
+	for(let i = 0; i < ROOM_TRIES; i++){
+		tryRoom(level, rooms, size, ROOM_POOL);
 	}
 }
 
-function tryRoom(level, rooms, size){
-	let newRoom = new Room(random(CONFIG.ROOMPOOL), randomInt(size), randomInt(size));
+function tryRoom(level, rooms, size, ROOM_POOL){
+	let newRoom = new Room(random(ROOM_POOL), randomInt(size), randomInt(size));
 	if(isValidRoom(rooms, newRoom, size)) rooms.push(newRoom);
 }
 
@@ -231,8 +231,8 @@ function makePathBetweenDoors(level, door1, door2, connectedDoors){
 	let distFromStart = {};
 	let finalCost = {};
 
-	for (let i = 0; i < CONFIG.DUNGEON_SIZE; i++) {
-		for (let j = 0; j < CONFIG.DUNGEON_SIZE; j++) {
+	for (let i = 0; i < level.length; i++) {
+		for (let j = 0; j < level[0].length; j++) {
 			distFromStart[level[i][j]] = LARGE_VALUE;
 			finalCost[level[i][j]] = LARGE_VALUE;
 		}
@@ -322,7 +322,7 @@ function fillBetweenNodes(level, node1, node2){
 	level[node1.x + ((node2.x - node1.x) / 2)][node1.y + ((node2.y - node1.y) / 2)] = FLOOR;
 }
 
-function finalizeLevel(level, stairUp, stairDown){
+function finalizeLevel(level, stairUp, stairDown, TEXTURES){
 	level[stairUp.x][stairUp.y] = STAIR_UP;
 	level[stairDown.x][stairDown.y] = STAIR_DOWN;
 
@@ -338,25 +338,22 @@ function finalizeLevel(level, stairUp, stairDown){
 			}
 			switch(level[i][j]){
 				case FLOOR:
-					level[i][j] = new FloorSquare(i, j);
+					level[i][j] = new FloorSquare(i, j, TEXTURES.SQUARES[FLOOR]);
 					break;
 				case WALL:
-					level[i][j] = new WallSquare(i, j);
-					break;
-				case FLOOR:
-					level[i][j] = new FloorSquare(i, j);
+					level[i][j] = new WallSquare(i, j, TEXTURES.SQUARES[WALL]);
 					break;
 				case DOOR:
-					level[i][j] = new DoorSquare(i, j);
+					level[i][j] = new DoorSquare(i, j, TEXTURES.SQUARES[DOOR]);
 					break;
 				case STAIR_UP:
-					level[i][j] = new StairSquare(i, j, true);
+					level[i][j] = new StairUpSquare(i, j, TEXTURES.SQUARES[STAIR_UP], true);
 					break;
 				case STAIR_DOWN:
-					level[i][j] = new StairSquare(i, j, false);
+					level[i][j] = new StairDownSquare(i, j, TEXTURES.SQUARES[STAIR_DOWN], false);
 					break;
 				case LOOT:
-					level[i][j] = new LootSquare(i, j);
+					level[i][j] = new LootSquare(i, j, TEXTURES.SQUARES[LOOT]);
 					break;
 				default:
 					console.log("Not recognized squaretype: " + level[i][j]);
