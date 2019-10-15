@@ -38,8 +38,6 @@ function VisionSystem (CONFIG){
 		map[player.position.x][player.position.y].light.lightLevel = light_max;
 		for(let octant = 0; octant < 8; octant++){
 			playerSightTriangle(map, octant, player.position.x, player.position.y, CONFIG.PLAYER_VISION_RANGE);
-		}
-		for(let octant = 0; octant < 8; octant++){
 			lightTriangle(map, octant, player.position.x, player.position.y, light_max);
 		}
 		for(let e of entities){

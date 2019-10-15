@@ -4,19 +4,19 @@
 	"speed": 10,
 	"classes": {
 		"warrior": {
-			"health": 60,
+			"health": 15,
 			"strength": 8,
 			"magic": 2,
 			"intelligence": 5
 		},
 		"rogue": {
-			"health": 40,
+			"health": 10,
 			"strength": 3,
 			"magic": 5,
 			"intelligence": 10
 		},
 		"mage": {
-			"health": 50,
+			"health": 1250,
 			"strength": 2,
 			"magic": 10,
 			"intelligence": 5

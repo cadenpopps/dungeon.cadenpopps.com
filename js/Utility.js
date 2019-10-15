@@ -17,8 +17,12 @@ function Utility(CONFIG){
 		entity.actions.currentAction = action_none;
 	}
 
-	this.entityDistance = function(e1, e2, dist) {
+	this.entityWithinRange = function(e1, e2, dist) {
 		return abs(e1.position.x - e2.position.x) < dist && abs(e1.position.y - e2.position.y) < dist;
+	}
+
+	this.entityDistance = function(e1, e2) {
+		return abs(e1.position.x - e2.position.x) + abs(e1.position.y - e2.position.y);
 	}
 
 	this.getDirectionToEntity = function(e1, e2) {

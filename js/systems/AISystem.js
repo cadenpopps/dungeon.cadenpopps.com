@@ -7,14 +7,14 @@ function AISystem (){
 
 	this.run = function(engine){
 		for(let entity of this.objects){
-			if(Utility.entityDistance(entity, player, entity_active_range)){
+			if(Utility.entityWithinRange(player, entity, entity_active_range)){
 				entity.actions.nextAction = determineAction(entity, player);
 			}
 		}
 	}
 
 	let determineAction = function(entity, player){
-		if(Utility.entityDistance(entity, player, entity.ai.maxRange)){
+		if(Utility.entityDistance(entity, player) < entity.ai.maxRange){
 			return getAttackAction(entity, player);
 		}
 		else{
@@ -23,7 +23,9 @@ function AISystem (){
 	}
 
 	let getAttackAction = function(entity, player){
-		return direction_to_attack[Utility.getDirectionToEntity(entity, player)];	
+		let dir = Utility.getDirectionToEntity(entity, player);
+		entity.direction.direction = dir;
+		return direction_to_attack[dir];	
 	}
 
 	let getMoveCloserAction = function(entity, player){

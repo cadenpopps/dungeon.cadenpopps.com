@@ -1,5 +1,8 @@
-Zoom out on sprint
-Zoom in on combat
+combat - turn entity to face other if facing wrong way
+ai - different levels of pathfinding (naive, adequate, advanced)
+display - level up screen, better health, MOVE TEXTURE CODE TO DISPLAY EXCLUSIVELY
+general - levels, inventory, loot, textures, direction/position dependent textures
+
 
 hud on combat/sprint
 camera shake on event

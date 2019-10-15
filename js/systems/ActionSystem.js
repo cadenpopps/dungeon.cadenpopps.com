@@ -20,19 +20,25 @@ function ActionSystem (){
 		object.actions.currentAction = object.actions.nextAction;
 		object.actions.nextAction = action_none;
 		if(object.components.includes(component_sprint)){
-			handleSprinting(object);
+			handleSprinting(object, engine);
 		}
 	}
 
-	let handleSprinting = function(object){
+	let handleSprinting = function(object, engine){
 		if(!object.sprint.sprinting && Utility.isMovementAction(object.actions.currentAction)){
 			object.sprint.sprintCounter++;
 			if(object.sprint.sprintCounter == object.sprint.movesBeforeSprinting){
+				if(object instanceof Player) {
+					engine.sendEvent(event_player_start_sprinting);
+				}
 				object.sprint.sprinting = true;	
 				object.sprint.sprintCounter = 0;
 			}
 		}
 		else if(object.sprint.sprinting && !Utility.isMovementAction(object.actions.currentAction)){
+			if(object instanceof Player) {
+				engine.sendEvent(event_player_stop_sprinting);
+			}
 			object.sprint.sprinting = false;	
 		}
 		else if(object.sprint.sprinting && Utility.isMovementAction(object.actions.currentAction)){

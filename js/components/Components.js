@@ -21,9 +21,11 @@ function MagicComponent(initialMagic){
 }
 
 function CombatComponent(strength, magic, intelligence){
+
 	this.meleeAttackPower = strength;
+	this.meleeDefensePower = floor((strength) / 5);
+
 	this.magicAttackPower = (magic * intelligence) / 2;
-	this.meleeDefensePower = (strength * intelligence) / 8;
 	this.magicDefensePower = (strength * magic) / 8;
 }
 

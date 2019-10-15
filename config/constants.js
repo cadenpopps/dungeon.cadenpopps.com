@@ -31,7 +31,7 @@ const HEART = 0;
 const component_position = 0, component_movement = 1, component_display = 2, component_animation = 3, component_actions = 4, component_physical = 5, component_sprint = 6, component_direction = 7, component_map = 8, component_health = 9, component_light = 10, component_strength = 11, component_intelligence = 12, component_magic = 13, component_level = 14, component_depth = 15, component_stair = 16, component_combat = 17, component_ai = 18;
 
 //events
-const event_new_game = 0, event_start_game = 1, event_first_level_initiated = 2, event_player_generated = 3, event_down_level = 4, event_up_level = 5, event_new_level = 6, event_player_moved = 7, event_entity_moved = 8, event_player_start_sprinting = 9, event_player_stop_sprinting = 10, event_open_door = 11, event_window_resized = 12, event_new_animation = 13, event_successful_action = 14, event_entity_take_damage = 15;
+const event_new_game = 0, event_start_game = 1, event_first_level_initiated = 2, event_player_generated = 3, event_down_level = 4, event_up_level = 5, event_new_level = 6, event_player_moved = 7, event_entity_moved = 8, event_player_start_sprinting = 9, event_player_stop_sprinting = 10, event_open_door = 11, event_window_resized = 12, event_new_animation = 13, event_successful_action = 14, event_entity_take_damage = 15, event_begin_combat = 16, event_end_combat = 17;
 
 //direction
 const direction_up = 0, direction_right = 1, direction_down = 2, direction_left = 3;
@@ -125,11 +125,11 @@ action_length[action_sprint_right] = 55;
 action_length[action_sprint_down] = 55;
 action_length[action_sprint_left] = 55;
 
-action_length[action_melee_attack_up] = 120;
-action_length[action_melee_attack_right] = 120;
-action_length[action_melee_attack_down] = 120;
-action_length[action_melee_attack_left] = 120;
-action_length[action_melee_attack_spin] = 150;
+action_length[action_melee_attack_up] = 200;
+action_length[action_melee_attack_right] = 200;
+action_length[action_melee_attack_down] = 200;
+action_length[action_melee_attack_left] = 200;
+action_length[action_melee_attack_spin] = 250;
 
 const action_to_direction = [];
 action_to_direction[action_move_up] = direction_up;

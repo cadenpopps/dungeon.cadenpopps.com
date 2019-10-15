@@ -4,8 +4,17 @@ function CombatSystem (){
 
 	this.componentRequirements = [component_combat];
 
+	const COMBAT_TIMER = 100;
+
+	let player;
+	let combatCounter = 0;
+	let inCombat = false;
+
 	this.run = function(engine){
 		for(let entity of this.objects){
+			if(inCombat && !(entity instanceof Player) && entity.display.visible){
+				combatCounter = COMBAT_TIMER;	
+			}
 			switch(entity.actions.currentAction){
 				case action_melee_attack_up: case action_melee_attack_right: case action_melee_attack_down: case action_melee_attack_left: 
 					meleeAttackFront(engine, entity, this.objects);
@@ -15,6 +24,23 @@ function CombatSystem (){
 					break;
 			}
 		}
+
+		if(combatCounter > 0){
+			combatCounter--;
+		}
+		if(combatCounter == 0 && inCombat == true) {
+			engine.sendEvent(event_end_combat);
+			inCombat = false;
+		}
+	}
+
+	let beginCombat = function(engine){
+		combatCounter = COMBAT_TIMER;
+		if(!inCombat) {
+			engine.sendEvent(event_begin_combat);
+			inCombat = true;
+		}
+
 	}
 
 	let meleeAttackFront = function(engine, entity, objects){
@@ -23,6 +49,7 @@ function CombatSystem (){
 				let healthLost = max(0, (entity.combat.meleeAttackPower * 1.5) - o.combat.meleeDefensePower);
 				engine.sendEvent(event_entity_take_damage, { "object": o, "healthLost": healthLost });
 				engine.sendEvent(event_successful_action, entity);
+				beginCombat(engine);
 			}
 		}
 	}
@@ -56,6 +83,7 @@ function CombatSystem (){
 				engine.sendEvent(event_entity_take_damage, { "object": o, "healthLost": healthLost });
 			}
 			engine.sendEvent(event_successful_action, entity);
+			beginCombat(engine);
 		}
 	}
 
@@ -68,6 +96,7 @@ function CombatSystem (){
 	}
 
 	this.addObject = function(object){
+		if(object instanceof Player) { player = object; }
 		System.prototype.addObject.call(this, object);
 	}
 }
