@@ -54,28 +54,34 @@ function CombatSystem (){
 
 	let meleeAttackFront = function(engine, entity, objects){
 		for(let o of objects){
-			if(entityInFront(entity, o)){
+			let dir = entityInFront(entity, o);
+			if(dir != -1){
+				entity.direction.direction = dir;
+				entity.actions.currentAction = direction_to_attack[dir];
 				let healthLost = max(0, (entity.combat.meleeAttackPower * 1.5) - o.combat.meleeDefensePower);
 				engine.sendEvent(event_entity_take_damage, { "object": o, "healthLost": healthLost });
 				engine.sendEvent(event_successful_action, entity);
 				beginCombat(engine);
+				return;
 			}
 		}
 	}
 
 	let entityInFront = function(entity, otherEntity){
-		switch(entity.direction.direction){
-			case direction_up:
-				return (entity.position.y == otherEntity.position.y + 1 && entity.position.x == otherEntity.position.x);
-			case direction_right:
-				return (entity.position.x == otherEntity.position.x - 1 && entity.position.y == otherEntity.position.y);
-			case direction_down:
-				return (entity.position.y == otherEntity.position.y - 1 && entity.position.x == otherEntity.position.x);
-			case direction_left:
-				return (entity.position.x == otherEntity.position.x + 1 && entity.position.y == otherEntity.position.y);
-			default:
-				console.log("Cannot determine direction of " + entity);
-				break;
+		if (entity.position.y == otherEntity.position.y + 1 && entity.position.x == otherEntity.position.x){
+			return direction_up;
+		}
+		else if (entity.position.x == otherEntity.position.x - 1 && entity.position.y == otherEntity.position.y) {
+			return direction_right;
+		}
+		else if (entity.position.y == otherEntity.position.y - 1 && entity.position.x == otherEntity.position.x) {
+			return direction_down;
+		}
+		else if (entity.position.x == otherEntity.position.x + 1 && entity.position.y == otherEntity.position.y) {
+			return direction_left;
+		}
+		else {
+			return -1;
 		}
 	}
 
