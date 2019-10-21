@@ -54,13 +54,13 @@ function EntitySystem (PLAYER_DATA, ENTITY_DATA){
 	let generateEnemies = function(engine, depth){
 		let animations = Utility.convertAnimationsFromConfig(ENTITY_DATA.skeleton.animations);
 		let actions = Utility.convertActionsFromConfig(ENTITY_DATA.skeleton.actions);
+		let config = ENTITY_DATA.skeleton;
 
 		entities[depth] = [];
 		let numEntities = depth + 7;
 
 		//near player
-		let config = ENTITY_DATA.skeleton;
-		entities[depth].push(new Mob(player.position.x - 2, player.position.y - 2, depth, config, actions, animations));
+		// entities[depth].push(new Mob(player.position.x - 2, player.position.y - 2, depth, config, actions, animations));
 
 		while(numEntities > 0){
 			let entityPosition = findValidEntitySquare(levels[depth].map.map);			
@@ -102,12 +102,6 @@ function EntitySystem (PLAYER_DATA, ENTITY_DATA){
 		engine.addObject(player);
 	}
 
-	this.addObject = function(object){
-		if(object instanceof Level){ levels.push(object); }
-		else{
-			System.prototype.addObject.call(this, object);
-		}
-	}
 
 	//MOB BEHAVIOR
 
@@ -127,5 +121,19 @@ function EntitySystem (PLAYER_DATA, ENTITY_DATA){
 			else{
 			}
 		}
+	}
+
+	this.addObject = function(object){
+		if(object instanceof Level){ levels.push(object); }
+		else{
+			System.prototype.addObject.call(this, object);
+		}
+	}
+
+	this.removeObject = function(object){
+		if(entities.includes(object)){
+			entities.splice(entities.indexOf(object), 1);
+		}
+		System.prototype.removeObject.call(this, object);
 	}
 }

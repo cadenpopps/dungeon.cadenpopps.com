@@ -41,7 +41,10 @@ function VisionSystem (CONFIG){
 			lightTriangle(map, octant, player.position.x, player.position.y, light_max);
 		}
 		for(let e of entities){
-			if(map[e.position.x][e.position.y].display.visible){ e.display.visible = true; }
+			if(map[e.position.x][e.position.y].display.visible){ 
+				e.display.visible = true;
+				e.display.discovered = true;
+			}
 		}
 	}
 

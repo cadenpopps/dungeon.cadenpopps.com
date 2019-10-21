@@ -115,15 +115,15 @@ sprint_to_movement[action_sprint_down] = action_move_down;
 sprint_to_movement[action_sprint_left] = action_move_left;
 
 const action_length = [];
-action_length[action_move_up] = 100;
-action_length[action_move_right] = 100;
-action_length[action_move_down] = 100;
-action_length[action_move_left] = 100;
+action_length[action_move_up] = 110;
+action_length[action_move_right] = 110;
+action_length[action_move_down] = 110;
+action_length[action_move_left] = 110;
 
-action_length[action_sprint_up] = 55;
-action_length[action_sprint_right] = 55;
-action_length[action_sprint_down] = 55;
-action_length[action_sprint_left] = 55;
+action_length[action_sprint_up] = 70;
+action_length[action_sprint_right] = 70;
+action_length[action_sprint_down] = 70;
+action_length[action_sprint_left] = 70;
 
 action_length[action_melee_attack_up] = 200;
 action_length[action_melee_attack_right] = 200;

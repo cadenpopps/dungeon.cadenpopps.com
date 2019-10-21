@@ -9,6 +9,8 @@ function DisplaySystem(DISPLAY_SETTINGS, VISION_SETTINGS, TEXTURES) {
 		y: 0,
 		shakeOffsetX : 0,
 		shakeOffsetY : 0,
+		combat: false,
+		sprinting: false,
 		zoom: DISPLAY_SETTINGS.CAMERA_DEFAULT_ZOOM
 	}
 
@@ -17,6 +19,8 @@ function DisplaySystem(DISPLAY_SETTINGS, VISION_SETTINGS, TEXTURES) {
 	let cameraZoomTimer = undefined;
 	let cameraShakeTimer = undefined;
 	let cameraMoving = false;
+
+	let ZOOM_FAST = 10, ZOOM_MEDIUM = 20, ZOOM_SLOW = 40;
 
 	let lightOffset = 0, lightOffsetScale = .02, lightOffsetSpeed = 600;
 
@@ -182,16 +186,20 @@ function DisplaySystem(DISPLAY_SETTINGS, VISION_SETTINGS, TEXTURES) {
 				resize();
 				break;
 			case event_begin_combat:
-				changeZoom(camera, 10, DISPLAY_SETTINGS.CAMERA_DEFAULT_ZOOM + .20);
+				camera.combat = true;
+				decideCameraZoomState(camera);
 				break;
 			case event_end_combat:
-				changeZoom(camera, 25, DISPLAY_SETTINGS.CAMERA_DEFAULT_ZOOM);
+				camera.combat = false;
+				decideCameraZoomState(camera);
 				break;
 			case event_player_start_sprinting:
-				changeZoom(camera, 25, DISPLAY_SETTINGS.CAMERA_DEFAULT_ZOOM - .10);
+				camera.sprinting = true;
+				decideCameraZoomState(camera);
 				break;
 			case event_player_stop_sprinting:
-				changeZoom(camera, 40, DISPLAY_SETTINGS.CAMERA_DEFAULT_ZOOM);
+				camera.sprinting = false;
+				decideCameraZoomState(camera);
 				break;
 		}
 	}
@@ -208,15 +216,47 @@ function DisplaySystem(DISPLAY_SETTINGS, VISION_SETTINGS, TEXTURES) {
 		//}
 	}
 
-	let changeZoom = function(camera, speed, zoom){
-		clearTimeout(cameraZoomTimer);
-		if(zoom > camera.zoom + .01){
-			camera.zoom = floor(camera.zoom * 50 + 1) / 50;
-			cameraZoomTimer = setTimeout(function(){changeZoom(camera, speed,  zoom)}, speed);
+	let decideCameraZoomState = function(camera) {
+		if(camera.combat) {
+			if(camera.sprinting) {
+				changeZoom(camera, DISPLAY_SETTINGS.CAMERA_ZOOM_STEPS_SLOW, DISPLAY_SETTINGS.CAMERA_DEFAULT_ZOOM);
+			}
+			else {
+				changeZoom(camera, DISPLAY_SETTINGS.CAMERA_ZOOM_STEPS_MEDIUM, DISPLAY_SETTINGS.CAMERA_COMBAT_ZOOM);
+			}
 		}
-		else if(zoom < camera.zoom - .01){
-			camera.zoom = floor(camera.zoom * 50 - 1) / 50;
-			cameraZoomTimer = setTimeout(function(){changeZoom(camera, speed, zoom)}, speed);
+		else if(camera.sprinting) {
+			if(camera.combat) {
+				changeZoom(camera, DISPLAY_SETTINGS.CAMERA_ZOOM_STEPS_MEDIUM, DISPLAY_SETTINGS.CAMERA_DEFAULT_ZOOM);
+			}
+			else {
+				changeZoom(camera, DISPLAY_SETTINGS.CAMERA_ZOOM_STEPS_MEDIUM, DISPLAY_SETTINGS.CAMERA_SPRINT_ZOOM);
+			}
+		}
+		else {
+			changeZoom(camera, DISPLAY_SETTINGS.CAMERA_ZOOM_STEPS_MEDIUM, DISPLAY_SETTINGS.CAMERA_DEFAULT_ZOOM);
+		}
+	}
+
+	let changeZoom = function(camera, steps, zoom){
+		if(camera.zoom != zoom) {
+			clearTimeout(cameraZoomTimer);
+			recursiveZoom(camera, DISPLAY_SETTINGS.CAMERA_ZOOM_SPEED, zoom, (zoom - camera.zoom) / steps);
+		}
+	}
+
+	let recursiveZoom = function(camera, speed, zoom, dif) { 
+		if(dif <= 0 && zoom - camera.zoom >= 0) { 
+			camera.zoom = zoom;
+			return;
+		}
+		else if(dif > 0 && zoom - camera.zoom <= 0) { 
+			camera.zoom = zoom;
+			return;
+		}
+		else {
+			camera.zoom += dif;
+			cameraZoomTimer = setTimeout(function(){ recursiveZoom(camera, speed, zoom, dif); }, speed);
 		}
 	}
 

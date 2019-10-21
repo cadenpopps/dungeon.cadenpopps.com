@@ -4,17 +4,13 @@ function CombatSystem (){
 
 	this.componentRequirements = [component_combat];
 
-	const COMBAT_TIMER = 100;
+	const COMBAT_TIMER = 30;
 
 	let player;
-	let combatCounter = 0;
 	let inCombat = false;
 
 	this.run = function(engine){
 		for(let entity of this.objects){
-			if(inCombat && !(entity instanceof Player) && entity.display.visible){
-				combatCounter = COMBAT_TIMER;	
-			}
 			switch(entity.actions.currentAction){
 				case action_melee_attack_up: case action_melee_attack_right: case action_melee_attack_down: case action_melee_attack_left: 
 					meleeAttackFront(engine, entity, this.objects);
@@ -25,22 +21,35 @@ function CombatSystem (){
 			}
 		}
 
-		if(combatCounter > 0){
-			combatCounter--;
+		if(checkStillInCombat(player, this.objects)){
+			beginCombat(engine);
 		}
-		if(combatCounter == 0 && inCombat == true) {
+		else {
+			endCombat(engine);
+		}
+	}
+
+	let beginCombat = function(engine){
+		if(!inCombat) {
+			engine.sendEvent(event_begin_combat);
+			inCombat = true;
+		}
+	}
+
+	let endCombat = function(engine){
+		if(inCombat) {
 			engine.sendEvent(event_end_combat);
 			inCombat = false;
 		}
 	}
 
-	let beginCombat = function(engine){
-		combatCounter = COMBAT_TIMER;
-		if(!inCombat) {
-			engine.sendEvent(event_begin_combat);
-			inCombat = true;
+	let checkStillInCombat = function(player, objects) {
+		for(let o of objects) {
+			if(o instanceof Mob && o.display.discovered && (o.display.visible || Utility.entityWithinRange(player, o, 10))) {
+				return true;
+			}
 		}
-
+		return false;
 	}
 
 	let meleeAttackFront = function(engine, entity, objects){

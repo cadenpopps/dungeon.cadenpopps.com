@@ -1,22 +1,22 @@
 {
 	"size": 1,
-	"sprint_threshhold": 3,
+	"sprint_threshhold": 2,
 	"speed": 10,
 	"classes": {
 		"warrior": {
-			"health": 15,
+			"health": 10,
 			"strength": 8,
 			"magic": 2,
 			"intelligence": 5
 		},
 		"rogue": {
-			"health": 10,
+			"health": 6,
 			"strength": 3,
 			"magic": 5,
 			"intelligence": 10
 		},
 		"mage": {
-			"health": 1250,
+			"health": 8,
 			"strength": 2,
 			"magic": 10,
 			"intelligence": 5
