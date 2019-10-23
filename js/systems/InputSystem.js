@@ -5,7 +5,16 @@ function InputSystem(){
 	let player;
 	let cancelSprintTimeout = undefined;
 
+	let mobSpawnCooldown = 0;
+
 	this.run = function(engine){
+		if(keys.includes('n') && mobSpawnCooldown <= 0) {
+			mobSpawnCooldown = 30;
+			engine.sendEvent(event_spawn_enemy_close, player);
+		}
+		else {
+			mobSpawnCooldown--;
+		}
 		let action = determineAction();
 		assignPlayerAction(player, action);		
 	}

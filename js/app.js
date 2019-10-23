@@ -9,7 +9,7 @@ function init() {
 
 	let config = loadConfig();
 	let room_pool = loadRoomPools();
-	let textures = loadTextures();
+	let images = loadImages();
 	let player_data = loadPlayerData();
 	let entity_data = loadEntityData();
 	let music = loadMusic();
@@ -18,7 +18,7 @@ function init() {
 		"config": config,
 		"room_pool": room_pool[0],
 		"stair_room_pool": room_pool[1],
-		"textures": textures,
+		"images": images,
 		"player_data": player_data,
 		"entity_data": entity_data,
 		"music": music,
@@ -38,25 +38,23 @@ function loadRoomPools(){
 	return loadJSON('/config/roompool.json');
 }
 
-function loadTextures(){
-	let textures = [];
+function loadImages(){
+	let images = [];
 
-	textures.SQUARES = [];
-	textures.SQUARES[FLOOR] = loadImage('/img/textures/floor0.jpg');
-	textures.SQUARES[WALL] = loadImage('/img/textures/wall0.jpg');
-	textures.SQUARES[DOOR] = [];
-	textures.SQUARES[DOOR][OPEN] = loadImage('/img/textures/doorOpen.png');
-	textures.SQUARES[DOOR][CLOSED] = loadImage('/img/textures/doorClosed.jpg');
-	textures.SQUARES[LOOT] = [];
-	textures.SQUARES[LOOT][OPEN] = loadImage('/img/textures/lootOpen.png');
-	textures.SQUARES[LOOT][CLOSED] = loadImage('/img/textures/lootClosed.png');
-	textures.SQUARES[STAIR_UP] = loadImage('/img/textures/stairUp.png');
-	textures.SQUARES[STAIR_DOWN] = loadImage('/img/textures/stairDown.png');
+	images.TEXTURES = [];
+	images.TEXTURES[TEXTURE_FLOOR] = loadImage('/img/textures/floor0.jpg');
+	images.TEXTURES[TEXTURE_WALL] = loadImage('/img/textures/wall0.jpg');
+	images.TEXTURES[TEXTURE_DOOR_OPEN] = loadImage('/img/textures/doorOpen.png');
+	images.TEXTURES[TEXTURE_DOOR_CLOSED] = loadImage('/img/textures/doorClosed.jpg');
+	images.TEXTURES[TEXTURE_LOOT_OPEN] = loadImage('/img/textures/lootOpen.png');
+	images.TEXTURES[TEXTURE_LOOT_CLOSED] = loadImage('/img/textures/lootClosed.png');
+	images.TEXTURES[TEXTURE_STAIR_UP] = loadImage('/img/textures/stairUp.png');
+	images.TEXTURES[TEXTURE_STAIR_DOWN] = loadImage('/img/textures/stairDown.png');
 
-	textures.UI = [];
-	textures.UI[HEART] = loadImage('/img/icons/heart.png');
+	images.UI = [];
+	images.UI[HEART] = loadImage('/img/icons/heart.png');
 
-	return textures;
+	return images;
 }
 
 function loadPlayerData(){

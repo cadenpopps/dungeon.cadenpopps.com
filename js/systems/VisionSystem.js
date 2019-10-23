@@ -17,8 +17,7 @@ function VisionSystem (CONFIG){
 
 	this.handleEvent = function(engine, eventID, data){
 		switch (eventID){
-			case event_start_game: case event_player_moved: case event_down_level: case event_up_level:
-				let st = millis();
+			case event_start_game: case event_player_moved: case event_down_level: case event_up_level: case event_entity_spawned:
 				vision(map, player);
 				break;
 		}

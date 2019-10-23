@@ -1,5 +1,27 @@
 function Utility(CONFIG){
 
+	this.collision = function(o1, o2) {
+		return (
+			o1.physical.solid && 
+			o2.physical.solid && 
+			!(
+				(o1.position.x > o2.position.x + o2.physical.size) || 
+				(o1.position.x + o1.physical.size < o2.position.x) ||
+				(o1.position.y > o2.position.y + o2.physical.size) || 
+				(o1.position.y + o1.physical.size < o2.position.y)
+			)
+		);
+	}
+
+	this.collision = function(o1x, o1y, o1size, o2x, o2y, o2size) {
+		return !(
+			(o1x >= o2x + o2size) || 
+			(o1x + o1size <= o2x) ||
+			(o1y >= o2y + o2size) || 
+			(o1y + o1size <= o2y)
+		);
+	}
+
 	this.entityActionSuccessful = function(entity){
 		entity.actions.busy = action_length[entity.actions.currentAction];
 

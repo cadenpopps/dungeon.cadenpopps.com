@@ -7,45 +7,42 @@ function Square(x, y, texture, solid, opaque) {
 }
 
 WallSquare.prototype = Object.create(Square.prototype);
-function WallSquare(x, y, texture) {
-	Square.call(this, x, y, texture, physical_solid, display_opaque);
+function WallSquare(x, y) {
+	Square.call(this, x, y, TEXTURE_WALL, physical_solid, display_opaque);
 }
 
 FloorSquare.prototype = Object.create(Square.prototype);
-function FloorSquare(x, y, texture) {
-	Square.call(this, x, y, texture, physical_non_solid, display_transparent);
+function FloorSquare(x, y) {
+	Square.call(this, x, y, TEXTURE_FLOOR, physical_non_solid, display_transparent);
 }
 
 DoorSquare.prototype = Object.create(Square.prototype);
-function DoorSquare(x, y, textures) {
-	Square.call(this, x, y, textures[CLOSED], physical_solid, display_opaque);
+function DoorSquare(x, y) {
+	Square.call(this, x, y, TEXTURE_DOOR_CLOSED, physical_solid, display_opaque);
 	this.opened = false;
-	this.textures = textures;
 }
 DoorSquare.prototype.open = function () {
 	this.opened = true;
 	this.physical.solid = false;
-	this.display.texture = this.textures[OPEN];
+	this.display.texture = TEXTURE_DOOR_OPEN;
 	this.display.opaque = false;
 }
 
 LootSquare.prototype = Object.create(Square.prototype);
-function LootSquare(x, y, textures) {
-	Square.call(this, x, y, textures[CLOSED], physical_solid, display_transparent);
+function LootSquare(x, y) {
+	Square.call(this, x, y, TEXTURE_LOOT_CLOSED, physical_solid, display_transparent);
 	this.opened = false;
-	this.textures = textures;
 }
 LootSquare.prototype.open = function () {
 	this.opened = true;
-	this.display.texture = this.textures[OPEN];
 }
 
 StairUpSquare.prototype = Object.create(Square.prototype);
-function StairUpSquare(x, y, texture) {
-	Square.call(this, x, y, texture, physical_solid, display_transparent);
+function StairUpSquare(x, y) {
+	Square.call(this, x, y, TEXTURE_STAIR_UP, physical_solid, display_transparent);
 }
 
 StairDownSquare.prototype = Object.create(Square.prototype);
-function StairDownSquare(x, y, texture) {
-	Square.call(this, x, y, texture, physical_solid, display_transparent);
+function StairDownSquare(x, y) {
+	Square.call(this, x, y, TEXTURE_STAIR_DOWN, physical_solid, display_transparent);
 }

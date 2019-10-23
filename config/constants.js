@@ -25,20 +25,120 @@ light_level_to_shadow[8] = "rgba(" + 255 + ", " + 70 + ", " + 0 + ", 0.05";
 const FLOOR = 0, WALL = 1, DOOR = 2, STAIR_DOWN = 3, STAIR_UP = 4, LOOT = 5; 
 
 //image constants
+const 
+TEXTURE_FLOOR = 0,
+	TEXTURE_WALL = 1,
+	TEXTURE_DOOR_CLOSED = 2,
+	TEXTURE_DOOR_OPEN = 3,
+	TEXTURE_LOOT_CLOSED = 4,
+	TEXTURE_LOOT_OPEN = 5,
+	TEXTURE_STAIR_UP = 6,
+	TEXTURE_STAIR_DOWN = 7;
+
 const HEART = 0;
 
 //components
-const component_position = 0, component_movement = 1, component_display = 2, component_animation = 3, component_actions = 4, component_physical = 5, component_sprint = 6, component_direction = 7, component_map = 8, component_health = 9, component_light = 10, component_strength = 11, component_intelligence = 12, component_magic = 13, component_level = 14, component_depth = 15, component_stair = 16, component_combat = 17, component_ai = 18;
+const 
+component_position = 0,
+	component_movement = 1,
+	component_display = 2,
+	component_animation = 3,
+	component_actions = 4,
+	component_physical = 5,
+	component_sprint = 6,
+	component_direction = 7,
+	component_map = 8,
+	component_health = 9,
+	component_light = 10,
+	component_strength = 11,
+	component_intelligence = 12,
+	component_magic = 13,
+	component_level = 14,
+	component_depth = 15,
+	component_stair = 16,
+	component_combat = 17,
+	component_ai = 18;
 
 //events
-const event_new_game = 0, event_start_game = 1, event_first_level_initiated = 2, event_player_generated = 3, event_down_level = 4, event_up_level = 5, event_new_level = 6, event_player_moved = 7, event_entity_moved = 8, event_player_start_sprinting = 9, event_player_stop_sprinting = 10, event_open_door = 11, event_window_resized = 12, event_new_animation = 13, event_successful_action = 14, event_entity_take_damage = 15, event_begin_combat = 16, event_end_combat = 17;
+const 
+event_new_game = 0,
+	event_start_game = 1,
+	event_first_level_initiated = 2,
+	event_player_generated = 3,
+	event_down_level = 4,
+	event_up_level = 5,
+	event_new_level = 6,
+	event_player_moved = 7,
+	event_entity_moved = 8,
+	event_player_start_sprinting = 9,
+	event_player_stop_sprinting = 10,
+	event_open_door = 11,
+	event_window_resized = 12,
+	event_new_animation = 13,
+	event_successful_action = 14,
+	event_entity_take_damage = 15,
+	event_begin_combat = 16,
+	event_end_combat = 17,
+	event_player_melee_attack = 18,
+	event_player_circle_attack = 19,
+	event_player_take_damage = 20,
+	event_entity_spawned = 21,
+	event_spawn_enemy_close = 22
+;
 
 //direction
 const direction_up = 0, direction_right = 1, direction_down = 2, direction_left = 3;
 
-
 //animations
-const animation_idle = 0, animation_move_up = 1, animation_move_right = 2, animation_move_down = 3, animation_move_left = 4, animation_sprint_up = 5, animation_sprint_right = 6, animation_sprint_down = 7, animation_sprint_left = 8, animation_melee_attack_up = 9, animation_melee_attack_right = 10, animation_melee_attack_down = 11, animation_melee_attack_left = 12, animation_melee_attack_spin = 13;
+const 
+animation_idle = 0,
+	animation_move_up = 1,
+	animation_move_right = 2,
+	animation_move_down = 3,
+	animation_move_left = 4,
+	animation_sprint_up = 5,
+	animation_sprint_right = 6,
+	animation_sprint_down = 7,
+	animation_sprint_left = 8,
+	animation_melee_attack_up = 9,
+	animation_melee_attack_right = 10,
+	animation_melee_attack_down = 11,
+	animation_melee_attack_left = 12,
+	animation_melee_attack_spin = 13;
+
+//Actions
+const 
+action_none = -1,
+	action_move = 0,
+	action_move_up = 0,
+	action_move_right = 1,
+	action_move_down = 2,
+	action_move_left = 3,
+	action_sprint = 4,
+	action_sprint_up = 4,
+	action_sprint_right = 5,
+	action_sprint_down = 6,
+	action_sprint_left = 8,
+	action_roll = 9,
+	action_roll_up = 9,
+	action_roll_right = 10,
+	action_roll_down = 11,
+	action_roll_left = 12,
+	action_melee_attack_front = 13,
+	action_melee_attack_up = 14,
+	action_melee_attack_right = 15,
+	action_melee_attack_down = 16,
+	action_melee_attack_left = 17,
+	action_melee_attack_spin = 18;
+
+const key_to_action = {
+	"w": action_move_up,
+	"a": action_move_left,
+	"s": action_move_down,
+	"d": action_move_right,
+	"1": action_melee_attack_front,
+	"2": action_melee_attack_spin
+};
 
 const animation_strings_to_constants = [];
 animation_strings_to_constants["animation_idle"] = animation_idle;
@@ -55,13 +155,6 @@ animation_strings_to_constants["animation_melee_attack_right"] = animation_melee
 animation_strings_to_constants["animation_melee_attack_down"] = animation_melee_attack_down;
 animation_strings_to_constants["animation_melee_attack_left"] = animation_melee_attack_left;
 animation_strings_to_constants["animation_melee_attack_spin"] = animation_melee_attack_spin;
-// paul["animation_roll_up"] = animation_roll_up;
-// paul["animation_roll_right"] = animation_roll_right;
-// paul["animation_roll_down"] = animation_roll_down;
-// paul["animation_roll_left"] = animation_roll_left;
-
-//Actions
-const action_none = -1, action_move = 0, action_move_up = 0, action_move_right = 1, action_move_down = 2, action_move_left = 3, action_sprint = 4, action_sprint_up = 4, action_sprint_right = 5, action_sprint_down = 6, action_sprint_left = 8, action_roll = 9, action_roll_up = 9, action_roll_right = 10, action_roll_down = 11, action_roll_left = 12, action_melee_attack_front = 13, action_melee_attack_up = 14, action_melee_attack_right = 15, action_melee_attack_down = 16, action_melee_attack_left = 17, action_melee_attack_spin = 18;
 
 const action_strings_to_constants = [];
 action_strings_to_constants["action_none"] = action_none;
@@ -78,16 +171,6 @@ action_strings_to_constants["action_melee_attack_right"] = action_melee_attack_r
 action_strings_to_constants["action_melee_attack_down"] = action_melee_attack_down;
 action_strings_to_constants["action_melee_attack_left"] = action_melee_attack_left;
 action_strings_to_constants["action_melee_attack_spin"] = action_melee_attack_spin;
-
-const key_to_action = {
-	"w": action_move_up,
-	"a": action_move_left,
-	"s": action_move_down,
-	"d": action_move_right,
-	"1": action_melee_attack_front,
-	"2": action_melee_attack_spin
-	// " ": action_roll,
-};
 
 const action_priority = [];
 action_priority[action_none] = 0;

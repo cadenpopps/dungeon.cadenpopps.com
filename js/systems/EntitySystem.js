@@ -24,7 +24,6 @@ function EntitySystem (PLAYER_DATA, ENTITY_DATA){
 			case event_first_level_initiated:
 				generatePlayer(engine, levels[0].stairUp);
 				generateEnemies(engine, currentDepth);
-				updateEntities(engine);
 				break;
 			case event_new_level:
 				generateEnemies(engine, currentDepth + 1);
@@ -32,12 +31,13 @@ function EntitySystem (PLAYER_DATA, ENTITY_DATA){
 			case event_up_level: 
 				currentDepth--;	
 				fixPlayerPosition(levels[currentDepth].stairDown);
-				updateEntities(engine);
 				break;
 			case event_down_level:
 				currentDepth++;
 				fixPlayerPosition(levels[currentDepth].stairUp);
-				updateEntities(engine);
+				break;
+			case event_spawn_enemy_close:
+				generateEnemy(engine, player.position.x - randomInt(-4, 4), player.position.y - randomInt(2, 4), currentDepth, ENTITY_DATA.skeleton);
 				break;
 		}
 	}
@@ -49,24 +49,34 @@ function EntitySystem (PLAYER_DATA, ENTITY_DATA){
 		let playerClass = PLAYER_DATA.classes.warrior;
 		player = new Player(position.x, position.y, config, playerClass, actions, animations);
 		engine.sendEvent(event_player_generated);
+		engine.addObject(player);
 	}
 
 	let generateEnemies = function(engine, depth){
-		let animations = Utility.convertAnimationsFromConfig(ENTITY_DATA.skeleton.animations);
-		let actions = Utility.convertActionsFromConfig(ENTITY_DATA.skeleton.actions);
 		let config = ENTITY_DATA.skeleton;
 
 		entities[depth] = [];
 		let numEntities = depth + 7;
 
-		//near player
-		// entities[depth].push(new Mob(player.position.x - 2, player.position.y - 2, depth, config, actions, animations));
-
 		while(numEntities > 0){
 			let entityPosition = findValidEntitySquare(levels[depth].map.map);			
-			entities[depth].push(new Mob(entityPosition.x, entityPosition.y, depth, config, actions, animations));
-			numEntities--;
+			if(generateEnemy(engine, entityPosition.x, entityPosition.y, depth, config)) {
+				numEntities--;
+			}
 		}
+	}
+
+	let generateEnemy = function(engine, x, y, depth, config){
+		let animations = Utility.convertAnimationsFromConfig(config.animations);
+		let actions = Utility.convertActionsFromConfig(config.actions);
+		if(safeSpawnLocation(x, y, config.size, entities, levels[depth].map.map)) {
+			let mob = new Mob(x, y, depth, config, actions, animations);
+			entities[depth].push(mob);
+			engine.addObject(mob);
+			engine.sendEvent(event_entity_spawned, mob);
+			return true;
+		}
+		return false;
 	}
 
 	let findValidEntitySquare = function(map){
@@ -88,6 +98,22 @@ function EntitySystem (PLAYER_DATA, ENTITY_DATA){
 		}
 
 		return random(validSquares);
+	}
+
+	let safeSpawnLocation = function(x, y, size, entities, map) {
+		for(let i = x; i < x + size; i++) {
+			for(let j = y; j < y + size; j++) {
+				if(map[i][j].physical.solid) {
+					return false;
+				}
+			}
+		}
+		for(let e of entities[currentDepth]) {
+			if(Utility.collision(x, y, size, e.position.x, e.position.y, e.physical.size)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	let fixPlayerPosition = function(stair){

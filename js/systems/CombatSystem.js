@@ -8,6 +8,7 @@ function CombatSystem (){
 
 	let player;
 	let inCombat = false;
+	let combatTimer = 0;
 
 	this.run = function(engine){
 		for(let entity of this.objects){
@@ -25,13 +26,19 @@ function CombatSystem (){
 			beginCombat(engine);
 		}
 		else {
-			endCombat(engine);
+			if(combatTimer > 0) {
+				combatTimer--;
+			}
+			else {
+				endCombat(engine);
+			}
 		}
 	}
 
 	let beginCombat = function(engine){
 		if(!inCombat) {
 			engine.sendEvent(event_begin_combat);
+			combatTimer = 30;
 			inCombat = true;
 		}
 	}
@@ -59,6 +66,9 @@ function CombatSystem (){
 				entity.direction.direction = dir;
 				entity.actions.currentAction = direction_to_attack[dir];
 				let healthLost = max(0, (entity.combat.meleeAttackPower * 1.5) - o.combat.meleeDefensePower);
+				if(entity instanceof Player) {
+					engine.sendEvent(event_player_melee_attack);
+				}
 				engine.sendEvent(event_entity_take_damage, { "object": o, "healthLost": healthLost });
 				engine.sendEvent(event_successful_action, entity);
 				beginCombat(engine);
@@ -96,6 +106,9 @@ function CombatSystem (){
 			for(let o of targets){
 				let healthLost = max(0, entity.combat.meleeAttackPower - o.combat.meleeDefensePower);
 				engine.sendEvent(event_entity_take_damage, { "object": o, "healthLost": healthLost });
+			}
+			if(entity instanceof Player) {
+				engine.sendEvent(event_player_circle_attack);
 			}
 			engine.sendEvent(event_successful_action, entity);
 			beginCombat(engine);

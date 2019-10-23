@@ -6,7 +6,7 @@ function PoppsEngine(data) {
 	const CONFIG = data.config;
 	const ROOM_POOL = data.room_pool;
 	const STAIR_ROOM_POOL = data.stair_room_pool;
-	const TEXTURES = data.textures;
+	const IMAGES = data.images;
 	const PLAYER_DATA = data.player_data;
 	const ENTITY_DATA = data.entity_data;
 
@@ -17,11 +17,11 @@ function PoppsEngine(data) {
 
 	this.init = function(){
 		this.systems.push(new InputSystem());
-		this.systems.push(new DisplaySystem(CONFIG.DISPLAY_SETTINGS, CONFIG.VISION_SETTINGS, TEXTURES));
+		this.systems.push(new DisplaySystem(CONFIG.DISPLAY_SETTINGS, CONFIG.VISION_SETTINGS, IMAGES));
 		this.systems.push(new VisionSystem(CONFIG.VISION_SETTINGS));
 		this.systems.push(new ActionSystem());
 		this.systems.push(new MovementSystem());
-		this.systems.push(new LevelSystem(CONFIG.LEVEL_SETTINGS, ROOM_POOL, STAIR_ROOM_POOL, TEXTURES));
+		this.systems.push(new LevelSystem(CONFIG.LEVEL_SETTINGS, ROOM_POOL, STAIR_ROOM_POOL));
 		this.systems.push(new EntitySystem(PLAYER_DATA, ENTITY_DATA));
 		this.systems.push(new AnimationSystem(CONFIG.ANIMATION_SETTINGS));
 		this.systems.push(new CombatSystem());

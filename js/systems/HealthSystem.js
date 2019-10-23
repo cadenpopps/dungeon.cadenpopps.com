@@ -26,6 +26,7 @@ function HealthSystem (){
 	this.handleEvent = function(engine, eventID, data){
 		switch(eventID){ 
 			case event_entity_take_damage:
+				if(data.object instanceof Player) { engine.sendEvent(event_player_take_damage); }
 				applyDamage(engine, data.object, data.healthLost);
 				break;
 			case event_begin_combat:

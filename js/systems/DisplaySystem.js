@@ -1,5 +1,5 @@
 DisplaySystem.prototype = Object.create(System.prototype);
-function DisplaySystem(DISPLAY_SETTINGS, VISION_SETTINGS, TEXTURES) {
+function DisplaySystem(DISPLAY_SETTINGS, VISION_SETTINGS, IMAGES) {
 	System.call(this);
 
 	this.componentRequirements = [component_position, component_display];
@@ -15,6 +15,9 @@ function DisplaySystem(DISPLAY_SETTINGS, VISION_SETTINGS, TEXTURES) {
 	}
 
 	let player;
+
+	let TEXTURES = IMAGES.TEXTURES;
+	let UI = IMAGES.UI;
 
 	let cameraZoomTimer = undefined;
 	let cameraShakeTimer = undefined;
@@ -38,7 +41,6 @@ function DisplaySystem(DISPLAY_SETTINGS, VISION_SETTINGS, TEXTURES) {
 
 	this.run = function(engine) {
 		background(0);
-		// lightOffset = osc(millis() / lightOffsetSpeed, 0, lightOffsetScale);
 		drawTextures(this.objects); 
 		drawLights(this.objects);
 		drawHealth(this.objects);
@@ -57,8 +59,8 @@ function DisplaySystem(DISPLAY_SETTINGS, VISION_SETTINGS, TEXTURES) {
 	let drawTextures = function(objects){
 		for(let o of objects){
 			if(o.display.visible || o.display.discovered > 0){
-				let x = CENTER_X - camera.zoom * (GRID_SIZE * (camera.x + camera.shakeOffsetX - o.position.x));
-				let y = CENTER_Y - camera.zoom * (GRID_SIZE * (camera.y + camera.shakeOffsetY - o.position.y));
+				let x = CENTER_X - (camera.zoom * (GRID_SIZE * (camera.x - o.position.x))) + camera.shakeOffsetX;
+				let y = CENTER_Y - (camera.zoom * (GRID_SIZE * (camera.y - o.position.y))) + camera.shakeOffsetY;
 				let w = o.display.width * GRID_SIZE * camera.zoom;
 				let h = o.display.height * GRID_SIZE * camera.zoom;
 				if(Utility.positionOnScreen(x, y, w, h)){
@@ -93,7 +95,7 @@ function DisplaySystem(DISPLAY_SETTINGS, VISION_SETTINGS, TEXTURES) {
 				rect(x, y, w, h);
 			}
 			else{
-				image(t, x, y, w, h);
+				image(TEXTURES[t], x, y, w, h);
 			}
 			if(!o.display.visible && o.display.discovered > 0){
 				// let opacity = min(1, 1 - (o.display.discovered/VISION_SETTINGS.DISCOVERED_MAX) + .2);
@@ -116,8 +118,8 @@ function DisplaySystem(DISPLAY_SETTINGS, VISION_SETTINGS, TEXTURES) {
 	}
 
 	let lightSquare = function(o) {
-		let x = CENTER_X - camera.zoom * (GRID_SIZE * (camera.x + camera.shakeOffsetX - o.position.x));
-		let y = CENTER_Y - camera.zoom * (GRID_SIZE * (camera.y + camera.shakeOffsetY - o.position.y));
+		let x = CENTER_X - (camera.zoom * (GRID_SIZE * (camera.x - o.position.x))) + camera.shakeOffsetX;
+		let y = CENTER_Y - (camera.zoom * (GRID_SIZE * (camera.y - o.position.y))) + camera.shakeOffsetY;
 		let w = o.display.width * GRID_SIZE * camera.zoom;
 		let h = o.display.height * GRID_SIZE * camera.zoom;
 
@@ -131,8 +133,8 @@ function DisplaySystem(DISPLAY_SETTINGS, VISION_SETTINGS, TEXTURES) {
 	let drawHealth = function(objects){
 		for(let o of objects){
 			if(o.components.includes(component_health) && (o.display.visible || o.display.discovered > 0)) {
-				let x = CENTER_X - camera.zoom * (GRID_SIZE * (camera.x + camera.shakeOffsetX - o.position.x));
-				let y = CENTER_Y - camera.zoom * (GRID_SIZE * (camera.y + camera.shakeOffsetY - o.position.y));
+				let x = CENTER_X - (camera.zoom * (GRID_SIZE * (camera.x - o.position.x))) + camera.shakeOffsetX;
+				let y = CENTER_Y - (camera.zoom * (GRID_SIZE * (camera.y - o.position.y))) + camera.shakeOffsetY;
 				let healthBarWidth = o.display.width * GRID_SIZE * camera.zoom;
 				if(o instanceof Player) {
 					drawPlayerHealth(o);
@@ -147,7 +149,7 @@ function DisplaySystem(DISPLAY_SETTINGS, VISION_SETTINGS, TEXTURES) {
 	let drawPlayerHealth = function(player){
 		let x = 0, y = 0;
 		for(let i = 1; i <= player.health.health; i++){
-			image(TEXTURES.UI[HEART], (x * HEART_SIZE) + HEART_OFFSET, (y * HEART_SIZE) + HEART_OFFSET, HEART_SIZE, HEART_SIZE);
+			image(UI[HEART], (x * HEART_SIZE) + HEART_OFFSET, (y * HEART_SIZE) + HEART_OFFSET, HEART_SIZE, HEART_SIZE);
 			x++;
 			if(i % 15 == 0) {
 				y++;
@@ -200,6 +202,15 @@ function DisplaySystem(DISPLAY_SETTINGS, VISION_SETTINGS, TEXTURES) {
 			case event_player_stop_sprinting:
 				camera.sprinting = false;
 				decideCameraZoomState(camera);
+				break;
+			case event_player_melee_attack:
+				shakeCamera(camera, DISPLAY_SETTINGS.CAMERA_SHAKE_MEDIUM_SMALL);
+				break;
+			case event_player_circle_attack:
+				shakeCamera(camera, DISPLAY_SETTINGS.CAMERA_SHAKE_SMALL);
+				break;
+			case event_player_take_damage:
+				shakeCamera(camera, DISPLAY_SETTINGS.CAMERA_SHAKE_SMALL);
 				break;
 		}
 	}
@@ -260,23 +271,12 @@ function DisplaySystem(DISPLAY_SETTINGS, VISION_SETTINGS, TEXTURES) {
 		}
 	}
 
-	let shakeCamera = function(camera, speed, shakeAmount, shakeDecreaseAmount){
+	let shakeCamera = function(camera, shakeAmount){
 		clearTimeout(cameraShakeTimer);
 		if(shakeAmount > 0){
-			let xSign, ySign;
-
-			if(camera.shakeOffsetX == 0) xSign = random([-1, 1]);
-			else if(camera.shakeOffsetX > 0) xSign = random([1, -1, -1]);
-			else xSign = random([-1, 1, 1]);
-
-			if(camera.shakeOffsetY == 0) ySign = random([-1, 1]);
-			else if(camera.shakeOffsetY > 0) ySign = random([1, -1, -1]);
-			else ySign = random([-1, 1, 1]);
-
-			camera.shakeOffsetX = xSign * random(shakeAmount - (shakeDecreaseAmount/2), shakeAmount);
-			camera.shakeOffsetY = ySign * random(shakeAmount - (shakeDecreaseAmount/2), shakeAmount);
-
-			cameraShakeTimer = setTimeout(function(){shakeCamera(camera, speed, shakeAmount - shakeDecreaseAmount, shakeDecreaseAmount)}, speed);
+			camera.shakeOffestX = ((shakeAmount % 2 == 0) ? -1 : 1) * (randomInt(0, shakeAmount * DISPLAY_SETTINGS.CAMERA_SHAKE_MULTIPLIER) + DISPLAY_SETTINGS.CAMERA_SHAKE_CONSTANT);
+			camera.shakeOffsetY = random(-1, 1) * DISPLAY_SETTINGS.CAMERA_SHAKE_CONSTANT / 2 * shakeAmount;
+			cameraShakeTimer = setTimeout(function(){ shakeCamera(camera, shakeAmount - 1); }, DISPLAY_SETTINGS.CAMERA_SHAKE_SPEED);
 		}
 		else{
 			camera.shakeOffsetX = 0;

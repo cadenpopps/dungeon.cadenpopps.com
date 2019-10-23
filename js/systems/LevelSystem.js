@@ -1,5 +1,5 @@
 LevelSystem.prototype = Object.create(System.prototype);
-function LevelSystem (CONFIG, ROOM_POOL, STAIR_ROOM_POOL, TEXTURES){
+function LevelSystem (CONFIG, ROOM_POOL, STAIR_ROOM_POOL){
 	System.call(this);
 
 	let currentDepth = 0;
@@ -35,7 +35,7 @@ function LevelSystem (CONFIG, ROOM_POOL, STAIR_ROOM_POOL, TEXTURES){
 	}
 
 	let newLevel = function(engine, depth){
-		let level = generateLevel(CONFIG, depth, ROOM_POOL, STAIR_ROOM_POOL, TEXTURES);
+		let level = generateLevel(CONFIG, depth, ROOM_POOL, STAIR_ROOM_POOL);
 		levels.push(level);
 		return level; 
 	}
