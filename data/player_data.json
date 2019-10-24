@@ -2,24 +2,25 @@
 	"size": 1,
 	"sprint_threshhold": 2,
 	"speed": 10,
+	"solid": true,
 	"classes": {
 		"warrior": {
 			"health": 10,
-			"strength": 8,
-			"magic": 2,
-			"intelligence": 5
+			"strength": 10,
+			"magic": 5,
+			"intelligence": 8
 		},
 		"rogue": {
 			"health": 6,
-			"strength": 3,
-			"magic": 5,
+			"strength": 5,
+			"magic": 8,
 			"intelligence": 10
 		},
 		"mage": {
 			"health": 8,
-			"strength": 2,
+			"strength": 5,
 			"magic": 10,
-			"intelligence": 5
+			"intelligence": 8
 		}
 	},
 	"actions": [

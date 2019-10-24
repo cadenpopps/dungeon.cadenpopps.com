@@ -83,7 +83,8 @@ event_new_game = 0,
 	event_player_circle_attack = 19,
 	event_player_take_damage = 20,
 	event_entity_spawned = 21,
-	event_spawn_enemy_close = 22
+	event_spawn_enemy_close = 22,
+	event_game_over = 1000
 ;
 
 //direction

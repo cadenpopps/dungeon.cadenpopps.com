@@ -7,7 +7,179 @@
 		"min_range": 1,
 		"max_range": 2,
 		"size": 1,
+		"solid": true,
 		"speed": 4,
+		"actions": [
+			"action_none",
+			"action_move_up",
+			"action_move_right",
+			"action_move_down",
+			"action_move_left",
+			"action_sprint_up",
+			"action_sprint_right",
+			"action_sprint_down",
+			"action_sprint_left",
+			"action_melee_attack_up",
+			"action_melee_attack_right",
+			"action_melee_attack_down",
+			"action_melee_attack_left"
+		],
+		"animations": {
+			"animation_idle": [
+				{"ox": 0, "oy": 0, "sprite": null},
+				{"ox": 0, "oy": 0, "sprite": null}, 
+				{"ox": 0, "oy": 0, "sprite": null}, 
+				{"ox": 0, "oy": 0, "sprite": null}, 
+				{"ox": 0, "oy": 0, "sprite": null}, 
+				{"ox": 0, "oy": 0, "sprite": null},
+				{"ox": 0, "oy": 0, "sprite": null},
+				{"ox": 0, "oy": 0, "sprite": null}
+			],
+			"animation_move_up": [
+				{"ox": 0, "oy": 0.95, "sprite": null}, 
+				{"ox": 0, "oy": 0.9, "sprite": null}, 
+				{"ox": 0, "oy": 0.8, "sprite": null}, 
+				{"ox": 0, "oy": 0.6, "sprite": null},
+				{"ox": 0, "oy": 0.4, "sprite": null}, 
+				{"ox": 0, "oy": 0.2, "sprite": null}, 
+				{"ox": 0, "oy": 0.1, "sprite": null}, 
+				{"ox": 0, "oy": 0.05, "sprite": null}
+			],
+			"animation_move_right": [
+				{"ox": -0.95, "oy": 0, "sprite": null}, 
+				{"ox": -0.9,  "oy": 0, "sprite": null}, 
+				{"ox": -0.8,  "oy": 0, "sprite": null}, 
+				{"ox": -0.6,  "oy": 0, "sprite": null}, 
+				{"ox": -0.4,  "oy": 0, "sprite": null}, 
+				{"ox": -0.2,  "oy": 0, "sprite": null}, 
+				{"ox": -0.1,  "oy": 0, "sprite": null}, 
+				{"ox": -0.05, "oy": 0, "sprite": null}
+			],
+			"animation_move_down": [
+				{"ox": 0, "oy": -0.95, "sprite": null}, 
+				{"ox": 0, "oy": -0.9,  "sprite": null}, 
+				{"ox": 0, "oy": -0.8,  "sprite": null}, 
+				{"ox": 0, "oy": -0.6,  "sprite": null}, 
+				{"ox": 0, "oy": -0.4,  "sprite": null}, 
+				{"ox": 0, "oy": -0.2,  "sprite": null}, 
+				{"ox": 0, "oy": -0.1,  "sprite": null}, 
+				{"ox": 0, "oy": -0.05, "sprite": null}
+			],
+			"animation_move_left": [
+				{"ox": 0.95, "oy": 0, "sprite": null}, 
+				{"ox": 0.9,  "oy": 0, "sprite": null}, 
+				{"ox": 0.8,  "oy": 0, "sprite": null}, 
+				{"ox": 0.6,  "oy": 0, "sprite": null}, 
+				{"ox": 0.4,  "oy": 0, "sprite": null}, 
+				{"ox": 0.2,  "oy": 0, "sprite": null}, 
+				{"ox": 0.1,  "oy": 0, "sprite": null}, 
+				{"ox": 0.05, "oy": 0, "sprite": null}
+			],
+			"animation_sprint_up": [
+				{"ox": 0, "oy": 0.95, "sprite": null}, 
+				{"ox": 0, "oy": 0.9, "sprite": null}, 
+				{"ox": 0, "oy": 0.8, "sprite": null}, 
+				{"ox": 0, "oy": 0.6, "sprite": null},
+				{"ox": 0, "oy": 0.4, "sprite": null}, 
+				{"ox": 0, "oy": 0.2, "sprite": null}, 
+				{"ox": 0, "oy": 0.1, "sprite": null}, 
+				{"ox": 0, "oy": 0.05, "sprite": null}
+			],
+			"animation_sprint_right": [
+				{"ox": -0.95, "oy": 0, "sprite": null}, 
+				{"ox": -0.9,  "oy": 0, "sprite": null}, 
+				{"ox": -0.8,  "oy": 0, "sprite": null}, 
+				{"ox": -0.6,  "oy": 0, "sprite": null}, 
+				{"ox": -0.4,  "oy": 0, "sprite": null}, 
+				{"ox": -0.2,  "oy": 0, "sprite": null}, 
+				{"ox": -0.1,  "oy": 0, "sprite": null}, 
+				{"ox": -0.05, "oy": 0, "sprite": null}
+			],
+			"animation_sprint_down": [
+				{"ox": 0, "oy": -0.95, "sprite": null}, 
+				{"ox": 0, "oy": -0.9,  "sprite": null}, 
+				{"ox": 0, "oy": -0.8,  "sprite": null}, 
+				{"ox": 0, "oy": -0.6,  "sprite": null}, 
+				{"ox": 0, "oy": -0.4,  "sprite": null}, 
+				{"ox": 0, "oy": -0.2,  "sprite": null}, 
+				{"ox": 0, "oy": -0.1,  "sprite": null}, 
+				{"ox": 0, "oy": -0.05, "sprite": null}
+			],
+			"animation_sprint_left": [
+				{"ox": 0.95, "oy": 0, "sprite": null}, 
+				{"ox": 0.9,  "oy": 0, "sprite": null}, 
+				{"ox": 0.8,  "oy": 0, "sprite": null}, 
+				{"ox": 0.6,  "oy": 0, "sprite": null}, 
+				{"ox": 0.4,  "oy": 0, "sprite": null}, 
+				{"ox": 0.2,  "oy": 0, "sprite": null}, 
+				{"ox": 0.1,  "oy": 0, "sprite": null}, 
+				{"ox": 0.05, "oy": 0, "sprite": null}
+			],
+			"animation_melee_attack_up": [
+				{"ox": 0, "oy": -0.1, "sprite": null}, 
+				{"ox": 0, "oy": -0.2, "sprite": null}, 
+				{"ox": 0, "oy": -0.4, "sprite": null}, 
+				{"ox": 0, "oy": -0.8, "sprite": null}, 
+				{"ox": 0, "oy": -0.8, "sprite": null}, 
+				{"ox": 0, "oy": -0.4, "sprite": null}, 
+				{"ox": 0, "oy": -0.2, "sprite": null}, 
+				{"ox": 0, "oy": -0.1, "sprite": null}
+			],
+			"animation_melee_attack_right": [
+				{"ox": 0.1, "oy": 0, "sprite": null}, 
+				{"ox": 0.2, "oy": 0, "sprite": null}, 
+				{"ox": 0.4, "oy": 0, "sprite": null}, 
+				{"ox": 0.8, "oy": 0, "sprite": null}, 
+				{"ox": 0.8, "oy": 0, "sprite": null}, 
+				{"ox": 0.4, "oy": 0, "sprite": null}, 
+				{"ox": 0.2, "oy": 0, "sprite": null}, 
+				{"ox": 0.1, "oy": 0, "sprite": null}
+			],
+			"animation_melee_attack_down": [
+				{"ox": 0, "oy": 0.1, "sprite": null}, 
+				{"ox": 0, "oy": 0.2, "sprite": null}, 
+				{"ox": 0, "oy": 0.4, "sprite": null}, 
+				{"ox": 0, "oy": 0.8, "sprite": null}, 
+				{"ox": 0, "oy": 0.8, "sprite": null}, 
+				{"ox": 0, "oy": 0.4, "sprite": null}, 
+				{"ox": 0, "oy": 0.2, "sprite": null}, 
+				{"ox": 0, "oy": 0.1, "sprite": null}
+			],
+			"animation_melee_attack_left": [
+				{"ox": -0.1, "oy": 0, "sprite": null}, 
+				{"ox": -0.2, "oy": 0, "sprite": null}, 
+				{"ox": -0.4, "oy": 0, "sprite": null}, 
+				{"ox": -0.8, "oy": 0, "sprite": null}, 
+				{"ox": -0.8, "oy": 0, "sprite": null}, 
+				{"ox": -0.4, "oy": 0, "sprite": null}, 
+				{"ox": -0.2, "oy": 0, "sprite": null}, 
+				{"ox": -0.1, "oy": 0, "sprite": null}
+			],
+			"animation_melee_attack_spin": [
+				{"ox": 0, "oy": 0.3, "sprite": null}, 
+				{"ox": 0, "oy": 0.5, "sprite": null}, 
+				{"ox": 0.3, "oy": 0.3, "sprite": null}, 
+				{"ox": 0.5, "oy": 0, "sprite": null}, 
+				{"ox": 0.3, "oy": -0.3, "sprite": null}, 
+				{"ox": 0, "oy": -0.5, "sprite": null}, 
+				{"ox": -0.3, "oy": -0.3, "sprite": null}, 
+				{"ox": -0.5, "oy": 0, "sprite": null}, 
+				{"ox": -0.3, "oy": 0.3, "sprite": null}, 
+				{"ox": 0, "oy": 0.5, "sprite": null},
+				{"ox": 0, "oy": 0.3, "sprite": null}
+			]
+		}
+	},
+	"glob": {
+		"health": 30,
+		"strength": 2,
+		"magic": 1,
+		"intelligence": 1,
+		"min_range": 1,
+		"max_range": 3,
+		"size": 2,
+		"speed": 2,
+		"solid": true,
 		"actions": [
 			"action_none",
 			"action_move_up",

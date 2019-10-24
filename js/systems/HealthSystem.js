@@ -46,6 +46,9 @@ function HealthSystem (){
 	let checkDead = function(engine, object){
 		if(object.health.health <= 0){
 			engine.removeObject(object);
+			if(object instanceof Player) {
+				engine.sendEvent(event_game_over);
+			}
 		}
 	}
 }

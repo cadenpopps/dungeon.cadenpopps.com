@@ -38,6 +38,11 @@ function PhysicalComponent(solid, size){
 	this.size = size;
 }
 
+function CollisionComponent(x, y, size){
+	this.topLeft = [x, y];
+	this.botRight = [x + size, y + size];
+}
+
 function MovementComponent(speed){
 	this.speed = speed;
 }

@@ -23,8 +23,6 @@ function DisplaySystem(DISPLAY_SETTINGS, VISION_SETTINGS, IMAGES) {
 	let cameraShakeTimer = undefined;
 	let cameraMoving = false;
 
-	let ZOOM_FAST = 10, ZOOM_MEDIUM = 20, ZOOM_SLOW = 40;
-
 	let lightOffset = 0, lightOffsetScale = .02, lightOffsetSpeed = 600;
 
 	let CENTER_X = floor(width / 2);

@@ -1,28 +1,17 @@
-function Utility(CONFIG){
+class Utility {
 
-	this.collision = function(o1, o2) {
+	static collision(o1, o2) {
 		return (
-			o1.physical.solid && 
-			o2.physical.solid && 
 			!(
-				(o1.position.x > o2.position.x + o2.physical.size) || 
-				(o1.position.x + o1.physical.size < o2.position.x) ||
-				(o1.position.y > o2.position.y + o2.physical.size) || 
-				(o1.position.y + o1.physical.size < o2.position.y)
+				(o1.top > o2.bottom) || 
+				(o1.right < o2.left) ||
+				(o1.bottom < o2.top) ||
+				(o1.left > o2.right)
 			)
 		);
 	}
 
-	this.collision = function(o1x, o1y, o1size, o2x, o2y, o2size) {
-		return !(
-			(o1x >= o2x + o2size) || 
-			(o1x + o1size <= o2x) ||
-			(o1y >= o2y + o2size) || 
-			(o1y + o1size <= o2y)
-		);
-	}
-
-	this.entityActionSuccessful = function(entity){
+	static entityActionSuccessful(entity) {
 		entity.actions.busy = action_length[entity.actions.currentAction];
 
 		entity.animation.newAnimation = true;
@@ -33,28 +22,28 @@ function Utility(CONFIG){
 		entity.actions.currentAction = action_none;
 	}
 
-	this.entityActionFailed = function(entity){
+	static entityActionFailed(entity) {
 		entity.actions.lastAction = action_none;
 		entity.actions.failedAction = entity.actions.currentAction;
 		entity.actions.currentAction = action_none;
 	}
 
-	this.entityWithinRange = function(e1, e2, dist) {
+	static entityWithinRange(e1, e2, dist) {
 		return abs(e1.position.x - e2.position.x) < dist && abs(e1.position.y - e2.position.y) < dist;
 	}
 
-	this.entityDistance = function(e1, e2) {
+	static entityDistance(e1, e2) {
 		return abs(e1.position.x - e2.position.x) + abs(e1.position.y - e2.position.y);
 	}
 
-	this.getDirectionToEntity = function(e1, e2) {
+	static getDirectionToEntity(e1, e2) {
 		if(e1.position.y > e2.position.y){ return direction_up; }
 		if(e1.position.x < e2.position.x){ return direction_right;}
 		if(e1.position.y < e2.position.y){ return direction_down; }
 		if(e1.position.x > e2.position.x){ return direction_left; }
 	}
 
-	this.getSquareNeighbors = function(x, y, map){
+	static getSquareNeighbors(x, y, map) {
 		neighbors = [];
 		if (x > 0) {
 			neighbors.push(map[x - 1][y]);
@@ -62,69 +51,69 @@ function Utility(CONFIG){
 		if (y > 0) {
 			neighbors.push(map[x][y - 1]);
 		}
-		if (x < CONFIG.LEVEL_SETTINGS.DUNGEON_SIZE) {
+		if (x < map.length - 1) {
 			neighbors.push(map[x + 1][y]);
 		}
-		if (y < CONFIG.LEVEL_SETTINGS.DUNGEON_SIZE - 1) {
+		if (y < map.length - 1) {
 			neighbors.push(map[x][y + 1]);
 		}
 		return neighbors;
 	}
 
-	this.getHealthPercent = function(entity){
+	static getHealthPercent(entity){
 		return entity.health.health / entity.health.maxHealth;
 	}
 
-	this.findMobPath = function(board, mob, player){
+	static findMobPath(board, mob, player){
 		return findPath(board, board[mob.position.x][mob.position.y], board[player.position.x][player.position.y]);
 	}
 
-	this.walkable = function(square, entity, objects){
-		return this.squareInBounds(square) && squareIsWalkable(square, entity) && !squareIsOccupied(square, objects);
+	static walkable(x, y, map, entity, objects){
+		return this.positionInBounds(x, y) && this.squareTypeIsWalkable(map[x][y], entity) && !this.squareIsOccupied(x, y, entity, objects);
 	}
 
-	this.positionOnScreen = function(x, y, w, h){
+	static positionOnScreen(x, y, w, h){
 		return x > -w && x < width + w && y > -h && y < height + h;
 	}
 
-	this.positionInBounds = function(x, y){
-		return x >= 0 && x < CONFIG.LEVEL_SETTINGS.DUNGEON_SIZE && y >= 0 && y < CONFIG.LEVEL_SETTINGS.DUNGEON_SIZE;
+	static positionInBounds(x, y, size){
+		return x >= 0 && x < size && y >= 0 && y < size;
 	}
 
-	this.squareInBounds = function(square){
-		return square.position.x >= 0 && square.position.x < CONFIG.LEVEL_SETTINGS.DUNGEON_SIZE && square.position.y >= 0 && square.position.y < CONFIG.LEVEL_SETTINGS.DUNGEON_SIZE;
+	static squareInBounds(square, size){
+		return square.position.x >= 0 && square.position.x < size && square.position.y >= 0 && square.position.y < size;
 	}
 
-	let squareIsWalkable = function(square, entity){
-		return (entity instanceof Player) ? playerWalkable(square) : mobWalkable(square);
+	static squareTypeIsWalkable(square, entity){
+		return (entity instanceof Player) ? this.playerWalkable(square) : this.mobWalkable(square);
 	}
 
-	let playerWalkable = function(square){
+	static playerWalkable(square){
 		return (!square.physical.solid || square instanceof DoorSquare || square instanceof StairUpSquare || square instanceof StairDownSquare);
 	}
 
-	let mobWalkable = function(square){
+	static mobWalkable(square){
 		return !(square.physical.solid);
 	}
 
-	let squareIsOccupied = function(square, objects){
+	static squareIsOccupied(x, y, entity, objects){
 		for(let o of objects){
-			if(o.position.x == square.position.x && o.position.y == square.position.y && o.physical.solid){
+			if(this.collision(new CollisionComponent(x, y, entity.size), o.collision)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	this.isMovementAction = function(action){
+	static isMovementAction(action){
 		return action == action_move_up || action == action_move_right || action == action_move_down || action == action_move_left;
 	}
 
-	this.isSprintAction = function(action){
+	static isSprintAction(action){
 		return action == action_sprint_up || action == action_sprint_right || action == action_sprint_down || action == action_sprint_left;
 	}
 
-	this.convertMovementToSprint = function(entity){
+	static convertMovementToSprint(entity){
 		switch(entity.actions.currentAction){
 			case action_move_up:
 				entity.actions.currentAction = action_sprint_up;
@@ -141,7 +130,7 @@ function Utility(CONFIG){
 		}
 	}
 
-	this.convertSprintToMovement = function(action){
+	static convertSprintToMovement(action){
 		switch(action){
 			case action_sprint_up:
 				return action_move_up;
@@ -158,7 +147,7 @@ function Utility(CONFIG){
 		}
 	}
 
-	this.convertAnimationsFromConfig = function(animations){
+	static convertAnimationsFromConfig(animations){
 		let animationsArray = [];
 		for(let a in animations){
 			animationsArray[animation_strings_to_constants[a]] = animations[a];	
@@ -166,7 +155,7 @@ function Utility(CONFIG){
 		return animationsArray;
 	}
 
-	this.convertActionsFromConfig = function(actions){
+	static convertActionsFromConfig(actions){
 		let actionsArray = [];
 		for(let i = 0; i < actions.length; i++){
 			actionsArray[i] = action_strings_to_constants[actions[i]];	
@@ -174,12 +163,12 @@ function Utility(CONFIG){
 		return actionsArray;
 	}
 
-	this.getSquareCode = function(x, y) {
-		return x + (y * CONFIG.LEVEL_SETTINGS.DUNGEON_SIZE)
+	static getSquareCode(x, y, size) {
+		return x + (y * size);
 	}
 
-	this.getSquareFromCode = function(board, code) {
-		return board[code % CONFIG.LEVEL_SETTINGS.DUNGEON_SIZE][floor(code / CONFIG.LEVEL_SETTINGS.DUNGEON_SIZE)];
+	static getSquareFromCode(map, code) {
+		return map[code % map.length][floor(code / map.length)];
 	}
 }
 

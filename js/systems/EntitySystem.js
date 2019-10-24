@@ -37,6 +37,7 @@ function EntitySystem (PLAYER_DATA, ENTITY_DATA){
 				fixPlayerPosition(levels[currentDepth].stairUp);
 				break;
 			case event_spawn_enemy_close:
+				let config = ENTITY_DATA[random(Object.keys(ENTITY_DATA))];
 				generateEnemy(engine, player.position.x - randomInt(-4, 4), player.position.y - randomInt(2, 4), currentDepth, ENTITY_DATA.skeleton);
 				break;
 		}
@@ -53,7 +54,7 @@ function EntitySystem (PLAYER_DATA, ENTITY_DATA){
 	}
 
 	let generateEnemies = function(engine, depth){
-		let config = ENTITY_DATA.skeleton;
+		let config = ENTITY_DATA[random(Object.keys(ENTITY_DATA))];
 
 		entities[depth] = [];
 		let numEntities = depth + 7;
@@ -108,8 +109,9 @@ function EntitySystem (PLAYER_DATA, ENTITY_DATA){
 				}
 			}
 		}
+		let col = new CollisionComponent(x, y, size);
 		for(let e of entities[currentDepth]) {
-			if(Utility.collision(x, y, size, e.position.x, e.position.y, e.physical.size)) {
+			if(Utility.collision(col, e.collision)) {
 				return false;
 			}
 		}

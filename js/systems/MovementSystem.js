@@ -58,7 +58,15 @@ function MovementSystem(){
 
 		entity.direction.direction = action_to_direction[entity.actions.currentAction];
 
-		if (Utility.walkable(map[targetX][targetY], entity, objects)) {
+		let walkable = true;
+
+		for(let i = targetX; i < targetX + entity.physical.size; i++) {
+			for(let j = targetY; j < targetY + entity.physical.size; j++) {
+				walkable = Utility.walkable(i, j, map, entity, objects);
+			}
+		}
+
+		if(walkable) {
 
 			entity.position.x = targetX;
 			entity.position.y = targetY;

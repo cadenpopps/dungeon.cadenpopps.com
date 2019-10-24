@@ -14,6 +14,7 @@ function PoppsEngine(data) {
 	// let sounds = data.sounds;
 
 	this.systems = [];
+	let tickInterval = undefined;
 
 	this.init = function(){
 		this.systems.push(new InputSystem());
@@ -29,12 +30,11 @@ function PoppsEngine(data) {
 		this.systems.push(new AISystem());
 
 		$(window).resize(this.sendEvent.bind(this, event_window_resized));
-		Utility = new Utility(CONFIG);
 
 		this.sendEvent(event_new_game);
 		this.sendEvent(event_start_game);
 
-		setInterval(tick.bind(this), TICKRATE);
+		tickInterval = setInterval(tick.bind(this), TICKRATE);
 	};
 
 	let tick = function(){
@@ -44,6 +44,9 @@ function PoppsEngine(data) {
 	}
 
 	this.sendEvent = function(e, data){
+		if(e == event_game_over) {
+			clearInterval(tickInterval);
+		}
 		for(let s of this.systems){
 			s.handleEvent(this, e, data);
 		}
