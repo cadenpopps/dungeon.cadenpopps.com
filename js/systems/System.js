@@ -1,27 +1,27 @@
-function System(){
-	this.objects = [];
-	this.componentRequirements = [];
-}
+class System {
 
-System.prototype.run = function(){}
+	constructor(componentRequirements) {
+		this.objects = [];
+		this.componentRequirements = componentRequirements;
+	}
 
-System.prototype.addObject = function(object){
-	for(let r of this.componentRequirements){
-		if(!object.components.includes(r)){
-			return;
+	addObject(object) {
+		if(this.componentRequirements.length == 0) return;
+		else if(Utility.checkComponents(object, this.componentRequirements)) {
+			this.objects.push(object);
 		}
 	}
-	this.objects.push(object);
-}
 
-System.prototype.removeObject = function(object){
-	if(this.objects.includes(object)){
-		this.objects.splice(this.objects.indexOf(object), 1);
+	removeObject(object) {
+		if(this.objects.indexOf(object) !== -1) {
+			this.objects.splice(this.objects.indexOf(object), 1);
+		}
 	}
-}
 
-System.prototype.clearObjects = function(){
-	this.objects = [];
-}
+	clearObjects() {
+		this.objects = [];
+	}
 
-System.prototype.handleEvent = function(engine, e){}
+	handleEvent(engine, eventID, data) {}
+
+}

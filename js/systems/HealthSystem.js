@@ -1,50 +1,50 @@
-HealthSystem.prototype = Object.create(System.prototype);
-function HealthSystem (){
-	System.call(this);
+class HealthSystem extends System {
 
-	this.componentRequirements = [component_health];
+	constructor(config) {
+		super([component_health]);
 
-	const HEALTH_REGEN_TIMER = 50;
+		this.config = config;
 
-	let healthRegenCounter = 0;
-	let healthRegen = true;
+		this.healthRegenCounter = 0;
+		this.healthRegen = true;
+	}
 
-	this.run = function(engine){ 
-		if(healthRegen){
-			if(healthRegenCounter % HEALTH_REGEN_TIMER == 0){	
-				for(let o of this.objects){
-					if(o.health.health < o.health.maxHealth){
+	run(engine) { 
+		if(this.healthRegen) {
+			if(this.healthRegenCounter % this.config.HEALTH_REGEN_TIMER == 0) {	
+				for(let o of this.objects) {
+					if(o.health.health < o.health.maxHealth) {
 						o.health.health++;
 					}
 				}
-				heatlhRegenCounter = 1;
+				this.healthRegenCounter = 1;
 			}
-			healthRegenCounter++;
+			this.healthRegenCounter++;
 		}
 	}
 
-	this.handleEvent = function(engine, eventID, data){
-		switch(eventID){ 
+	handleEvent(engine, eventID, data) {
+		switch(eventID) { 
 			case event_entity_take_damage:
 				if(data.object instanceof Player) { engine.sendEvent(event_player_take_damage); }
-				applyDamage(engine, data.object, data.healthLost);
+				this.applyDamage(engine, data.object, data.healthLost);
 				break;
 			case event_begin_combat:
-				healthRegen = false;
+				this.healthRegen = false;
 				break;
 			case event_end_combat:
-				healthRegen = true;
+				this.healthRegen = true;
 				break;
 		}
 	}
 
-	let applyDamage = function(engine, object, healthLost){
+	applyDamage(engine, object, healthLost) {
 		object.health.health -= healthLost;
-		checkDead(engine, object);
+		this.checkDead(engine, object);
 	}
 
-	let checkDead = function(engine, object){
-		if(object.health.health <= 0){
+	checkDead(engine, object) {
+		if(object.health.health <= 0) {
 			engine.removeObject(object);
 			if(object instanceof Player) {
 				engine.sendEvent(event_game_over);

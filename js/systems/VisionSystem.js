@@ -1,55 +1,58 @@
-VisionSystem.prototype = Object.create(System.prototype);
-function VisionSystem (CONFIG){
-	System.call(this);
-	this.componentRequirements = [component_position, component_display];
+class VisionSystem extends System {
 
-	let player;
-	let map;
-	let entities = [];
+	constructor(config) {
+		super([]);
 
-	this.run = function(engine){ }
-
-	this.addObject = function(object){
-		if(object instanceof Player){ player = object; }
-		else if(object instanceof Level){ map = object.map.map }
-		else if(object instanceof Mob){ entities.push(object); }
+		this.player;
+		this.map;
+		this.entities = [];
+		this.config = config;
 	}
 
-	this.handleEvent = function(engine, eventID, data){
-		switch (eventID){
+	run(engine) { }
+
+	handleEvent(engine, eventID, data) {
+		switch (eventID) {
 			case event_start_game: case event_player_moved: case event_down_level: case event_up_level: case event_entity_spawned:
-				vision(map, player);
+				this.vision(this.map, this.player);
 				break;
 		}
 	}
 
-	let vision = function(map, player){
-		for(let r of map){
-			for(let s of r){
+	addObject(object) {
+		if(object instanceof Player) { this.player = object; }
+		else if(object instanceof Level) { this.map = object.map.map }
+		else if(object instanceof Mob) { this.entities.push(object); }
+	}
+
+	vision(map, player) {
+		for(let r of map) {
+			for(let s of r) {
 				s.display.visible = false;
-				if(s.display.discovered > 0){s.display.discovered--};
-				if(s.components.includes(component_light)){ s.light.lightLevel = 0; }
+				if(s.display.discovered > 0) {s.display.discovered--};
+				if(s.components.includes(component_light)) { s.light.lightLevel = 0; }
 			}
 		}
 		player.display.visible = true;
 		map[player.position.x][player.position.y].display.visible = true;
-		map[player.position.x][player.position.y].display.discovered = CONFIG.DISCOVERED_MAX;
-		map[player.position.x][player.position.y].light.lightLevel = light_max;
-		for(let octant = 0; octant < 8; octant++){
-			playerSightTriangle(map, octant, player.position.x, player.position.y, CONFIG.PLAYER_VISION_RANGE);
-			lightTriangle(map, octant, player.position.x, player.position.y, light_max);
+		map[player.position.x][player.position.y].display.discovered = this.config.DISCOVERED_MAX;
+		map[player.position.x][player.position.y].light.lightLevel = light_range;
+		for(let octant = 0; octant < 8; octant++) {
+			this.playerSightTriangle(map, octant, player.position.x, player.position.y, this.config.PLAYER_VISION_RANGE);
+			this.lightTriangle(map, octant, player.position.x, player.position.y, light_range);
 		}
-		for(let e of entities){
-			if(map[e.position.x][e.position.y].display.visible){ 
+		for(let e of this.entities) {
+			if(map[e.position.x][e.position.y].display.visible) { 
 				e.display.visible = true;
 				e.display.discovered = true;
+			}
+			else {
+				e.display.visible = false;
 			}
 		}
 	}
 
-
-
-	let lightTriangle = function(map, octant, sx, sy, range){
+	lightTriangle(map, octant, sx, sy, range) {
 		let x = 1;
 		let shadows = [];
 		let squaresVisible = true;
@@ -58,68 +61,68 @@ function VisionSystem (CONFIG){
 			squaresVisible = false;
 			let y = 0;
 			let curslope = 0;
-			while(curslope <= 1){
-				if(!inShadow(x, y, shadows)){
+			while(curslope <= 1) {
+				if(!this.inShadow(x, y, shadows)) {
 					squaresVisible = true;
-					let cur = getTranslatedSquare(map, octant, x, y, sx, sy); 
-					if(cur === undefined){ break; }
+					let cur = this.getTranslatedSquare(map, octant, x, y, sx, sy); 
+					if(cur === undefined) { break; }
 					cur.light.lightLevel = range - x;
-					if(cur.display.opaque){
-						let firstBlocked = getFirstBlockedLight(map, octant, x, y, sx, sy, shadows, range);
-						let lastBlocked = getBlockedLight(map, octant, x, y, sx, sy, shadows, range);
-						let shadowStart = slope(firstBlocked.x, firstBlocked.y, BOTTOM_RIGHT);
-						let shadowEnd = slope(lastBlocked.x, lastBlocked.y, TOP_LEFT);
+					if(cur.display.opaque) {
+						let firstBlocked = this.getFirstBlockedLight(map, octant, x, y, sx, sy, shadows, range);
+						let lastBlocked = this.getBlockedLight(map, octant, x, y, sx, sy, shadows, range);
+						let shadowStart = this.slope(firstBlocked.x, firstBlocked.y, BOTTOM_RIGHT);
+						let shadowEnd = this.slope(lastBlocked.x, lastBlocked.y, TOP_LEFT);
 						shadows.push([shadowStart, shadowEnd]);
 					}
 					else{
-						let above = getTranslatedSquare(map, octant, x, y + 1, sx, sy); 
-						if(above !== undefined ){ 
-							// above.display.discovered = CONFIG.DISCOVERED_MAX;
+						let above = this.getTranslatedSquare(map, octant, x, y + 1, sx, sy); 
+						if(above !== undefined ) { 
+							// above.display.discovered = this.config.DISCOVERED_MAX;
 						}
 					}
 				}
 				y++;
-				curslope = slope(x, y, CENTER_SQUARE); 
+				curslope = this.slope(x, y, CENTER_SQUARE); 
 			}
 			x++;
 		}
 	}
 
-	let getFirstBlockedLight = function(map, octant, x, y, sx, sy, shadows, range){
+	getFirstBlockedLight(map, octant, x, y, sx, sy, shadows, range) {
 		let firstBlocked = {x:x, y:y};
 
-		let currentBlocked = getTranslatedSquare(map, octant, x, y, sx, sy); 
+		let currentBlocked = this.getTranslatedSquare(map, octant, x, y, sx, sy); 
 
-		while(currentBlocked !== undefined && currentBlocked.display.opaque && slope(x, y, CENTER_SQUARE) > 0){
+		while(currentBlocked !== undefined && currentBlocked.display.opaque && this.slope(x, y, CENTER_SQUARE) > 0) {
 			firstBlocked = {x:x, y:y};
-			if(!inShadow(x, y, shadows)){
+			if(!this.inShadow(x, y, shadows)) {
 				currentBlocked.light.lightLevel = range - x;
 			}
 
 			y--;
-			currentBlocked = getTranslatedSquare(map, octant, x, y, sx, sy);
+			currentBlocked = this.getTranslatedSquare(map, octant, x, y, sx, sy);
 		}
 		return firstBlocked;
 	}
 
-	let getBlockedLight = function(map, octant, x, y, sx, sy, shadows, range){
+	getBlockedLight(map, octant, x, y, sx, sy, shadows, range) {
 		let lastBlocked = {x:x, y:y};
 
-		let currentBlocked = getTranslatedSquare(map, octant, x, y, sx, sy); 
+		let currentBlocked = this.getTranslatedSquare(map, octant, x, y, sx, sy); 
 
-		while(currentBlocked !== undefined && currentBlocked.display.opaque && slope(x, y, BOTTOM_RIGHT) < 1){
+		while(currentBlocked !== undefined && currentBlocked.display.opaque && this.slope(x, y, BOTTOM_RIGHT) < 1) {
 			lastBlocked = {x:x, y:y};
-			if(!inShadow(x, y, shadows)){
+			if(!this.inShadow(x, y, shadows)) {
 				currentBlocked.light.lightLevel = range - x;
 			}
 
 			y++;
-			currentBlocked = getTranslatedSquare(map, octant, x, y, sx, sy);
+			currentBlocked = this.getTranslatedSquare(map, octant, x, y, sx, sy);
 		}
 		return lastBlocked;
 	}
 
-	let playerSightTriangle = function(map, octant, sx, sy, range){
+	playerSightTriangle(map, octant, sx, sy, range) {
 		let x = 1;
 		let shadows = [];
 		let squaresVisible = true;
@@ -128,41 +131,38 @@ function VisionSystem (CONFIG){
 			squaresVisible = false;
 			let y = 0;
 			let curslope = 0;
-			while(curslope <= 1){
-				if(!inShadow(x, y, shadows)){
+			while(curslope <= 1) {
+				if(!this.inShadow(x, y, shadows)) {
 					squaresVisible = true;
-					let cur = getTranslatedSquare(map, octant, x, y, sx, sy); 
-					if(cur === undefined){ break; }
+					let cur = this.getTranslatedSquare(map, octant, x, y, sx, sy); 
+					if(cur === undefined) { break; }
 					cur.display.visible = true;
-					cur.display.discovered = CONFIG.DISCOVERED_MAX;
-					if(cur.display.opaque){
-						let firstBlocked = getFirstBlocked(map, octant, x, y, sx, sy, shadows);
-						let lastBlocked = getBlocked(map, octant, x, y, sx, sy, shadows);
-						let shadowStart = slope(firstBlocked.x, firstBlocked.y, BOTTOM_RIGHT);
-						let shadowEnd = slope(lastBlocked.x, lastBlocked.y, TOP_LEFT);
+					cur.display.discovered = this.config.DISCOVERED_MAX;
+					if(cur.display.opaque) {
+						let firstBlocked = this.getFirstBlocked(map, octant, x, y, sx, sy, shadows);
+						let lastBlocked = this.getBlocked(map, octant, x, y, sx, sy, shadows);
+						let shadowStart = this.slope(firstBlocked.x, firstBlocked.y, BOTTOM_RIGHT);
+						let shadowEnd = this.slope(lastBlocked.x, lastBlocked.y, TOP_LEFT);
 						shadows.push([shadowStart, shadowEnd]);
 					}
 					else{
-						let above = getTranslatedSquare(map, octant, x, y + 1, sx, sy); 
-						if(above !== undefined ){ above.display.discovered = CONFIG.DISCOVERED_MAX; }
+						let above = this.getTranslatedSquare(map, octant, x, y + 1, sx, sy); 
+						if(above !== undefined ) { above.display.discovered = this.config.DISCOVERED_MAX; }
 					}
 				}
 				y++;
-				curslope = slope(x, y, CENTER_SQUARE); 
+				curslope = this.slope(x, y, CENTER_SQUARE); 
 			}
 			x++;
 		}
 	}
 
-	const CENTER_SQUARE = 0, TOP_LEFT = 1, BOTTOM_RIGHT = 2, UPPER_BOUND = 3, LOWER_BOUND = 4;
-	const PERM = .5;
-
-	let slope = function(x, y, CORNER){
-		switch(CORNER){
+	slope(x, y, CORNER) {
+		switch(CORNER) {
 			case CENTER_SQUARE:
 				return y/x;
 			case TOP_LEFT:
-				if(x == 0){
+				if(x == 0) {
 					return 1;
 				}
 				return (y + .5)/(x - .5);
@@ -176,45 +176,45 @@ function VisionSystem (CONFIG){
 		return 1;
 	}
 
-	let getFirstBlocked = function(map, octant, x, y, sx, sy, shadows){
+	getFirstBlocked(map, octant, x, y, sx, sy, shadows) {
 		let firstBlocked = {x:x, y:y};
 
-		let currentBlocked = getTranslatedSquare(map, octant, x, y, sx, sy); 
+		let currentBlocked = this.getTranslatedSquare(map, octant, x, y, sx, sy); 
 
-		while(currentBlocked !== undefined && currentBlocked.display.opaque && slope(x, y, CENTER_SQUARE) > 0){
+		while(currentBlocked !== undefined && currentBlocked.display.opaque && this.slope(x, y, CENTER_SQUARE) > 0) {
 			firstBlocked = {x:x, y:y};
-			if(!inShadow(x, y, shadows)){
+			if(!this.inShadow(x, y, shadows)) {
 				currentBlocked.display.visible = true;
-				currentBlocked.display.discovered = CONFIG.DISCOVERED_MAX;
+				currentBlocked.display.discovered = this.config.DISCOVERED_MAX;
 			}
 
 			y--;
-			currentBlocked = getTranslatedSquare(map, octant, x, y, sx, sy);
+			currentBlocked = this.getTranslatedSquare(map, octant, x, y, sx, sy);
 		}
 		return firstBlocked;
 	}
 
-	let getBlocked = function(map, octant, x, y, sx, sy, shadows){
+	getBlocked(map, octant, x, y, sx, sy, shadows) {
 		let lastBlocked = {x:x, y:y};
 
-		let currentBlocked = getTranslatedSquare(map, octant, x, y, sx, sy); 
+		let currentBlocked = this.getTranslatedSquare(map, octant, x, y, sx, sy); 
 
-		while(currentBlocked !== undefined && currentBlocked.display.opaque && slope(x, y, BOTTOM_RIGHT) < 1){
+		while(currentBlocked !== undefined && currentBlocked.display.opaque && this.slope(x, y, BOTTOM_RIGHT) < 1) {
 			lastBlocked = {x:x, y:y};
-			if(!inShadow(x, y, shadows)){
+			if(!this.inShadow(x, y, shadows)) {
 				currentBlocked.display.visible = true;
-				currentBlocked.display.discovered = CONFIG.DISCOVERED_MAX;
+				currentBlocked.display.discovered = this.config.DISCOVERED_MAX;
 			}
 
 			y++;
-			currentBlocked = getTranslatedSquare(map, octant, x, y, sx, sy);
+			currentBlocked = this.getTranslatedSquare(map, octant, x, y, sx, sy);
 		}
 		return lastBlocked;
 	}
 
-	let inShadow = function(x, y, shadows){
-		let BR = slope(x, y, BOTTOM_RIGHT), TL = slope(x, y, TOP_LEFT);
-		for(let s of shadows){
+	inShadow(x, y, shadows) {
+		let BR = this.slope(x, y, BOTTOM_RIGHT), TL = this.slope(x, y, TOP_LEFT);
+		for(let s of shadows) {
 			if( BR >= s[0] && TL <= s[1]) return true;
 			else if( BR >= s[0] && BR <= s[1] && TL >= s[1]) { BR = s[1]; }
 			else if( BR <= s[0] && TL >= s[0] && TL <= s[1]) { TL = s[0]; }
@@ -222,27 +222,22 @@ function VisionSystem (CONFIG){
 		return false;
 	}
 
-	let startSquare = function(x, slopeStart){
+	startSquare(x, slopeStart) {
 		if(slopeStart == 0) return 0; 
 		return ceil(x * slopeStart);
 	}
 
-	let getTranslatedSquare = function(map, octant, x, y, sx, sy){
-		let uc = translate(octant, x, y);
+	getTranslatedSquare(map, octant, x, y, sx, sy) {
+		let uc = this.translate(octant, x, y);
 		let fx = sx + uc[0];
 		let fy = sy - uc[1];
-		if(Utility.positionInBounds(fx, fy)){
+		if(Utility.positionInBounds(fx, fy, map.length)) {
 			return map[fx][fy];
 		}
 		return undefined;
 	}
 
-	const xxcomp = [ 1, 0, 0, -1, -1, 0, 0, 1 ];
-	const xycomp = [ 0, 1, -1, 0, 0, -1, 1, 0 ];
-	const yxcomp = [ 0, 1, 1, 0, 0, -1, -1, 0 ];
-	const yycomp = [ 1, 0, 0, 1, -1, 0, 0, -1 ];
-
-	let translate = function(octant, x, y){
+	translate(octant, x, y) {
 		return[ x * xxcomp[octant] + y * xycomp[octant], x * yxcomp[octant] + y * yycomp[octant]];
 	}
 

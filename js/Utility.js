@@ -1,14 +1,15 @@
 class Utility {
 
 	static collision(o1, o2) {
-		return (
-			!(
-				(o1.top > o2.bottom) || 
-				(o1.right < o2.left) ||
-				(o1.bottom < o2.top) ||
-				(o1.left > o2.right)
-			)
-		);
+		return !(o1.top >= o2.bottom || o1.right <= o2.left || o1.bottom <= o2.top || o1.left >= o2.right);
+	}
+
+	static checkComponents(object, requirements) {
+		for(var i = 0; i < requirements.length; i++){
+			if(object.components.indexOf(requirements[i]) === -1)
+				return false;
+		}
+		return true;
 	}
 
 	static entityActionSuccessful(entity) {
@@ -33,7 +34,7 @@ class Utility {
 	}
 
 	static entityDistance(e1, e2) {
-		return abs(e1.position.x - e2.position.x) + abs(e1.position.y - e2.position.y);
+		return abs((e1.position.x > e2.position.x) ? e1.collision.left - e2.collision.right : e1.collision.right - e2.collision.left) + abs((e1.position.y > e2.position.y) ? e1.collision.top - e2.collision.bottom : e1.collision.bottom - e2.collision.top);
 	}
 
 	static getDirectionToEntity(e1, e2) {
@@ -43,18 +44,36 @@ class Utility {
 		if(e1.position.x > e2.position.x){ return direction_left; }
 	}
 
+	static entityAdjacent(entity, otherEntity) {
+		if (Utility.collision(new CollisionComponent(entity.collision.top - 1, entity.collision.right, entity.collision.top, entity.collision.left), otherEntity.collision)) {
+			return direction_up;
+		}
+		else if (Utility.collision(new CollisionComponent(entity.collision.top, entity.collision.right + 1, entity.collision.bottom, entity.collision.right), otherEntity.collision)) {
+			return direction_right;
+		}
+		else if (Utility.collision(new CollisionComponent(entity.collision.bottom, entity.collision.right, entity.collision.bottom + 1, entity.collision.left), otherEntity.collision)) {
+			return direction_down;
+		}
+		else if (Utility.collision(new CollisionComponent(entity.collision.top, entity.collision.left, entity.collision.bottom, entity.collision.left - 1), otherEntity.collision)) {
+			return direction_left;
+		}
+		else {
+			return -1;
+		}
+	}
+
 	static getSquareNeighbors(x, y, map) {
 		neighbors = [];
-		if (x > 0) {
+		if(x > 0) {
 			neighbors.push(map[x - 1][y]);
 		}
-		if (y > 0) {
+		if(y > 0) {
 			neighbors.push(map[x][y - 1]);
 		}
-		if (x < map.length - 1) {
+		if(x < map.length - 1) {
 			neighbors.push(map[x + 1][y]);
 		}
-		if (y < map.length - 1) {
+		if(y < map.length - 1) {
 			neighbors.push(map[x][y + 1]);
 		}
 		return neighbors;
@@ -69,7 +88,7 @@ class Utility {
 	}
 
 	static walkable(x, y, map, entity, objects){
-		return this.positionInBounds(x, y) && this.squareTypeIsWalkable(map[x][y], entity) && !this.squareIsOccupied(x, y, entity, objects);
+		return Utility.positionInBounds(x, y, map.length) && Utility.squareTypeIsWalkable(map[x][y], entity) && !Utility.squareIsOccupied(x, y, entity, objects);
 	}
 
 	static positionOnScreen(x, y, w, h){
@@ -85,7 +104,7 @@ class Utility {
 	}
 
 	static squareTypeIsWalkable(square, entity){
-		return (entity instanceof Player) ? this.playerWalkable(square) : this.mobWalkable(square);
+		return (entity instanceof Player) ? Utility.playerWalkable(square) : Utility.mobWalkable(square);
 	}
 
 	static playerWalkable(square){
@@ -98,34 +117,58 @@ class Utility {
 
 	static squareIsOccupied(x, y, entity, objects){
 		for(let o of objects){
-			if(this.collision(new CollisionComponent(x, y, entity.size), o.collision)) {
-				return true;
+			if(entity != o) {
+				if(Utility.collision(new CollisionComponent(x, y, entity.physical.size), o.collision)) {
+					return true;
+				}
 			}
 		}
 		return false;
 	}
 
+	static directionToPosition(direction) {
+		switch(direction) {
+			case direction_up:
+				return new PositionComponent(0, -1);
+				break;
+			case direction_right:
+				return new PositionComponent(1, 0);
+				break;
+			case direction_down:
+				return new PositionComponent(0, 1);
+				break;
+			case direction_left:
+				return new PositionComponent(-1, 0);
+				break;
+		}
+	}
+
+	static getPositionInFrontOf(entity) {
+		let dtp = Utility.directionToPosition(entity.direction.direction);
+		return new PositionComponent(entity.position.x + dtp.x, entity.position.y + dtp.y);
+	}
+
 	static isMovementAction(action){
-		return action == action_move_up || action == action_move_right || action == action_move_down || action == action_move_left;
+		return action > action_move && action <= action_move_left;
 	}
 
 	static isSprintAction(action){
-		return action == action_sprint_up || action == action_sprint_right || action == action_sprint_down || action == action_sprint_left;
+		return action > action_sprint && action <= action_sprint_left;
 	}
 
-	static convertMovementToSprint(entity){
-		switch(entity.actions.currentAction){
+	static convertMovementToSprint(action){
+		switch(action){
 			case action_move_up:
-				entity.actions.currentAction = action_sprint_up;
+				return action_sprint_up;
 				break;
 			case action_move_right:
-				entity.actions.currentAction = action_sprint_right;
+				return action_sprint_right;
 				break;
 			case action_move_down:
-				entity.actions.currentAction = action_sprint_down;
+				return action_sprint_down;
 				break;
 			case action_move_left:
-				entity.actions.currentAction = action_sprint_left;
+				return action_sprint_left;
 				break;
 		}
 	}
@@ -201,8 +244,7 @@ function findPath(board, start, end) {
 		for (let s of searching) {
 			if (finalCost[s] < finalCost[current]) current = s;
 		}
-
-		if (current == end) {
+		if(current == end) {
 			return makePath(board, cameFrom, current);
 		};
 
@@ -210,7 +252,7 @@ function findPath(board, start, end) {
 		searched.push(current);
 
 		let currentNeighbors = getNeighbors(board, current);
-		for (let n of currentNeighbors) {
+		for(let n of currentNeighbors) {
 			if (searched.includes(n)) {
 				continue;
 			}
@@ -240,7 +282,7 @@ function squareDistance(start, end) {
 function makePath(board, cameFrom, last) {
 	let path = [];
 	let current = Utility.getSquareCode(last.position.x, last.position.y);
-	while (cameFrom[current] > 0) {
+	while(cameFrom[current] > 0) {
 		path.unshift(Utility.getSquareFromCode(board, current));
 		current = cameFrom[current];
 	}

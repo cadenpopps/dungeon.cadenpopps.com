@@ -37,7 +37,7 @@
 		"action_melee_attack_right",
 		"action_melee_attack_down",
 		"action_melee_attack_left",
-		"action_melee_attack_spin"
+		"action_spin_attack"
 	],
 	"animations": {
 		"animation_idle": [
@@ -170,7 +170,7 @@
 			{"ox": -0.2, "oy": 0, "sprite": null}, 
 			{"ox": -0.1, "oy": 0, "sprite": null}
 		],
-		"animation_melee_attack_spin": [
+		"animation_spin_attack": [
 			{"ox": 0, "oy": 0.3, "sprite": null}, 
 			{"ox": 0, "oy": 0.5, "sprite": null}, 
 			{"ox": 0.3, "oy": 0.3, "sprite": null}, 

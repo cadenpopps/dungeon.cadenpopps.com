@@ -1,11 +1,9 @@
-"use strict";
-
 function setup() {
 	createCanvas(windowWidth, windowHeight);
-	init();
+	load();
 }
 
-function init() {
+function load() {
 
 	let config = loadConfig();
 	let room_pool = loadRoomPools();
@@ -42,14 +40,14 @@ function loadImages(){
 	let images = [];
 
 	images.TEXTURES = [];
-	images.TEXTURES[TEXTURE_FLOOR] = loadImage('/img/textures/floor0.jpg');
-	images.TEXTURES[TEXTURE_WALL] = loadImage('/img/textures/wall0.jpg');
-	images.TEXTURES[TEXTURE_DOOR_OPEN] = loadImage('/img/textures/doorOpen.png');
-	images.TEXTURES[TEXTURE_DOOR_CLOSED] = loadImage('/img/textures/doorClosed.jpg');
-	images.TEXTURES[TEXTURE_LOOT_OPEN] = loadImage('/img/textures/lootOpen.png');
-	images.TEXTURES[TEXTURE_LOOT_CLOSED] = loadImage('/img/textures/lootClosed.png');
-	images.TEXTURES[TEXTURE_STAIR_UP] = loadImage('/img/textures/stairUp.png');
-	images.TEXTURES[TEXTURE_STAIR_DOWN] = loadImage('/img/textures/stairDown.png');
+	images.TEXTURES[texture_floor] = loadImage('/img/textures/floor0.jpg');
+	images.TEXTURES[texture_wall] = loadImage('/img/textures/wall0.jpg');
+	images.TEXTURES[texture_door_open] = loadImage('/img/textures/doorOpen.png');
+	images.TEXTURES[texture_door_closed] = loadImage('/img/textures/doorClosed.jpg');
+	images.TEXTURES[texture_loot_open] = loadImage('/img/textures/lootOpen.png');
+	images.TEXTURES[texture_loot_closed] = loadImage('/img/textures/lootClosed.png');
+	images.TEXTURES[texture_stair_up] = loadImage('/img/textures/stairUp.png');
+	images.TEXTURES[texture_stair_down] = loadImage('/img/textures/stairDown.png');
 
 	images.UI = [];
 	images.UI[HEART] = loadImage('/img/icons/heart.png');

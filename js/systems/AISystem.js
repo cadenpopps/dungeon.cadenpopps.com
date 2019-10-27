@@ -1,43 +1,42 @@
-AISystem.prototype = Object.create(System.prototype);
-function AISystem (){
-	System.call(this);
+class AISystem extends System {
 
-	this.componentRequirements = [component_ai];
-	let player;
+	constructor() {
+		super([component_ai]);
 
-	this.run = function(engine){
-		for(let entity of this.objects){
-			if(Utility.entityWithinRange(player, entity, entity_active_range)){
-				entity.actions.nextAction = determineAction(entity, player);
+		this.player;
+	}
+
+	run(engine) {
+		for(let entity of this.objects) {
+			if(Utility.entityDistance(entity, this.player) < entity_active_range) {
+				entity.actions.nextAction = this.determineAction(entity, this.player);
 			}
 		}
 	}
 
-	let determineAction = function(entity, player){
-		if(Utility.entityDistance(entity, player) < entity.ai.maxRange){
-			return getAttackAction(entity, player);
+	handleEvent(engine, eventID, data) { }
+
+	addObject(object) {
+		if(object instanceof Player) { this.player = object; }
+		else{ super.addObject(object); }
+	}
+
+	determineAction(entity, player) {
+		if(Utility.entityDistance(entity, player) < entity.ai.maxRange) {
+			return this.getAttackAction(entity, player);
 		}
 		else{
-			return getMoveCloserAction(entity, player);
+			return this.getMoveCloserAction(entity, player);
 		}
 	}
 
-	let getAttackAction = function(entity, player){
+	getAttackAction(entity, player) {
 		let dir = Utility.getDirectionToEntity(entity, player);
 		entity.direction.direction = dir;
 		return direction_to_attack[dir];	
 	}
 
-	let getMoveCloserAction = function(entity, player){
+	getMoveCloserAction(entity, player) {
 		return direction_to_movement[Utility.getDirectionToEntity(entity, player)];	
-	}
-
-	this.handleEvent = function(engine, eventID, data){
-		switch(eventID){ }
-	}
-
-	this.addObject = function(object){
-		if(object instanceof Player){ player = object; }
-		else{ System.prototype.addObject.call(this, object); }
 	}
 }

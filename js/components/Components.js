@@ -38,9 +38,19 @@ function PhysicalComponent(solid, size){
 	this.size = size;
 }
 
-function CollisionComponent(x, y, size){
-	this.topLeft = [x, y];
-	this.botRight = [x + size, y + size];
+function CollisionComponent(top, right, bottom, left){
+	if(left === undefined) {
+		this.top = right;
+		this.right = top + bottom;
+		this.bottom = right + bottom;
+		this.left = top;
+	}
+	else {
+		this.top = top;
+		this.right = right;
+		this.bottom = bottom;
+		this.left = left;
+	}
 }
 
 function MovementComponent(speed){
@@ -76,6 +86,7 @@ function ActionComponent(actions, speed){
 	this.nextAction = action_none;
 	this.currentAction = action_none;
 	this.lastAction = action_none;
+	this.lastActionFailed = false;
 }
 
 function SprintComponent(movesBeforeSprinting){

@@ -299,7 +299,7 @@ function nodeDistance(start, end) {
 }
 
 function getSurroundingNodes(level, node) {
-	neighbors = [];
+	let neighbors = [];
 	if (node.x > 1 && level[node.x - 2][node.y] instanceof Node) neighbors.push(level[node.x - 2][node.y]);
 	if (node.y > 1 && level[node.x][node.y - 2] instanceof Node) neighbors.push(level[node.x][node.y - 2]);
 	if (node.x < level.length - 2 && level[node.x + 2][node.y] instanceof Node) neighbors.push(level[node.x + 2][node.y]);
