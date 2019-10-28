@@ -193,10 +193,16 @@ class DisplaySystem extends System {
 
 	drawPlayerHealth(player) {
 		const HEART_SIZE = 30;
+		const HEART_SPACING = 5;
 		const HEART_OFFSET = 20;
 		let x = 0, y = 0;
-		for(let i = 1; i <= this.player.health.health; i++) {
-			image(this.ui[HEART], (x * HEART_SIZE) + HEART_OFFSET, (y * HEART_SIZE) + HEART_OFFSET, HEART_SIZE, HEART_SIZE);
+		for(let i = 1; i <= this.player.health.maxHealth; i++) {
+			if(i <= player.health.health) { 
+				image(this.UI[HEART], (x * HEART_SIZE) + (x * HEART_SPACING) + HEART_OFFSET, (y * HEART_SIZE) + HEART_OFFSET, HEART_SIZE, HEART_SIZE);
+			}
+			else { 
+				image(this.UI[EMPTY_HEART], (x * HEART_SIZE) + (x * HEART_SPACING) + HEART_OFFSET, (y * HEART_SIZE) + HEART_OFFSET, HEART_SIZE, HEART_SIZE);
+			}
 			x++;
 			if(i % 15 == 0) {
 				y++;

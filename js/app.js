@@ -36,6 +36,7 @@ function loadRoomPools(){
 	return loadJSON('/config/roompool.json');
 }
 
+<<<<<<< HEAD
 function loadImages(){
 	let images = [];
 
@@ -53,6 +54,28 @@ function loadImages(){
 	images.UI[HEART] = loadImage('/img/icons/heart.png');
 
 	return images;
+=======
+function loadTextures(){
+	let textures = [];
+
+	textures.SQUARES = [];
+	textures.SQUARES[FLOOR] = loadImage('/img/textures/floor0.jpg');
+	textures.SQUARES[WALL] = loadImage('/img/textures/wall0.jpg');
+	textures.SQUARES[DOOR] = [];
+	textures.SQUARES[DOOR][OPEN] = loadImage('/img/textures/doorOpen.png');
+	textures.SQUARES[DOOR][CLOSED] = loadImage('/img/textures/doorClosed.jpg');
+	textures.SQUARES[LOOT] = [];
+	textures.SQUARES[LOOT][OPEN] = loadImage('/img/textures/lootOpen.png');
+	textures.SQUARES[LOOT][CLOSED] = loadImage('/img/textures/lootClosed.png');
+	textures.SQUARES[STAIR_UP] = loadImage('/img/textures/stairUp.png');
+	textures.SQUARES[STAIR_DOWN] = loadImage('/img/textures/stairDown.png');
+
+	textures.UI = [];
+	textures.UI[HEART] = loadImage('/img/icons/heart.png');
+	textures.UI[EMPTY_HEART] = loadImage('/img/icons/emptyHeart.png');
+
+	return textures;
+>>>>>>> dev
 }
 
 function loadPlayerData(){
