@@ -38,7 +38,6 @@ light_level_to_shadow[8] = "rgba(" + 255 + ", " + 70 + ", " + 0 + ", 0.05";
 const FLOOR = 0, WALL = 1, DOOR = 2, STAIR_DOWN = 3, STAIR_UP = 4, LOOT = 5; 
 
 //image constants
-<<<<<<< HEAD
 const 
 texture_floor = 0,
 	texture_wall = 1,
@@ -49,10 +48,7 @@ texture_floor = 0,
 	texture_stair_up = 6,
 	texture_stair_down = 7;
 
-const HEART = 0;
-=======
-const HEART = 0, EMPTY_HEART = 1;
->>>>>>> dev
+const ui_heart = 0, ui_empty_heart = 1;
 
 //components
 const 
@@ -221,7 +217,7 @@ action_to_length[action_move_right] = 100;
 action_to_length[action_move_down] = 100;
 action_to_length[action_move_left] = 100;
 
-action_to_length[action_sprint] = 60;
+action_to_length[action_sprint] = 65;
 
 action_to_length[action_melee_attack_up] = 200;
 action_to_length[action_melee_attack_right] = 200;

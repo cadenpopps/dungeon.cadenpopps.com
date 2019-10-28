@@ -10,17 +10,17 @@ function load() {
 	let images = loadImages();
 	let player_data = loadPlayerData();
 	let entity_data = loadEntityData();
-	let music = loadMusic();
-	let sounds = loadSounds();
+	// let music = loadMusic();
+	// let sounds = loadSounds();
 	let data = {
 		"config": config,
 		"room_pool": room_pool[0],
 		"stair_room_pool": room_pool[1],
 		"images": images,
 		"player_data": player_data,
-		"entity_data": entity_data,
-		"music": music,
-		"sounds": sounds
+		"entity_data": entity_data
+		// "music": music,
+		// "sounds": sounds
 	}
 
 	let e = new PoppsEngine(data);
@@ -36,7 +36,6 @@ function loadRoomPools(){
 	return loadJSON('/config/roompool.json');
 }
 
-<<<<<<< HEAD
 function loadImages(){
 	let images = [];
 
@@ -51,31 +50,10 @@ function loadImages(){
 	images.TEXTURES[texture_stair_down] = loadImage('/img/textures/stairDown.png');
 
 	images.UI = [];
-	images.UI[HEART] = loadImage('/img/icons/heart.png');
+	images.UI[ui_heart] = loadImage('/img/icons/heart.png');
+	images.UI[ui_empty_heart] = loadImage('/img/icons/emptyHeart.png');
 
 	return images;
-=======
-function loadTextures(){
-	let textures = [];
-
-	textures.SQUARES = [];
-	textures.SQUARES[FLOOR] = loadImage('/img/textures/floor0.jpg');
-	textures.SQUARES[WALL] = loadImage('/img/textures/wall0.jpg');
-	textures.SQUARES[DOOR] = [];
-	textures.SQUARES[DOOR][OPEN] = loadImage('/img/textures/doorOpen.png');
-	textures.SQUARES[DOOR][CLOSED] = loadImage('/img/textures/doorClosed.jpg');
-	textures.SQUARES[LOOT] = [];
-	textures.SQUARES[LOOT][OPEN] = loadImage('/img/textures/lootOpen.png');
-	textures.SQUARES[LOOT][CLOSED] = loadImage('/img/textures/lootClosed.png');
-	textures.SQUARES[STAIR_UP] = loadImage('/img/textures/stairUp.png');
-	textures.SQUARES[STAIR_DOWN] = loadImage('/img/textures/stairDown.png');
-
-	textures.UI = [];
-	textures.UI[HEART] = loadImage('/img/icons/heart.png');
-	textures.UI[EMPTY_HEART] = loadImage('/img/icons/emptyHeart.png');
-
-	return textures;
->>>>>>> dev
 }
 
 function loadPlayerData(){
