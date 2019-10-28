@@ -55,6 +55,7 @@ function loadTextures(){
 
 	textures.UI = [];
 	textures.UI[HEART] = loadImage('/img/icons/heart.png');
+	textures.UI[EMPTY_HEART] = loadImage('/img/icons/emptyHeart.png');
 
 	return textures;
 }

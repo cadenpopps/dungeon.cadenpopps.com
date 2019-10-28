@@ -25,7 +25,7 @@ light_level_to_shadow[8] = "rgba(" + 255 + ", " + 70 + ", " + 0 + ", 0.05";
 const FLOOR = 0, WALL = 1, DOOR = 2, STAIR_DOWN = 3, STAIR_UP = 4, LOOT = 5; 
 
 //image constants
-const HEART = 0;
+const HEART = 0, EMPTY_HEART = 1;
 
 //components
 const component_position = 0, component_movement = 1, component_display = 2, component_animation = 3, component_actions = 4, component_physical = 5, component_sprint = 6, component_direction = 7, component_map = 8, component_health = 9, component_light = 10, component_strength = 11, component_intelligence = 12, component_magic = 13, component_level = 14, component_depth = 15, component_stair = 16, component_combat = 17, component_ai = 18;

@@ -1,6 +1,6 @@
 {
 	"size": 1,
-	"sprint_threshhold": 3,
+	"sprint_threshhold": 2,
 	"speed": 10,
 	"classes": {
 		"warrior": {

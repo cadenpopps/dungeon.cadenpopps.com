@@ -23,7 +23,8 @@ function DisplaySystem(DISPLAY_SETTINGS, VISION_SETTINGS, TEXTURES) {
 	let CENTER_X = floor(width / 2);
 	let CENTER_Y = floor(height / 2);
 
-	let HEART_SIZE = 30;
+	let HEART_SIZE = 28;
+	let HEART_SPACING = 4;
 	let HEART_OFFSET = 20;
 
 	let HEALTH_BAR_OFFSET = 3;
@@ -142,8 +143,13 @@ function DisplaySystem(DISPLAY_SETTINGS, VISION_SETTINGS, TEXTURES) {
 
 	let drawPlayerHealth = function(player){
 		let x = 0, y = 0;
-		for(let i = 1; i <= player.health.health; i++){
-			image(TEXTURES.UI[HEART], (x * HEART_SIZE) + HEART_OFFSET, (y * HEART_SIZE) + HEART_OFFSET, HEART_SIZE, HEART_SIZE);
+		for(let i = 1; i <= player.health.maxHealth; i++){
+			if(i <= player.health.health) { 
+				image(TEXTURES.UI[HEART], (x * HEART_SIZE) + (x * HEART_SPACING) + HEART_OFFSET, (y * HEART_SIZE) + HEART_OFFSET, HEART_SIZE, HEART_SIZE);
+			}
+			else { 
+				image(TEXTURES.UI[EMPTY_HEART], (x * HEART_SIZE) + (x * HEART_SPACING) + HEART_OFFSET, (y * HEART_SIZE) + HEART_OFFSET, HEART_SIZE, HEART_SIZE);
+			}
 			x++;
 			if(i % 15 == 0) {
 				y++;
@@ -187,12 +193,12 @@ function DisplaySystem(DISPLAY_SETTINGS, VISION_SETTINGS, TEXTURES) {
 			case event_end_combat:
 				changeZoom(camera, 25, DISPLAY_SETTINGS.CAMERA_DEFAULT_ZOOM);
 				break;
-			case event_player_start_sprinting:
-				changeZoom(camera, 25, DISPLAY_SETTINGS.CAMERA_DEFAULT_ZOOM - .10);
-				break;
-			case event_player_stop_sprinting:
-				changeZoom(camera, 40, DISPLAY_SETTINGS.CAMERA_DEFAULT_ZOOM);
-				break;
+			// case event_player_start_sprinting:
+			// 	changeZoom(camera, 25, DISPLAY_SETTINGS.CAMERA_DEFAULT_ZOOM - .10);
+			// 	break;
+			// case event_player_stop_sprinting:
+			// 	changeZoom(camera, 40, DISPLAY_SETTINGS.CAMERA_DEFAULT_ZOOM);
+			// 	break;
 		}
 	}
 
