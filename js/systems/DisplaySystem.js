@@ -119,11 +119,13 @@ class DisplaySystem extends System {
 			y += this.gridSize * o.animation.offsetY;
 			let s = o.animation.sprite;
 			if(s == undefined) {
+				fill(20);
+				rect(x + (this.gridSize / 8) - 2, y + (this.gridSize / 8) - 2, w - (this.gridSize / 4) + 4, h - (this.gridSize / 4) + 4);
 				if(o instanceof Player) {
-					fill(255);
+					fill(0, 200, 230);
 				}
 				else{
-					fill(255, 150, 100);
+					fill(200, 20, 40);
 				}
 				rect(x + (this.gridSize / 8), y + (this.gridSize / 8), w - (this.gridSize / 4), h - (this.gridSize / 4));
 			}

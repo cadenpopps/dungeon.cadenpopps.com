@@ -28,6 +28,7 @@ class HealthSystem extends System {
 			case event_entity_take_damage:
 				if(data.object instanceof Player) { engine.sendEvent(event_player_take_damage); }
 				this.applyDamage(engine, data.object, data.healthLost);
+				console.log(data.object);
 				break;
 			case event_begin_combat:
 				this.healthRegen = false;
