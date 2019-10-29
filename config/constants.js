@@ -20,7 +20,7 @@ const yycomp = [ 1, 0, 0, 1, -1, 0, 0, -1 ];
 
 
 // lights
-const light_range = 8, light_intensity = .07, light_red = 230, light_green = 150, light_blue = 0;
+const light_range = 8, light_max = light_range, light_intensity = .07, light_red = 230, light_green = 150, light_blue = 0;
 const shadow_intensity = .08, shadow_red = 10, shadow_green = 5, shadow_blue = 25, shadow_max = .6;
 const light_fill_string = "rgba(" + light_red + "," + light_green + "," + light_blue + ",";
 const light_level_to_shadow = [];
@@ -70,7 +70,9 @@ component_position = 0,
 	component_depth = 15,
 	component_stair = 16,
 	component_combat = 17,
-	component_ai = 18;
+	component_ai = 18,
+	component_light_emitter = 19,
+	component_collision = 20;
 
 //events
 const 

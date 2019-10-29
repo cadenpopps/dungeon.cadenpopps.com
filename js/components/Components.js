@@ -70,6 +70,10 @@ function LightComponent(){
 	this.lightLevel = 0;
 }
 
+function LightEmitterComponent(emitterLevel){
+	this.level = emitterLevel;
+}
+
 function AnimationComponent(animations){
 	this.offsetX = 0;
 	this.offsetY = 0;
