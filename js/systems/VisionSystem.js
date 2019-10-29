@@ -1,12 +1,10 @@
 class VisionSystem extends System {
 
 	constructor(config) {
-		super([]);
+		super([component_display, component_position]);
 
 		this.player;
 		this.map;
-		this.depth = 0;
-		this.entities = [[]];
 		this.config = config;
 	}
 
@@ -17,22 +15,15 @@ class VisionSystem extends System {
 			case event_start_game: case event_player_moved: case event_down_level: case event_up_level: case event_spawn_enemy_close:
 				this.vision(this.map, this.player);
 				break;
-			case event_up_level:
-				this.depth--;
-				break;
-			case event_down_level:
-				this.depth++
-				break;
-			case event_new_level:
-				this.entities.push([]);
-				break;
 		}
 	}
 
 	addObject(object) {
 		if(object instanceof Player) { this.player = object; }
 		else if(object instanceof Level) { this.map = object.map.map }
-		else if(object instanceof Mob) { this.entities[this.depth].push(object); }
+		else if(!(object instanceof Square)) {
+			super.addObject(object);
+		}
 	}
 
 	vision(map, player) {
@@ -48,7 +39,7 @@ class VisionSystem extends System {
 		for(let octant = 0; octant < 8; octant++) {
 			this.playerSightTriangle(map, octant, player.position.x, player.position.y, this.config.PLAYER_VISION_RANGE);
 		}
-		for(let e of this.entities[this.depth]) {
+		for(let e of this.objects) {
 			if(map[e.position.x][e.position.y].display.visible) { 
 				e.display.visible = true;
 				e.display.discovered = true;

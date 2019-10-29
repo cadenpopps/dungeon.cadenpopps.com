@@ -14,8 +14,14 @@ class LightSystem extends System {
 
 	handleEvent(engine, eventID, data) {
 		switch (eventID) {
-			case event_start_game: case event_player_moved: case event_down_level: case event_up_level: case event_spawn_enemy_close:
-				this.light(this.map);
+			case event_start_game: case event_down_level: case event_up_level: case event_spawn_enemy_close:
+				this.light(this.map)
+				break;
+			case event_player_moved:
+				let self = this;
+				setTimeout(function() {
+					self.light(self.map);
+				}, 40);
 				break;
 			case event_up_level:
 				this.depth--;
@@ -51,12 +57,12 @@ class LightSystem extends System {
 		}
 	}
 
-	setLightLevel(object, level) {
-		if(object.light.level < level) {
-			object.light.level = level;
+	setLightLevel(object, range, x, y) {
+		if(x === undefined) {
+			object.light.level = range;
 		}
-		else if(object.light.level == level) {
-			object.light.level = level + 1;
+		else if(object.light.level < range - x - floor(y / x)) {
+			object.light.level = range - x - floor(y / x);
 		}
 	}
 
@@ -74,7 +80,7 @@ class LightSystem extends System {
 					squaresVisible = true;
 					let cur = VisionSystem.getTranslatedSquare(map, octant, x, y, sx, sy); 
 					if(cur === undefined) { break; }
-					this.setLightLevel(cur, range - x);
+					this.setLightLevel(cur, range, x, y);
 					if(cur.display.opaque) {
 						let firstBlocked = this.getFirstBlockedLight(map, octant, x, y, sx, sy, shadows, range);
 						let lastBlocked = this.getBlockedLight(map, octant, x, y, sx, sy, shadows, range);
@@ -104,7 +110,7 @@ class LightSystem extends System {
 		while(currentBlocked !== undefined && currentBlocked.display.opaque && VisionSystem.slope(x, y, CENTER_SQUARE) > 0) {
 			firstBlocked = {x:x, y:y};
 			if(!VisionSystem.inShadow(x, y, shadows)) {
-				this.setLightLevel(currentBlocked, range - x);
+				this.setLightLevel(currentBlocked, range, x, y);
 			}
 
 			y--;
@@ -121,7 +127,7 @@ class LightSystem extends System {
 		while(currentBlocked !== undefined && currentBlocked.display.opaque && VisionSystem.slope(x, y, BOTTOM_RIGHT) < 1) {
 			lastBlocked = {x:x, y:y};
 			if(!VisionSystem.inShadow(x, y, shadows)) {
-				this.setLightLevel(currentBlocked, range - x);
+				this.setLightLevel(currentBlocked, range, x, y);
 			}
 
 			y++;

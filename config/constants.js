@@ -20,19 +20,21 @@ const yycomp = [ 1, 0, 0, 1, -1, 0, 0, -1 ];
 
 
 // lights
-const light_range = 8, light_max = light_range, light_intensity = .07, light_red = 230, light_green = 150, light_blue = 0;
+const light_range = 8, light_max = light_range;
+const light_intensity = .08, light_red = 200, light_green = 150, light_blue = 0;
 const shadow_intensity = .08, shadow_red = 10, shadow_green = 5, shadow_blue = 25, shadow_max = .6;
-const light_fill_string = "rgba(" + light_red + "," + light_green + "," + light_blue + ",";
+const light_fill_string = "rgba(" + light_red + "," + light_green + "," + light_blue + "," + light_intensity + ")";
+
 const light_level_to_shadow = [];
-light_level_to_shadow[0] = "rgba(" + 10 + ", " + 0 + ", " + 35 + ", 0.40";
-light_level_to_shadow[1] = "rgba(" + 10 + ", " + 2 + ", " + 30 + ", 0.35";
-light_level_to_shadow[2] = "rgba(" + 10 + ", " + 4 + ", " + 25 + ", 0.30";
-light_level_to_shadow[3] = "rgba(" + 20 + ", " + 6 + ", " + 20 + ", 0.25";
-light_level_to_shadow[4] = "rgba(" + 30 + ", " + 8 + ", " + 15 + ", 0.20";
-light_level_to_shadow[5] = "rgba(" + 50 + ", " + 10 + ", " + 10 + ", 0.15";
-light_level_to_shadow[6] = "rgba(" + 100 + ", " + 30 + ", " + 5 + ", 0.10";
-light_level_to_shadow[7] = "rgba(" + 180 + ", " + 50 + ", " + 0 + ", 0.05";
-light_level_to_shadow[8] = "rgba(" + 255 + ", " + 70 + ", " + 0 + ", 0.05";
+light_level_to_shadow[0] = "rgba(" + 10 + ", " + 0 + ", " + 35 + ", 0.45";
+light_level_to_shadow[1] = "rgba(" + 10 + ", " + 2 + ", " + 30 + ", 0.4";
+light_level_to_shadow[2] = "rgba(" + 10 + ", " + 4 + ", " + 25 + ", 0.35";
+light_level_to_shadow[3] = "rgba(" + 20 + ", " + 6 + ", " + 20 + ", 0.3";
+light_level_to_shadow[4] = "rgba(" + 30 + ", " + 8 + ", " + 15 + ", 0.25";
+light_level_to_shadow[5] = "rgba(" + 50 + ", " + 10 + ", " + 10 + ", 0.2";
+light_level_to_shadow[6] = "rgba(" + 100 + ", " + 30 + ", " + 5 + ", 0.15";
+light_level_to_shadow[7] = "rgba(" + 180 + ", " + 50 + ", " + 0 + ", 0.1";
+light_level_to_shadow[8] = "rgba(" + 255 + ", " + 70 + ", " + 0 + ", 0.5";
 
 //square constants
 const FLOOR = 0, WALL = 1, DOOR = 2, STAIR_DOWN = 3, STAIR_UP = 4, LOOT = 5; 
