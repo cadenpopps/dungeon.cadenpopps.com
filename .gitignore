@@ -3,3 +3,4 @@
 .git/
 .aseprite
 .psd
+node_modules/
