@@ -40,14 +40,23 @@ class LightSystem extends System {
 	light(map) {
 		for(let r of map) {
 			for(let s of r) {
-				s.light.lightLevel = 0; 
+				s.light.level = 0; 
 			}
 		}
 		for(let l of this.emitters[this.depth]) {
-			map[l.position.x][l.position.y].light.lightLevel = l.lightEmitter.level;
+			this.setLightLevel(map[l.position.x][l.position.y], l.lightEmitter.level);
 			for(let octant = 0; octant < 8; octant++) {
 				this.lightTriangle(map, octant, l.position.x, l.position.y, l.lightEmitter.level);
 			}
+		}
+	}
+
+	setLightLevel(object, level) {
+		if(object.light.level < level) {
+			object.light.level = level;
+		}
+		else if(object.light.level == level) {
+			object.light.level = level + 1;
 		}
 	}
 
@@ -65,7 +74,7 @@ class LightSystem extends System {
 					squaresVisible = true;
 					let cur = VisionSystem.getTranslatedSquare(map, octant, x, y, sx, sy); 
 					if(cur === undefined) { break; }
-					cur.light.lightLevel = range - x;
+					this.setLightLevel(cur, range - x);
 					if(cur.display.opaque) {
 						let firstBlocked = this.getFirstBlockedLight(map, octant, x, y, sx, sy, shadows, range);
 						let lastBlocked = this.getBlockedLight(map, octant, x, y, sx, sy, shadows, range);
@@ -95,7 +104,7 @@ class LightSystem extends System {
 		while(currentBlocked !== undefined && currentBlocked.display.opaque && VisionSystem.slope(x, y, CENTER_SQUARE) > 0) {
 			firstBlocked = {x:x, y:y};
 			if(!VisionSystem.inShadow(x, y, shadows)) {
-				currentBlocked.light.lightLevel = range - x;
+				this.setLightLevel(currentBlocked, range - x);
 			}
 
 			y--;
@@ -112,7 +121,7 @@ class LightSystem extends System {
 		while(currentBlocked !== undefined && currentBlocked.display.opaque && VisionSystem.slope(x, y, BOTTOM_RIGHT) < 1) {
 			lastBlocked = {x:x, y:y};
 			if(!VisionSystem.inShadow(x, y, shadows)) {
-				currentBlocked.light.lightLevel = range - x;
+				this.setLightLevel(currentBlocked, range - x);
 			}
 
 			y++;

@@ -67,7 +67,7 @@ function DisplayComponent(texture, width, height, opaque){
 }
 
 function LightComponent(){
-	this.lightLevel = 0;
+	this.level = 0;
 }
 
 function LightEmitterComponent(emitterLevel){
@@ -105,11 +105,6 @@ function MapComponent(map){
 
 function DepthComponent(depth){
 	this.depth = depth;
-}
-
-function StairComponent(x, y){
-	this.x = x;
-	this.y = y;
 }
 
 function AIComponent(actions, minRange, maxRange){

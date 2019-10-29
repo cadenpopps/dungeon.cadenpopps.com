@@ -173,7 +173,7 @@ class DisplaySystem extends System {
 		let h = o.display.height * this.gridSize * this.camera.zoom;
 
 		rect(x, y, w, h);
-		canvas.fillStyle = light_level_to_shadow[o.light.lightLevel];
+		canvas.fillStyle = light_level_to_shadow[o.light.level];
 		// fill(shadow_red, shadow_green, shadow_blue, constrainHigh(shadow_intensity * (light_max - o.light.lightLevel), shadow_max));
 		// console.log(shadow_intensity * (light_max - o.light.lightLevel));
 		rect(x, y, w, h);
