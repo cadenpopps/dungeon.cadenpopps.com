@@ -13,7 +13,7 @@ class VisionSystem extends System {
 
 	handleEvent(engine, eventID, data) {
 		switch (eventID) {
-			case event_start_game: case event_player_moved: case event_down_level: case event_up_level: case event_entity_spawned:
+			case event_start_game: case event_player_moved: case event_down_level: case event_up_level: case event_spawn_enemy_close:
 				this.vision(this.map, this.player);
 				break;
 		}

@@ -7,7 +7,7 @@ class System {
 
 	addObject(object) {
 		if(this.componentRequirements.length == 0) return;
-		else if(Utility.checkComponents(object, this.componentRequirements)) {
+		else if(!this.objects.includes(object) && Utility.checkComponents(object, this.componentRequirements)) {
 			this.objects.push(object);
 		}
 	}
