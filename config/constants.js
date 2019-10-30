@@ -17,24 +17,37 @@ const xycomp = [ 0, 1, -1, 0, 0, -1, 1, 0 ];
 const yxcomp = [ 0, 1, 1, 0, 0, -1, -1, 0 ];
 const yycomp = [ 1, 0, 0, 1, -1, 0, 0, -1 ];
 
-
-
 // lights
-const light_range = 8, light_max = light_range;
-const light_intensity = .08, light_red = 200, light_green = 150, light_blue = 0;
-const shadow_intensity = .08, shadow_red = 10, shadow_green = 5, shadow_blue = 25, shadow_max = .6;
+const light_range = 10, light_max = light_range - 1;
+const light_intensity = .2, light_red = 255, light_green = 190, light_blue = 0;
+const shadow_intensity = .4, shadow_stop = 4, shadow_red = 10, shadow_green = 0, shadow_blue = 40, shadow_max = .6;
 const light_fill_string = "rgba(" + light_red + "," + light_green + "," + light_blue + "," + light_intensity + ")";
 
+const light_level_to_light = [];
 const light_level_to_shadow = [];
-light_level_to_shadow[0] = "rgba(" + 10 + ", " + 0 + ", " + 35 + ", 0.45";
-light_level_to_shadow[1] = "rgba(" + 10 + ", " + 2 + ", " + 30 + ", 0.4";
-light_level_to_shadow[2] = "rgba(" + 10 + ", " + 4 + ", " + 25 + ", 0.35";
-light_level_to_shadow[3] = "rgba(" + 20 + ", " + 6 + ", " + 20 + ", 0.3";
-light_level_to_shadow[4] = "rgba(" + 30 + ", " + 8 + ", " + 15 + ", 0.25";
-light_level_to_shadow[5] = "rgba(" + 50 + ", " + 10 + ", " + 10 + ", 0.2";
-light_level_to_shadow[6] = "rgba(" + 100 + ", " + 30 + ", " + 5 + ", 0.15";
-light_level_to_shadow[7] = "rgba(" + 180 + ", " + 50 + ", " + 0 + ", 0.1";
-light_level_to_shadow[8] = "rgba(" + 255 + ", " + 70 + ", " + 0 + ", 0.5";
+for(let i = 0; i < light_range; i++) {
+		light_level_to_light.unshift("rgba(" + 
+			floor(light_red - ((light_red / (light_range - 1)) * i)) + "," + 
+			floor(light_green - ((light_green / (light_range - 1)) * i)) + "," + 
+			floor(light_blue - ((light_blue / (light_range - 1)) * i)) + "," + 
+			(floor(100 * (light_intensity - ((light_intensity / (light_range - 1)) * i))) / 100) + ")");
+	if(i > shadow_stop) {
+		light_level_to_shadow.push("rgba(0,0,0,0)");
+	}
+	else {
+		light_level_to_shadow.push("rgba(" + 
+			floor(shadow_red - ((shadow_red / shadow_stop) * i)) + "," + 
+			floor(shadow_green - ((shadow_green / shadow_stop) * i)) + "," + 
+			floor(shadow_blue - ((shadow_blue / shadow_stop) * i)) + "," + 
+			(floor(100 * (shadow_intensity - ((shadow_intensity / shadow_stop) * i))) / 100) + ")");
+	}
+}
+
+light_level_to_light[light_level_to_light.length - 1] = light_level_to_light[light_level_to_light.length - 2];
+
+// console.log(light_level_to_light);
+// console.log(light_level_to_shadow);
+
 
 //square constants
 const FLOOR = 0, WALL = 1, DOOR = 2, STAIR_DOWN = 3, STAIR_UP = 4, LOOT = 5; 

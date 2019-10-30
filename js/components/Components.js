@@ -57,7 +57,7 @@ function MovementComponent(speed){
 	this.speed = speed;
 }
 
-function DisplayComponent(texture, width, height, opaque, offsetX, offsetY){
+function DisplayComponent(texture, width, height, opaque, offsetX = 0, offsetY = 0){
 	this.texture = texture;
 	this.width = width;
 	this.height = height;

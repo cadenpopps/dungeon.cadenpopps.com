@@ -8,7 +8,7 @@ function Player(x, y, config, playerClass, actions, animations) {
 	this.sprint = new SprintComponent(config.sprint_threshhold);
 
 	this.components.push(component_light_emitter);
-	this.lightEmitter = new LightEmitterComponent(7);
+	this.lightEmitter = new LightEmitterComponent(6);
 
 	// this.components.push(component_experience);
 	// this.level = new ExperienceComponent(0);

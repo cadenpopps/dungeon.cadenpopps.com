@@ -39,15 +39,17 @@ class DisplaySystem extends System {
 	run(engine) {
 		background(0);
 
-		let st = millis();
+		// let st = millis();
+
 		canvas.translate(this.centerX + this.camera.shakeOffsetX, this.centerY + this.camera.shakeOffsetY);
 		canvas.scale(this.camera.zoom, this.camera.zoom);
 		this.drawTextures(this.objects); 
 		this.drawLights(this.objects);
 		this.drawMobHealth(this.objects);
 		canvas.setTransform();
-		let et = millis() - st;
-		console.log("Time for draw loop: " + et);
+
+		// let et = millis() - st;
+		// console.log("Time for draw loop: " + et);
 
 		this.drawUI(this.player);
 
@@ -153,8 +155,8 @@ class DisplaySystem extends System {
 			let t = o.display.texture;
 			if(t == undefined) {
 				if(o instanceof Torch) {
-					fill(255, 230, 50, .2);
-					ellipse(x + (this.gridSize / 2), y + (this.gridSize / 2), w, h);
+					fill(255, 230, 140, .7);
+					ellipse(x, y, w, h);
 				}
 				else {
 					fill(255, 100, 100);
@@ -169,19 +171,13 @@ class DisplaySystem extends System {
 			else {
 				image(this.textures[t], x, y, w, h);
 			}
-			if(!o.display.visible && o.display.discovered > 0) {
-				fill(5, 10, 0, .2);
-				rect(x, y, w, h);
-			}
 		}
 	}
 
 	drawLights(objects) {
 		// let st = millis();
-		let lightFill = light_fill_string;
 		for(let o of objects) {
 			if(o.display.discovered && o.components.includes(component_light)) {
-				canvas.fillStyle = lightFill;
 				this.lightSquare(o);
 			}
 		}
@@ -190,11 +186,14 @@ class DisplaySystem extends System {
 
 	lightSquare(o) {
 		let bounds = this.getDrawBounds(o);
+		canvas.fillStyle = light_level_to_light[o.light.level];
 		rect(bounds.x, bounds.y, bounds.w, bounds.h);
-		// fill(shadow_red, shadow_green, shadow_blue, constrainHigh(shadow_intensity * (light_max - o.light.lightLevel), shadow_max));
-		// console.log(shadow_intensity * (light_max - o.light.lightLevel));
 		canvas.fillStyle = light_level_to_shadow[o.light.level];
 		rect(bounds.x, bounds.y, bounds.w, bounds.h);
+		if(!o.display.visible) {
+			fill(0, 0, 0, .15);
+			rect(bounds.x, bounds.y, bounds.w, bounds.h);
+		}
 	}
 
 	drawMobHealth(objects) {
@@ -221,8 +220,8 @@ class DisplaySystem extends System {
 
 	getDrawBounds(object) {
 		return {
-			"x": this.gridSize * (object.position.x - this.camera.x),
-			"y": this.gridSize * (object.position.y - this.camera.y),
+			"x": this.gridSize * (object.position.x + object.display.offsetX - this.camera.x),
+			"y": this.gridSize * (object.position.y + object.display.offsetY - this.camera.y),
 			"w": object.display.width * this.gridSize,
 			"h": object.display.height * this.gridSize
 		}

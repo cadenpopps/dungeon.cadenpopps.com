@@ -58,11 +58,12 @@ class LightSystem extends System {
 	}
 
 	setLightLevel(object, range, x, y) {
-		if(x === undefined) {
-			object.light.level = range;
+		let l = (x === undefined) ? range : range - x - floor(y / x);
+		if(object.light.level < l) {
+			object.light.level = l;
 		}
-		else if(object.light.level < range - x - floor(y / x)) {
-			object.light.level = range - x - floor(y / x);
+		else if(object.light.level == l && l < light_max) {
+			object.light.level++;
 		}
 	}
 
