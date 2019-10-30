@@ -18,6 +18,7 @@ class PoppsEngine {
 		this.systems.push(new InputSystem());
 		this.systems.push(new DisplaySystem(config.display, IMAGES));
 		this.systems.push(new VisionSystem(config.vision));
+		this.systems.push(new LightSystem(config.light));
 		this.systems.push(new ActionSystem());
 		this.systems.push(new MovementSystem());
 		this.systems.push(new LevelSystem(config.level, ROOM_POOL, STAIR_ROOM_POOL));

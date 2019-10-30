@@ -38,9 +38,21 @@ class DisplaySystem extends System {
 
 	run(engine) {
 		background(0);
+
+		// let st = millis();
+
+		canvas.translate(this.centerX + this.camera.shakeOffsetX, this.centerY + this.camera.shakeOffsetY);
+		canvas.scale(this.camera.zoom, this.camera.zoom);
 		this.drawTextures(this.objects); 
 		this.drawLights(this.objects);
-		this.drawHealth(this.objects);
+		this.drawMobHealth(this.objects);
+		canvas.setTransform();
+
+		// let et = millis() - st;
+		// console.log("Time for draw loop: " + et);
+
+		this.drawUI(this.player);
+
 		if(this.cameraMoving) {
 			if(this.player.animation.animation == animation_idle) { this.cameraMoving = false; }
 			this.centerCamera(this.camera, this.player.position, this.player.animation.offsetX, this.player.animation.offsetY); 
@@ -48,8 +60,9 @@ class DisplaySystem extends System {
 
 		// canvas.translate(width/2, height/2);
 		// canvas.rotate(45 * Math.PI / 180);
-		// fill(255, 0, 0);
-		// rect(0, 0, 200, 200);
+		// canvas.shadowBlur = 10;
+		// canvas.shadowColor = 'black';
+		// canvas.shadowOffsetX = 5;
 		// canvas.setTransform();
 	}
 
@@ -101,13 +114,18 @@ class DisplaySystem extends System {
 
 	drawTextures(objects) {
 		for(let o of objects) {
-			if(o.display.visible || o.display.discovered > 0) {
-				let x = this.centerX - (this.camera.zoom * (this.gridSize * (this.camera.x - o.position.x))) + this.camera.shakeOffsetX;
-				let y = this.centerY - (this.camera.zoom * (this.gridSize * (this.camera.y - o.position.y))) + this.camera.shakeOffsetY;
-				let w = o.display.width * this.gridSize * this.camera.zoom;
-				let h = o.display.height * this.gridSize * this.camera.zoom;
-				if(Utility.positionOnScreen(x, y, w, h)) {
-					this.drawTexture(o, x, y, w, h); 
+			if(o instanceof Square && (o.display.visible || o.display.discovered > 0)) {
+				let bounds = this.getDrawBounds(o);
+				if(this.onScreen(bounds, this.camera.zoom)) {
+					this.drawTexture(o, bounds.x, bounds.y, bounds.w, bounds.h); 
+				}
+			}
+		}
+		for(let o of objects) {
+			if(!(o instanceof Square) && (o.display.visible || o.display.discovered > 0)) {
+				let bounds = this.getDrawBounds(o);
+				if(this.onScreen(bounds, this.camera.zoom)) {
+					this.drawTexture(o, bounds.x, bounds.y, bounds.w, bounds.h); 
 				}
 			}
 		}
@@ -136,8 +154,14 @@ class DisplaySystem extends System {
 		else {
 			let t = o.display.texture;
 			if(t == undefined) {
-				fill(255, 100, 100);
-				rect(x, y, w, h);
+				if(o instanceof Torch) {
+					fill(255, 230, 140, .7);
+					ellipse(x, y, w, h);
+				}
+				else {
+					fill(255, 100, 100);
+					rect(x, y, w, h);
+				}
 			}
 			else if(t.length > 1) {
 				for(let i of t) {
@@ -147,19 +171,13 @@ class DisplaySystem extends System {
 			else {
 				image(this.textures[t], x, y, w, h);
 			}
-			if(!o.display.visible && o.display.discovered > 0) {
-				fill(5, 10, 0, .2);
-				rect(x, y, w, h);
-			}
 		}
 	}
 
 	drawLights(objects) {
 		// let st = millis();
-		let lightFill = light_fill_string + light_intensity + ")";
 		for(let o of objects) {
 			if(o.display.discovered && o.components.includes(component_light)) {
-				canvas.fillStyle = lightFill;
 				this.lightSquare(o);
 			}
 		}
@@ -167,32 +185,59 @@ class DisplaySystem extends System {
 	}
 
 	lightSquare(o) {
-		let x = this.centerX - (this.camera.zoom * (this.gridSize * (this.camera.x - o.position.x))) + this.camera.shakeOffsetX;
-		let y = this.centerY - (this.camera.zoom * (this.gridSize * (this.camera.y - o.position.y))) + this.camera.shakeOffsetY;
-		let w = o.display.width * this.gridSize * this.camera.zoom;
-		let h = o.display.height * this.gridSize * this.camera.zoom;
-
-		rect(x, y, w, h);
-		canvas.fillStyle = light_level_to_shadow[o.light.lightLevel];
-		// fill(shadow_red, shadow_green, shadow_blue, constrainHigh(shadow_intensity * (light_max - o.light.lightLevel), shadow_max));
-		// console.log(shadow_intensity * (light_max - o.light.lightLevel));
-		rect(x, y, w, h);
+		let bounds = this.getDrawBounds(o);
+		canvas.fillStyle = light_level_to_light[o.light.level];
+		rect(bounds.x, bounds.y, bounds.w, bounds.h);
+		canvas.fillStyle = light_level_to_shadow[o.light.level];
+		rect(bounds.x, bounds.y, bounds.w, bounds.h);
+		if(!o.display.visible) {
+			fill(0, 0, 0, .15);
+			rect(bounds.x, bounds.y, bounds.w, bounds.h);
+		}
 	}
 
-	drawHealth(objects) {
-		for(let o of objects) {
-			if(o.components.includes(component_health) && (o.display.visible || o.display.discovered > 0)) {
-				let x = this.centerX - (this.camera.zoom * (this.gridSize * (this.camera.x - o.position.x))) + this.camera.shakeOffsetX;
-				let y = this.centerY - (this.camera.zoom * (this.gridSize * (this.camera.y - o.position.y))) + this.camera.shakeOffsetY;
-				let healthBarWidth = o.display.width * this.gridSize * this.camera.zoom;
-				if(o instanceof Player) {
-					this.drawPlayerHealth(o);
-				}
-				else {
-					this.drawMobHealth(o, x, y, healthBarWidth);
-				}
+	drawMobHealth(objects) {
+		const HEALTH_BAR_OFFSET = 3;
+		const HEALTH_BAR_HEIGHT = 4;
+		for(let mob of objects) {
+			if(mob instanceof Mob && mob.components.includes(component_health) && (mob.display.visible || mob.display.discovered > 0)) {
+				let bounds = this.getDrawBounds(mob);
+				let x = bounds.x;
+				let y = bounds.y;
+				// let x = (this.gridSize * (this.camera.x - mob.position.x)) + this.camera.shakeOffsetX;
+				// let y = (this.gridSize * (this.camera.y - mob.position.y)) + this.camera.shakeOffsetY;
+				let xoff = this.gridSize * mob.animation.offsetX;
+				let yoff = this.gridSize * mob.animation.offsetY;
+				let healthBarWidth = mob.display.width * this.gridSize - (this.gridSize / 4);
+				fill(40,0,0);
+				rect(xoff + x + (this.gridSize / 8), yoff + y - HEALTH_BAR_OFFSET, healthBarWidth, HEALTH_BAR_HEIGHT);
+				healthBarWidth = healthBarWidth * Utility.getHealthPercent(mob);
+				fill(50, 220, 120);
+				rect(xoff + x + (this.gridSize / 8), yoff + y - HEALTH_BAR_OFFSET, healthBarWidth, HEALTH_BAR_HEIGHT);
 			}
 		}
+	}
+
+	getDrawBounds(object) {
+		return {
+			"x": this.gridSize * (object.position.x + object.display.offsetX - this.camera.x),
+			"y": this.gridSize * (object.position.y + object.display.offsetY - this.camera.y),
+			"w": object.display.width * this.gridSize,
+			"h": object.display.height * this.gridSize
+		}
+	}
+
+	onScreen(bounds, scale) {
+		const border = max(bounds.w, bounds.h) + 10;
+		const t = -(height / scale / 2) - border;
+		const r = (width / scale / 2) + border;
+		const b = (height / scale / 2) + border;
+		const l = -(width / scale / 2) - border;
+		return bounds.y > t && bounds.x + bounds.w < r && bounds.y + bounds.h < b && bounds.x > l;
+	}
+
+	drawUI(player) {
+		this.drawPlayerHealth(player);
 	}
 
 	drawPlayerHealth(player) {
@@ -213,19 +258,6 @@ class DisplaySystem extends System {
 				x = 0;
 			}
 		}
-	}
-
-	drawMobHealth(mob, x, y, healthBarWidth) {
-		const HEALTH_BAR_OFFSET = 3;
-		const HEALTH_BAR_HEIGHT = 4;
-		const xoff = this.gridSize * mob.animation.offsetX;
-		const yoff = this.gridSize * mob.animation.offsetY;
-		healthBarWidth = healthBarWidth - (this.gridSize / 4);
-		fill(40,0,0);
-		rect(xoff + x + (this.gridSize / 8), yoff + y - HEALTH_BAR_OFFSET, healthBarWidth, HEALTH_BAR_HEIGHT);
-		healthBarWidth = healthBarWidth * Utility.getHealthPercent(mob);
-		fill(50, 220, 120);
-		rect(xoff + x + (this.gridSize / 8), yoff + y - HEALTH_BAR_OFFSET, healthBarWidth, HEALTH_BAR_HEIGHT);
 	}
 
 	centerCamera(camera, position, offsetX = 0, offsetY = 0) {
@@ -296,6 +328,7 @@ class DisplaySystem extends System {
 	}
 
 	resize() {
+		console.log("RESIZE");
 		resizeCanvas(window.innerWidth, window.innerHeight);
 		this.centerX = floor(width / 2);
 		this.centerY = floor(height / 2);

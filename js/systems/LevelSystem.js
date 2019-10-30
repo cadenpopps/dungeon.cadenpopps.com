@@ -44,6 +44,8 @@ class LevelSystem extends System {
 	newLevel(engine, depth) {
 		let level = generateLevel(this.config, depth, this.roomPool, this.stairRoomPool);
 		this.levels.push(level);
+		let t = new Torch(level.stairUp.x - 1, level.stairUp.y - 5, direction_down, 7)
+		engine.addObject(t);
 		return level; 
 	}
 

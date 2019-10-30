@@ -57,17 +57,23 @@ function MovementComponent(speed){
 	this.speed = speed;
 }
 
-function DisplayComponent(texture, width, height, opaque){
+function DisplayComponent(texture, width, height, opaque, offsetX = 0, offsetY = 0){
 	this.texture = texture;
 	this.width = width;
 	this.height = height;
 	this.visible = false;
 	this.discovered = 0;
 	this.opaque = opaque;
+	this.offsetX = offsetX;
+	this.offsetY = offsetY;
 }
 
 function LightComponent(){
-	this.lightLevel = 0;
+	this.level = 0;
+}
+
+function LightEmitterComponent(emitterLevel){
+	this.level = emitterLevel;
 }
 
 function AnimationComponent(animations){
@@ -101,11 +107,6 @@ function MapComponent(map){
 
 function DepthComponent(depth){
 	this.depth = depth;
-}
-
-function StairComponent(x, y){
-	this.x = x;
-	this.y = y;
 }
 
 function AIComponent(actions, minRange, maxRange){

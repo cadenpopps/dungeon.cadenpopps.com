@@ -24,7 +24,9 @@
 	},
 	"vision": {
 		"PLAYER_VISION_RANGE": 18,
-		"DISCOVERED_MAX": 500,
+		"DISCOVERED_MAX": 500
+	},
+	"light": {
 		"LIGHT_RANGE": 10
 	},
 	"animation": {
