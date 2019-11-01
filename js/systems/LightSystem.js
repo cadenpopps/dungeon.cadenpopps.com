@@ -14,30 +14,30 @@ class LightSystem extends System {
 
 	handleEvent(engine, eventID, data) {
 		switch (eventID) {
-			case event_start_game: case event_down_level: case event_up_level: case event_spawn_enemy_close:
-				this.light(this.map)
+			case event_spawn_enemy_close:
+				this.light(this.map);
 				break;
 			case event_player_moved:
-				let self = this;
 				setTimeout(function() {
-					self.light(self.map);
-				}, 40);
+					this.light(this.map);
+				}.bind(this), 50);
 				break;
 			case event_up_level:
 				this.depth--;
 				break;
 			case event_down_level:
-				this.depth++
+				this.depth++;
 				break;
-			case event_new_level:
+			case event_begin_level:
 				this.emitters.push([]);
+				this.light(this.map);
 				break;
 		}
 	}
 
 	addObject(object) {
 		if(object instanceof Player) { this.player = object; }
-		else if(object instanceof Level) { this.map = object.map.map }
+		else if(object instanceof Level) { this.map = object.map.map; }
 		if(object.components.includes(component_light_emitter)) {
 			this.emitters[this.depth].push(object);
 		}
@@ -46,7 +46,7 @@ class LightSystem extends System {
 	light(map) {
 		for(let r of map) {
 			for(let s of r) {
-				s.light.level = 0; 
+				s.light.level = 0;
 			}
 		}
 		for(let l of this.emitters[this.depth]) {
@@ -58,12 +58,9 @@ class LightSystem extends System {
 	}
 
 	setLightLevel(object, range, x, y) {
-		let l = (x === undefined) ? range : range - x - floor(y / x);
+		let l = (x === undefined) ? range : range - x - floor(y * .4);
 		if(object.light.level < l) {
 			object.light.level = l;
-		}
-		else if(object.light.level == l && l < light_max) {
-			object.light.level++;
 		}
 	}
 
@@ -79,7 +76,7 @@ class LightSystem extends System {
 			while(curslope <= 1) {
 				if(!VisionSystem.inShadow(x, y, shadows)) {
 					squaresVisible = true;
-					let cur = VisionSystem.getTranslatedSquare(map, octant, x, y, sx, sy); 
+					let cur = VisionSystem.getTranslatedSquare(map, octant, x, y, sx, sy);
 					if(cur === undefined) { break; }
 					this.setLightLevel(cur, range, x, y);
 					if(cur.display.opaque) {
@@ -90,14 +87,14 @@ class LightSystem extends System {
 						shadows.push([shadowStart, shadowEnd]);
 					}
 					else{
-						let above = VisionSystem.getTranslatedSquare(map, octant, x, y + 1, sx, sy); 
-						if(above !== undefined ) { 
+						let above = VisionSystem.getTranslatedSquare(map, octant, x, y + 1, sx, sy);
+						if(above !== undefined ) {
 							// above.display.discovered = this.config.DISCOVERED_MAX;
 						}
 					}
 				}
 				y++;
-				curslope = VisionSystem.slope(x, y, CENTER_SQUARE); 
+				curslope = VisionSystem.slope(x, y, CENTER_SQUARE);
 			}
 			x++;
 		}
@@ -106,7 +103,7 @@ class LightSystem extends System {
 	getFirstBlockedLight(map, octant, x, y, sx, sy, shadows, range) {
 		let firstBlocked = {x:x, y:y};
 
-		let currentBlocked = VisionSystem.getTranslatedSquare(map, octant, x, y, sx, sy); 
+		let currentBlocked = VisionSystem.getTranslatedSquare(map, octant, x, y, sx, sy);
 
 		while(currentBlocked !== undefined && currentBlocked.display.opaque && VisionSystem.slope(x, y, CENTER_SQUARE) > 0) {
 			firstBlocked = {x:x, y:y};
@@ -123,7 +120,7 @@ class LightSystem extends System {
 	getBlockedLight(map, octant, x, y, sx, sy, shadows, range) {
 		let lastBlocked = {x:x, y:y};
 
-		let currentBlocked = VisionSystem.getTranslatedSquare(map, octant, x, y, sx, sy); 
+		let currentBlocked = VisionSystem.getTranslatedSquare(map, octant, x, y, sx, sy);
 
 		while(currentBlocked !== undefined && currentBlocked.display.opaque && VisionSystem.slope(x, y, BOTTOM_RIGHT) < 1) {
 			lastBlocked = {x:x, y:y};

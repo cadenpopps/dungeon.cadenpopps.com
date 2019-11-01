@@ -22,6 +22,5 @@ class System {
 		this.objects = [];
 	}
 
-	handleEvent(engine, eventID, data) {}
-
+	handleEvent(engine, eventID, data) { }
 }

@@ -16,7 +16,7 @@ class CombatSystem extends System {
 					this.determineAttackDirection(entity, this.objects);
 					this.meleeAttack(engine, entity, this.objects);
 					break;
-				case action_melee_attack_up: case action_melee_attack_right: case action_melee_attack_down: case action_melee_attack_left: 
+				case action_melee_attack_up: case action_melee_attack_right: case action_melee_attack_down: case action_melee_attack_left:
 					this.meleeAttack(engine, entity, this.objects);
 					break;
 				case action_spin_attack:
@@ -43,9 +43,7 @@ class CombatSystem extends System {
 		}
 	}
 
-	handleEvent(engine, eventID, data) {
-		switch(eventID) { }
-	}
+	handleEvent(engine, eventID, data) { }
 
 	addObject(object) {
 		if(object instanceof Player) { this.player = object; }
@@ -99,8 +97,8 @@ class CombatSystem extends System {
 					if(entity instanceof Player) {
 						engine.sendEvent(event_player_melee_attack);
 					}
-					engine.sendEvent(event_entity_take_damage, { "object": o, "healthLost": healthLost });
-					engine.sendEvent(event_successful_action, { "action": entity.actions.currentAction, "entity": entity });
+					engine.sendEvent(event_entity_take_damage, { 'object': o, 'healthLost': healthLost });
+					engine.sendEvent(event_successful_action, { 'action': entity.actions.currentAction, 'entity': entity });
 					this.beginCombat(engine);
 					return;
 				}
@@ -118,12 +116,12 @@ class CombatSystem extends System {
 		if(targets.length > 0) {
 			for(let o of targets) {
 				let healthLost = max(0, entity.combat.meleeAttackPower - o.combat.meleeDefensePower);
-				engine.sendEvent(event_entity_take_damage, { "object": o, "healthLost": healthLost });
+				engine.sendEvent(event_entity_take_damage, { 'object': o, 'healthLost': healthLost });
 			}
 			if(entity instanceof Player) {
 				engine.sendEvent(event_player_spin_attack);
 			}
-			engine.sendEvent(event_successful_action, { "action": entity.actions.currentAction, "entity": entity });
+			engine.sendEvent(event_successful_action, { 'action': entity.actions.currentAction, 'entity': entity });
 			this.beginCombat(engine);
 		}
 	}

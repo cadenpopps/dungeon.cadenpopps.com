@@ -12,7 +12,7 @@ class VisionSystem extends System {
 
 	handleEvent(engine, eventID, data) {
 		switch (eventID) {
-			case event_start_game: case event_player_moved: case event_down_level: case event_up_level: case event_spawn_enemy_close:
+			case event_player_moved: case event_begin_level: case event_spawn_enemy_close:
 				this.vision(this.map, this.player);
 				break;
 		}
@@ -20,7 +20,7 @@ class VisionSystem extends System {
 
 	addObject(object) {
 		if(object instanceof Player) { this.player = object; }
-		else if(object instanceof Level) { this.map = object.map.map }
+		else if(object instanceof Level) { this.map = object.map.map; }
 		else if(!(object instanceof Square)) {
 			super.addObject(object);
 		}
@@ -30,17 +30,16 @@ class VisionSystem extends System {
 		for(let r of map) {
 			for(let s of r) {
 				s.display.visible = false;
-				if(s.display.discovered > 0) {s.display.discovered--};
 			}
 		}
 		player.display.visible = true;
 		map[player.position.x][player.position.y].display.visible = true;
-		map[player.position.x][player.position.y].display.discovered = this.config.DISCOVERED_MAX;
+		map[player.position.x][player.position.y].display.discovered = true;
 		for(let octant = 0; octant < 8; octant++) {
 			this.playerSightTriangle(map, octant, player.position.x, player.position.y, this.config.PLAYER_VISION_RANGE);
 		}
 		for(let e of this.objects) {
-			if(map[e.position.x][e.position.y].display.visible) { 
+			if(map[e.position.x][e.position.y].display.visible) {
 				e.display.visible = true;
 				e.display.discovered = true;
 			}
@@ -62,10 +61,10 @@ class VisionSystem extends System {
 			while(curslope <= 1) {
 				if(!VisionSystem.inShadow(x, y, shadows)) {
 					squaresVisible = true;
-					let cur = VisionSystem.getTranslatedSquare(map, octant, x, y, sx, sy); 
+					let cur = VisionSystem.getTranslatedSquare(map, octant, x, y, sx, sy);
 					if(cur === undefined) { break; }
 					cur.display.visible = true;
-					cur.display.discovered = this.config.DISCOVERED_MAX;
+					cur.display.discovered = true;
 					if(cur.display.opaque) {
 						let firstBlocked = this.getFirstBlocked(map, octant, x, y, sx, sy, shadows);
 						let lastBlocked = this.getBlocked(map, octant, x, y, sx, sy, shadows);
@@ -74,12 +73,12 @@ class VisionSystem extends System {
 						shadows.push([shadowStart, shadowEnd]);
 					}
 					else{
-						let above = VisionSystem.getTranslatedSquare(map, octant, x, y + 1, sx, sy); 
-						if(above !== undefined ) { above.display.discovered = this.config.DISCOVERED_MAX; }
+						let above = VisionSystem.getTranslatedSquare(map, octant, x, y + 1, sx, sy);
+						if(above !== undefined ) { above.display.discovered = true; }
 					}
 				}
 				y++;
-				curslope = VisionSystem.slope(x, y, CENTER_SQUARE); 
+				curslope = VisionSystem.slope(x, y, CENTER_SQUARE);
 			}
 			x++;
 		}
@@ -88,13 +87,13 @@ class VisionSystem extends System {
 	getFirstBlocked(map, octant, x, y, sx, sy, shadows) {
 		let firstBlocked = {x:x, y:y};
 
-		let currentBlocked = VisionSystem.getTranslatedSquare(map, octant, x, y, sx, sy); 
+		let currentBlocked = VisionSystem.getTranslatedSquare(map, octant, x, y, sx, sy);
 
 		while(currentBlocked !== undefined && currentBlocked.display.opaque && VisionSystem.slope(x, y, CENTER_SQUARE) > 0) {
 			firstBlocked = {x:x, y:y};
 			if(!VisionSystem.inShadow(x, y, shadows)) {
 				currentBlocked.display.visible = true;
-				currentBlocked.display.discovered = this.config.DISCOVERED_MAX;
+				currentBlocked.display.discovered = true;
 			}
 
 			y--;
@@ -106,13 +105,13 @@ class VisionSystem extends System {
 	getBlocked(map, octant, x, y, sx, sy, shadows) {
 		let lastBlocked = {x:x, y:y};
 
-		let currentBlocked = VisionSystem.getTranslatedSquare(map, octant, x, y, sx, sy); 
+		let currentBlocked = VisionSystem.getTranslatedSquare(map, octant, x, y, sx, sy);
 
 		while(currentBlocked !== undefined && currentBlocked.display.opaque && VisionSystem.slope(x, y, BOTTOM_RIGHT) < 1) {
 			lastBlocked = {x:x, y:y};
 			if(!VisionSystem.inShadow(x, y, shadows)) {
 				currentBlocked.display.visible = true;
-				currentBlocked.display.discovered = this.config.DISCOVERED_MAX;
+				currentBlocked.display.discovered = true;
 			}
 
 			y++;
@@ -151,7 +150,7 @@ class VisionSystem extends System {
 	}
 
 	static startSquare(x, slopeStart) {
-		if(slopeStart == 0) return 0; 
+		if(slopeStart == 0) return 0;
 		return ceil(x * slopeStart);
 	}
 

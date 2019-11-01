@@ -9,45 +9,51 @@ class EntitySystem extends System {
 		this.entities = [];
 		this.levels = [];
 		this.depth = 0;
-		this.player;
+		this.player = this.generatePlayer();
 	}
 
 	run(engine) {
-		for(let e of this.objects) {
-			if(e instanceof Mob) {
-				// let action = getMobBehavior(e, player);
-				// e.actions.nextAction = action;
-			}
-		}
+		// for(let e of this.objects) {
+		// 	if(e instanceof Mob) {
+		// 	}
+		// }
 	}
 
 	handleEvent(engine, eventID, data) {
 		switch(eventID) {
-			case event_first_level_initiated:
-				this.generatePlayer(engine, this.levels[0].stairUp);
-				this.generateEnemies(engine, this.depth);
+			case event_new_game:
+				engine.addObject(this.player);
+				engine.sendEvent(event_player_generated);
 				break;
-			case event_new_level:
-				this.generateEnemies(engine, this.depth + 1);
-				break;
-			case event_up_level: 
-				this.depth--;	
-				this.updateEntities(engine);
+			case event_up_level:
+				this.depth--;
 				break;
 			case event_down_level:
 				this.depth++;
+				break;
+			case event_level_loaded:
+				if(this.player.depth.depth < this.depth) {
+					this.fixPlayerPosition(this.player, this.levels[this.depth].stairUp, this.depth);
+				}
+				else if(this.player.depth.depth > this.depth) {
+					this.fixPlayerPosition(this.player, this.levels[this.depth].stairDown, this.depth);
+				}
+				if(this.entities.length == this.depth) {
+					this.generateEnemies(engine, this.entities, this.levels, this.entityData, this.entities.length);
+				}
 				this.updateEntities(engine);
 				break;
 			case event_spawn_enemy_close:
-				let config = this.entityData[random(Object.keys(this.entityData))];
-				this.generateEnemy(engine, this.player.position.x - randomInt(-4, 4), this.player.position.y - randomInt(2, 4), this.depth, config);
+				this.generateEnemy(engine, this.player.position.x - randomInt(-4, 4), this.player.position.y - randomInt(2, 4), this.depth, this.entityData[random(Object.keys(this.entityData))]);
 				break;
 		}
 	}
 
 	addObject(object) {
-		if(object instanceof Level) { this.levels.push(object); }
-		else{ super.addObject(object); }
+		if(object instanceof Level) { this.levels[object.depth.depth] = object; }
+		else {
+			super.addObject(object);
+		}
 	}
 
 	removeObject(object) {
@@ -59,24 +65,22 @@ class EntitySystem extends System {
 		super.removeObject(object);
 	}
 
-	generatePlayer(engine, position) {
+	generatePlayer() {
 		let animations = Utility.convertAnimationsFromConfig(this.playerData.animations);
 		let actions = Utility.convertActionsFromConfig(this.playerData.actions);
 		let config = this.playerData;
 		let playerClass = this.playerData.classes.warrior;
-		this.player = new Player(position.x, position.y, config, playerClass, actions, animations);
-		engine.sendEvent(event_player_generated);
-		engine.addObject(this.player);
+		return new Player(0, 0, config, playerClass, actions, animations);
 	}
 
-	generateEnemies(engine, depth) {
-		let config = this.entityData[random(Object.keys(this.entityData))];
-
-		this.entities[depth] = [];
+	generateEnemies(engine, entities, levels, entityData, depth) {
+		let config, entityPosition;
 		let numEntities = depth + 7;
+		entities.push([]);
 
 		while(numEntities > 0) {
-			let entityPosition = this.findSafeSpawnLocation(config.size, this.entities[depth], this.levels[depth].map.map);			
+			config = entityData[random(Object.keys(entityData))];
+			entityPosition = this.findSafeSpawnLocation(config.size, entities[depth], levels[depth].map.map);
 			if(entityPosition != undefined) {
 				this.generateEnemy(engine, entityPosition.x, entityPosition.y, depth, config);
 			}
@@ -130,10 +134,17 @@ class EntitySystem extends System {
 		return true;
 	}
 
+	fixPlayerPosition(player, stair, depth) {
+		player.position.x = stair.x;
+		player.position.y = stair.y;
+		player.depth.depth = depth;
+	}
+
 	updateEntities(engine) {
 		for(let e of this.entities[this.depth]) {
 			engine.addObject(e);
 		}
 		engine.addObject(this.player);
+		engine.sendEvent(event_entities_loaded, 0, 1);
 	}
 }

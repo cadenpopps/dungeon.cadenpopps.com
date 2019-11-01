@@ -130,16 +130,12 @@ class Utility {
 		switch(direction) {
 			case direction_up:
 				return new PositionComponent(0, -1);
-				break;
 			case direction_right:
 				return new PositionComponent(1, 0);
-				break;
 			case direction_down:
 				return new PositionComponent(0, 1);
-				break;
 			case direction_left:
 				return new PositionComponent(-1, 0);
-				break;
 		}
 	}
 
@@ -160,16 +156,12 @@ class Utility {
 		switch(action){
 			case action_move_up:
 				return action_sprint_up;
-				break;
 			case action_move_right:
 				return action_sprint_right;
-				break;
 			case action_move_down:
 				return action_sprint_down;
-				break;
 			case action_move_left:
 				return action_sprint_left;
-				break;
 		}
 	}
 
@@ -177,23 +169,19 @@ class Utility {
 		switch(action){
 			case action_sprint_up:
 				return action_move_up;
-				break;
 			case action_sprint_right:
 				return action_move_right;
-				break;
 			case action_sprint_down:
 				return action_move_down;
-				break;
 			case action_sprint_left:
 				return action_move_left;
-				break;
 		}
 	}
 
 	static convertAnimationsFromConfig(animations){
 		let animationsArray = [];
 		for(let a in animations){
-			animationsArray[animation_strings_to_constants[a]] = animations[a];	
+			animationsArray[animation_strings_to_constants[a]] = animations[a];
 		}
 		return animationsArray;
 	}
@@ -201,7 +189,7 @@ class Utility {
 	static convertActionsFromConfig(actions){
 		let actionsArray = [];
 		for(let i = 0; i < actions.length; i++){
-			actionsArray[i] = action_strings_to_constants[actions[i]];	
+			actionsArray[i] = action_strings_to_constants[actions[i]];
 		}
 		return actionsArray;
 	}
@@ -246,7 +234,7 @@ function findPath(board, start, end) {
 		}
 		if(current == end) {
 			return makePath(board, cameFrom, current);
-		};
+		}
 
 		searching.splice(searching.indexOf(current), 1);
 		searched.push(current);
@@ -290,9 +278,6 @@ function makePath(board, cameFrom, last) {
 	return path;
 }
 
-
-const PATHFINDING = -1;
-
 function getNeighbors(board, square) {
 	neighbors = [];
 	if (square.position.x > 0 && walkable(entity_mob, board[square.position.x - 1][square.position.y])) {
@@ -314,37 +299,31 @@ function getNeighbors(board, square) {
 	return neighbors;
 }
 
-function walkable(e, i){
+// function direction(start, target){
+// 	if(abs(start[0] - target[0]) >= abs(start[1] - target[1])){
+// 		if(start[0] < target[0]) return RIGHT;
+// 		else if(start[0] > target[0]) return LEFT;
+// 	}
+// 	else{
+// 		if(start[1] < target[1]) return DOWN;
+// 		else if(start[1] > target[1]) return UP;
+// 	}
+// }
 
-	return true;
-
-}
-
-function direction(start, target){
-	if(abs(start[0] - target[0]) >= abs(start[1] - target[1])){
-		if(start[0] < target[0]) return RIGHT;
-		else if(start[0] > target[0]) return LEFT;
-	}
-	else{
-		if(start[1] < target[1]) return DOWN;
-		else if(start[1] > target[1]) return UP;
-	}
-}
-
-function dirToSquare(start, target){
-	if(start.position.x > target.position.x){
-		return LEFT;
-	}
-	else if(start.position.y > target.position.y){
-		return UP;
-	}
-	else if (start.position.x < target.position.x){
-		return RIGHT;
-	}
-	else if(start.position.y < target.position.y){
-		return DOWN;
-	}
-	else{
-		throw new Error("Cannot determine direction from square" + start + " to " + target);
-	}
-}
+// function dirToSquare(start, target){
+// 	if(start.position.x > target.position.x){
+// 		return LEFT;
+// 	}
+// 	else if(start.position.y > target.position.y){
+// 		return UP;
+// 	}
+// 	else if (start.position.x < target.position.x){
+// 		return RIGHT;
+// 	}
+// 	else if(start.position.y < target.position.y){
+// 		return DOWN;
+// 	}
+// 	else{
+// 		throw new Error('Cannot determine direction from square' + start + ' to ' + target);
+// 	}
+// }

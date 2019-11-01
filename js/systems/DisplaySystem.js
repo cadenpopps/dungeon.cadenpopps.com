@@ -8,6 +8,7 @@ class DisplaySystem extends System {
 		this.ui = images.UI;
 
 		this.camera = {
+			display: true,
 			x: 0,
 			y: 0,
 			shakeOffsetX : 0,
@@ -15,7 +16,7 @@ class DisplaySystem extends System {
 			combat: false,
 			sprinting: false,
 			zoom: this.config.CAMERA_DEFAULT_ZOOM
-		}
+		};
 
 		this.player;
 
@@ -32,8 +33,6 @@ class DisplaySystem extends System {
 
 		this.gridSize = this.config.GRID_SIZE;
 		this.halfGridSize = this.gridSize / 2;
-
-		window.addEventListener('resize', this.resize);
 	}
 
 	run(engine) {
@@ -41,22 +40,23 @@ class DisplaySystem extends System {
 
 		// let st = millis();
 
-		canvas.translate(this.centerX + this.camera.shakeOffsetX, this.centerY + this.camera.shakeOffsetY);
-		canvas.scale(this.camera.zoom, this.camera.zoom);
-		this.drawTextures(this.objects); 
-		this.drawLights(this.objects);
-		this.drawMobHealth(this.objects);
-		canvas.setTransform();
+		if(this.camera.display) {
+			if(this.cameraMoving) {
+				if(this.player.animation.animation == animation_idle) { this.cameraMoving = false; }
+				this.centerCamera(this.camera, this.player.position, this.player.animation.offsetX, this.player.animation.offsetY);
+			}
+			canvas.translate(this.centerX + this.camera.shakeOffsetX, this.centerY + this.camera.shakeOffsetY);
+			canvas.scale(this.camera.zoom, this.camera.zoom);
+			this.drawTextures(this.objects);
+			this.drawLights(this.objects);
+			this.drawMobHealth(this.objects);
+			canvas.setTransform();
+		}
 
 		// let et = millis() - st;
 		// console.log("Time for draw loop: " + et);
 
 		this.drawUI(this.player);
-
-		if(this.cameraMoving) {
-			if(this.player.animation.animation == animation_idle) { this.cameraMoving = false; }
-			this.centerCamera(this.camera, this.player.position, this.player.animation.offsetX, this.player.animation.offsetY); 
-		}
 
 		// canvas.translate(width/2, height/2);
 		// canvas.rotate(45 * Math.PI / 180);
@@ -68,11 +68,12 @@ class DisplaySystem extends System {
 
 	handleEvent(engine, eventID, data) {
 		switch(eventID) {
-			case event_start_game:
-				this.centerCamera(this.camera, this.player.position);
-				break;
-			case event_up_level: case event_down_level: case event_player_moved:
+			case event_begin_level: case event_player_moved:
 				this.cameraMoving = true;
+				this.camera.display = true;
+				break;
+			case event_up_level: case event_down_level:
+				this.camera.display = false;
 				break;
 			case event_window_resized:
 				this.resize();
@@ -114,18 +115,18 @@ class DisplaySystem extends System {
 
 	drawTextures(objects) {
 		for(let o of objects) {
-			if(o instanceof Square && (o.display.visible || o.display.discovered > 0)) {
+			if(o instanceof Square && (o.display.visible || o.display.discovered)) {
 				let bounds = this.getDrawBounds(o);
 				if(this.onScreen(bounds, this.camera.zoom)) {
-					this.drawTexture(o, bounds.x, bounds.y, bounds.w, bounds.h); 
+					this.drawTexture(o, bounds.x, bounds.y, bounds.w, bounds.h);
 				}
 			}
 		}
 		for(let o of objects) {
-			if(!(o instanceof Square) && (o.display.visible || o.display.discovered > 0)) {
+			if(!(o instanceof Square) && o.display.visible) {
 				let bounds = this.getDrawBounds(o);
 				if(this.onScreen(bounds, this.camera.zoom)) {
-					this.drawTexture(o, bounds.x, bounds.y, bounds.w, bounds.h); 
+					this.drawTexture(o, bounds.x, bounds.y, bounds.w, bounds.h);
 				}
 			}
 		}
@@ -186,12 +187,26 @@ class DisplaySystem extends System {
 
 	lightSquare(o) {
 		let bounds = this.getDrawBounds(o);
-		canvas.fillStyle = light_level_to_light[o.light.level];
-		rect(bounds.x, bounds.y, bounds.w, bounds.h);
-		canvas.fillStyle = light_level_to_shadow[o.light.level];
-		rect(bounds.x, bounds.y, bounds.w, bounds.h);
-		if(!o.display.visible) {
-			fill(0, 0, 0, .15);
+		if(o.display.visible) {
+			if(o instanceof WallSquare) {
+				canvas.fillStyle = light_level_to_light[2];
+				rect(bounds.x, bounds.y, bounds.w, bounds.h);
+				canvas.fillStyle = light_level_to_shadow[2];
+				rect(bounds.x, bounds.y, bounds.w, bounds.h);
+			}
+			else {
+				canvas.fillStyle = light_level_to_light[o.light.level];
+				rect(bounds.x, bounds.y, bounds.w, bounds.h);
+				canvas.fillStyle = light_level_to_shadow[o.light.level];
+				rect(bounds.x, bounds.y, bounds.w, bounds.h);
+			}
+		}
+		else {
+			canvas.fillStyle = light_level_to_light[0];
+			rect(bounds.x, bounds.y, bounds.w, bounds.h);
+			canvas.fillStyle = light_level_to_shadow[0];
+			rect(bounds.x, bounds.y, bounds.w, bounds.h);
+			fill(0, 0, 0, .25);
 			rect(bounds.x, bounds.y, bounds.w, bounds.h);
 		}
 	}
@@ -200,7 +215,7 @@ class DisplaySystem extends System {
 		const HEALTH_BAR_OFFSET = 3;
 		const HEALTH_BAR_HEIGHT = 4;
 		for(let mob of objects) {
-			if(mob instanceof Mob && mob.components.includes(component_health) && (mob.display.visible || mob.display.discovered > 0)) {
+			if(mob instanceof Mob && mob.components.includes(component_health) && mob.display.visible) {
 				let bounds = this.getDrawBounds(mob);
 				let x = bounds.x;
 				let y = bounds.y;
@@ -220,11 +235,11 @@ class DisplaySystem extends System {
 
 	getDrawBounds(object) {
 		return {
-			"x": this.gridSize * (object.position.x + object.display.offsetX - this.camera.x),
-			"y": this.gridSize * (object.position.y + object.display.offsetY - this.camera.y),
-			"w": object.display.width * this.gridSize,
-			"h": object.display.height * this.gridSize
-		}
+			'x': this.gridSize * (object.position.x + object.display.offsetX - this.camera.x),
+			'y': this.gridSize * (object.position.y + object.display.offsetY - this.camera.y),
+			'w': object.display.width * this.gridSize,
+			'h': object.display.height * this.gridSize
+		};
 	}
 
 	onScreen(bounds, scale) {
@@ -246,10 +261,10 @@ class DisplaySystem extends System {
 		const HEART_OFFSET = 20;
 		let x = 0, y = 0;
 		for(let i = 1; i <= this.player.health.maxHealth; i++) {
-			if(i <= player.health.health) { 
+			if(i <= player.health.health) {
 				image(this.ui[ui_heart], (x * HEART_SIZE) + (x * HEART_SPACING) + HEART_OFFSET, (y * HEART_SIZE) + HEART_OFFSET, HEART_SIZE, HEART_SIZE);
 			}
-			else { 
+			else {
 				image(this.ui[ui_empty_heart], (x * HEART_SIZE) + (x * HEART_SPACING) + HEART_OFFSET, (y * HEART_SIZE) + HEART_OFFSET, HEART_SIZE, HEART_SIZE);
 			}
 			x++;
@@ -296,13 +311,13 @@ class DisplaySystem extends System {
 		}
 	}
 
-	recursiveZoom(camera, speed, zoom, dif) { 
+	recursiveZoom(camera, speed, zoom, dif) {
 		let self = this;
-		if(dif <= 0 && zoom - camera.zoom >= 0) { 
+		if(dif <= 0 && zoom - camera.zoom >= 0) {
 			camera.zoom = zoom;
 			return;
 		}
-		else if(dif > 0 && zoom - camera.zoom <= 0) { 
+		else if(dif > 0 && zoom - camera.zoom <= 0) {
 			camera.zoom = zoom;
 			return;
 		}
@@ -328,9 +343,12 @@ class DisplaySystem extends System {
 	}
 
 	resize() {
-		console.log("RESIZE");
-		resizeCanvas(window.innerWidth, window.innerHeight);
-		this.centerX = floor(width / 2);
-		this.centerY = floor(height / 2);
+		let w = document.documentElement.clientWidth;
+		let h = document.documentElement.clientHeight;
+		resizeCanvas(w, h);
+		width = w;
+		height = h;
+		this.centerX = floor(w / 2);
+		this.centerY = floor(h / 2);
 	}
 }

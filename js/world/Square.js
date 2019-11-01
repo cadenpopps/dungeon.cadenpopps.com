@@ -26,7 +26,7 @@ DoorSquare.prototype.open = function () {
 	this.physical.solid = false;
 	this.display.texture = [texture_floor, texture_door_open];
 	this.display.opaque = false;
-}
+};
 
 LootSquare.prototype = Object.create(Square.prototype);
 function LootSquare(x, y) {
@@ -36,7 +36,7 @@ function LootSquare(x, y) {
 LootSquare.prototype.open = function () {
 	this.opened = true;
 	this.display.texture = [texture_floor, texture_loot_open];
-}
+};
 
 StairUpSquare.prototype = Object.create(Square.prototype);
 function StairUpSquare(x, y) {

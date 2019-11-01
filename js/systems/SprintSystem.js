@@ -5,32 +5,32 @@ class SprintSystem extends System {
 
 		this.sprintTimer = [];
 		this.sprintTimerMax = 20;
-		this.combat = false;
+		// this.combat = false;
 	}
 
 	run(engine) {
 		for(let entity of this.objects) {
-			if(!this.combat) {
+			// if(!this.combat) {
 				this.decrementSprintCounter(entity);
 				this.determineSprintState(engine, entity);
-			}
+			// }
 		}
 	}
 
 	handleEvent(engine, eventID, data) {
 		switch(eventID) {
 			case event_successful_action:
-				if(!this.combat && data.entity.components.includes(component_sprint)) {
+				if(data.entity.components.includes(component_sprint)) {
 					this.sprintHandler(engine, data.entity, data.action);
 				}
 				break;
-			case event_begin_combat:
-				this.combat = true;
-				this.stopAllSprinting(engine);
-				break;
-			case event_end_combat:
-				this.combat = false;
-				break;
+			// case event_begin_combat:
+			// 	this.combat = true;
+			// 	this.stopAllSprinting(engine);
+			// 	break;
+			// case event_end_combat:
+			// 	this.combat = false;
+			// 	break;
 		}
 	}
 

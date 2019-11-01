@@ -25,6 +25,9 @@ class LevelSystem extends System {
 			case event_new_game:
 				this.handleNewGame(engine);
 				break;
+			case event_entities_loaded:
+				engine.sendEvent(event_begin_level, 0, 1);
+				break;
 		}
 	}
 
@@ -38,37 +41,34 @@ class LevelSystem extends System {
 	handleNewGame(engine) {
 		this.newLevel(engine, 0);
 		this.updateLevel(engine);
-		engine.sendEvent(event_first_level_initiated);
 	}
 
 	newLevel(engine, depth) {
 		let level = generateLevel(this.config, depth, this.roomPool, this.stairRoomPool);
 		this.levels.push(level);
-		let t = new Torch(level.stairUp.x - 1, level.stairUp.y - 5, direction_down, 7)
-		engine.addObject(t);
-		return level; 
+		engine.sendEvent(event_new_level);
+		// let t = new Torch(level.stairUp.x - 1, level.stairUp.y - 5, direction_down, 7)
+		// engine.addObject(t);
+		return level;
 	}
 
 	handleDownLevel(engine) {
 		engine.clearObjects();
 		this.depth++;
 		if(this.depth == this.levels.length) {
-			this.newLevel(engine, this.depth); 
+			this.newLevel(engine, this.depth);
 			this.updateLevel(engine);
-			engine.sendEvent(event_new_level);
 		}
 		else{
 			this.updateLevel(engine);
 		}
-		this.fixPlayerPosition(this.levels[this.depth].stairUp);
 	}
 
 	handleUpLevel(engine) {
 		engine.clearObjects();
 		if(this.depth > 0) {
-			this.depth--; 
+			this.depth--;
 			this.updateLevel(engine);
-			this.fixPlayerPosition(this.levels[this.depth].stairDown);
 		}
 	}
 
@@ -80,10 +80,10 @@ class LevelSystem extends System {
 				engine.addObject(level.map.map[i][j]);
 			}
 		}
+		for(let t of level.torches) {
+			engine.addObject(t);
+		}
+		engine.sendEvent(event_level_loaded, 0, 1);
 	}
 
-	fixPlayerPosition(stair) {
-		this.player.position.x = stair.x;
-		this.player.position.y = stair.y;
-	}
 }

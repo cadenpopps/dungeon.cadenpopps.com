@@ -13,8 +13,11 @@ class PoppsEngine {
 		const PLAYER_DATA = data.player_data;
 		const ENTITY_DATA = data.entity_data;
 
+		this.running = false;
+
+		this.events = [];
+
 		this.systems = [];
-		let tickInterval = undefined;
 		this.systems.push(new InputSystem());
 		this.systems.push(new DisplaySystem(config.display, IMAGES));
 		this.systems.push(new VisionSystem(config.vision));
@@ -29,27 +32,65 @@ class PoppsEngine {
 		this.systems.push(new AISystem());
 		this.systems.push(new SprintSystem());
 
-		// $(window).resize(this.sendEvent.bind(this, event_window_resized));
-
-		this.sendEvent(event_new_game);
-		this.sendEvent(event_start_game);
-
-		window.requestAnimationFrame(this.tick.bind(this));
-	};
+		this.start();
+	}
 
 	tick() {
-		for(let s of this.systems) {
-			s.run(this);
+		if(this.running) {
+			for(let s of this.systems) {
+				s.run(this);
+			}
 		}
+		this.handleEvents(this.events);
 		window.requestAnimationFrame(this.tick.bind(this));
 	}
 
-	sendEvent(e, data) {
+	start() {
+		window.addEventListener('resize', this.sendEvent(event_window_resized));
+		this.sendEvent(event_new_game);
+		this.sendEvent(event_begin_game, 0, 20);
+		window.requestAnimationFrame(this.tick.bind(this));
+	}
+
+	sendEvent(e, data = undefined, ticks = 0) {
 		if(e == event_game_over) {
-			clearInterval(tickInterval);
+			alert('Game Over');
+		}
+		else if(ticks == 0) {
+			this.runEvent([e, data]);
+		}
+		else {
+			this.events.push([e, data, ticks]);
+		}
+	}
+
+	handleEvents(events) {
+		for(let i = events.length - 1; i >= 0; i--) {
+			if(events[i][2] > 0) {
+				events[i][2]--;
+			}
+			else {
+				this.runEvent(events[i]);
+				events.splice(i, 1);
+			}
+		}
+	}
+
+	runEvent(e) {
+		if(DEBUG_MODE) {
+			this.printEvent(e);
 		}
 		for(let s of this.systems) {
-			s.handleEvent(this, e, data);
+			s.handleEvent(this, e[0], e[1]);
+		}
+		this.handleEvent(e[0], e[1]);
+	}
+
+	handleEvent(e, data) {
+		switch(e) {
+			case event_begin_game:
+				this.running = true;
+				break;
 		}
 	}
 
@@ -68,6 +109,14 @@ class PoppsEngine {
 	clearObjects() {
 		for(let s of this.systems) {
 			s.clearObjects();
+		}
+	}
+
+	printEvent(e) {
+		for(key in window) {
+			if(e[0] == window[key] && key.includes('event_')) {
+				console.log(key);
+			}
 		}
 	}
 }

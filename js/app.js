@@ -13,17 +13,17 @@ function load() {
 	// let music = loadMusic();
 	// let sounds = loadSounds();
 	let data = {
-		"config": config,
-		"room_pool": room_pool[0],
-		"stair_room_pool": room_pool[1],
-		"images": images,
-		"player_data": player_data,
-		"entity_data": entity_data
-		// "music": music,
-		// "sounds": sounds
-	}
+		'config': config,
+		'room_pool': room_pool[0],
+		'stair_room_pool': room_pool[1],
+		'images': images,
+		'player_data': player_data,
+		'entity_data': entity_data
+		// 'music': music,
+		// 'sounds': sounds
+	};
 
-	let e = new PoppsEngine(data);
+	new PoppsEngine(data);
 
 	// document.addEventListener('contextmenu', function () { });
 }
@@ -82,7 +82,8 @@ function loadMusic(){
 function loadSounds(){
 }
 
-function keyDown() { } 
+function keyDown() { }
+
 function keyUp() { }
 
 // $(document).ready(function () { init(); });

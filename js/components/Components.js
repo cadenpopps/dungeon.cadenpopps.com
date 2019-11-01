@@ -62,7 +62,8 @@ function DisplayComponent(texture, width, height, opaque, offsetX = 0, offsetY =
 	this.width = width;
 	this.height = height;
 	this.visible = false;
-	this.discovered = 0;
+	this.discovered = false;
+	this.discoveredCounter = 0;
 	this.opaque = opaque;
 	this.offsetX = offsetX;
 	this.offsetY = offsetY;

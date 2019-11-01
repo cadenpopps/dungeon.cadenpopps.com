@@ -1,9 +1,10 @@
-function generateLevel(CONFIG, depth, ROOM_POOL, STAIR_ROOM_POOL){
+function generateLevel(CONFIG, depth, ROOM_POOL, STAIR_ROOM_POOL) {
 
 	let startTime = millis();
 
-	let level; 
+	let level;
 	let rooms = [];
+	let torches = [];
 
 	let stairUp = {x:0, y:0, sector:0};
 	let stairDown = {x:0, y:0, sector:0};
@@ -15,41 +16,42 @@ function generateLevel(CONFIG, depth, ROOM_POOL, STAIR_ROOM_POOL){
 	placeRoomsOnLevel(level, rooms);
 	markNodeSquares(level);
 	connectRooms(level, rooms, CONFIG.DUNGEON_SIZE);
+	populateRooms(level, rooms, torches);
 	finalizeLevel(level, stairUp, stairDown);
 
 	// console.log("Milliseconds: " + (millis() - startTime));
 
-	return new Level(level, stairUp, stairDown, depth);
+	return new Level(level, stairUp, stairDown, depth, torches);
 }
 
-function initLevel(size){
-	let level = new Array(size);	
-	for(let i = 0; i < size; i++){
+function initLevel(size) {
+	let level = new Array(size);
+	for(let i = 0; i < size; i++) {
 		level[i] = new Array(size);
-		for(let j = 0; j < size; j++){
-			level[i][j] = WALL;
+		for(let j = 0; j < size; j++) {
+			level[i][j] = square_wall;
 		}
 	}
 	return level;
 }
 
-function generateStairUpRoom(stairUp, size, STAIR_ROOM_POOL){
+function generateStairUpRoom(stairUp, size, STAIR_ROOM_POOL) {
 	stairUp.sector = randomInt(8);
-	sectorToCoordinates(stairUp, size);	
+	sectorToCoordinates(stairUp, size);
 	return new Room(random(STAIR_ROOM_POOL), stairUp.x, stairUp.y);
 }
 
-function generateStairDownRoom(stairUp, stairDown, size, STAIR_ROOM_POOL){
+function generateStairDownRoom(stairUp, stairDown, size, STAIR_ROOM_POOL) {
 	stairDown.sector = (stairUp.sector + 4) % 8;
-	sectorToCoordinates(stairDown, size);	
+	sectorToCoordinates(stairDown, size);
 	return new Room(random(STAIR_ROOM_POOL), stairDown.x, stairDown.y);
 }
 
-function sectorToCoordinates(stair, size){
+function sectorToCoordinates(stair, size) {
 	// 0 1 2
 	// 7 X 3  (sector + 4) % 8 = opposite sector
 	// 6 5 4
-	switch(stair.sector){
+	switch(stair.sector) {
 		case 0:
 			stair.x = floor(size/4);
 			stair.y = floor(size/4);
@@ -85,66 +87,66 @@ function sectorToCoordinates(stair, size){
 	}
 }
 
-function generateOtherRooms(level, rooms, size, ROOM_TRIES, ROOM_POOL){
-	for(let i = 0; i < ROOM_TRIES; i++){
+function generateOtherRooms(level, rooms, size, ROOM_TRIES, ROOM_POOL) {
+	for(let i = 0; i < ROOM_TRIES; i++) {
 		tryRoom(level, rooms, size, ROOM_POOL);
 	}
 }
 
-function tryRoom(level, rooms, size, ROOM_POOL){
+function tryRoom(level, rooms, size, ROOM_POOL) {
 	let newRoom = new Room(random(ROOM_POOL), randomInt(size), randomInt(size));
 	if(isValidRoom(rooms, newRoom, size)) rooms.push(newRoom);
 }
 
-function isValidRoom(rooms, newRoom, size){
+function isValidRoom(rooms, newRoom, size) {
 	if(newRoom.left < 0 || newRoom.top < 0 || newRoom.right > size || newRoom.bottom > size) return false;
-	for(let r of rooms){
+	for(let r of rooms) {
 		if(roomsCollide(r, newRoom)) return false;
 	}
 	return true;
 }
 
-function roomsCollide(r1, r2){
+function roomsCollide(r1, r2) {
 	return !(r1.left > r2.right || r1.top > r2.bottom || r1.right < r2.left || r1.bottom < r2.top);
 }
 
-function placeRoomsOnLevel(level, rooms){
-	for(let r of rooms){
-		for(let i = 0; i < r.width; i++){
-			for(let j = 0; j < r.height; j++){
+function placeRoomsOnLevel(level, rooms) {
+	for(let r of rooms) {
+		for(let i = 0; i < r.width; i++) {
+			for(let j = 0; j < r.height; j++) {
 				level[i + r.left][j + r.top] = r.squares[i][j];
 			}
 		}
 	}
 }
 
-function markNodeSquares(level){
-	for(let i = 1; i < level.length - 1; i+=2){
-		for(let j = 1; j < level.length - 1; j+=2){
-			if(level[i][j] == WALL) level[i][j] = new Node(i, j, false);
+function markNodeSquares(level) {
+	for(let i = 1; i < level.length - 1; i+=2) {
+		for(let j = 1; j < level.length - 1; j+=2) {
+			if(level[i][j] == square_wall) level[i][j] = new Node(i, j, false);
 		}
 	}
 }
 
-function connectRooms(level, rooms, size){
+function connectRooms(level, rooms, size) {
 
 	let connected = [rooms[0]];
 	let connectedDoors = rooms[0].doors;
-	while(connected.length < rooms.length){
+	while(connected.length < rooms.length) {
 		let closestRoom;
 		let closestDistance;
-		for(let r of rooms){
-			if(!connected.includes(r)){
+		for(let r of rooms) {
+			if(!connected.includes(r)) {
 				closestRoom = r;
 				closestDistance = 10000;
 			}
 		}
-		for(let c of connected){
-			for(let r of rooms){
+		for(let c of connected) {
+			for(let r of rooms) {
 				if(connected.includes(r)) continue;
 				else{
 					let currentDistance = roomDistance(c, r);
-					if(currentDistance < closestDistance){
+					if(currentDistance < closestDistance) {
 						closestRoom = r;
 						closestDistance = currentDistance;
 					}
@@ -155,11 +157,11 @@ function connectRooms(level, rooms, size){
 	}
 }
 
-function roomDistance(r1, r2){
-	return abs(r1.x - r2.x) + abs(r1.y - r2.y);	
+function roomDistance(r1, r2) {
+	return abs(r1.x - r2.x) + abs(r1.y - r2.y);
 }
 
-function connectRoom(level, connected, room, connectedDoors){
+function connectRoom(level, connected, room, connectedDoors) {
 
 	let roomDoors = room.doors;
 	let closestDoors = [connectedDoors[0], roomDoors[0]];
@@ -167,9 +169,9 @@ function connectRoom(level, connected, room, connectedDoors){
 	let adjacent = false;
 	let success = false;
 
-	for(let rd of roomDoors){
+	for(let rd of roomDoors) {
 		//if door touches a connected room, use that door
-		if(includesDoor(connectedDoors, rd)){
+		if(includesDoor(connectedDoors, rd)) {
 			closestDoors[0] = rd;
 			adjacent = true;
 			success = true;
@@ -177,9 +179,9 @@ function connectRoom(level, connected, room, connectedDoors){
 		}
 		//otherwise find the closest point of connection
 		else{
-			for(let cd of connectedDoors){
+			for(let cd of connectedDoors) {
 				let currentDistance = doorDistance(rd, cd);
-				if(currentDistance < closestDistance){
+				if(currentDistance < closestDistance) {
 					closestDoors = [cd, rd];
 					closestDistance = currentDistance;
 				}
@@ -187,25 +189,25 @@ function connectRoom(level, connected, room, connectedDoors){
 		}
 	}
 
-	if(!adjacent){
+	if(!adjacent) {
 		success = makePathBetweenDoors(level, closestDoors[0], closestDoors[1], connectedDoors);
 	}
 
 	if(success) {
-		if(adjacent){
-			level[closestDoors[0][0]][closestDoors[0][1]] = DOOR;
+		if(adjacent) {
+			level[closestDoors[0][0]][closestDoors[0][1]] = square_door;
 		}
 		else{
-			level[closestDoors[0][0]][closestDoors[0][1]] = DOOR;
-			level[closestDoors[1][0]][closestDoors[1][1]] = DOOR;
+			level[closestDoors[0][0]][closestDoors[0][1]] = square_door;
+			level[closestDoors[1][0]][closestDoors[1][1]] = square_door;
 		}
 
-		for(let rd of roomDoors){
+		for(let rd of roomDoors) {
 			if(!includesDoor(connectedDoors, rd)) {
 				connectedDoors.push(rd);
 			}
 		}
-		connected.push(room);	
+		connected.push(room);
 	}
 	else{
 		connectedDoors.splice(connectedDoors.indexOf(closestDoors[0]), 1);
@@ -214,18 +216,18 @@ function connectRoom(level, connected, room, connectedDoors){
 	}
 }
 
-function includesDoor(doorArray, door){
-	for(let d of doorArray){
+function includesDoor(doorArray, door) {
+	for(let d of doorArray) {
 		if(door[0] == d[0] && door[1] == d[1]) return true;
 	}
 	return false;
 }
 
-function doorDistance(d1, d2){
+function doorDistance(d1, d2) {
 	return ((d1[0] - d2[0]) * (d1[0] - d2[0])) + ((d1[1] - d2[1]) * (d1[1] - d2[1]));
 }
 
-function makePathBetweenDoors(level, door1, door2, connectedDoors){
+function makePathBetweenDoors(level, door1, door2, connectedDoors) {
 	let searched = [];
 	let searching = [];
 	let distFromStart = {};
@@ -257,7 +259,7 @@ function makePathBetweenDoors(level, door1, door2, connectedDoors){
 		if (current == end) {
 			drawNodePath(level, current, connectedDoors);
 			return true;
-		};
+		}
 
 		searching.splice(searching.indexOf(current), 1);
 		searched.push(current);
@@ -308,55 +310,91 @@ function getSurroundingNodes(level, node) {
 }
 
 function drawNodePath(level, node) {
-	// level[node.x][node.y] = FLOOR;
+	// level[node.x][node.y] = square_floor;
 	level[node.x][node.y].connected = true;
-	while(node.cameFrom != undefined){
+	while(node.cameFrom != undefined) {
 		fillBetweenNodes(level, node, node.cameFrom);
 		node = node.cameFrom;
-		// level[node.x][node.y] = FLOOR;
+		// level[node.x][node.y] = square_floor;
 		level[node.x][node.y].connected = true;
 	}
 }
 
-function fillBetweenNodes(level, node1, node2){
-	level[node1.x + ((node2.x - node1.x) / 2)][node1.y + ((node2.y - node1.y) / 2)] = FLOOR;
+function fillBetweenNodes(level, node1, node2) {
+	level[node1.x + ((node2.x - node1.x) / 2)][node1.y + ((node2.y - node1.y) / 2)] = square_floor;
 }
 
-function finalizeLevel(level, stairUp, stairDown){
-	level[stairUp.x][stairUp.y] = STAIR_UP;
-	level[stairDown.x][stairDown.y] = STAIR_DOWN;
+function populateRooms(level, rooms, torches) {
+	for(let r of rooms) {
+		placeTorchInRoom(r, torches);
+	}
+}
 
-	for(let i = 0; i < level.length; i++){
-		for(let j = 0; j < level.length; j++){
-			if(level[i][j] instanceof Node){
-				if(level[i][j].connected){
-					level[i][j] = FLOOR;
+function placeTorchInRoom(room, torches) {
+	if(room.width > 5 && room.height > 5 && !oneIn(5)) {
+		let dir = randomInt(4);
+		let x = 0, y = 0;
+		switch(dir) {
+			case direction_up:
+				x = room.left + randomInt(2, room.width - 2);
+				y = room.top;
+				dir = direction_down;
+				break;
+			case direction_right:
+				x = room.right - 1;
+				y = room.top + randomInt(2, room.height - 2);
+				dir = direction_left;
+				break;
+			case direction_down:
+				x = room.left + randomInt(2, room.width - 2);
+				y = room.bottom - 1;
+				dir = direction_up;
+				break;
+			case direction_left:
+				x = room.left;
+				y = room.top + randomInt(2, room.height - 2);
+				dir = direction_right;
+				break;
+		}
+		torches.push(new Torch(x, y, dir));
+	}
+}
+
+function finalizeLevel(level, stairUp, stairDown) {
+	level[stairUp.x][stairUp.y] = square_stair_up;
+	level[stairDown.x][stairDown.y] = square_stair_down;
+
+	for(let i = 0; i < level.length; i++) {
+		for(let j = 0; j < level.length; j++) {
+			if(level[i][j] instanceof Node) {
+				if(level[i][j].connected) {
+					level[i][j] = square_floor;
 				}
 				else{
-					level[i][j] = WALL;
+					level[i][j] = square_wall;
 				}
 			}
-			switch(level[i][j]){
-				case FLOOR:
+			switch(level[i][j]) {
+				case square_floor:
 					level[i][j] = new FloorSquare(i, j);
 					break;
-				case WALL:
+				case square_wall:
 					level[i][j] = new WallSquare(i, j);
 					break;
-				case DOOR:
+				case square_door:
 					level[i][j] = new DoorSquare(i, j);
 					break;
-				case STAIR_UP:
+				case square_stair_up:
 					level[i][j] = new StairUpSquare(i, j);
 					break;
-				case STAIR_DOWN:
+				case square_stair_down:
 					level[i][j] = new StairDownSquare(i, j);
 					break;
-				case LOOT:
+				case square_loot:
 					level[i][j] = new LootSquare(i, j);
 					break;
 				default:
-					console.log("Not recognized squaretype: " + level[i][j]);
+					console.log('Not recognized squaretype: ' + level[i][j]);
 					level[i][j] = new Square(i, j, level[i][j]);
 					break;
 			}
@@ -365,7 +403,7 @@ function finalizeLevel(level, stairUp, stairDown){
 }
 
 
-function Node(x, y, connected){
+function Node(x, y, connected) {
 	this.x = x;
 	this.y = y;
 	this.connected = connected;

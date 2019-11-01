@@ -54,7 +54,7 @@ class MovementSystem extends System {
 				targetX--;
 				break;
 			default:
-				console.log("No direction");
+				console.log('No direction');
 				break;
 		}
 
@@ -83,7 +83,7 @@ class MovementSystem extends System {
 				this.playerWalkEvents(engine, entity, map[targetX][targetY]);
 			}
 
-			engine.sendEvent(event_successful_action, { "action": entity.actions.currentAction, "entity": entity });
+			engine.sendEvent(event_successful_action, { 'action': entity.actions.currentAction, 'entity': entity });
 
 		}
 		else{
@@ -95,14 +95,16 @@ class MovementSystem extends System {
 
 	playerWalkEvents(engine, player, square) {
 		if(square instanceof StairUpSquare && this.depth > 0) {
-			engine.sendEvent(event_up_level); 
+			engine.sendEvent(event_up_level);
 		}
 		else if(square instanceof StairDownSquare) {
-			engine.sendEvent(event_down_level); 
+			engine.sendEvent(event_down_level);
 		}
-		else if(square instanceof DoorSquare) {
-			square.open();
+		else {
+			if(square instanceof DoorSquare) {
+				square.open();
+			}
+			engine.sendEvent(event_player_moved);
 		}
-		engine.sendEvent(event_player_moved);
 	}
 }

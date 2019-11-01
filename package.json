@@ -5,26 +5,25 @@
 	"main": "app.js",
 	"dependencies": {
 		"babel-preset-env": "^1.7.0",
+		"eslint": "^6.6.0",
 		"source-map-loader": "^0.2.4"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.6.4",
 		"@babel/preset-env": "^7.6.3",
-		"babel-cli": "^6.26.0",
-		"watch": "^1.0.2"
+		"babel-cli": "^6.26.0"
 	},
 	"scripts": {
 		"build": "babel config/constants.js js/systems/System.js js/ --out-file bundle.min.js --presets env --no-comments --minified --compact --source-maps",
-		"watch": "watch 'npm run build:js' ./js/ ./config/"
+		"lint": "eslint"
 	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/cadenpopps/dungeon.cadenpopps.com.git"
 	},
 	"author": "Caden Popps",
-	"license": "ISC",
+	"homepage": "https://github.com/cadenpopps/dungeon.cadenpopps.com#readme",
 	"bugs": {
 		"url": "https://github.com/cadenpopps/dungeon.cadenpopps.com/issues"
-	},
-	"homepage": "https://github.com/cadenpopps/dungeon.cadenpopps.com#readme"
+	}
 }

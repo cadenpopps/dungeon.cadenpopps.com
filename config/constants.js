@@ -1,6 +1,7 @@
-"use strict";
+'use strict';
 
 //constants
+const DEBUG_MODE = false;
 const UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
 const OPEN = 0, CLOSED = 1;
 const entity_player = 0, entity_mob = 1;
@@ -19,42 +20,45 @@ const yycomp = [ 1, 0, 0, 1, -1, 0, 0, -1 ];
 
 // lights
 const light_range = 10, light_max = light_range - 1;
-const light_intensity = .2, light_red = 255, light_green = 190, light_blue = 0;
-const shadow_intensity = .4, shadow_stop = 4, shadow_red = 10, shadow_green = 0, shadow_blue = 40, shadow_max = .6;
-const light_fill_string = "rgba(" + light_red + "," + light_green + "," + light_blue + "," + light_intensity + ")";
+const light_intensity = .25, light_red = 255, light_green = 190, light_blue = 0;
+const shadow_intensity = .40, shadow_stop = 4, shadow_red = 10, shadow_green = 0, shadow_blue = 40;
+const light_fill_string = 'rgba(' + light_red + ',' + light_green + ',' + light_blue + ',' + light_intensity + ')';
 
 const light_level_to_light = [];
 const light_level_to_shadow = [];
 for(let i = 0; i < light_range; i++) {
-		light_level_to_light.unshift("rgba(" + 
-			floor(light_red - ((light_red / (light_range - 1)) * i)) + "," + 
-			floor(light_green - ((light_green / (light_range - 1)) * i)) + "," + 
-			floor(light_blue - ((light_blue / (light_range - 1)) * i)) + "," + 
-			(floor(100 * (light_intensity - ((light_intensity / (light_range - 1)) * i))) / 100) + ")");
+	light_level_to_light.unshift('rgba(' +
+		floor(light_red - ((light_red / (light_range - 1)) * i)) + ',' +
+		floor(light_green - ((light_green / (light_range - 1)) * i)) + ',' +
+		floor(light_blue - ((light_blue / (light_range - 1)) * i)) + ',' +
+		(floor(100 * (light_intensity - ((light_intensity / (light_range - 1)) * i))) / 100) + ')');
 	if(i > shadow_stop) {
-		light_level_to_shadow.push("rgba(0,0,0,0)");
+		light_level_to_shadow.push('rgba(0,0,0,0)');
 	}
 	else {
-		light_level_to_shadow.push("rgba(" + 
-			floor(shadow_red - ((shadow_red / shadow_stop) * i)) + "," + 
-			floor(shadow_green - ((shadow_green / shadow_stop) * i)) + "," + 
-			floor(shadow_blue - ((shadow_blue / shadow_stop) * i)) + "," + 
-			(floor(100 * (shadow_intensity - ((shadow_intensity / shadow_stop) * i))) / 100) + ")");
+		light_level_to_shadow.push('rgba(' +
+			floor(shadow_red - ((shadow_red / shadow_stop) * i)) + ',' +
+			floor(shadow_green - ((shadow_green / shadow_stop) * i)) + ',' +
+			floor(shadow_blue - ((shadow_blue / shadow_stop) * i)) + ',' +
+			(floor(100 * (shadow_intensity - ((shadow_intensity / shadow_stop) * i))) / 100) + ')');
 	}
 }
 
 light_level_to_light[light_level_to_light.length - 1] = light_level_to_light[light_level_to_light.length - 2];
 
+const light_level_player = 4, light_level_torch = light_max - 2;
+
 // console.log(light_level_to_light);
 // console.log(light_level_to_shadow);
 
+//direction
+const direction_up = 0, direction_right = 1, direction_down = 2, direction_left = 3;
 
 //square constants
-const FLOOR = 0, WALL = 1, DOOR = 2, STAIR_DOWN = 3, STAIR_UP = 4, LOOT = 5; 
+const square_floor = 0, square_wall = 1, square_door = 2, square_stair_down = 3, square_stair_up = 4, square_loot = 5;
 
 //image constants
-const 
-texture_floor = 0,
+const texture_floor = 0,
 	texture_wall = 1,
 	texture_door_closed = 2,
 	texture_door_open = 3,
@@ -66,8 +70,7 @@ texture_floor = 0,
 const ui_heart = 0, ui_empty_heart = 1;
 
 //components
-const 
-component_position = 0,
+const component_position = 0,
 	component_movement = 1,
 	component_display = 2,
 	component_animation = 3,
@@ -90,15 +93,17 @@ component_position = 0,
 	component_collision = 20;
 
 //events
-const 
-event_new_game = 0,
-	event_start_game = 1,
-	event_first_level_initiated = 2,
+const event_new_game = 0,
+	event_begin_game = 1,
+	event_window_resized = 2,
+
 	event_player_generated = 3,
 	event_down_level = 4,
 	event_up_level = 5,
 	event_new_level = 6,
-	event_window_resized = 7,
+	event_level_loaded = 7,
+	event_entities_loaded = 8,
+	event_begin_level = 9,
 
 	event_player_moved = 10,
 	event_entity_moved = 11,
@@ -124,12 +129,8 @@ event_new_game = 0,
 	event_game_over = 1000
 ;
 
-//direction
-const direction_up = 0, direction_right = 1, direction_down = 2, direction_left = 3;
-
 //animations
-const 
-animation_idle = 0,
+const animation_idle = 0,
 	animation_move_up = 1,
 	animation_move_right = 2,
 	animation_move_down = 3,
@@ -145,8 +146,7 @@ animation_idle = 0,
 	animation_spin_attack = 13;
 
 //Actions
-const 
-action_none = -1,
+const action_none = -1,
 	action_move = 0,
 	action_move_up = 1,
 	action_move_right = 2,
@@ -165,45 +165,44 @@ action_none = -1,
 	action_spin_attack = 25;
 
 const key_to_action = {
-	"w": action_move_up,
-	"a": action_move_left,
-	"s": action_move_down,
-	"d": action_move_right,
-	"e": action_melee_attack,
-	"q": action_spin_attack
+	'w': action_move_up,
+	'a': action_move_left,
+	's': action_move_down,
+	'd': action_move_right,
+	'e': action_melee_attack,
+	'q': action_spin_attack
 };
 
 const animation_strings_to_constants = [];
-animation_strings_to_constants["animation_idle"] = animation_idle;
-animation_strings_to_constants["animation_move_up"] = animation_move_up;
-animation_strings_to_constants["animation_move_right"] = animation_move_right;
-animation_strings_to_constants["animation_move_down"] = animation_move_down;
-animation_strings_to_constants["animation_move_left"] = animation_move_left;
-animation_strings_to_constants["animation_sprint_up"] = animation_sprint_up;
-animation_strings_to_constants["animation_sprint_right"] = animation_sprint_right;
-animation_strings_to_constants["animation_sprint_down"] = animation_sprint_down;
-animation_strings_to_constants["animation_sprint_left"] = animation_sprint_left;
-animation_strings_to_constants["animation_melee_attack_up"] = animation_melee_attack_up;
-animation_strings_to_constants["animation_melee_attack_right"] = animation_melee_attack_right;
-animation_strings_to_constants["animation_melee_attack_down"] = animation_melee_attack_down;
-animation_strings_to_constants["animation_melee_attack_left"] = animation_melee_attack_left;
-animation_strings_to_constants["animation_spin_attack"] = animation_spin_attack;
+animation_strings_to_constants['animation_idle'] = animation_idle;
+animation_strings_to_constants['animation_move_up'] = animation_move_up;
+animation_strings_to_constants['animation_move_right'] = animation_move_right;
+animation_strings_to_constants['animation_move_down'] = animation_move_down;
+animation_strings_to_constants['animation_move_left'] = animation_move_left;
+animation_strings_to_constants['animation_sprint_up'] = animation_sprint_up;
+animation_strings_to_constants['animation_sprint_right'] = animation_sprint_right;
+animation_strings_to_constants['animation_sprint_down'] = animation_sprint_down;
+animation_strings_to_constants['animation_sprint_left'] = animation_sprint_left;
+animation_strings_to_constants['animation_melee_attack_up'] = animation_melee_attack_up;
+animation_strings_to_constants['animation_melee_attack_right'] = animation_melee_attack_right;
+animation_strings_to_constants['animation_melee_attack_down'] = animation_melee_attack_down; animation_strings_to_constants['animation_melee_attack_left'] = animation_melee_attack_left;
+animation_strings_to_constants['animation_spin_attack'] = animation_spin_attack;
 
 const action_strings_to_constants = [];
-action_strings_to_constants["action_none"] = action_none;
-action_strings_to_constants["action_move_up"] = action_move_up;
-action_strings_to_constants["action_move_right"] = action_move_right;
-action_strings_to_constants["action_move_down"] = action_move_down;
-action_strings_to_constants["action_move_left"] = action_move_left;
-action_strings_to_constants["action_sprint_up"] = action_sprint_up;
-action_strings_to_constants["action_sprint_right"] = action_sprint_right;
-action_strings_to_constants["action_sprint_down"] = action_sprint_down;
-action_strings_to_constants["action_sprint_left"] = action_sprint_left;
-action_strings_to_constants["action_melee_attack_up"] = action_melee_attack_up;
-action_strings_to_constants["action_melee_attack_right"] = action_melee_attack_right;
-action_strings_to_constants["action_melee_attack_down"] = action_melee_attack_down;
-action_strings_to_constants["action_melee_attack_left"] = action_melee_attack_left;
-action_strings_to_constants["action_spin_attack"] = action_spin_attack;
+action_strings_to_constants['action_none'] = action_none;
+action_strings_to_constants['action_move_up'] = action_move_up;
+action_strings_to_constants['action_move_right'] = action_move_right;
+action_strings_to_constants['action_move_down'] = action_move_down;
+action_strings_to_constants['action_move_left'] = action_move_left;
+action_strings_to_constants['action_sprint_up'] = action_sprint_up;
+action_strings_to_constants['action_sprint_right'] = action_sprint_right;
+action_strings_to_constants['action_sprint_down'] = action_sprint_down;
+action_strings_to_constants['action_sprint_left'] = action_sprint_left;
+action_strings_to_constants['action_melee_attack_up'] = action_melee_attack_up;
+action_strings_to_constants['action_melee_attack_right'] = action_melee_attack_right;
+action_strings_to_constants['action_melee_attack_down'] = action_melee_attack_down;
+action_strings_to_constants['action_melee_attack_left'] = action_melee_attack_left;
+action_strings_to_constants['action_spin_attack'] = action_spin_attack;
 
 const action_to_priority = [];
 action_to_priority[action_none] = 0;
