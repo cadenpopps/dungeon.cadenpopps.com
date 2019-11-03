@@ -1,7 +1,6 @@
 class PoppsEngine {
 
 	constructor(data) {
-		// const TICKRATE = floor(1000/60);
 		this.init(data);
 	}
 
@@ -119,4 +118,5 @@ class PoppsEngine {
 			}
 		}
 	}
+
 }

@@ -22,7 +22,7 @@ class AISystem extends System {
 	}
 
 	determineAction(entity, player) {
-		if(Utility.entityDistance(entity, player) < entity.ai.maxRange) {
+		if(Utility.entityDistance(entity, player) <= entity.ai.attackRange) {
 			return this.getAttackAction(entity, player);
 		}
 		else{
@@ -33,10 +33,10 @@ class AISystem extends System {
 	getAttackAction(entity, player) {
 		let dir = Utility.getDirectionToEntity(entity, player);
 		entity.direction.direction = dir;
-		return direction_to_attack[dir];	
+		return direction_to_attack[dir];
 	}
 
 	getMoveCloserAction(entity, player) {
-		return direction_to_movement[Utility.getDirectionToEntity(entity, player)];	
+		return direction_to_movement[Utility.getDirectionToEntity(entity, player)];
 	}
 }

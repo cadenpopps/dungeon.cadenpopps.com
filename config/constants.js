@@ -173,37 +173,6 @@ const key_to_action = {
 	'q': action_spin_attack
 };
 
-const animation_strings_to_constants = [];
-animation_strings_to_constants['animation_idle'] = animation_idle;
-animation_strings_to_constants['animation_move_up'] = animation_move_up;
-animation_strings_to_constants['animation_move_right'] = animation_move_right;
-animation_strings_to_constants['animation_move_down'] = animation_move_down;
-animation_strings_to_constants['animation_move_left'] = animation_move_left;
-animation_strings_to_constants['animation_sprint_up'] = animation_sprint_up;
-animation_strings_to_constants['animation_sprint_right'] = animation_sprint_right;
-animation_strings_to_constants['animation_sprint_down'] = animation_sprint_down;
-animation_strings_to_constants['animation_sprint_left'] = animation_sprint_left;
-animation_strings_to_constants['animation_melee_attack_up'] = animation_melee_attack_up;
-animation_strings_to_constants['animation_melee_attack_right'] = animation_melee_attack_right;
-animation_strings_to_constants['animation_melee_attack_down'] = animation_melee_attack_down; animation_strings_to_constants['animation_melee_attack_left'] = animation_melee_attack_left;
-animation_strings_to_constants['animation_spin_attack'] = animation_spin_attack;
-
-const action_strings_to_constants = [];
-action_strings_to_constants['action_none'] = action_none;
-action_strings_to_constants['action_move_up'] = action_move_up;
-action_strings_to_constants['action_move_right'] = action_move_right;
-action_strings_to_constants['action_move_down'] = action_move_down;
-action_strings_to_constants['action_move_left'] = action_move_left;
-action_strings_to_constants['action_sprint_up'] = action_sprint_up;
-action_strings_to_constants['action_sprint_right'] = action_sprint_right;
-action_strings_to_constants['action_sprint_down'] = action_sprint_down;
-action_strings_to_constants['action_sprint_left'] = action_sprint_left;
-action_strings_to_constants['action_melee_attack_up'] = action_melee_attack_up;
-action_strings_to_constants['action_melee_attack_right'] = action_melee_attack_right;
-action_strings_to_constants['action_melee_attack_down'] = action_melee_attack_down;
-action_strings_to_constants['action_melee_attack_left'] = action_melee_attack_left;
-action_strings_to_constants['action_spin_attack'] = action_spin_attack;
-
 const action_to_priority = [];
 action_to_priority[action_none] = 0;
 
@@ -285,3 +254,34 @@ action_to_animation[action_melee_attack_right] = animation_melee_attack_right;
 action_to_animation[action_melee_attack_down] = animation_melee_attack_down;
 action_to_animation[action_melee_attack_left] = animation_melee_attack_left;
 action_to_animation[action_spin_attack] = animation_spin_attack;
+
+const animation_strings_to_constants = [];
+animation_strings_to_constants['animation_idle'] = animation_idle;
+animation_strings_to_constants['animation_move_up'] = animation_move_up;
+animation_strings_to_constants['animation_move_right'] = animation_move_right;
+animation_strings_to_constants['animation_move_down'] = animation_move_down;
+animation_strings_to_constants['animation_move_left'] = animation_move_left;
+animation_strings_to_constants['animation_sprint_up'] = animation_sprint_up;
+animation_strings_to_constants['animation_sprint_right'] = animation_sprint_right;
+animation_strings_to_constants['animation_sprint_down'] = animation_sprint_down;
+animation_strings_to_constants['animation_sprint_left'] = animation_sprint_left;
+animation_strings_to_constants['animation_melee_attack_up'] = animation_melee_attack_up;
+animation_strings_to_constants['animation_melee_attack_right'] = animation_melee_attack_right;
+animation_strings_to_constants['animation_melee_attack_down'] = animation_melee_attack_down; animation_strings_to_constants['animation_melee_attack_left'] = animation_melee_attack_left;
+animation_strings_to_constants['animation_spin_attack'] = animation_spin_attack;
+
+const action_strings_to_constants = [];
+action_strings_to_constants['action_none'] = action_none;
+action_strings_to_constants['action_move_up'] = action_move_up;
+action_strings_to_constants['action_move_right'] = action_move_right;
+action_strings_to_constants['action_move_down'] = action_move_down;
+action_strings_to_constants['action_move_left'] = action_move_left;
+action_strings_to_constants['action_sprint_up'] = action_sprint_up;
+action_strings_to_constants['action_sprint_right'] = action_sprint_right;
+action_strings_to_constants['action_sprint_down'] = action_sprint_down;
+action_strings_to_constants['action_sprint_left'] = action_sprint_left;
+action_strings_to_constants['action_melee_attack_up'] = action_melee_attack_up;
+action_strings_to_constants['action_melee_attack_right'] = action_melee_attack_right;
+action_strings_to_constants['action_melee_attack_down'] = action_melee_attack_down;
+action_strings_to_constants['action_melee_attack_left'] = action_melee_attack_left;
+action_strings_to_constants['action_spin_attack'] = action_spin_attack;

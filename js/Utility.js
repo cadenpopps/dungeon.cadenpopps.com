@@ -79,10 +79,6 @@ class Utility {
 		return neighbors;
 	}
 
-	static getHealthPercent(entity){
-		return entity.health.health / entity.health.maxHealth;
-	}
-
 	static findMobPath(board, mob, player){
 		return findPath(board, board[mob.position.x][mob.position.y], board[player.position.x][player.position.y]);
 	}
@@ -203,9 +199,7 @@ class Utility {
 	}
 }
 
-
-
-const LARGE_VALUE = 2147483647;
+const LARGE_VALUE = 10000;
 
 function findPath(board, start, end) {
 
@@ -298,32 +292,3 @@ function getNeighbors(board, square) {
 	// if (square.position.y < board.length - 1 && board[square.position.x][square.position.y + 1].walkable(board, PATHFINDING)) neighbors.push(board[square.position.x][square.position.y + 1]);
 	return neighbors;
 }
-
-// function direction(start, target){
-// 	if(abs(start[0] - target[0]) >= abs(start[1] - target[1])){
-// 		if(start[0] < target[0]) return RIGHT;
-// 		else if(start[0] > target[0]) return LEFT;
-// 	}
-// 	else{
-// 		if(start[1] < target[1]) return DOWN;
-// 		else if(start[1] > target[1]) return UP;
-// 	}
-// }
-
-// function dirToSquare(start, target){
-// 	if(start.position.x > target.position.x){
-// 		return LEFT;
-// 	}
-// 	else if(start.position.y > target.position.y){
-// 		return UP;
-// 	}
-// 	else if (start.position.x < target.position.x){
-// 		return RIGHT;
-// 	}
-// 	else if(start.position.y < target.position.y){
-// 		return DOWN;
-// 	}
-// 	else{
-// 		throw new Error('Cannot determine direction from square' + start + ' to ' + target);
-// 	}
-// }

@@ -12,7 +12,7 @@ class AnimationSystem extends System {
 	run(engine) {
 		// for(let o of this.objects) {
 		// 	if(o.animation.newAnimation) {
-		// 		startAnimation(o);	
+		// 		startAnimation(o);
 		// 	}
 		// }
 		if(this.animationCounter == this.config.ANIMATION_SPEED) {
@@ -29,7 +29,7 @@ class AnimationSystem extends System {
 				this.updateAnimation(o);
 				// if((o.animation.nextAnimation == animation_idle && this.idleAnimationCounter == 0) || o.animation.nextAnimation != animation_idle) {
 				// 	if(o.animation.stage == o.animation.animations[o.animation.animation].length) {
-				// 		this.startAnimation(o, action_none); 
+				// 		this.startAnimation(o, action_none);
 				// 	}
 				// }
 			}
@@ -54,10 +54,10 @@ class AnimationSystem extends System {
 
 	updateAnimation(entity) {
 		entity.animation.offsetX = entity.animation.animations[entity.animation.animation][entity.animation.stage].ox;
-		// if(entity.animation.offsetX == undefined) {entity.animation.offsetX = 0;}
 		entity.animation.offsetY = entity.animation.animations[entity.animation.animation][entity.animation.stage].oy;
-		// if(entity.animation.offsetY == undefined) {entity.animation.offsetY = 0;}
 		entity.animation.sprite = entity.animation.animations[entity.animation.animation][entity.animation.stage].sprite;
+		// if(entity.animation.offsetX == undefined) {entity.animation.offsetX = 0;}
+		// if(entity.animation.offsetY == undefined) {entity.animation.offsetY = 0;}
 	}
 
 	startAnimation(object) {

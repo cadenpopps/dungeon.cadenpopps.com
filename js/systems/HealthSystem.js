@@ -14,7 +14,7 @@ class HealthSystem extends System {
 			if(this.healthRegenCounter % this.config.HEALTH_REGEN_TIMER == 0) {	
 				for(let o of this.objects) {
 					if(o.health.health < o.health.maxHealth) {
-						o.health.health++;
+						o.health.health+=5;
 					}
 				}
 				this.healthRegenCounter = 1;
@@ -36,6 +36,18 @@ class HealthSystem extends System {
 				this.healthRegen = true;
 				break;
 		}
+	}
+
+	static getHealthPercent(entity){
+		return entity.health.health / entity.health.maxHealth;
+	}
+
+	static getCurrentHeartAmount(entity){
+		return floor(entity.health.health / 10);
+	}
+
+	static getMaxHeartAmount(entity){
+		return floor(entity.health.maxHealth / 10);
 	}
 
 	applyDamage(engine, object, healthLost) {

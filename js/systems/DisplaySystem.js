@@ -188,7 +188,7 @@ class DisplaySystem extends System {
 	lightSquare(o) {
 		let bounds = this.getDrawBounds(o);
 		if(o.display.visible) {
-			if(o instanceof WallSquare) {
+			if(o instanceof WallSquare || o instanceof DoorSquare) {
 				canvas.fillStyle = light_level_to_light[2];
 				rect(bounds.x, bounds.y, bounds.w, bounds.h);
 				canvas.fillStyle = light_level_to_shadow[2];
@@ -226,7 +226,7 @@ class DisplaySystem extends System {
 				let healthBarWidth = mob.display.width * this.gridSize - (this.gridSize / 4);
 				fill(40,0,0);
 				rect(xoff + x + (this.gridSize / 8), yoff + y - HEALTH_BAR_OFFSET, healthBarWidth, HEALTH_BAR_HEIGHT);
-				healthBarWidth = healthBarWidth * Utility.getHealthPercent(mob);
+				healthBarWidth = healthBarWidth * HealthSystem.getHealthPercent(mob);
 				fill(50, 220, 120);
 				rect(xoff + x + (this.gridSize / 8), yoff + y - HEALTH_BAR_OFFSET, healthBarWidth, HEALTH_BAR_HEIGHT);
 			}
@@ -260,8 +260,10 @@ class DisplaySystem extends System {
 		const HEART_SPACING = 4;
 		const HEART_OFFSET = 20;
 		let x = 0, y = 0;
-		for(let i = 1; i <= this.player.health.maxHealth; i++) {
-			if(i <= player.health.health) {
+		let hearts = HealthSystem.getCurrentHeartAmount(player);
+		let maxHearts = HealthSystem.getMaxHeartAmount(player);
+		for(let i = 1; i <= maxHearts; i++) {
+			if(i <= hearts) {
 				image(this.ui[ui_heart], (x * HEART_SIZE) + (x * HEART_SPACING) + HEART_OFFSET, (y * HEART_SIZE) + HEART_OFFSET, HEART_SIZE, HEART_SIZE);
 			}
 			else {
