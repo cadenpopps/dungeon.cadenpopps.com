@@ -41,6 +41,7 @@ class ActionSystem extends System {
 		entity.animation.animation = action_to_animation[entity.actions.currentAction];
 		engine.sendEvent(event_new_animation, entity);
 
+		entity.actions.lastActionFailed = false;
 		entity.actions.lastAction = entity.actions.currentAction;
 		entity.actions.currentAction = action_none;
 	}

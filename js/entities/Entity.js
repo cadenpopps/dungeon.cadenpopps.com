@@ -13,7 +13,7 @@ function Entity(x, y, initialDepth, initialHealth, initialStrength, initialMagic
 	this.intelligence = new IntelligenceComponent(initialIntelligence);
 	this.combat = new CombatComponent(initialStrength, initialMagic, initialIntelligence);
 
-	this.display = new DisplayComponent(undefined, size, size, display_transparent);
+	this.display = new DisplayComponent(size, size, display_transparent);
 	this.animation = new AnimationComponent(animations);
 
 	this.actions = new ActionComponent(actions, speed);

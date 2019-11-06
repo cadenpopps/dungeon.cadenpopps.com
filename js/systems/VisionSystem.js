@@ -158,7 +158,7 @@ class VisionSystem extends System {
 		let uc = VisionSystem.translate(octant, x, y);
 		let fx = sx + uc[0];
 		let fy = sy - uc[1];
-		if(Utility.positionInBounds(fx, fy, map.length)) {
+		if(Utility.positionInBounds(new PositionComponent(fx, fy), map.length)) {
 			return map[fx][fy];
 		}
 		return undefined;

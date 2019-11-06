@@ -4,8 +4,8 @@ class DisplaySystem extends System {
 		super([component_position, component_display]);
 
 		this.config = config;
-		this.textures = images.TEXTURES;
-		this.ui = images.UI;
+		this.textures = images.textures;
+		this.ui = images.ui;
 
 		this.camera = {
 			display: true,
@@ -19,6 +19,9 @@ class DisplaySystem extends System {
 		};
 
 		this.player;
+		this.map;
+		this.squares = [];
+		this.entities = [];
 
 		this.cameraZoomTimer = undefined;
 		this.cameraShakeTimer = undefined;
@@ -47,7 +50,8 @@ class DisplaySystem extends System {
 			}
 			canvas.translate(this.centerX + this.camera.shakeOffsetX, this.centerY + this.camera.shakeOffsetY);
 			canvas.scale(this.camera.zoom, this.camera.zoom);
-			this.drawTextures(this.objects);
+			this.drawSquares(this.squares);
+			this.drawEntities(this.entities);
 			this.drawLights(this.objects);
 			this.drawMobHealth(this.objects);
 			canvas.setTransform();
@@ -107,70 +111,142 @@ class DisplaySystem extends System {
 	}
 
 	addObject(object) {
-		if(object instanceof Player) {
-			this.player = object;
+		if(object instanceof Level) {
+			this.map = object.map.map;
+		}
+		else if(object instanceof Square) {
+			if(!this.squares.includes(object)) {
+				this.determineTexture(object, this.map);
+				this.squares.push(object);
+			}
+		}
+		else {
+			if(object instanceof Player) {
+				this.player = object;
+			}
+			if(this.componentRequirements.length > 0) {
+				if(!this.entities.includes(object) && Utility.checkComponents(object, this.componentRequirements)) {
+					this.entities.push(object);
+				}
+			}
 		}
 		super.addObject(object);
 	}
 
-	drawTextures(objects) {
-		for(let o of objects) {
-			if(o instanceof Square && (o.display.visible || o.display.discovered)) {
-				let bounds = this.getDrawBounds(o);
-				if(this.onScreen(bounds, this.camera.zoom)) {
-					this.drawTexture(o, bounds.x, bounds.y, bounds.w, bounds.h);
+	removeObject(object) {
+		if(this.squares.indexOf(object) !== -1) {
+			this.squares.splice(this.squares.indexOf(object), 1);
+		}
+		else if(this.entities.indexOf(object) !== -1) {
+			this.entities.splice(this.entities.indexOf(object), 1);
+		}
+		super.removeObject(object);
+	}
+
+	clearObjects(object) {
+		this.squares = [];
+		this.entities = [];
+		super.clearObjects();
+	}
+
+	determineTexture(square, map) {
+		let neighbors = Utility.getNeighbors(square, map);
+
+		//do default texture
+		for(let texture of square.textures) {
+			texture.textureElements = [texture_default];
+			this.setTextureAlt(texture);
+		}
+	}
+
+	setTextureAlt(texture) {
+		if(this.textures[texture.textureType][texture_default].length > 1) {
+			let rand = random(texture_probability_distribution[this.textures[texture.textureType][texture_default].length - 1]);
+			for(let i = 0; i < this.textures[texture.textureType][texture_default].length; i++) {
+				if(rand < texture_probability_distribution[i]) {
+					texture.textureAlt = i;
+					break;
 				}
 			}
 		}
-		for(let o of objects) {
-			if(!(o instanceof Square) && o.display.visible) {
-				let bounds = this.getDrawBounds(o);
+		else {
+			texture.textureAlt = 0;
+		}
+	}
+
+	drawSquares(squares) {
+		for(let s of squares) {
+			if(s.display.discovered) {
+				let bounds = this.getDrawBounds(s);
 				if(this.onScreen(bounds, this.camera.zoom)) {
-					this.drawTexture(o, bounds.x, bounds.y, bounds.w, bounds.h);
+					this.drawTexture(s, bounds);
 				}
 			}
 		}
 	}
 
-	drawTexture(o, x, y, w, h) {
-		if(o.components.includes(component_animation)) {
-			x += this.gridSize * o.animation.offsetX;
-			y += this.gridSize * o.animation.offsetY;
-			let s = o.animation.sprite;
-			if(s == undefined) {
-				fill(20);
-				rect(x + (this.gridSize / 8) - 2, y + (this.gridSize / 8) - 2, w - (this.gridSize / 4) + 4, h - (this.gridSize / 4) + 4);
-				if(o instanceof Player) {
-					fill(0, 200, 230);
+	drawEntities(entities) {
+		for(let e of entities) {
+			if(e.display.visible) {
+				let bounds = this.getDrawBounds(e);
+				if(this.onScreen(bounds, this.camera.zoom)) {
+					if(e.components.indexOf(component_animation) !== -1) {
+						this.drawAnimation(e, bounds);
+					}
+					else if(e.components.indexOf(component_texture) !== -1) {
+						this.drawAnimation(e, bounds);
+					}
+					else {
+						//========NEED TEXTURES========
+						let x = bounds.x, y = bounds.y, w = bounds.w, h = bounds.h;
+						if(e instanceof Torch) {
+							fill(255, 230, 140, .7);
+							ellipse(x, y, w, h);
+						}
+						else {
+							fill(255, 100, 100);
+							rect(x, y, w, h);
+						}
+					}
 				}
-				else{
-					fill(200, 20, 40);
-				}
-				rect(x + (this.gridSize / 8), y + (this.gridSize / 8), w - (this.gridSize / 4), h - (this.gridSize / 4));
-			}
-			else{
-				image(a, x, y, w, h);
 			}
 		}
-		else {
-			let t = o.display.texture;
-			if(t == undefined) {
-				if(o instanceof Torch) {
-					fill(255, 230, 140, .7);
-					ellipse(x, y, w, h);
-				}
-				else {
-					fill(255, 100, 100);
-					rect(x, y, w, h);
-				}
+	}
+
+	drawAnimation(object, bounds) {
+		let x = bounds.x, y = bounds.y, w = bounds.w, h = bounds.h;
+		x += this.gridSize * object.animation.offsetX;
+		y += this.gridSize * object.animation.offsetY;
+		let s = object.animation.sprite;
+		if(s == undefined) {
+			fill(20);
+			rect(x + (this.gridSize / 8) - 2, y + (this.gridSize / 8) - 2, w - (this.gridSize / 4) + 4, h - (this.gridSize / 4) + 4);
+			if(object instanceof Player) {
+				fill(0, 200, 230);
 			}
-			else if(t.length > 1) {
-				for(let i of t) {
-					image(this.textures[i], x, y, w, h);
+			else{
+				fill(200, 20, 40);
+			}
+			rect(x + (this.gridSize / 8), y + (this.gridSize / 8), w - (this.gridSize / 4), h - (this.gridSize / 4));
+		}
+		else{
+			image(a, x, y, w, h);
+		}
+	}
+
+	drawTexture(object, bounds) {
+		let x = bounds.x, y = bounds.y, w = bounds.w, h = bounds.h;
+		for(let texture of object.textures) {
+			let textureType = texture.textureType;
+			let textureElements = texture.textureElements;
+			let textureAlt = texture.textureAlt;
+			if(textureElements.length > 1) {
+				for(let element of textureElements) {
+					image(this.textures[textureType][element][0], x, y, w, h);
 				}
 			}
 			else {
-				image(this.textures[t], x, y, w, h);
+				image(this.textures[textureType][textureElements[0]][textureAlt], x, y, w, h);
 			}
 		}
 	}

@@ -19,7 +19,7 @@ class Torch {
 		else if(direction == direction_left) {
 			xoff = 1;
 		}
-		this.display = new DisplayComponent(undefined, SIZE, SIZE, display_transparent, xoff, yoff);
+		this.display = new DisplayComponent(SIZE, SIZE, display_transparent, xoff, yoff);
 		this.lightEmitter = new LightEmitterComponent(light_level_torch);
 	}
 }

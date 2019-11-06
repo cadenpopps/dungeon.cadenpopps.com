@@ -135,8 +135,7 @@ class EntitySystem extends System {
 	}
 
 	fixPlayerPosition(player, stair, depth) {
-		player.position.x = stair.x;
-		player.position.y = stair.y;
+		MovementSystem.move(player, stair);
 		player.depth.depth = depth;
 	}
 

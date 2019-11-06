@@ -8,7 +8,7 @@ class PoppsEngine {
 		const config = data.config;
 		const ROOM_POOL = data.room_pool;
 		const STAIR_ROOM_POOL = data.stair_room_pool;
-		const IMAGES = data.images;
+		const images = data.images;
 		const PLAYER_DATA = data.player_data;
 		const ENTITY_DATA = data.entity_data;
 
@@ -18,7 +18,7 @@ class PoppsEngine {
 
 		this.systems = [];
 		this.systems.push(new InputSystem());
-		this.systems.push(new DisplaySystem(config.display, IMAGES));
+		this.systems.push(new DisplaySystem(config.display, images));
 		this.systems.push(new VisionSystem(config.vision));
 		this.systems.push(new LightSystem(config.light));
 		this.systems.push(new ActionSystem());

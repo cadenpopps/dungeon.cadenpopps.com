@@ -36,22 +36,30 @@ class MovementSystem extends System {
 		}
 	}
 
+	static move(entity, position) {
+		entity.position.x = position.x;
+		entity.position.y = position.y;
+		entity.collision.top = position.y;
+		entity.collision.right = position.x + entity.collision.width;
+		entity.collision.bottom = position.y + entity.collision.height;
+		entity.collision.left = position.x;
+	}
+
 	move(engine, map, entity, objects) {
-		let targetX = entity.position.x;
-		let targetY = entity.position.y;
+		let target = new PositionComponent(entity.position.x, entity.position.y);
 
 		switch (entity.actions.currentAction) {
 			case action_move_up:
-				targetY--;
+				target.y--;
 				break;
 			case action_move_right:
-				targetX++;
+				target.x++;
 				break;
 			case action_move_down:
-				targetY++;
+				target.y++;
 				break;
 			case action_move_left:
-				targetX--;
+				target.x--;
 				break;
 			default:
 				console.log('No direction');
@@ -62,8 +70,8 @@ class MovementSystem extends System {
 
 		let walkable = true;
 
-		for(let i = targetX; i < targetX + entity.physical.size; i++) {
-			for(let j = targetY; j < targetY + entity.physical.size; j++) {
+		for(let i = target.x; i < target.x + entity.physical.size; i++) {
+			for(let j = target.y; j < target.y + entity.physical.size; j++) {
 				if(!Utility.walkable(i, j, map, entity, objects)) {
 					walkable = false;
 				}
@@ -71,16 +79,10 @@ class MovementSystem extends System {
 		}
 
 		if(walkable) {
-			entity.position.x = targetX;
-			entity.position.y = targetY;
-
-			entity.collision.top = targetY;
-			entity.collision.right = targetX + entity.physical.size;
-			entity.collision.bottom = targetY + entity.physical.size;
-			entity.collision.left = targetX;
+			MovementSystem.move(entity, target);
 
 			if(entity instanceof Player) {
-				this.playerWalkEvents(engine, entity, map[targetX][targetY]);
+				this.playerWalkEvents(engine, entity, map[target.x][target.y]);
 			}
 
 			engine.sendEvent(event_successful_action, { 'action': entity.actions.currentAction, 'entity': entity });

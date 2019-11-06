@@ -38,27 +38,29 @@ function PhysicalComponent(solid, size){
 	this.size = size;
 }
 
-function CollisionComponent(top, right, bottom, left){
-	if(left === undefined) {
-		this.top = right;
-		this.right = top + bottom;
-		this.bottom = right + bottom;
-		this.left = top;
+function CollisionComponent(x, y, w, h){
+	if(h === undefined) {
+		h = w;
 	}
-	else {
-		this.top = top;
-		this.right = right;
-		this.bottom = bottom;
-		this.left = left;
-	}
+	this.top = y;
+	this.right = x + w;
+	this.bottom = y + h;
+	this.left = x;
+	this.width = w;
+	this.height = h;
 }
 
 function MovementComponent(speed){
 	this.speed = speed;
 }
 
-function DisplayComponent(texture, width, height, opaque, offsetX = 0, offsetY = 0){
-	this.texture = texture;
+function TextureComponent(type) {
+	this.textureType = type;
+	this.textureElements;
+	this.textureAlt;
+}
+
+function DisplayComponent(width, height, opaque, offsetX = 0, offsetY = 0){
 	this.width = width;
 	this.height = height;
 	this.visible = false;

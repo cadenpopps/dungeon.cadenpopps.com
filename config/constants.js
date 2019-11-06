@@ -57,7 +57,7 @@ const direction_up = 0, direction_right = 1, direction_down = 2, direction_left 
 //square constants
 const square_floor = 0, square_wall = 1, square_door = 2, square_stair_down = 3, square_stair_up = 4, square_loot = 5;
 
-//image constants
+//texture constants
 const texture_floor = 0,
 	texture_wall = 1,
 	texture_door_closed = 2,
@@ -67,30 +67,70 @@ const texture_floor = 0,
 	texture_stair_up = 6,
 	texture_stair_down = 7;
 
+const texture_center = 0,
+	texture_concave_top_left = 1,
+	texture_concave_top_right = 2,
+	texture_concave_bottom_right = 3,
+	texture_concave_bottom_left = 4,
+	texture_convex_top_left = 5,
+	texture_convex_top_right = 6,
+	texture_convex_bottom_right = 7,
+	texture_convex_bottom_left = 8,
+	texture_side_top = 9,
+	texture_side_right = 10,
+	texture_side_bottom = 11,
+	texture_side_left = 12;
+
+const texture_default = 0,
+	texture_alt1 = 1,
+	texture_alt2 = 2,
+	texture_alt3 = 3,
+	texture_alt4 = 4,
+	texture_alt5 = 5,
+	texture_alt6 = 6,
+	texture_alt7 = 7,
+	texture_alt8 = 8,
+	texture_alt9 = 9;
+
+const texture_probability_distribution = [];
+texture_probability_distribution[0] = 55;
+texture_probability_distribution[1] = texture_probability_distribution[0] + 34;
+texture_probability_distribution[2] = texture_probability_distribution[1] + 21;
+texture_probability_distribution[3] = texture_probability_distribution[2] + 13;
+texture_probability_distribution[4] = texture_probability_distribution[3] + 8;
+texture_probability_distribution[5] = texture_probability_distribution[4] + 5;
+texture_probability_distribution[6] = texture_probability_distribution[5] + 3;
+texture_probability_distribution[7] = texture_probability_distribution[6] + 2;
+texture_probability_distribution[8] = texture_probability_distribution[7] + 1;
+texture_probability_distribution[9] = texture_probability_distribution[8] + 1;
+
+const texture_probability_max = texture_probability_distribution[texture_probability_distribution.length - 1];
+
 const ui_heart = 0, ui_empty_heart = 1;
 
 //components
 const component_position = 0,
 	component_movement = 1,
 	component_display = 2,
-	component_animation = 3,
-	component_actions = 4,
-	component_physical = 5,
-	component_sprint = 6,
-	component_direction = 7,
-	component_map = 8,
-	component_health = 9,
-	component_light = 10,
-	component_strength = 11,
-	component_intelligence = 12,
-	component_magic = 13,
-	component_level = 14,
-	component_depth = 15,
-	component_stair = 16,
-	component_combat = 17,
-	component_ai = 18,
-	component_light_emitter = 19,
-	component_collision = 20;
+	component_texture = 3,
+	component_animation = 4,
+	component_actions = 5,
+	component_physical = 6,
+	component_sprint = 7,
+	component_direction = 8,
+	component_map = 9,
+	component_health = 10,
+	component_light = 11,
+	component_strength = 12,
+	component_intelligence = 13,
+	component_magic = 14,
+	component_level = 15,
+	component_depth = 16,
+	component_stair = 17,
+	component_combat = 18,
+	component_ai = 19,
+	component_light_emitter = 20,
+	component_collision = 21;
 
 //events
 const event_new_game = 0,
@@ -126,8 +166,7 @@ const event_new_game = 0,
 	event_entity_spawned = 50,
 	event_spawn_enemy_close = 51,
 
-	event_game_over = 1000
-;
+	event_game_over = 1000;
 
 //animations
 const animation_idle = 0,
@@ -204,12 +243,12 @@ action_to_length[action_move_left] = 100;
 
 action_to_length[action_sprint] = 65;
 
-action_to_length[action_melee_attack_up] = 200;
-action_to_length[action_melee_attack_right] = 200;
-action_to_length[action_melee_attack_down] = 200;
-action_to_length[action_melee_attack_left] = 200;
+action_to_length[action_melee_attack_up] = 160;
+action_to_length[action_melee_attack_right] = 160;
+action_to_length[action_melee_attack_down] = 160;
+action_to_length[action_melee_attack_left] = 160;
 
-action_to_length[action_spin_attack] = 250;
+action_to_length[action_spin_attack] = 200;
 
 const action_to_direction = [];
 action_to_direction[action_move_up] = direction_up;

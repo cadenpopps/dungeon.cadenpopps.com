@@ -44,17 +44,38 @@ class Utility {
 		if(e1.position.x > e2.position.x){ return direction_left; }
 	}
 
+	static getCollisionInFrontOf(entity) {
+		return Utility.getCollisionInDirection(entity, entity.direction.direction);
+	}
+
+	static getCollisionInDirection(entity, direction) {
+		switch(direction) {
+			case direction_up:
+				return new CollisionComponent(entity.collision.left, entity.collision.top - 1, entity.collision.width, 1);
+			case direction_right:
+				return new CollisionComponent(entity.collision.right, entity.collision.top, 1, entity.collision.height);
+			case direction_down:
+				return new CollisionComponent(entity.collision.left, entity.collision.bottom, entity.collision.width, 1);
+			case direction_left:
+				return new CollisionComponent(entity.collision.left - 1, entity.collision.top, 1, entity.collision.height);
+			default:
+				console.log("Cannot determine direction");
+				return;
+		}
+	}
+
 	static entityAdjacent(entity, otherEntity) {
-		if (Utility.collision(new CollisionComponent(entity.collision.top - 1, entity.collision.right, entity.collision.top, entity.collision.left), otherEntity.collision)) {
+		let c1 = entity.collision, c2 = otherEntity.collision;
+		if (Utility.collision(Utility.getCollisionInDirection(entity, direction_up), c2)) {
 			return direction_up;
 		}
-		else if (Utility.collision(new CollisionComponent(entity.collision.top, entity.collision.right + 1, entity.collision.bottom, entity.collision.right), otherEntity.collision)) {
+		else if (Utility.collision(Utility.getCollisionInDirection(entity, direction_right), c2)) {
 			return direction_right;
 		}
-		else if (Utility.collision(new CollisionComponent(entity.collision.bottom, entity.collision.right, entity.collision.bottom + 1, entity.collision.left), otherEntity.collision)) {
+		else if (Utility.collision(Utility.getCollisionInDirection(entity, direction_down), c2)) {
 			return direction_down;
 		}
-		else if (Utility.collision(new CollisionComponent(entity.collision.top, entity.collision.left, entity.collision.bottom, entity.collision.left - 1), otherEntity.collision)) {
+		else if (Utility.collision(Utility.getCollisionInDirection(entity, direction_left), c2)) {
 			return direction_left;
 		}
 		else {
@@ -84,19 +105,36 @@ class Utility {
 	}
 
 	static walkable(x, y, map, entity, objects){
-		return Utility.positionInBounds(x, y, map.length) && Utility.squareTypeIsWalkable(map[x][y], entity) && !Utility.squareIsOccupied(x, y, entity, objects);
+		return Utility.positionInBounds(new PositionComponent(x, y), map.length) && Utility.squareTypeIsWalkable(map[x][y], entity) && !Utility.squareIsOccupied(x, y, entity, objects);
 	}
 
 	static positionOnScreen(x, y, w, h){
 		return x > -w && x < width + w && y > -h && y < height + h;
 	}
 
-	static positionInBounds(x, y, size){
-		return x >= 0 && x < size && y >= 0 && y < size;
+	static positionInBounds(position, size){
+		return position.x >= 0 && position.x < size && position.y >= 0 && position.y < size;
 	}
 
 	static squareInBounds(square, size){
 		return square.position.x >= 0 && square.position.x < size && square.position.y >= 0 && square.position.y < size;
+	}
+
+	static getNeighbors(square, map) {
+		let neighbors = [];
+		if(Utility.positionInBounds(new PositionComponent(square.position.x, square.position.y - 1), map.length)) {
+			neighbors.push(map[square.position.x][square.position.y - 1]);
+		}
+		if(Utility.positionInBounds(new PositionComponent(square.position.x + 1, square.position.y), map.length)) {
+			neighbors.push(map[square.position.x + 1][square.position.y]);
+		}
+		if(Utility.positionInBounds(new PositionComponent(square.position.x, square.position.y + 1), map.length)) {
+			neighbors.push(map[square.position.x][square.position.y + 1]);
+		}
+		if(Utility.positionInBounds(new PositionComponent(square.position.x - 1, square.position.y), map.length)) {
+			neighbors.push(map[square.position.x - 1][square.position.y]);
+		}
+		return neighbors;
 	}
 
 	static squareTypeIsWalkable(square, entity){
@@ -135,10 +173,6 @@ class Utility {
 		}
 	}
 
-	static getPositionInFrontOf(entity) {
-		let dtp = Utility.directionToPosition(entity.direction.direction);
-		return new PositionComponent(entity.position.x + dtp.x, entity.position.y + dtp.y);
-	}
 
 	static isMovementAction(action){
 		return action > action_move && action <= action_move_left;

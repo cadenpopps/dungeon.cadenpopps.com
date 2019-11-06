@@ -1,7 +1,7 @@
 {
 	"level": {
-		"DUNGEON_SIZE": 35,
-		"ROOM_TRIES": 50
+		"DUNGEON_SIZE": 51,
+		"ROOM_TRIES": 100
 	},
 	"display": {
 		"GRID_SIZE": 72,

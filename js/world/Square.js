@@ -1,49 +1,78 @@
-function Square(x, y, texture, solid, opaque) {
-	this.components = [component_position, component_display, component_physical, component_light];
-	this.position = new PositionComponent(x, y);
-	this.display = new DisplayComponent(texture, 1, 1, opaque);
-	this.physical = new PhysicalComponent(solid, 1);
-	this.light = new LightComponent();
+class Square {
+	constructor (x, y, textures, solid, opaque) {
+		this.components = [component_position, component_display, component_texture, component_physical, component_light];
+		this.position = new PositionComponent(x, y);
+		this.display = new DisplayComponent(1, 1, opaque);
+		this.textures = textures;
+		this.physical = new PhysicalComponent(solid, 1);
+		this.light = new LightComponent();
+	}
 }
 
-WallSquare.prototype = Object.create(Square.prototype);
-function WallSquare(x, y) {
-	Square.call(this, x, y, texture_wall, physical_solid, display_opaque);
+class WallSquare extends Square {
+	constructor(x, y) {
+		let textures = [new TextureComponent(texture_wall)];
+		super(x, y, textures, physical_solid, display_opaque);
+	}
 }
 
-FloorSquare.prototype = Object.create(Square.prototype);
-function FloorSquare(x, y) {
-	Square.call(this, x, y, texture_floor, physical_non_solid, display_transparent);
+class FloorSquare extends Square {
+	constructor(x, y) {
+		let textures = [new TextureComponent(texture_floor)];
+		super(x, y, textures, physical_non_solid, display_transparent);
+	}
 }
 
-DoorSquare.prototype = Object.create(Square.prototype);
-function DoorSquare(x, y) {
-	Square.call(this, x, y, texture_door_closed, physical_solid, display_opaque);
-	this.opened = false;
-}
-DoorSquare.prototype.open = function () {
-	this.opened = true;
-	this.physical.solid = false;
-	this.display.texture = [texture_floor, texture_door_open];
-	this.display.opaque = false;
-};
+class DoorSquare extends Square {
+	constructor(x, y) {
+		let textures = [
+			new TextureComponent(texture_floor),
+			new TextureComponent(texture_door_closed)
+		];
+		super(x, y, textures, physical_solid, display_opaque);
+		this.opened = false;
+	}
 
-LootSquare.prototype = Object.create(Square.prototype);
-function LootSquare(x, y) {
-	Square.call(this, x, y, [texture_floor, texture_loot_closed], physical_solid, display_transparent);
-	this.opened = false;
-}
-LootSquare.prototype.open = function () {
-	this.opened = true;
-	this.display.texture = [texture_floor, texture_loot_open];
-};
-
-StairUpSquare.prototype = Object.create(Square.prototype);
-function StairUpSquare(x, y) {
-	Square.call(this, x, y, [texture_floor, texture_stair_up], physical_solid, display_transparent);
+	open() {
+		this.opened = true;
+		this.physical.solid = false;
+		this.display.opaque = false;
+		this.textures[1].textureType = texture_door_open;
+	}
 }
 
-StairDownSquare.prototype = Object.create(Square.prototype);
-function StairDownSquare(x, y) {
-	Square.call(this, x, y, [texture_floor, texture_stair_down], physical_solid, display_transparent);
+class LootSquare extends Square {
+	constructor(x, y) {
+		let textures = [
+			new TextureComponent(texture_floor),
+			new TextureComponent(texture_loot_closed)
+		];
+		super(x, y, textures, physical_solid, display_transparent);
+		this.opened = false;
+	}
+
+	open() {
+		this.opened = true;
+		this.textures[1].textureType = texture_loot_open;
+	}
+}
+
+class StairUpSquare extends Square {
+	constructor(x, y) {
+		let textures = [
+			new TextureComponent(texture_floor),
+			new TextureComponent(texture_stair_up)
+		];
+		super(x, y, textures, physical_solid, display_transparent);
+	}
+}
+
+class StairDownSquare extends Square {
+	constructor(x, y) {
+		let textures = [
+			new TextureComponent(texture_floor),
+			new TextureComponent(texture_stair_down)
+		];
+		super(x, y, textures, physical_solid, display_transparent);
+	}
 }

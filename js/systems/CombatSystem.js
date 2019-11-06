@@ -13,8 +13,15 @@ class CombatSystem extends System {
 		for(let entity of this.objects) {
 			switch(entity.actions.currentAction) {
 				case action_melee_attack:
-					this.determineAttackDirection(entity, this.objects);
-					this.meleeAttack(engine, entity, this.objects);
+					let dir = this.determineAttackDirection(entity, this.objects);
+					if(dir !== -1) {
+						entity.direction.direction = dir;
+						entity.actions.currentAction = direction_to_attack[dir];
+						this.meleeAttack(engine, entity, this.objects);
+					}
+					else {
+						engine.sendEvent(event_failed_action, { 'action': entity.actions.currentAction, 'entity': entity });
+					}
 					break;
 				case action_melee_attack_up: case action_melee_attack_right: case action_melee_attack_down: case action_melee_attack_left:
 					this.meleeAttack(engine, entity, this.objects);
@@ -81,18 +88,17 @@ class CombatSystem extends System {
 	determineAttackDirection(entity, objects) {
 		for(let o of objects) {
 			let dir = Utility.entityAdjacent(entity, o);
-			if(dir != -1) {
-				entity.direction.direction = dir;
-				entity.actions.currentAction = direction_to_attack[dir];
+			if(dir !== -1) {
+				return dir;
 			}
 		}
+		return -1;
 	}
 
 	meleeAttack(engine, entity, objects) {
 		for(let o of objects) {
 			if(entity != o) {
-				let target = Utility.getPositionInFrontOf(entity);
-				if(Utility.collision(new CollisionComponent(target.x, target.y, entity.physical.size), o.collision)) {
+				if(Utility.collision(Utility.getCollisionInFrontOf(entity), o.collision)) {
 					let healthLost = max(0, (entity.combat.meleeAttackPower * 1.5) - o.combat.meleeDefensePower);
 					if(entity instanceof Player) {
 						engine.sendEvent(event_player_melee_attack);
@@ -104,6 +110,7 @@ class CombatSystem extends System {
 				}
 			}
 		}
+		engine.sendEvent(event_failed_action, { 'action': entity.actions.currentAction, 'entity': entity });
 	}
 
 	spinAttack(engine, entity, objects) {

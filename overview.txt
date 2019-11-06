@@ -3,6 +3,13 @@ ai - different levels of pathfinding (naive, adequate, advanced)
 display - level up screen, better health, MOVE TEXTURE CODE TO DISPLAY EXCLUSIVELY
 general - levels, inventory, loot, textures, direction/position dependent textures
 
+for length 1 hallways - make door in middle spot, doors become floors
+
+floor progression -
+castle
+sewer
+mine
+
 
 hud on combat/sprint
 camera shake on event
@@ -36,15 +43,10 @@ Ideas
             Traps
             NPC
 
-Needs Improvement -
-    Level gen (maze + sparse + detours)
-    Performance
-
 Sounds
     Music
         Main theme
     Effects
-        Water sound
         Hurt sound
         Door
         Walking
@@ -53,19 +55,6 @@ Sounds
         Chest
         New floor
         Mob sounds
-        Drip sound
-
-
-Idle loop runs all the time, updates animations
-	-idle animations update every 8 idle loops (CONFIG.IDLE_ANIMATION_SLOW_FACTOR)
-	-moves time foward???
-	-no turns occur
-	-idle animation can be interrupted by active animation (attack, move, ability, wait, etc)
-
-Active loops updates player and mobs 
-	-represents a 'turn'
-	-updates level
-	-runs when there is input to process
-	-can be queued via input queue
-	-can't perform an action if your cooldown counter is > 0
-
+        Water sound
+		Drip sound (water)
+		bruh sound effect #2
