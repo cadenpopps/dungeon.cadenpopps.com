@@ -395,7 +395,7 @@ function finalizeLevel(level, stairUp, stairDown) {
 					level[i][j] = new StairDownSquare(i, j);
 					break;
 				case square_loot:
-					level[i][j] = new LootSquare(i, j);
+					level[i][j] = new FloorSquare(i, j);
 					break;
 				default:
 					console.log('Not recognized squaretype: ' + level[i][j]);
@@ -403,6 +403,36 @@ function finalizeLevel(level, stairUp, stairDown) {
 					break;
 			}
 		}
+	}
+
+
+	let blanks = [];
+
+	for(let i = 1; i < level.length - 1; i++) {
+		for(let j = 1; j < level.length - 1; j++) {
+			if(level[i][j] instanceof WallSquare && !(level[i - 1][j - 1] instanceof FloorSquare || level[i][j - 1] instanceof FloorSquare || level[i + 1][j - 1] instanceof FloorSquare || level[i - 1][j] instanceof FloorSquare || level[i + 1][j] instanceof FloorSquare || level[i - 1][j + 1] instanceof FloorSquare || level[i][j + 1] instanceof FloorSquare || level[i + 1][j + 1] instanceof FloorSquare)){
+				blanks.push(level[i][j]);
+			}
+		}
+	}
+
+	for(let i = 1; i < level.length - 1; i++) {
+		if(!(level[i - 1][1] instanceof FloorSquare || level[i][1] instanceof FloorSquare || level[i + 1][1] instanceof FloorSquare)){
+			blanks.push(level[i][0]);
+		}
+		if(!(level[1][i - 1] instanceof FloorSquare || level[1][i] instanceof FloorSquare || level[1][i + 1] instanceof FloorSquare)){
+			blanks.push(level[0][i]);
+		}
+		if(!(level[i - 1][level.length - 2] instanceof FloorSquare || level[i][level.length - 2] instanceof FloorSquare || level[i + 1][level.length - 2] instanceof FloorSquare)){
+			blanks.push(level[i][level.length - 1]);
+		}
+		if(!(level[level.length - 2][i - 1] instanceof FloorSquare || level[level.length - 2][i] instanceof FloorSquare || level[level.length - 2][i + 1] instanceof FloorSquare)){
+			blanks.push(level[level.length - 1][i]);
+		}
+	}
+
+	for(let b of blanks) {
+		level[b.position.x][b.position.y] = new BlankSquare(b.position.x, b.position.y);
 	}
 }
 

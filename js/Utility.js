@@ -33,6 +33,10 @@ class Utility {
 		return abs(e1.position.x - e2.position.x) < dist && abs(e1.position.y - e2.position.y) < dist;
 	}
 
+	static positionInRange(p1, p2, dist) {
+		return abs(p1.x - p2.x) < dist && abs(p1.y - p2.y) < dist;
+	}
+
 	static entityDistance(e1, e2) {
 		return abs((e1.position.x > e2.position.x) ? e1.collision.left - e2.collision.right : e1.collision.right - e2.collision.left) + abs((e1.position.y > e2.position.y) ? e1.collision.top - e2.collision.bottom : e1.collision.bottom - e2.collision.top);
 	}
@@ -121,18 +125,18 @@ class Utility {
 	}
 
 	static getNeighbors(square, map) {
-		let neighbors = [];
+		let neighbors = new Array(4);
 		if(Utility.positionInBounds(new PositionComponent(square.position.x, square.position.y - 1), map.length)) {
-			neighbors.push(map[square.position.x][square.position.y - 1]);
+			neighbors[0] = (map[square.position.x][square.position.y - 1]);
 		}
 		if(Utility.positionInBounds(new PositionComponent(square.position.x + 1, square.position.y), map.length)) {
-			neighbors.push(map[square.position.x + 1][square.position.y]);
+			neighbors[1] = (map[square.position.x + 1][square.position.y]);
 		}
 		if(Utility.positionInBounds(new PositionComponent(square.position.x, square.position.y + 1), map.length)) {
-			neighbors.push(map[square.position.x][square.position.y + 1]);
+			neighbors[2] = (map[square.position.x][square.position.y + 1]);
 		}
 		if(Utility.positionInBounds(new PositionComponent(square.position.x - 1, square.position.y), map.length)) {
-			neighbors.push(map[square.position.x - 1][square.position.y]);
+			neighbors[3] = (map[square.position.x - 1][square.position.y]);
 		}
 		return neighbors;
 	}

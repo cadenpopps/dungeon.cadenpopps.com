@@ -67,20 +67,6 @@ const texture_floor = 0,
 	texture_stair_up = 6,
 	texture_stair_down = 7;
 
-const texture_center = 0,
-	texture_concave_top_left = 1,
-	texture_concave_top_right = 2,
-	texture_concave_bottom_right = 3,
-	texture_concave_bottom_left = 4,
-	texture_convex_top_left = 5,
-	texture_convex_top_right = 6,
-	texture_convex_bottom_right = 7,
-	texture_convex_bottom_left = 8,
-	texture_side_top = 9,
-	texture_side_right = 10,
-	texture_side_bottom = 11,
-	texture_side_left = 12;
-
 const texture_default = 0,
 	texture_alt1 = 1,
 	texture_alt2 = 2,
@@ -90,7 +76,17 @@ const texture_default = 0,
 	texture_alt6 = 6,
 	texture_alt7 = 7,
 	texture_alt8 = 8,
-	texture_alt9 = 9;
+	texture_alt9 = 9,
+	texture_corner_top_left = 10,
+	texture_corner_top_right = 11,
+	texture_corner_bottom_right = 12,
+	texture_corner_bottom_left = 13,
+	texture_side_top = 14,
+	texture_side_right = 15,
+	texture_side_bottom = 16,
+	texture_side_left = 17,
+	texture_num_alts = 18;
+
 
 const texture_probability_distribution = [];
 texture_probability_distribution[0] = 55;

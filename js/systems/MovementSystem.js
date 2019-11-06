@@ -78,6 +78,10 @@ class MovementSystem extends System {
 			}
 		}
 
+		// if(map[target.x][target.y] instanceof WallSquare && entity instanceof Player) {
+		// 	console.log(map[target.x][target.y]);
+		// }
+
 		if(walkable) {
 			MovementSystem.move(entity, target);
 

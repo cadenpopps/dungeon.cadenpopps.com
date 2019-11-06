@@ -9,6 +9,12 @@ class Square {
 	}
 }
 
+class BlankSquare extends Square {
+	constructor(x, y) {
+		super(x, y, [], physical_solid, display_transparent);
+	}
+}
+
 class WallSquare extends Square {
 	constructor(x, y) {
 		let textures = [new TextureComponent(texture_wall)];

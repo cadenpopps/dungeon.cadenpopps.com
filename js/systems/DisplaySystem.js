@@ -41,8 +41,6 @@ class DisplaySystem extends System {
 	run(engine) {
 		background(0);
 
-		// let st = millis();
-
 		if(this.camera.display) {
 			if(this.cameraMoving) {
 				if(this.player.animation.animation == animation_idle) { this.cameraMoving = false; }
@@ -50,15 +48,15 @@ class DisplaySystem extends System {
 			}
 			canvas.translate(this.centerX + this.camera.shakeOffsetX, this.centerY + this.camera.shakeOffsetY);
 			canvas.scale(this.camera.zoom, this.camera.zoom);
+
+
 			this.drawSquares(this.squares);
 			this.drawEntities(this.entities);
 			this.drawLights(this.objects);
 			this.drawMobHealth(this.objects);
+
 			canvas.setTransform();
 		}
-
-		// let et = millis() - st;
-		// console.log("Time for draw loop: " + et);
 
 		this.drawUI(this.player);
 
@@ -116,7 +114,7 @@ class DisplaySystem extends System {
 		}
 		else if(object instanceof Square) {
 			if(!this.squares.includes(object)) {
-				this.determineTexture(object, this.map);
+				this.determineTextures(object, this.map);
 				this.squares.push(object);
 			}
 		}
@@ -149,28 +147,100 @@ class DisplaySystem extends System {
 		super.clearObjects();
 	}
 
-	determineTexture(square, map) {
-		let neighbors = Utility.getNeighbors(square, map);
+	static texturesConnect(t1, t2) {
+		if(t2 === undefined) {
+			return false;
+		}
+		if(t1 instanceof WallSquare) {
+			return (t2 instanceof WallSquare || t2 instanceof DoorSquare);
+		}
+		else if(t1 instanceof FloorSquare) {
+			return !(t2 instanceof WallSquare);
+		}
+	}
 
-		//do default texture
+	determineTextures(square, map) {
 		for(let texture of square.textures) {
-			texture.textureElements = [texture_default];
-			this.setTextureAlt(texture);
+			let neighbors = Utility.getNeighbors(square, map);
+			let TOP = neighbors[0], RIGHT = neighbors[1], BOTTOM = neighbors[2], LEFT = neighbors[3];
+			if(texture.textureType == texture_wall) {
+				texture.textureElements.push(new TextureElementComponent(texture_default, 0, 0));
+				if(!DisplaySystem.texturesConnect(square, BOTTOM)) {
+					texture.textureElements.push(new TextureElementComponent(texture_side_bottom, 0, 0));
+				}
+				if(!DisplaySystem.texturesConnect(square, TOP)) {
+					texture.textureElements.push(new TextureElementComponent(texture_side_top, 0, 0));
+				}
+				if(!DisplaySystem.texturesConnect(square, RIGHT)) {
+					texture.textureElements.push(new TextureElementComponent(texture_side_right, 0, 0));
+				}
+				if(!DisplaySystem.texturesConnect(square, LEFT)) {
+					texture.textureElements.push(new TextureElementComponent(texture_side_left, 0, 0));
+				}
+				if(DisplaySystem.texturesConnect(square, TOP) && DisplaySystem.texturesConnect(square, RIGHT)) {
+					texture.textureElements.push(new TextureElementComponent(texture_corner_top_right, 0, 0));
+				}
+				if(DisplaySystem.texturesConnect(square, RIGHT) && DisplaySystem.texturesConnect(square, BOTTOM)) {
+					texture.textureElements.push(new TextureElementComponent(texture_corner_bottom_right, 0, 0));
+				}
+				if(DisplaySystem.texturesConnect(square, BOTTOM) && DisplaySystem.texturesConnect(square, LEFT)) {
+					texture.textureElements.push(new TextureElementComponent(texture_corner_bottom_left, 0, 0));
+				}
+				if(DisplaySystem.texturesConnect(square, LEFT) && DisplaySystem.texturesConnect(square, TOP)) {
+					texture.textureElements.push(new TextureElementComponent(texture_corner_top_left, 0, 0));
+				}
+				if(texture.textureElements.length == 0) {
+					texture.textureElements.push(new TextureElementComponent(texture_default, 0, 0));
+				}
+			}
+			else if(texture.textureType == texture_floor) {
+				texture.textureElements.push(new TextureElementComponent(texture_default, 0, 0));
+				if(!DisplaySystem.texturesConnect(square, BOTTOM) && DisplaySystem.texturesConnect(square, LEFT) &&  DisplaySystem.texturesConnect(square, RIGHT)) {
+					texture.textureElements.push(new TextureElementComponent(texture_side_bottom, 0, 0));
+				}
+				if(!DisplaySystem.texturesConnect(square, TOP) && DisplaySystem.texturesConnect(square, LEFT) &&  DisplaySystem.texturesConnect(square, RIGHT)) {
+					texture.textureElements.push(new TextureElementComponent(texture_side_top, 0, 0));
+				}
+				if(!DisplaySystem.texturesConnect(square, RIGHT) && DisplaySystem.texturesConnect(square, TOP) &&  DisplaySystem.texturesConnect(square, BOTTOM)) {
+					texture.textureElements.push(new TextureElementComponent(texture_side_right, 0, 0));
+				}
+				if(!DisplaySystem.texturesConnect(square, LEFT) && DisplaySystem.texturesConnect(square, TOP) &&  DisplaySystem.texturesConnect(square, BOTTOM)) {
+					texture.textureElements.push(new TextureElementComponent(texture_side_left, 0, 0));
+				}
+				if(!DisplaySystem.texturesConnect(square, TOP) && !DisplaySystem.texturesConnect(square, RIGHT)) {
+					texture.textureElements.push(new TextureElementComponent(texture_corner_top_right, .8, -.8));
+				}
+				if(!DisplaySystem.texturesConnect(square, RIGHT) && !DisplaySystem.texturesConnect(square, BOTTOM)) {
+					texture.textureElements.push(new TextureElementComponent(texture_corner_bottom_right, .8, .8));
+				}
+				if(!DisplaySystem.texturesConnect(square, BOTTOM) && !DisplaySystem.texturesConnect(square, LEFT)) {
+					texture.textureElements.push(new TextureElementComponent(texture_corner_bottom_left, -.8, .8));
+				}
+				if(!DisplaySystem.texturesConnect(square, LEFT) && !DisplaySystem.texturesConnect(square, TOP)) {
+					texture.textureElements.push(new TextureElementComponent(texture_corner_top_left, -.8, -.8));
+				}
+				if(texture.textureElements.length == 0) {
+					texture.textureElements.push(new TextureElementComponent(texture_default, 0, 0));
+				}
+			}
+			else {
+				texture.textureElements.push(new TextureElementComponent(texture_default, 0, 0));
+			}
+			if(texture.textureElements.length == 1 && texture.textureElements[0].element == texture_default) {
+				this.setTextureAlt(texture);
+			}
 		}
 	}
 
 	setTextureAlt(texture) {
-		if(this.textures[texture.textureType][texture_default].length > 1) {
-			let rand = random(texture_probability_distribution[this.textures[texture.textureType][texture_default].length - 1]);
-			for(let i = 0; i < this.textures[texture.textureType][texture_default].length; i++) {
+		if(this.textures[texture.textureType][texture_num_alts] > 0) {
+			let rand = random(texture_probability_distribution[this.textures[texture.textureType][texture_num_alts] + 1]);
+			for(let i = 0; i < this.textures[texture.textureType][texture_num_alts] + 1; i++) {
 				if(rand < texture_probability_distribution[i]) {
-					texture.textureAlt = i;
-					break;
+					texture.textureElements[0].element = texture_default + i;
+					return;
 				}
 			}
-		}
-		else {
-			texture.textureAlt = 0;
 		}
 	}
 
@@ -237,16 +307,8 @@ class DisplaySystem extends System {
 	drawTexture(object, bounds) {
 		let x = bounds.x, y = bounds.y, w = bounds.w, h = bounds.h;
 		for(let texture of object.textures) {
-			let textureType = texture.textureType;
-			let textureElements = texture.textureElements;
-			let textureAlt = texture.textureAlt;
-			if(textureElements.length > 1) {
-				for(let element of textureElements) {
-					image(this.textures[textureType][element][0], x, y, w, h);
-				}
-			}
-			else {
-				image(this.textures[textureType][textureElements[0]][textureAlt], x, y, w, h);
+			for(let textureElement of texture.textureElements) {
+				image(this.textures[texture.textureType][textureElement.element], x + (this.gridSize * textureElement.xOff), y + (this.gridSize * textureElement.yOff), w, h);
 			}
 		}
 	}

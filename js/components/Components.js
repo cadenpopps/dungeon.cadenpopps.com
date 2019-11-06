@@ -21,7 +21,6 @@ function MagicComponent(initialMagic){
 }
 
 function CombatComponent(strength, magic, intelligence){
-
 	this.meleeAttackPower = strength;
 	this.meleeDefensePower = floor((strength) / 5);
 
@@ -54,12 +53,6 @@ function MovementComponent(speed){
 	this.speed = speed;
 }
 
-function TextureComponent(type) {
-	this.textureType = type;
-	this.textureElements;
-	this.textureAlt;
-}
-
 function DisplayComponent(width, height, opaque, offsetX = 0, offsetY = 0){
 	this.width = width;
 	this.height = height;
@@ -71,14 +64,6 @@ function DisplayComponent(width, height, opaque, offsetX = 0, offsetY = 0){
 	this.offsetY = offsetY;
 }
 
-function LightComponent(){
-	this.level = 0;
-}
-
-function LightEmitterComponent(emitterLevel){
-	this.level = emitterLevel;
-}
-
 function AnimationComponent(animations){
 	this.offsetX = 0;
 	this.offsetY = 0;
@@ -86,6 +71,25 @@ function AnimationComponent(animations){
 	this.sprite = undefined;
 	this.animation = animation_idle;
 	this.animations = animations;
+}
+
+function TextureComponent(type) {
+	this.textureType = type;
+	this.textureElements = [];
+}
+
+function TextureElementComponent(element = texture_default, xOff = 0, yOff = 0) {
+	this.element = element;
+	this.xOff = xOff;
+	this.yOff = yOff;
+}
+
+function LightComponent(){
+	this.level = 0;
+}
+
+function LightEmitterComponent(emitterLevel){
+	this.level = emitterLevel;
 }
 
 function ActionComponent(actions, speed){

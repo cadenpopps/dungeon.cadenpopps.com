@@ -42,52 +42,67 @@ function loadImages(){
 	images.textures = [];
 
 	images.textures[texture_floor] = [];
-	images.textures[texture_floor][texture_default] = [];
-	images.textures[texture_floor][texture_default][texture_default] = loadImage('/img/textures/old/pathTexture0.png');
-	images.textures[texture_floor][texture_default][texture_alt1] = loadImage('/img/textures/old/pathTexture0.png');
-	images.textures[texture_floor][texture_default][texture_alt2] = loadImage('/img/textures/old/pathTexture0.png');
-	images.textures[texture_floor][texture_default][texture_alt3] = loadImage('/img/textures/old/pathTexture1.png');
-	images.textures[texture_floor][texture_default][texture_alt4] = loadImage('/img/textures/old/pathTexture2.png');
-	images.textures[texture_floor][texture_default][texture_alt5] = loadImage('/img/textures/old/pathTexture3.png');
-	images.textures[texture_floor][texture_default][texture_alt6] = loadImage('/img/textures/old/pathTexture4.png');
-	images.textures[texture_floor][texture_default][texture_alt7] = loadImage('/img/textures/old/pathTexture5.png');
-	// images.textures[texture_floor][texture_default][texture_alt6] = loadImage('/img/textures/old/pathTexture6.png');
-	// images.textures[texture_floor][texture_default][texture_alt7] = loadImage('/img/textures/old/pathTexture7.png');
+	images.textures[texture_floor][texture_default] = loadImage('/img/textures/old/pathTexture0.png');
+	images.textures[texture_floor][texture_alt1] = loadImage('/img/textures/old/pathTexture0.png');
+	images.textures[texture_floor][texture_alt2] = loadImage('/img/textures/old/pathTexture0.png');
+	images.textures[texture_floor][texture_alt3] = loadImage('/img/textures/old/pathTexture1.png');
+	images.textures[texture_floor][texture_alt4] = loadImage('/img/textures/old/pathTexture2.png');
+	images.textures[texture_floor][texture_alt5] = loadImage('/img/textures/old/pathTexture3.png');
+	images.textures[texture_floor][texture_alt6] = loadImage('/img/textures/old/pathTexture4.png');
+	images.textures[texture_floor][texture_alt7] = loadImage('/img/textures/old/pathTexture5.png');
+	images.textures[texture_floor][texture_num_alts] = 7;
+
+	images.textures[texture_floor][texture_corner_bottom_left] = loadImage('/img/textures/corner_top_right.png');
+	images.textures[texture_floor][texture_corner_bottom_right] = loadImage('/img/textures/corner_top_left.png');
+	images.textures[texture_floor][texture_corner_top_left] = loadImage('/img/textures/corner_bottom_right.png');
+	images.textures[texture_floor][texture_corner_top_right] = loadImage('/img/textures/corner_bottom_left.png');
+	images.textures[texture_floor][texture_side_top] = loadImage('/img/textures/side_top.png');
+	images.textures[texture_floor][texture_side_right] = loadImage('/img/textures/side_right.png');
+	images.textures[texture_floor][texture_side_bottom] = loadImage('/img/textures/side_bottom.png');
+	images.textures[texture_floor][texture_side_left] = loadImage('/img/textures/side_left.png');
 
 	images.textures[texture_wall] = [];
-	images.textures[texture_wall][texture_default] = [];
-	images.textures[texture_wall][texture_default][texture_default] = loadImage('/img/textures/old/wallTexture0.png');
-	images.textures[texture_wall][texture_default][texture_alt1] = loadImage('/img/textures/old/wallTexture0.png');
-	images.textures[texture_wall][texture_default][texture_alt2] = loadImage('/img/textures/old/wallTexture0.png');
-	images.textures[texture_wall][texture_default][texture_alt3] = loadImage('/img/textures/old/wallTexture1.png');
-	images.textures[texture_wall][texture_default][texture_alt4] = loadImage('/img/textures/old/wallTexture3.png');
-	images.textures[texture_wall][texture_default][texture_alt5] = loadImage('/img/textures/old/wallTexture4.png');
-	images.textures[texture_wall][texture_default][texture_alt6] = loadImage('/img/textures/old/wallTexture5.png');
+	images.textures[texture_wall][texture_default] = loadImage('/img/textures/old/wallTexture0.png');
+	images.textures[texture_wall][texture_alt1] = loadImage('/img/textures/old/wallTexture0.png');
+	images.textures[texture_wall][texture_alt2] = loadImage('/img/textures/old/wallTexture0.png');
+	images.textures[texture_wall][texture_alt3] = loadImage('/img/textures/old/wallTexture1.png');
+	images.textures[texture_wall][texture_alt4] = loadImage('/img/textures/old/wallTexture3.png');
+	images.textures[texture_wall][texture_alt5] = loadImage('/img/textures/old/wallTexture4.png');
+	images.textures[texture_wall][texture_alt6] = loadImage('/img/textures/old/wallTexture5.png');
+	images.textures[texture_wall][texture_num_alts] = 6;
+
+	images.textures[texture_wall][texture_corner_top_right] = loadImage('/img/textures/corner_top_right.png');
+	images.textures[texture_wall][texture_corner_top_left] = loadImage('/img/textures/corner_top_left.png');
+	images.textures[texture_wall][texture_corner_bottom_right] = loadImage('/img/textures/corner_bottom_right.png');
+	images.textures[texture_wall][texture_corner_bottom_left] = loadImage('/img/textures/corner_bottom_left.png');
+	images.textures[texture_wall][texture_side_top] = loadImage('/img/textures/side_top.png');
+	images.textures[texture_wall][texture_side_right] = loadImage('/img/textures/side_right.png');
+	images.textures[texture_wall][texture_side_bottom] = loadImage('/img/textures/side_bottom.png');
+	images.textures[texture_wall][texture_side_left] = loadImage('/img/textures/side_left.png');
 
 	images.textures[texture_door_closed] = [];
-	images.textures[texture_door_closed][texture_default] = [];
-	images.textures[texture_door_closed][texture_default][texture_default] = loadImage('/img/textures/old/doorClosedTexture.png');
+	images.textures[texture_door_closed][texture_default] = loadImage('/img/textures/old/doorClosedTexture.png');
+	images.textures[texture_door_closed][texture_num_alts] = 0;
 
 	images.textures[texture_door_open] = [];
-	images.textures[texture_door_open][texture_default] = [];
-	images.textures[texture_door_open][texture_default][texture_default] = loadImage('/img/textures/old/doorOpenedTexture.png');
+	images.textures[texture_door_open][texture_default] = loadImage('/img/textures/old/doorOpenedTexture.png');
+	images.textures[texture_door_open][texture_num_alts] = 0;
 
 	images.textures[texture_loot_closed] = [];
-	images.textures[texture_loot_closed][texture_default] = [];
-	images.textures[texture_loot_closed][texture_default][texture_default] = loadImage('/img/textures/old/lootClosedTexture.png');
+	images.textures[texture_loot_closed][texture_default] = loadImage('/img/textures/old/lootClosedTexture.png');
+	images.textures[texture_loot_closed][texture_num_alts] = 0;
 
 	images.textures[texture_loot_open] = [];
-	images.textures[texture_loot_open][texture_default] = [];
-	images.textures[texture_loot_open][texture_default][texture_default] = loadImage('/img/textures/old/lootOpenedTexture.png');
+	images.textures[texture_loot_open][texture_default] = loadImage('/img/textures/old/lootOpenedTexture.png');
+	images.textures[texture_loot_open][texture_num_alts] = 0;
 
 	images.textures[texture_stair_up] = [];
-	images.textures[texture_stair_up][texture_default] = [];
-	images.textures[texture_stair_up][texture_default] = [loadImage('/img/textures/stairUp.png')];
+	images.textures[texture_stair_up][texture_default] = loadImage('/img/textures/stairUp.png');
+	images.textures[texture_stair_up][texture_num_alts] = 0;
 
 	images.textures[texture_stair_down] = [];
-	images.textures[texture_stair_down][texture_default] = [];
-	images.textures[texture_stair_down][texture_default] = [loadImage('/img/textures/stairDown.png')];
-
+	images.textures[texture_stair_down][texture_default] = loadImage('/img/textures/stairDown.png');
+	images.textures[texture_stair_down][texture_num_alts] = 0;
 
 	images.ui = [];
 
