@@ -141,6 +141,23 @@ class Utility {
 		return neighbors;
 	}
 
+	static getCornerNeighbors(square, map) {
+		let neighbors = new Array(4);
+		if(Utility.positionInBounds(new PositionComponent(square.position.x - 1, square.position.y - 1), map.length)) {
+			neighbors[0] = (map[square.position.x - 1][square.position.y - 1]);
+		}
+		if(Utility.positionInBounds(new PositionComponent(square.position.x + 1, square.position.y - 1), map.length)) {
+			neighbors[1] = (map[square.position.x + 1][square.position.y - 1]);
+		}
+		if(Utility.positionInBounds(new PositionComponent(square.position.x - 1, square.position.y + 1), map.length)) {
+			neighbors[2] = (map[square.position.x - 1][square.position.y + 1]);
+		}
+		if(Utility.positionInBounds(new PositionComponent(square.position.x - 1, square.position.y + 1), map.length)) {
+			neighbors[3] = (map[square.position.x + 1][square.position.y + 1]);
+		}
+		return neighbors;
+	}
+
 	static squareTypeIsWalkable(square, entity){
 		return (entity instanceof Player) ? Utility.playerWalkable(square) : Utility.mobWalkable(square);
 	}

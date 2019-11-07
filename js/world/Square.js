@@ -29,13 +29,14 @@ class FloorSquare extends Square {
 	}
 }
 
-class DoorSquare extends Square {
+class DoorSquare extends WallSquare {
 	constructor(x, y) {
+		super(x, y, [], physical_solid, display_opaque);
 		let textures = [
 			new TextureComponent(texture_floor),
 			new TextureComponent(texture_door_closed)
 		];
-		super(x, y, textures, physical_solid, display_opaque);
+		this.textures = textures;
 		this.opened = false;
 	}
 
@@ -63,22 +64,24 @@ class LootSquare extends Square {
 	}
 }
 
-class StairUpSquare extends Square {
+class StairUpSquare extends FloorSquare {
 	constructor(x, y) {
+		super(x, y, [], physical_solid, display_transparent);
 		let textures = [
 			new TextureComponent(texture_floor),
 			new TextureComponent(texture_stair_up)
 		];
-		super(x, y, textures, physical_solid, display_transparent);
+		this.textures = textures;
 	}
 }
 
-class StairDownSquare extends Square {
+class StairDownSquare extends FloorSquare {
 	constructor(x, y) {
+		super(x, y, [], physical_solid, display_transparent);
 		let textures = [
 			new TextureComponent(texture_floor),
 			new TextureComponent(texture_stair_down)
 		];
-		super(x, y, textures, physical_solid, display_transparent);
+		this.textures = textures;
 	}
 }
