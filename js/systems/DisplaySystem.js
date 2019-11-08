@@ -181,16 +181,16 @@ class DisplaySystem extends System {
 					texture.textureElements.push(new TextureElementComponent(texture_side_left, 0, 0));
 				}
 				if(TOP && RIGHT) {
-					texture.textureElements.push(new TextureElementComponent(texture_corner_top_right, 0, 0));
+					texture.textureElements.push(new TextureElementComponent(texture_out_corner_top_right, 0, 0));
 				}
 				if(RIGHT && BOTTOM) {
-					texture.textureElements.push(new TextureElementComponent(texture_corner_bottom_right, 0, 0));
+					texture.textureElements.push(new TextureElementComponent(texture_out_corner_bottom_right, 0, 0));
 				}
 				if(BOTTOM && LEFT) {
-					texture.textureElements.push(new TextureElementComponent(texture_corner_bottom_left, 0, 0));
+					texture.textureElements.push(new TextureElementComponent(texture_out_corner_bottom_left, 0, 0));
 				}
 				if(LEFT && TOP) {
-					texture.textureElements.push(new TextureElementComponent(texture_corner_top_left, 0, 0));
+					texture.textureElements.push(new TextureElementComponent(texture_out_corner_top_left, 0, 0));
 				}
 				if(texture.textureElements.length == 0) {
 					texture.textureElements.push(new TextureElementComponent(texture_default, 0, 0));
@@ -208,48 +208,73 @@ class DisplaySystem extends System {
 					BOTTOMLEFT = DisplaySystem.texturesConnect(square, cornerNeighbors[2]),
 					BOTTOMRIGHT = DisplaySystem.texturesConnect(square, cornerNeighbors[3]);
 
-				// texture.textureElements.push(new TextureElementComponent(texture_default, 0, 0));
-				if(!TOP && LEFT && RIGHT) {
-					texture.textureElements.push(new TextureElementComponent(texture_side_top, 0, 0));
+				texture.textureElements.push(new TextureElementComponent(texture_default, 0, 0));
+				if(!TOP && !RIGHT && !BOTTOM && !LEFT) {
+					texture.textureElements.push(new TextureElementComponent(texture_cross, 0, 0));
 				}
-				if(!RIGHT && TOP && BOTTOM) {
-					texture.textureElements.push(new TextureElementComponent(texture_side_right, 0, 0));
+				else if(!TOP && !RIGHT && !LEFT && BOTTOM) {
+					texture.textureElements.push(new TextureElementComponent(texture_U_bottom, 0, 0));
 				}
-				if(!BOTTOM && LEFT && RIGHT) {
-					texture.textureElements.push(new TextureElementComponent(texture_side_bottom, 0, 0));
+				else if(!RIGHT && !BOTTOM && !TOP && LEFT) {
+					texture.textureElements.push(new TextureElementComponent(texture_U_left, 0, 0));
 				}
-				if(!LEFT && TOP && BOTTOM) {
-					texture.textureElements.push(new TextureElementComponent(texture_side_left, 0, 0));
+				else if(!BOTTOM && !LEFT && !RIGHT && TOP) {
+					texture.textureElements.push(new TextureElementComponent(texture_U_top, 0, 0));
 				}
-				if(!TOP && !RIGHT) {
-					texture.textureElements.push(new TextureElementComponent(texture_corner_top_right, 0, 0));
+				else if(!LEFT && !TOP && !BOTTOM && RIGHT) {
+					texture.textureElements.push(new TextureElementComponent(texture_U_right, 0, 0));
 				}
-				if(!RIGHT && !BOTTOM) {
-					texture.textureElements.push(new TextureElementComponent(texture_corner_bottom_right, 0, 0));
-				}
-				if(!BOTTOM && !LEFT) {
-					texture.textureElements.push(new TextureElementComponent(texture_corner_bottom_left, 0, 0));
-				}
-				if(!LEFT && !TOP) {
-					texture.textureElements.push(new TextureElementComponent(texture_corner_top_left, 0, 0));
-				}
-				if(TOP && RIGHT && BOTTOM && LEFT) {
-					if(!TOPLEFT) {
-						texture.textureElements.push(new TextureElementComponent(texture_corner_top_left, 0, 0));
+				else{
+					if(!TOP && LEFT && RIGHT) {
+						texture.textureElements.push(new TextureElementComponent(texture_side_top, 0, 0));
 					}
-					if(!TOPRIGHT) {
-						texture.textureElements.push(new TextureElementComponent(texture_corner_top_right, 0, 0));
+					if(!RIGHT && TOP && BOTTOM) {
+						texture.textureElements.push(new TextureElementComponent(texture_side_right, 0, 0));
 					}
-					if(!BOTTOMLEFT) {
-						texture.textureElements.push(new TextureElementComponent(texture_corner_bottom_left, 0, 0));
+					if(!BOTTOM && LEFT && RIGHT) {
+						texture.textureElements.push(new TextureElementComponent(texture_side_bottom, 0, 0));
 					}
-					if(!BOTTOMRIGHT) {
-						texture.textureElements.push(new TextureElementComponent(texture_corner_bottom_right, 0, 0));
+					if(!LEFT && TOP && BOTTOM) {
+						texture.textureElements.push(new TextureElementComponent(texture_side_left, 0, 0));
+					}
+					if(!TOP && !RIGHT) {
+						texture.textureElements.push(new TextureElementComponent(texture_in_corner_top_right, 0, 0));
+					}
+					if(!RIGHT && !BOTTOM) {
+						texture.textureElements.push(new TextureElementComponent(texture_in_corner_bottom_right, 0, 0));
+					}
+					if(!BOTTOM && !LEFT) {
+						texture.textureElements.push(new TextureElementComponent(texture_in_corner_bottom_left, 0, 0));
+					}
+					if(!LEFT && !TOP) {
+						texture.textureElements.push(new TextureElementComponent(texture_in_corner_top_left, 0, 0));
+					}
+					if(TOP && RIGHT) {
+						if(!TOPRIGHT) {
+							texture.textureElements.push(new TextureElementComponent(texture_out_corner_top_right, 0, 0));
+						}
+					}
+					if(RIGHT && BOTTOM) {
+						if(!BOTTOMRIGHT) {
+							texture.textureElements.push(new TextureElementComponent(texture_out_corner_bottom_right, 0, 0));
+						}
+					}
+					if(BOTTOM && LEFT) {
+						if(!BOTTOMLEFT) {
+							texture.textureElements.push(new TextureElementComponent(texture_out_corner_bottom_left, 0, 0));
+						}
+					}
+					if(LEFT && TOP) {
+						if(!TOPLEFT) {
+							texture.textureElements.push(new TextureElementComponent(texture_out_corner_top_left, 0, 0));
+						}
 					}
 				}
-				if(texture.textureElements.length == 0) {
-					texture.textureElements.push(new TextureElementComponent(texture_default, 0, 0));
-				}
+				// if(TOP && RIGHT && BOTTOM && LEFT) {
+				// }
+				// if(texture.textureElements.length = 2) {
+				// 	// texture.textureElements.push(new TextureElementComponent(texture_default, 0, 0));
+				// }
 			}
 			else {
 				texture.textureElements.push(new TextureElementComponent(texture_default, 0, 0));

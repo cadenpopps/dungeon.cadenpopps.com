@@ -78,7 +78,7 @@ class MovementSystem extends System {
 			}
 		}
 
-		// if(map[target.x][target.y] instanceof WallSquare && entity instanceof Player) {
+		// if(entity instanceof Player) {
 		// 	console.log(map[target.x][target.y]);
 		// }
 
