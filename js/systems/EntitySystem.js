@@ -39,7 +39,7 @@ class EntitySystem extends System {
 					this.fixPlayerPosition(this.player, this.levels[this.depth].stairDown, this.depth);
 				}
 				if(this.entities.length == this.depth) {
-					this.generateEnemies(engine, this.entities, this.levels, this.entityData, this.entities.length);
+					this.generateEnemies(engine, this.entities, this.levels, this.entityData, this.entities.length, this.player);
 				}
 				this.updateEntities(engine);
 				break;
@@ -73,14 +73,14 @@ class EntitySystem extends System {
 		return new Player(0, 0, config, playerClass, actions, animations);
 	}
 
-	generateEnemies(engine, entities, levels, entityData, depth) {
+	generateEnemies(engine, entities, levels, entityData, depth, player) {
 		let config, entityPosition;
 		let numEntities = depth + 7;
 		entities.push([]);
 
 		while(numEntities > 0) {
 			config = entityData[random(Object.keys(entityData))];
-			entityPosition = this.findSafeSpawnLocation(config.size, entities[depth], levels[depth].map.map);
+			entityPosition = this.findSafeSpawnLocation(config.size, entities[depth], player, levels[depth].map.map);
 			if(entityPosition != undefined) {
 				this.generateEnemy(engine, entityPosition.x, entityPosition.y, depth, config);
 			}
@@ -105,12 +105,14 @@ class EntitySystem extends System {
 		return false;
 	}
 
-	findSafeSpawnLocation(size, entities, map) {
+	findSafeSpawnLocation(size, entities, player, map) {
 		let validSquares = [];
 		for(let i = 0; i < map.length; i++) {
 			for(let j = 0; j < map[0].length; j++) {
 				if(this.safeSpawnLocation(i, j, size, entities, map)) {
-					validSquares.push(map[i][j].position);
+					if(Utility.distance(new PositionComponent(i, j), player.position) > 10) {
+						validSquares.push(map[i][j].position);
+					}
 				}
 			}
 		}

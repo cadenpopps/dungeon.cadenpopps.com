@@ -37,6 +37,10 @@ class Utility {
 		return abs((e1.position.x > e2.position.x) ? e1.collision.left - e2.collision.right : e1.collision.right - e2.collision.left) + abs((e1.position.y > e2.position.y) ? e1.collision.top - e2.collision.bottom : e1.collision.bottom - e2.collision.top);
 	}
 
+	static distance(p1, p2) {
+		return abs(p1.x - p2.x) + abs(p1.y - p2.y);
+	}
+
 	static getDirectionToEntity(e1, e2) {
 		if(e1.position.y > e2.position.y){ return direction_up; }
 		if(e1.position.x < e2.position.x){ return direction_right;}
