@@ -6,7 +6,7 @@
 
 		<!-- css -->
 		<link rel="stylesheet" type="text/css" href="/css/index.css" />
-		<!-- <link href="https://fonts.googleapis.com/css?family=Montserrat:400" rel="stylesheet"> -->
+		<link href="https://fonts.googleapis.com/css?family=Montserrat:400" rel="stylesheet">
 
 		<!-- libraries -->
 		<!-- <script type="text/javascript" src="http://js.cadenpopps.com/popps.js?v=8"></script> -->
@@ -14,7 +14,7 @@
 		<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script> -->
 		<!-- <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> -->
 
-		<!-- <1!-- Components --1> -->
+		<!-- Components -->
 		<script type="text/javascript" src="/js/components/Components.js"></script>
 
 		<script type="text/javascript" src="/bundle.min.js"></script>
@@ -24,11 +24,11 @@
 		<!-- Utility -->
 		<!-- <script type="text/javascript" src="/js/Utility.js?v=2"></script> -->
 
-		<!-- <1!-- game files --1> -->
+		<!-- game files -->
 		<!-- <script type="text/javascript" src="/js/app.js"></script> -->
 		<!-- <script type="text/javascript" src="/js/PoppsEngine.js"></script> -->
 
-		<!-- <1!-- Systems --1> -->
+		<!-- Systems -->
 		<!-- <script type="text/javascript" src="/js/systems/System.js"></script> -->
 		<!-- <script type="text/javascript" src="/js/systems/InputSystem.js"></script> -->
 		<!-- <script type="text/javascript" src="/js/systems/DisplaySystem.js"></script> -->
@@ -45,19 +45,19 @@
 		<!-- <script type="text/javascript" src="/js/systems/AISystem.js"></script> -->
 
 
-		<!-- <1!-- World --1> -->
+		<!-- World -->
 		<!-- <script type="text/javascript" src="/js/world/Level.js"></script> -->
 		<!-- <script type="text/javascript" src="/js/world/Square.js"></script> -->
 
-		<!-- <1!-- Entities --1> -->
+		<!-- Entities -->
 		<!-- <script type="text/javascript" src="/js/entities/Entity.js"></script> -->
 		<!-- <script type="text/javascript" src="/js/entities/Player.js"></script> -->
 		<!-- <script type="text/javascript" src="/js/entities/Mob.js"></script> -->
 
-		<!-- <1!-- Items --1> -->
+		<!-- Items -->
 		<!-- <script type="text/javascript" src="/js/items/Item.js"></script> -->
 
-		<!-- <1!-- Level generation --1> -->
+		<!-- Level generation -->
 		<!-- <script type="text/javascript" src="/js/levelgen/LevelGenerator.js"></script> -->
 		<!-- <script type="text/javascript" src="/js/levelgen/Room.js"></script> -->
 
@@ -67,10 +67,14 @@
 
 	<body>
 
-		<div id="game"></div>
-		<!-- <div id="welcome" class="title">Welcome, Adventurer</div> -->
-		<div id="vignette"></div>
-		<div id="overlay"></div>
+		<div id="titleScreen">
+			<div id="titleScreenContent">
+				<div id="title">Dungeon Game</div>
+				<div id="howToPlayButton" class="button">How to play</div>
+				<div id="playButton" class="button">Play</div>
+			</div>
+		</div>
+		<canvas id="heartCanvas"></canvas>
 
 	</body>
 

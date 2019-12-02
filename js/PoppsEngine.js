@@ -8,7 +8,6 @@ class PoppsEngine {
 		const config = data.config;
 		const ROOM_POOL = data.room_pool;
 		const STAIR_ROOM_POOL = data.stair_room_pool;
-		const IMAGES = data.images;
 		const PLAYER_DATA = data.player_data;
 		const ENTITY_DATA = data.entity_data;
 
@@ -18,7 +17,8 @@ class PoppsEngine {
 
 		this.systems = [];
 		this.systems.push(new InputSystem());
-		this.systems.push(new DisplaySystem(config.display, IMAGES));
+		this.systems.push(new DisplaySystem(config.display, data.images));
+		this.systems.push(new UISystem(config.ui, data.images.ui));
 		this.systems.push(new VisionSystem(config.vision));
 		this.systems.push(new LightSystem(config.light));
 		this.systems.push(new ActionSystem());
@@ -46,9 +46,13 @@ class PoppsEngine {
 
 	start() {
 		window.addEventListener('resize', this.sendEvent(event_window_resized));
-		this.sendEvent(event_new_game);
-		this.sendEvent(event_begin_game, 0, 20);
 		window.requestAnimationFrame(this.tick.bind(this));
+		if(TITLE_SCREEN) {
+			this.sendEvent(event_title_screen);
+		}
+		else {
+			this.sendEvent(event_new_game);
+		}
 	}
 
 	sendEvent(e, data = undefined, ticks = 0) {
@@ -87,7 +91,7 @@ class PoppsEngine {
 
 	handleEvent(e, data) {
 		switch(e) {
-			case event_begin_game:
+			case event_new_game:
 				this.running = true;
 				break;
 		}

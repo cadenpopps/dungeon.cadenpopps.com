@@ -1,7 +1,6 @@
-'use strict';
-
 //constants
 const DEBUG_MODE = false;
+const TITLE_SCREEN = false;
 const UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
 const OPEN = 0, CLOSED = 1;
 const entity_player = 0, entity_mob = 1;
@@ -126,6 +125,7 @@ const event_new_game = 0,
 	event_entity_spawned = 50,
 	event_spawn_enemy_close = 51,
 
+	event_title_screen = 999,
 	event_game_over = 1000
 ;
 

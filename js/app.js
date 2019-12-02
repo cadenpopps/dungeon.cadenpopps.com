@@ -39,19 +39,19 @@ function loadRoomPools(){
 function loadImages(){
 	let images = [];
 
-	images.TEXTURES = [];
-	images.TEXTURES[texture_floor] = loadImage('/img/textures/floor0.jpg');
-	images.TEXTURES[texture_wall] = loadImage('/img/textures/wall0.jpg');
-	images.TEXTURES[texture_door_open] = loadImage('/img/textures/doorOpen.png');
-	images.TEXTURES[texture_door_closed] = loadImage('/img/textures/doorClosed.jpg');
-	images.TEXTURES[texture_loot_open] = loadImage('/img/textures/lootOpen.png');
-	images.TEXTURES[texture_loot_closed] = loadImage('/img/textures/lootClosed.png');
-	images.TEXTURES[texture_stair_up] = loadImage('/img/textures/stairUp.png');
-	images.TEXTURES[texture_stair_down] = loadImage('/img/textures/stairDown.png');
+	images.textures = [];
+	images.textures[texture_floor] = loadImage('/img/textures/floor0.jpg');
+	images.textures[texture_wall] = loadImage('/img/textures/wall0.jpg');
+	images.textures[texture_door_open] = loadImage('/img/textures/doorOpen.png');
+	images.textures[texture_door_closed] = loadImage('/img/textures/doorClosed.jpg');
+	images.textures[texture_loot_open] = loadImage('/img/textures/lootOpen.png');
+	images.textures[texture_loot_closed] = loadImage('/img/textures/lootClosed.png');
+	images.textures[texture_stair_up] = loadImage('/img/textures/stairUp.png');
+	images.textures[texture_stair_down] = loadImage('/img/textures/stairDown.png');
 
-	images.UI = [];
-	images.UI[ui_heart] = loadImage('/img/icons/heart.png');
-	images.UI[ui_empty_heart] = loadImage('/img/icons/emptyHeart.png');
+	images.ui = [];
+	images.ui[ui_heart] = loadImage('/img/icons/heart.png');
+	images.ui[ui_empty_heart] = loadImage('/img/icons/emptyHeart.png');
 
 	return images;
 }

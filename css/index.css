@@ -1,4 +1,9 @@
 
+:root {
+	--button-width: 240px;
+	--button-height: 55px;
+}
+
 html, body{
 	overflow: hidden;
 }
@@ -29,14 +34,8 @@ body {
 a {
 	text-decoration: none;
 }
-.title{
-	font-size: 3em;
-}
-.subtitle{
-	font-size:2em;
-}
 
-#game{
+#game {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -44,36 +43,60 @@ a {
 	right:0;
 	z-index:0;
 }
-#game *{
-	/* display:none; */
-	z-index:-1;
-}
 
-#welcome{
+#titleScreen {
 	position: absolute;
-	padding:80px;
-	z-index:1;
-}
-
-#vignette {
-	position: fixed;
-	opacity: 0;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	z-index:1;
-	background-color:rgba(255,30,30,.1);
-	box-shadow: inset 0 0 50vw rgba(255,30,30,.7);
-}
-
-#overlay {
-	position: absolute;
-	display:block;
 	top:0;
 	left:0;
 	right:0;
 	bottom:0;
-	background-color:black;
-	opacity: 0;
+	z-index:100;
+
+	background-color: black;
+	display: none;
+}
+
+#titleScreen>#titleScreenContent {
+	display: flex;
+	flex-direction: column;
+	align-content: center;
+	justify-content: center;
+
+	width: max-content;
+	height: 100vh;
+	margin: 0 auto;
+}
+
+#titleScreenContent>#title {
+	font-size: 70pt;
+	margin: 80px 0;
+}
+
+#titleScreenContent>.button {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	background-color: white;
+	color: black;
+	border-radius: 5px;
+	width: var(--button-width);
+	height: var(--button-height);
+	font-size: 32pt;
+	margin: 15px auto;
+	padding: 8px 15px;
+	cursor: pointer;
+}
+
+#titleScreenContent>#howToPlayButton  {
+	font-size: 27pt;
+}
+
+#titleScreenContent>#playButton  { }
+
+#heartCanvas {
+	position: absolute;
+	top:0;
+	left:0;
+	z-index:1;
+	width: min-content;
 }

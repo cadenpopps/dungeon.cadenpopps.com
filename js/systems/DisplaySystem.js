@@ -4,8 +4,8 @@ class DisplaySystem extends System {
 		super([component_position, component_display]);
 
 		this.config = config;
-		this.textures = images.TEXTURES;
-		this.ui = images.UI;
+		this.textures = images.textures;
+		this.ui = images.ui;
 
 		this.camera = {
 			display: true,
@@ -256,25 +256,6 @@ class DisplaySystem extends System {
 	}
 
 	drawPlayerHealth(player) {
-		const HEART_SIZE = 30;
-		const HEART_SPACING = 4;
-		const HEART_OFFSET = 20;
-		let x = 0, y = 0;
-		let hearts = HealthSystem.getCurrentHeartAmount(player);
-		let maxHearts = HealthSystem.getMaxHeartAmount(player);
-		for(let i = 1; i <= maxHearts; i++) {
-			if(i <= hearts) {
-				image(this.ui[ui_heart], (x * HEART_SIZE) + (x * HEART_SPACING) + HEART_OFFSET, (y * HEART_SIZE) + HEART_OFFSET, HEART_SIZE, HEART_SIZE);
-			}
-			else {
-				image(this.ui[ui_empty_heart], (x * HEART_SIZE) + (x * HEART_SPACING) + HEART_OFFSET, (y * HEART_SIZE) + HEART_OFFSET, HEART_SIZE, HEART_SIZE);
-			}
-			x++;
-			if(i % 15 == 0) {
-				y++;
-				x = 0;
-			}
-		}
 	}
 
 	centerCamera(camera, position, offsetX = 0, offsetY = 0) {
