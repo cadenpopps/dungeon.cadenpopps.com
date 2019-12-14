@@ -2,30 +2,25 @@ class InputSystem extends System {
 
 	constructor() {
 		super([]);
-		this.player;
 		this.mobSpawnCooldown = 0;
 	}
 
 	run(engine) {
 		if(keys.includes('n') && this.mobSpawnCooldown <= 0) {
 			this.mobSpawnCooldown = 10;
-			engine.sendEvent(event_spawn_enemy_close, this.player);
+			engine.sendEvent(event_spawn_enemy_close, engine.getPlayer());
 		}
 
 		if(this.mobSpawnCooldown > 0) {
 			this.mobSpawnCooldown--;
 		}
 
-		this.player.actions.nextAction = this.determineAction();		
+		engine.getPlayer().actions.nextAction = this.determineAction(engine.getPlayer());
 	}
 
-	addObject(object) {
-		if(object instanceof Player) {
-			this.player = object;
-		}
-	}
+	addObject(object) { }
 
-	determineAction() {
+	determineAction(player) {
 		let action = action_none;
 
 		if(keys.length > 0) {
@@ -33,7 +28,7 @@ class InputSystem extends System {
 			for(let k of keys) {
 				let a = key_to_action[k];
 				let priority = action_to_priority[a];
-				priority = this.fixPriority(this.player, a, priority);
+				priority = this.fixPriority(player, a, priority);
 				if(priority > highestPriority) {
 					action = a;
 					highestPriority = priority;
@@ -45,7 +40,7 @@ class InputSystem extends System {
 	}
 
 	fixPriority(player, a, priority) {
-		if(this.actionEqualsLastAction(player, a)) {
+		if(player.actions.lastAction == a) {
 			if(player.actions.lastActionFailed) { return 0; }
 			else { return priority - 1; }
 		}
@@ -54,6 +49,6 @@ class InputSystem extends System {
 
 
 	actionEqualsLastAction(player, a) {
-		return player.actions.lastAction == a;
+		return k;
 	}
 }

@@ -9,7 +9,7 @@
 		"SharedArrayBuffer": "writable"
 	},
 	"parserOptions": {
-		"ecmaVersion": 2019
+		"ecmaVersion": 2018
 	},
 	"rules": {
 		"indent": ["warn", "tab", {"SwitchCase": 1}],

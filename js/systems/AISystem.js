@@ -3,17 +3,16 @@ class AISystem extends System {
 	constructor(config) {
 		super([component_ai]);
 		this.config = config;
-		this.player;
 	}
 
 	run(engine) {
 		for(let entity of this.objects) {
-			if(Utility.entityDistance(entity, this.player) < entity_active_range) {
+			if(Utility.entityDistance(entity, engine.getPlayer()) < entity_active_range) {
 				if(entity.ai.noticedPlayer) {
-					this.handleActiveEntity(engine, entity, this.player);
+					this.handleActiveEntity(engine, entity, engine.getPlayer());
 				}
 				else {
-					this.handleIdleEntity(engine, entity, this.player);
+					this.handleIdleEntity(engine, entity, engine.getPlayer());
 				}
 			}
 		}
@@ -22,8 +21,7 @@ class AISystem extends System {
 	handleEvent(engine, eventID, data) { }
 
 	addObject(object) {
-		if(object instanceof Player) { this.player = object; }
-		else{ super.addObject(object); }
+		super.addObject(object);
 	}
 
 	handleActiveEntity(engine, entity, player) {

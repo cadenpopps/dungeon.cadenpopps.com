@@ -44,9 +44,8 @@ class UISystem extends System {
 			engine.sendEvent(event_new_game);
 		});
 
-		document.getElementById('howToPlayButton').addEventListener('click', function() {
-			document.getElementById('howToPlayScreen').style.visible = 'visible';
-			// engine.sendEvent(event_new_game);
+		document.getElementById('helpButton').addEventListener('click', function() {
+			document.getElementById('helpScreen').style.visible = 'visible';
 		});
 	}
 

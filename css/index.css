@@ -54,46 +54,57 @@ a {
 
 	background-color: black;
 	display: none;
+
+	letter-spacing: 2px;
 }
 
 #titleScreen>#titleScreenContent {
 	display: flex;
 	flex-direction: column;
-	align-content: center;
 	justify-content: center;
 
 	width: max-content;
 	height: 100vh;
 	margin: 0 auto;
+	margin-left:80px;
 }
 
 #titleScreenContent>#title {
-	font-size: 70pt;
-	margin: 80px 0;
+	font-size: 64pt;
+	margin: -40px 0 40px 0;
+	text-align: left;
+	letter-spacing: 1px;
+}
+
+#titleScreenContent>#title>#smallTitleText {
+	font-size: 36pt;
+	margin: 0 0 -10px 5px;
+	display: block;
 }
 
 #titleScreenContent>.button {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
-	background-color: white;
-	color: black;
+	color: white;
 	border-radius: 5px;
 	width: var(--button-width);
 	height: var(--button-height);
-	font-size: 32pt;
-	margin: 15px auto;
-	padding: 8px 15px;
+	font-size: 24pt;
+	text-align: left;
+	margin: 5px 0 2px 10px;
+	/* padding: 0 ; */
 	cursor: pointer;
 }
 
-#titleScreenContent>#howToPlayButton  {
-	font-size: 27pt;
-}
 
 #titleScreenContent>#playButton  { }
 
-#howToPlayScreen {
+#titleScreenContent>#optionsButton  { }
+
+#titleScreenContent>#helpButton  { }
+
+#helpScreen {
 	display: flex;
 	position: absolute;
 	visibility: hidden;
@@ -106,6 +117,7 @@ a {
 	border-radius: 1px;
 	z-index: 11;
 }
+
 
 #heartCanvas {
 	position: absolute;
