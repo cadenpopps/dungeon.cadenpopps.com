@@ -167,4 +167,10 @@ class VisionSystem extends System {
 	static translate(octant, x, y) {
 		return[ x * xxcomp[octant] + y * xycomp[octant], x * yxcomp[octant] + y * yycomp[octant]];
 	}
+
+	static sightLine(p1, p2, map) {
+		let slope = VisionSystem.slope(p1.x - p2.x, p1.y - p2.y, CENTER);
+		console.log(slope);
+		return false;
+	}
 }

@@ -32,7 +32,7 @@ class EntitySystem extends System {
 				this.depth++;
 				break;
 			case event_level_loaded:
-				if(this.player.depth.depth < this.depth) {
+				if(this.player.depth.depth <= this.depth) {
 					this.fixPlayerPosition(this.player, this.levels[this.depth].stairUp, this.depth);
 				}
 				else if(this.player.depth.depth > this.depth) {

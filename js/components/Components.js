@@ -114,4 +114,6 @@ function AIComponent(actions, attackRange, retreatRange){
 	this.actions = actions;
 	this.attackRange = attackRange;
 	this.retreatRange = retreatRange;
+	this.noticedPlayer = false;
+	this.idleTimer = 0;
 }

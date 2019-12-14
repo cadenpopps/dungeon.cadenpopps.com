@@ -43,6 +43,11 @@ class UISystem extends System {
 			self.titleScreen.style.display = 'none';
 			engine.sendEvent(event_new_game);
 		});
+
+		document.getElementById('howToPlayButton').addEventListener('click', function() {
+			document.getElementById('howToPlayScreen').style.visible = 'visible';
+			// engine.sendEvent(event_new_game);
+		});
 	}
 
 	drawPlayerHealth(heartCanvas, player) {

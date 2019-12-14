@@ -5,7 +5,7 @@ class Utility {
 	}
 
 	static checkComponents(object, requirements) {
-		for(var i = 0; i < requirements.length; i++){
+		for(var i = 0; i < requirements.length; i++) {
 			if(object.components.indexOf(requirements[i]) === -1)
 				return false;
 		}
@@ -42,10 +42,74 @@ class Utility {
 	}
 
 	static getDirectionToEntity(e1, e2) {
-		if(e1.position.y > e2.position.y){ return direction_up; }
-		if(e1.position.x < e2.position.x){ return direction_right;}
-		if(e1.position.y < e2.position.y){ return direction_down; }
-		if(e1.position.x > e2.position.x){ return direction_left; }
+		if(e1.position.y > e2.position.y) { return direction_up; }
+		if(e1.position.x < e2.position.x) { return direction_right;}
+		if(e1.position.y < e2.position.y) { return direction_down; }
+		if(e1.position.x > e2.position.x) { return direction_left; }
+	}
+
+	static shortestPath(map, startPosition, endPosition) {
+		// let nodeMap = Utility.convertMapToNodes(map);
+		// let searching = [];
+
+		// let start = nodeMap[startPosition.x][startPosition.y];
+		// let end = nodeMap[endPosition.x][endPosition.y];
+
+		// searching.push(start);
+		// start.distFromStart = 0;
+		// start.finalCost = Utility.distance(startPosition, endPosition);
+		// // start.cameFrom = undefined;
+
+		// while (searching.length > 0) {
+		// 	let current = searching[0];
+		// 	for (let node of searching) {
+		// 		if (node.finalCost < current.finalCost) {
+		// 			current = node;
+		// 		}
+		// 	}
+
+		// 	if(current == end) {
+		// 		return makePath(current);
+		// 	}
+
+		// 	searching.splice(searching.indexOf(current), 1);
+		// 	current.searched = true;
+
+		// 	let currentNeighbors = getNeighbors(board, current);
+		// 	for(let n of currentNeighbors) {
+		// 		if (!n.searched) {
+		// 			let estimatedDistFromStart = Utility.distance();
+
+		// 			if (!searching.includes(n)) {
+		// 				searching.push(n);
+		// 			}
+		// 			else if (estimatedDistFromStart >= distFromStart[n]) {
+		// 				continue;
+		// 			}
+
+		// 			cameFrom[Utility.getSquareCode(n.position.x, n.position.y)] = Utility.getSquareCode(current.position.x, current.position.y);
+		// 			distFromStart[n] = estimatedDistFromStart;
+		// 			finalCost[n] = distFromStart[n] + squareDistance(start, end);
+		// 		}
+		// 	}
+		// }
+		// return false;
+	}
+
+	static convertMapToNodes(map) {
+		let nodeMap = new Array(map.length);
+		for(let i = 0; i < map.length; i++) {
+			nodeMap[i] = new Array(map.length);
+			for(let j = 0; j < map.length; j++) {
+				nodeMap[i][j] = {
+					'searched': false,
+					'cameFrom': undefined,
+					'distFromStart': 10000,
+					'finalCost': 10000
+				}
+			}
+		}
+		return nodeMap;
 	}
 
 	static entityAdjacent(entity, otherEntity) {
@@ -83,42 +147,42 @@ class Utility {
 		return neighbors;
 	}
 
-	static findMobPath(board, mob, player){
+	static findMobPath(board, mob, player) {
 		return findPath(board, board[mob.position.x][mob.position.y], board[player.position.x][player.position.y]);
 	}
 
-	static walkable(x, y, map, entity, objects){
+	static walkable(x, y, map, entity, objects) {
 		return Utility.positionInBounds(x, y, map.length) && Utility.squareTypeIsWalkable(map[x][y], entity) && !Utility.squareIsOccupied(x, y, entity, objects);
 	}
 
-	static positionOnScreen(x, y, w, h){
+	static positionOnScreen(x, y, w, h) {
 		return x > -w && x < width + w && y > -h && y < height + h;
 	}
 
-	static positionInBounds(x, y, size){
+	static positionInBounds(x, y, size) {
 		return x >= 0 && x < size && y >= 0 && y < size;
 	}
 
-	static squareInBounds(square, size){
+	static squareInBounds(square, size) {
 		return square.position.x >= 0 && square.position.x < size && square.position.y >= 0 && square.position.y < size;
 	}
 
-	static squareTypeIsWalkable(square, entity){
+	static squareTypeIsWalkable(square, entity) {
 		return (entity instanceof Player) ? Utility.playerWalkable(square) : Utility.mobWalkable(square);
 	}
 
-	static playerWalkable(square){
+	static playerWalkable(square) {
 		return (!square.physical.solid || square instanceof DoorSquare || square instanceof StairUpSquare || square instanceof StairDownSquare);
 	}
 
-	static mobWalkable(square){
+	static mobWalkable(square) {
 		return !(square.physical.solid);
 	}
 
-	static squareIsOccupied(x, y, entity, objects){
-		for(let o of objects){
+	static squareIsOccupied(x, y, entity, objects) {
+		for(let o of objects) {
 			if(entity != o) {
-				if(Utility.collision(new CollisionComponent(x, y, entity.physical.size), o.collision)) {
+				if(Utility.collision(new CollisionComponent(x, y, 1), o.collision)) {
 					return true;
 				}
 			}
@@ -144,16 +208,16 @@ class Utility {
 		return new PositionComponent(entity.position.x + dtp.x, entity.position.y + dtp.y);
 	}
 
-	static isMovementAction(action){
+	static isMovementAction(action) {
 		return action > action_move && action <= action_move_left;
 	}
 
-	static isSprintAction(action){
+	static isSprintAction(action) {
 		return action > action_sprint && action <= action_sprint_left;
 	}
 
-	static convertMovementToSprint(action){
-		switch(action){
+	static convertMovementToSprint(action) {
+		switch(action) {
 			case action_move_up:
 				return action_sprint_up;
 			case action_move_right:
@@ -165,8 +229,8 @@ class Utility {
 		}
 	}
 
-	static convertSprintToMovement(action){
-		switch(action){
+	static convertSprintToMovement(action) {
+		switch(action) {
 			case action_sprint_up:
 				return action_move_up;
 			case action_sprint_right:
@@ -178,17 +242,17 @@ class Utility {
 		}
 	}
 
-	static convertAnimationsFromConfig(animations){
+	static convertAnimationsFromConfig(animations) {
 		let animationsArray = [];
-		for(let a in animations){
+		for(let a in animations) {
 			animationsArray[animation_strings_to_constants[a]] = animations[a];
 		}
 		return animationsArray;
 	}
 
-	static convertActionsFromConfig(actions){
+	static convertActionsFromConfig(actions) {
 		let actionsArray = [];
-		for(let i = 0; i < actions.length; i++){
+		for(let i = 0; i < actions.length; i++) {
 			actionsArray[i] = action_strings_to_constants[actions[i]];
 		}
 		return actionsArray;

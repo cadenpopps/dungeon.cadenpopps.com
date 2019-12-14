@@ -28,7 +28,7 @@ class PoppsEngine {
 		this.systems.push(new AnimationSystem(config.animation));
 		this.systems.push(new CombatSystem());
 		this.systems.push(new HealthSystem(config.health));
-		this.systems.push(new AISystem());
+		this.systems.push(new AISystem(config.ai));
 		this.systems.push(new SprintSystem());
 
 		this.start();
@@ -45,6 +45,15 @@ class PoppsEngine {
 	}
 
 	start() {
+
+		this.DUNGEON = {
+			depth: 0,
+			player: undefined,
+			map: undefined,
+			levels: [],
+			entities: []
+		};
+
 		window.addEventListener('resize', this.sendEvent(event_window_resized));
 		window.requestAnimationFrame(this.tick.bind(this));
 		if(TITLE_SCREEN) {
@@ -94,6 +103,15 @@ class PoppsEngine {
 			case event_new_game:
 				this.running = true;
 				break;
+			case event_down_level:
+				this.DUNGEON.depth++;
+				break;
+			case event_up_level:
+				this.DUNGEON.depth--;
+				break;
+			case event_new_level:
+				this.DUNGEON.entities.push([]);
+				break;
 		}
 	}
 
@@ -101,11 +119,33 @@ class PoppsEngine {
 		for(let s of this.systems) {
 			s.addObject(object);
 		}
+
+
+		if(object instanceof Player) {
+			this.DUNGEON.player = object;
+		}
+
+		if(object instanceof Level) {
+			this.DUNGEON.levels[object.depth.depth] = object;
+			this.DUNGEON.map = object.map.map;
+		}
+
+		if(object instanceof Entity) {
+			if(!this.DUNGEON.entities[object.depth.depth].includes(object)) {
+				this.DUNGEON.entities[object.depth.depth].push(object);
+			}
+		}
 	}
 
 	removeObject(object) {
 		for(let s of this.systems) {
 			s.removeObject(object);
+		}
+
+		if(object instanceof Mob) {
+			if(this.DUNGEON.entities[object.depth.depth].includes(object)) {
+				this.DUNGEON.entities[object.depth.depth].splice(this.DUNGEON.entities[object.depth.depth].indexOf(object), 1);
+			}
 		}
 	}
 
@@ -121,6 +161,26 @@ class PoppsEngine {
 				console.log(key);
 			}
 		}
+	}
+
+	getDepth() {
+		return this.DUNGEON.depth;
+	}
+
+	getPlayer() {
+		return this.DUNGEON.player;
+	}
+
+	getMap() {
+		return this.DUNGEON.map;
+	}
+
+	getLevel() {
+		return this.DUNGEON.levels[this.DUNGEON.depth];
+	}
+
+	getEntities() {
+		return this.DUNGEON.entities[this.DUNGEON.depth];
 	}
 
 }
