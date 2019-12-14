@@ -58,9 +58,6 @@ class AISystem extends System {
 				if(!entity.ai.noticedPlayer) {
 					entity.ai.idleTimer = randomInt(this.config.MIN_IDLE_TIME, this.config.MAX_IDLE_TIME);
 				}
-				else {
-					console.log(entity + " noticed player");
-				}
 			}
 		}
 		else {
