@@ -7,7 +7,6 @@ class LevelSystem extends System {
 		this.roomPool = room_pool;
 		this.stairRoomPool = stair_room_pool;
 
-		this.player;
 		this.depth = 0;
 		this.levels = [];
 	}
@@ -26,15 +25,12 @@ class LevelSystem extends System {
 				this.handleNewGame(engine);
 				break;
 			case event_entities_loaded:
-				engine.sendEvent(event_begin_level, 0, 1);
+				engine.sendEvent(event_begin_level, 0, 5);
 				break;
 		}
 	}
 
 	addObject(object) {
-		if(object instanceof Player) {
-			this.player = object;
-		}
 		super.addObject(object);
 	}
 
@@ -47,8 +43,6 @@ class LevelSystem extends System {
 		let level = generateLevel(this.config, depth, this.roomPool, this.stairRoomPool);
 		this.levels.push(level);
 		engine.sendEvent(event_new_level);
-		// let t = new Torch(level.stairUp.x - 1, level.stairUp.y - 5, direction_down, 7)
-		// engine.addObject(t);
 		return level;
 	}
 

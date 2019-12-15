@@ -1,12 +1,7 @@
 class LightSystem extends System {
 
 	constructor(config) {
-		super([component_light]);
-
-		this.player;
-		this.map;
-		this.depth = 0;
-		this.emitters = [[]];
+		super([component_light_emitter]);
 		this.config = config;
 	}
 
@@ -15,32 +10,21 @@ class LightSystem extends System {
 	handleEvent(engine, eventID, data) {
 		switch (eventID) {
 			case event_spawn_enemy_close:
-				this.light(this.map);
+				this.light(engine.getMap());
 				break;
 			case event_player_moved:
 				setTimeout(function() {
-					this.light(this.map);
+					this.light(engine.getMap());
 				}.bind(this), 50);
 				break;
-			case event_up_level:
-				this.depth--;
-				break;
-			case event_down_level:
-				this.depth++;
-				break;
 			case event_begin_level:
-				this.emitters.push([]);
-				this.light(this.map);
+				this.light(engine.getMap());
 				break;
 		}
 	}
 
 	addObject(object) {
-		if(object instanceof Player) { this.player = object; }
-		else if(object instanceof Level) { this.map = object.map.map; }
-		if(object.components.includes(component_light_emitter)) {
-			this.emitters[this.depth].push(object);
-		}
+		super.addObject(object);
 	}
 
 	light(map) {
@@ -49,7 +33,7 @@ class LightSystem extends System {
 				s.light.level = 0;
 			}
 		}
-		for(let l of this.emitters[this.depth]) {
+		for(let l of this.objects) {
 			this.setLightLevel(map[l.position.x][l.position.y], l.lightEmitter.level);
 			for(let octant = 0; octant < 8; octant++) {
 				this.lightTriangle(map, octant, l.position.x, l.position.y, l.lightEmitter.level);
