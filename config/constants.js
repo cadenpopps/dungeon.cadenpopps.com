@@ -1,6 +1,6 @@
 //constants
+const TITLE_SCREEN = false;
 const DEBUG_MODE = false;
-const TITLE_SCREEN = true;
 const UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
 const OPEN = 0, CLOSED = 1;
 const entity_player = 0, entity_mob = 1;
@@ -117,7 +117,7 @@ const event_new_game = 0,
 
 	event_begin_combat = 40,
 	event_end_combat = 41,
-	event_entity_take_damage = 42,
+	event_entity_attacked = 42,
 	event_player_melee_attack = 43,
 	event_player_spin_attack = 44,
 	event_player_take_damage = 45,

@@ -10,6 +10,7 @@ class PoppsEngine {
 		const STAIR_ROOM_POOL = data.stair_room_pool;
 		const PLAYER_DATA = data.player_data;
 		const ENTITY_DATA = data.entity_data;
+		const BOSS_DATA = data.boss_data;
 
 		this.running = false;
 
@@ -24,7 +25,7 @@ class PoppsEngine {
 		this.systems.push(new ActionSystem());
 		this.systems.push(new MovementSystem());
 		this.systems.push(new LevelSystem(config.level, ROOM_POOL, STAIR_ROOM_POOL));
-		this.systems.push(new EntitySystem(PLAYER_DATA, ENTITY_DATA));
+		this.systems.push(new EntitySystem(PLAYER_DATA, ENTITY_DATA, BOSS_DATA));
 		this.systems.push(new AnimationSystem(config.animation));
 		this.systems.push(new CombatSystem());
 		this.systems.push(new HealthSystem(config.health));

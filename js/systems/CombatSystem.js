@@ -71,7 +71,7 @@ class CombatSystem extends System {
 
 	checkInCombat(player, objects) {
 		for(let o of objects) {
-			if(o instanceof Mob && o.display.visible) {
+			if(o instanceof Mob && o.ai.noticedPlayer && o.display.visible) {
 				return true;
 			}
 		}
@@ -97,7 +97,7 @@ class CombatSystem extends System {
 					if(entity instanceof Player) {
 						engine.sendEvent(event_player_melee_attack);
 					}
-					engine.sendEvent(event_entity_take_damage, { 'object': o, 'healthLost': healthLost });
+					engine.sendEvent(event_entity_attacked, { 'attacker': entity, 'target': o, 'healthLost': healthLost });
 					engine.sendEvent(event_successful_action, { 'action': entity.actions.currentAction, 'entity': entity });
 					this.beginCombat(engine);
 					return;
@@ -114,12 +114,12 @@ class CombatSystem extends System {
 			}
 		}
 		if(targets.length > 0) {
-			for(let o of targets) {
-				let healthLost = max(0, entity.combat.meleeAttackPower - o.combat.meleeDefensePower);
-				engine.sendEvent(event_entity_take_damage, { 'object': o, 'healthLost': healthLost });
-			}
 			if(entity instanceof Player) {
 				engine.sendEvent(event_player_spin_attack);
+			}
+			for(let o of targets) {
+				let healthLost = max(0, entity.combat.meleeAttackPower - o.combat.meleeDefensePower);
+				engine.sendEvent(event_entity_attacked, { 'attacker': entity, 'target': o, 'healthLost': healthLost });
 			}
 			engine.sendEvent(event_successful_action, { 'action': entity.actions.currentAction, 'entity': entity });
 			this.beginCombat(engine);

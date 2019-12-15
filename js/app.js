@@ -8,17 +8,21 @@ function load() {
 	let config = loadConfig();
 	let room_pool = loadRoomPools();
 	let images = loadImages();
-	let player_data = loadPlayerData();
-	let entity_data = loadEntityData();
+	let player_data = loadJSON('/data/player_data.json');
+	let entity_data = loadJSON('/data/entity_data.json');
+	let boss_data = loadJSON('/data/boss_data.json');
+
 	// let music = loadMusic();
 	// let sounds = loadSounds();
+
 	let data = {
 		'config': config,
 		'room_pool': room_pool[0],
 		'stair_room_pool': room_pool[1],
 		'images': images,
 		'player_data': player_data,
-		'entity_data': entity_data
+		'entity_data': entity_data,
+		'boss_data': boss_data
 		// 'music': music,
 		// 'sounds': sounds
 	};
@@ -56,13 +60,6 @@ function loadImages(){
 	return images;
 }
 
-function loadPlayerData(){
-	return loadJSON('/data/player_data.json');
-}
-
-function loadEntityData(){
-	return loadJSON('/data/entity_data.json');
-}
 
 function loadMusic(){
 	let music = [];

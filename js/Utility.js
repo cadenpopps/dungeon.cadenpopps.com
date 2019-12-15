@@ -34,7 +34,26 @@ class Utility {
 	}
 
 	static entityDistance(e1, e2) {
-		return abs((e1.position.x > e2.position.x) ? e1.collision.left - e2.collision.right : e1.collision.right - e2.collision.left) + abs((e1.position.y > e2.position.y) ? e1.collision.top - e2.collision.bottom : e1.collision.bottom - e2.collision.top);
+		if(e1.physical.size == 1 && e2.physical.size == 1) {
+			return Utility.distance(e1.position, e2.position);
+		}
+		else {
+			let xDist = 0;
+			if(e1.collision.left >= e2.collision.right) {
+				xDist = abs(e1.collision.left - (e2.collision.right - 1));
+			}
+			else if(e1.collision.right <= e2.collision.left) {
+				xDist = abs((e1.collision.right - 1) - e2.collision.left);
+			}
+			let yDist = 0;
+			if(e1.collision.top >= e2.collision.bottom) {
+				yDist = abs(e1.collision.top - (e2.collision.bottom - 1));
+			}
+			else if(e1.collision.bottom <= e2.collision.top) {
+				yDist = abs((e1.collision.bottom - 1) - e2.collision.top);
+			}
+			return xDist + yDist;
+		}
 	}
 
 	static distance(p1, p2) {

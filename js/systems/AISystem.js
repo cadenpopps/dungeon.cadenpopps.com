@@ -7,7 +7,7 @@ class AISystem extends System {
 
 	run(engine) {
 		for(let entity of this.objects) {
-			if(Utility.entityDistance(entity, engine.getPlayer()) < entity_active_range) {
+			if(Utility.distance(entity.position, engine.getPlayer().position) < entity_active_range) {
 				if(entity.ai.noticedPlayer) {
 					this.handleActiveEntity(engine, entity, engine.getPlayer());
 				}
@@ -18,14 +18,24 @@ class AISystem extends System {
 		}
 	}
 
-	handleEvent(engine, eventID, data) { }
+	handleEvent(engine, eventID, data) {
+		switch(eventID) {
+			case event_entity_attacked:
+				if(data.attacker instanceof Player) {
+					data.target.ai.noticedPlayer = true;
+				}
+				break;
+		}
+	}
 
 	addObject(object) {
 		super.addObject(object);
 	}
 
 	handleActiveEntity(engine, entity, player) {
-		entity.actions.nextAction = this.determineAction(engine, entity, player);
+		if(entity.actions.busy == 0) {
+			entity.actions.nextAction = this.determineAction(engine, entity, player);
+		}
 	}
 
 	determineAction(engine, entity, player) {
@@ -86,6 +96,18 @@ class AISystem extends System {
 			return randomMoveAction;
 		}
 		else {
+			if(randomMoveAction == action_move_up) {
+				return action_move_down;
+			}
+			else if(randomMoveAction == action_move_right) {
+				return action_move_left;
+			}
+			else if(randomMoveAction == action_move_down) {
+				return action_move_up;
+			}
+			else if(randomMoveAction == action_move_left) {
+				return action_move_right;
+			}
 			return action_none;
 		}
 	}

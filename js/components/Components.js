@@ -110,10 +110,9 @@ function DepthComponent(depth){
 	this.depth = depth;
 }
 
-function AIComponent(actions, attackRange, retreatRange){
+function AIComponent(actions, attackRange){
 	this.actions = actions;
 	this.attackRange = attackRange;
-	this.retreatRange = retreatRange;
 	this.noticedPlayer = false;
 	this.idleTimer = 0;
 }

@@ -1,10 +1,11 @@
 class EntitySystem extends System {
 
-	constructor(player_data, entity_data) {
+	constructor(player_data, entity_data, boss_data) {
 		super([component_actions]);
 
 		this.playerData = player_data;
 		this.entityData = entity_data;
+		this.bossData = boss_data;
 
 		this.entities = [];
 		this.levels = [];
@@ -40,6 +41,7 @@ class EntitySystem extends System {
 				}
 				if(this.entities.length == this.depth) {
 					this.generateEnemies(engine, this.entities, this.levels, this.entityData, this.entities.length, this.player);
+					// this.generateBosses(engine, this.entities, this.levels, this.bossData, this.entities.length, this.player);
 				}
 				this.updateEntities(engine);
 				break;
@@ -109,10 +111,8 @@ class EntitySystem extends System {
 		let validSquares = [];
 		for(let i = 0; i < map.length; i++) {
 			for(let j = 0; j < map[0].length; j++) {
-				if(this.safeSpawnLocation(i, j, size, entities, map)) {
-					if(Utility.distance(new PositionComponent(i, j), player.position) > 10) {
-						validSquares.push(map[i][j].position);
-					}
+				if((abs(player.position.x - i) + abs(player.position.y - j)) > 10 && this.safeSpawnLocation(i, j, size, entities, map)) {
+					validSquares.push(map[i][j].position);
 				}
 			}
 		}
@@ -134,6 +134,21 @@ class EntitySystem extends System {
 			}
 		}
 		return true;
+	}
+
+	generateBosses(engine, entities, levels, bossData, depth, player) {
+		let config, entityPosition;
+		let numBosses = 1;
+		entities.push([]);
+
+		while(numBosses > 0) {
+			config = bossData[random(Object.keys(bossData))];
+			entityPosition = this.findSafeSpawnLocation(config.size, entities[depth], player, levels[depth].map.map);
+			if(entityPosition != undefined) {
+				this.generateEnemy(engine, entityPosition.x, entityPosition.y, depth, config);
+			}
+			numEntities--;
+		}
 	}
 
 	fixPlayerPosition(player, stair, depth) {

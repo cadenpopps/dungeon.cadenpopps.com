@@ -7,5 +7,5 @@ function Mob(x, y, depth, config, actions, animations) {
 		this.collision = new CollisionComponent(x, y, config.size);
 	}
 	this.components.push(component_ai);
-	this.ai = new AIComponent(actions, config.attack_range, config.retreat_range);
+	this.ai = new AIComponent(actions, config.attack_range);
 }

@@ -44,7 +44,7 @@
 		"HEALTH_REGEN_TIMER": 50
 	},
 	"ai": {
-		"MIN_IDLE_TIME": 50,
-		"MAX_IDLE_TIME": 200
+		"MIN_IDLE_TIME": 60,
+		"MAX_IDLE_TIME": 250
 	}
 }
