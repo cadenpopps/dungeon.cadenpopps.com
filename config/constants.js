@@ -1,5 +1,5 @@
 //constants
-const TITLE_SCREEN = false;
+const TITLE_SCREEN = true;
 const DEBUG_MODE = false;
 const UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
 const OPEN = 0, CLOSED = 1;
