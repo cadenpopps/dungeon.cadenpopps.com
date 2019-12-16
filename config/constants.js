@@ -165,13 +165,36 @@ const action_none = -1,
 	action_spin_attack = 25;
 
 const key_to_action = {
-	'w': action_move_up,
-	'a': action_move_left,
-	's': action_move_down,
-	'd': action_move_right,
-	'e': action_melee_attack,
-	'q': action_spin_attack
+	'w': action_move_up, //w
+	'a': action_move_left, //a
+	's': action_move_down, //s
+	'd': action_move_right, //d
+	'e': action_melee_attack, //e
+	'q': action_spin_attack, //q
+	'38': action_move_up,
+	'37': action_move_left,
+	'40': action_move_down,
+	'39': action_move_right
+	// 'e': action_melee_attack,
+	// 'q': action_spin_attack
 };
+
+const keyCode_to_action = [];
+keyCode_to_action[87] = action_move_up; //w
+keyCode_to_action[68] = action_move_right; //d
+keyCode_to_action[83] = action_move_down; //s
+keyCode_to_action[65] = action_move_left; //a
+
+keyCode_to_action[69] = action_melee_attack; //e
+keyCode_to_action[81] = action_spin_attack; //q
+
+keyCode_to_action[38] = action_move_up;
+keyCode_to_action[39] = action_move_right
+keyCode_to_action[40] = action_move_down;
+keyCode_to_action[37] = action_move_left;
+
+// 'e': action_melee_attack;
+// 'q': action_spin_attack
 
 const action_to_priority = [];
 action_to_priority[action_none] = 0;

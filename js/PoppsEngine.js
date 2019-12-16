@@ -36,12 +36,12 @@ class PoppsEngine {
 	}
 
 	tick() {
+		this.handleEvents(this.events);
 		if(this.running) {
 			for(let s of this.systems) {
 				s.run(this);
 			}
 		}
-		this.handleEvents(this.events);
 		window.requestAnimationFrame(this.tick.bind(this));
 	}
 

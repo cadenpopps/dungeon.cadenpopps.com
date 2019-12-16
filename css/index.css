@@ -53,7 +53,8 @@ a {
 	z-index: 10;
 
 	background-color: black;
-	display: none;
+	display: block;
+	visibility: hidden;
 
 	letter-spacing: 2px;
 }
@@ -93,7 +94,6 @@ a {
 	font-size: 24pt;
 	text-align: left;
 	margin: 5px 0 2px 10px;
-	/* padding: 0 ; */
 	cursor: pointer;
 }
 
@@ -118,6 +118,28 @@ a {
 	z-index: 11;
 }
 
+#levelChangeScreen {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 10;
+
+	background-color: black;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	visibility: hidden;
+
+	letter-spacing: 2px;
+}
+
+#levelChangeScreen>#levelChangeText {
+	width: max-content;
+	margin: 0 auto;
+	font-size: 48pt;
+}
 
 #heartCanvas {
 	position: absolute;

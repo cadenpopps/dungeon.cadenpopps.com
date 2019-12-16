@@ -25,7 +25,7 @@ class LevelSystem extends System {
 				this.handleNewGame(engine);
 				break;
 			case event_entities_loaded:
-				engine.sendEvent(event_begin_level, 0, 5);
+				engine.sendEvent(event_begin_level, 0, 60);
 				break;
 		}
 	}

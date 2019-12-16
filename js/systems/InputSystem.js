@@ -3,6 +3,17 @@ class InputSystem extends System {
 	constructor() {
 		super([]);
 		this.mobSpawnCooldown = 0;
+
+		this.inputs = [];
+
+		let self = this;
+		document.addEventListener("keydown", function (e) {
+			self.keyDown(e);
+		});
+
+		document.addEventListener("keyup", function (e) {
+			self.keyUp(e);
+		});
 	}
 
 	run(engine) {
@@ -15,28 +26,42 @@ class InputSystem extends System {
 			this.mobSpawnCooldown--;
 		}
 
-		engine.getPlayer().actions.nextAction = this.determineAction(engine.getPlayer());
+		this.setPlayerAction(engine, this.inputs);
 	}
 
 	addObject(object) { }
 
-	determineAction(player) {
-		let action = action_none;
+	keyDown(event) {
+		if(!this.inputs.includes(event.keyCode)) {
+			this.inputs.unshift(event.keyCode);
+		}
+	}
 
-		if(keys.length > 0) {
+	keyUp(event) {
+		if(this.inputs.includes(event.keyCode)) {
+			this.inputs.splice(this.inputs.indexOf(event.keyCode), 1);
+		}
+	}
+
+	setPlayerAction(engine, inputs) {
+		let player = engine.getPlayer();
+		if(inputs.length > 0) {
 			let highestPriority = 0;
-			for(let k of keys) {
-				let a = key_to_action[k];
-				let priority = action_to_priority[a];
-				priority = this.fixPriority(player, a, priority);
+			let playerAction = action_none;
+			for(let key of inputs) {
+				let action = keyCode_to_action[key];
+				let priority = action_to_priority[action];
+				priority = this.fixPriority(player, action, priority);
 				if(priority > highestPriority) {
-					action = a;
+					playerAction = action;
 					highestPriority = priority;
 				}
 			}
+			player.actions.nextAction = playerAction;
 		}
-
-		return action;
+		else {
+			player.actions.nextAction = action_none;
+		}
 	}
 
 	fixPriority(player, a, priority) {
