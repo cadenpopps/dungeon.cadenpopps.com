@@ -25,7 +25,12 @@ class LevelSystem extends System {
 				this.handleNewGame(engine);
 				break;
 			case event_entities_loaded:
-				engine.sendEvent(event_begin_level, 0, 60);
+				if(LOADING_SCREEN) {
+					engine.sendEvent(event_begin_level, 0, 60);
+				}
+				else {
+					engine.sendEvent(event_begin_level, 0, 1);
+				}
 				break;
 		}
 	}

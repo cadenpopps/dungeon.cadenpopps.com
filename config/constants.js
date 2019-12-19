@@ -1,5 +1,7 @@
 //constants
 const TITLE_SCREEN = false;
+const LOADING_SCREEN = false;
+const LEVEL_GEN = true;
 const DEBUG_MODE = false;
 const UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
 const OPEN = 0, CLOSED = 1;
@@ -114,6 +116,7 @@ const event_new_game = 0,
 	event_failed_action = 21,
 
 	event_new_animation = 30,
+	event_hitstun = 31,
 
 	event_begin_combat = 40,
 	event_end_combat = 41,
@@ -227,18 +230,19 @@ action_to_length[action_move_left] = 100;
 
 action_to_length[action_sprint] = 65;
 
-action_to_length[action_melee_attack_up] = 200;
-action_to_length[action_melee_attack_right] = 200;
-action_to_length[action_melee_attack_down] = 200;
-action_to_length[action_melee_attack_left] = 200;
+action_to_length[action_melee_attack_up] = 250;
+action_to_length[action_melee_attack_right] = 250;
+action_to_length[action_melee_attack_down] = 250;
+action_to_length[action_melee_attack_left] = 250;
 
-action_to_length[action_spin_attack] = 250;
+action_to_length[action_spin_attack] = 300;
 
 const action_to_direction = [];
 action_to_direction[action_move_up] = direction_up;
 action_to_direction[action_move_right] = direction_right;
 action_to_direction[action_move_down] = direction_down;
 action_to_direction[action_move_left] = direction_left;
+
 action_to_direction[action_sprint_up] = direction_up;
 action_to_direction[action_sprint_right] = direction_right;
 action_to_direction[action_sprint_down] = direction_down;

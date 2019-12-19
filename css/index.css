@@ -98,7 +98,9 @@ a {
 }
 
 
-#titleScreenContent>#playButton  { }
+#titleScreenContent>#playButton  {
+	font-size: 26pt;
+}
 
 #titleScreenContent>#optionsButton  { }
 

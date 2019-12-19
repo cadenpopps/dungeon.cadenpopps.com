@@ -48,6 +48,7 @@
 		"HEALTH_REGEN_TIMER": 50
 	},
 	"ai": {
+		"MOB_REACTION_TIME": 350,
 		"MIN_IDLE_TIME": 60,
 		"MAX_IDLE_TIME": 250
 	}

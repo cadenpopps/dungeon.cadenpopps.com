@@ -1,27 +1,37 @@
 class ActionSystem extends System {
-	
+
 	constructor() {
 		super([component_actions]);
+
+		this.hitstunTimer = 0;
 	}
 
 	run(engine) {
-		for(let entity of this.objects) {
-			if(entity.actions.busy > 0) {
-				entity.actions.busy -= entity.actions.speed;
+		if(this.hitstunTimer == 0) {
+			for(let entity of this.objects) {
+				if(entity.actions.busy > 0) {
+					entity.actions.busy -= entity.actions.speed;
+				}
+				else{
+					this.setCurrentAction(entity, engine);
+				}
 			}
-			else{
-				this.setCurrentAction(entity, engine);
-			}
+		}
+		else {
+			this.hitstunTimer--;
 		}
 	}
 
 	handleEvent(engine, eventID, data) {
 		switch(eventID) {
 			case event_successful_action:
-				this.handleSuccessfulAction(data.entity, engine);
+				this.handleSuccessfulAction(engine, data.entity, data.action);
 				break;
 			case event_failed_action:
-				this.handleFailedAction(data.entity, engine);
+				this.handleFailedAction(engine, data.entity);
+				break;
+			case event_hitstun:
+				this.hitstunTimer = data.ticks;
 				break;
 		}
 	}
@@ -31,22 +41,22 @@ class ActionSystem extends System {
 		entity.actions.nextAction = action_none;
 	}
 
-	handleSuccessfulAction(entity, engine) {
-		entity.actions.busy = action_to_length[entity.actions.currentAction];
+	handleSuccessfulAction(engine, entity, action) {
+		entity.actions.busy = action_to_length[action];
 
-		if(entity.components.includes(component_sprint)) {
+		if(entity.components.includes(component_sprint) && Utility.isMovementAction(action)) {
 			this.handleSprinting(entity, engine);
 		}
 
-		entity.animation.animation = action_to_animation[entity.actions.currentAction];
+		entity.animation.animation = action_to_animation[action];
 		engine.sendEvent(event_new_animation, entity);
 
-		entity.actions.lastAction = entity.actions.currentAction;
+		entity.actions.lastAction = action;
 		entity.actions.currentAction = action_none;
 	}
 
-	handleFailedAction(entity, engine) {
-		entity.actions.busy = 1;
+	handleFailedAction(engine, entity) {
+		entity.actions.busy = 3;
 
 		// entity.animation.animation = action_to_animation[entity.actions.currentAction];
 		// engine.sendEvent(event_new_animation, entity);
