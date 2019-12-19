@@ -96,12 +96,15 @@ class DisplaySystem extends System {
 				break;
 			case event_player_melee_attack:
 				this.shakeCamera(this.camera, this.config.CAMERA_SHAKE_MEDIUM_SMALL);
+				engine.sendEvent(event_hitstun, { "ticks": 5 });
 				break;
 			case event_player_spin_attack:
 				this.shakeCamera(this.camera, this.config.CAMERA_SHAKE_SMALL);
+				engine.sendEvent(event_hitstun, { "ticks": 3 });
 				break;
 			case event_player_take_damage:
-				this.shakeCamera(this.camera, this.config.CAMERA_SHAKE_SMALL);
+				this.shakeCamera(this.camera, this.config.CAMERA_SHAKE_MEDIUM);
+				engine.sendEvent(event_hitstun, { "ticks": 8 });
 				break;
 		}
 	}

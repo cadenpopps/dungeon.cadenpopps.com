@@ -1,35 +1,54 @@
 function generateLevel(CONFIG, depth, ROOM_POOL, STAIR_ROOM_POOL) {
+	if(LEVEL_GEN) {
+		let startTime = millis();
 
-	let startTime = millis();
+		let level;
+		let rooms = [];
+		let torches = [];
 
-	let level;
-	let rooms = [];
-	let torches = [];
+		let stairUp = {x:0, y:0, sector:0};
+		let stairDown = {x:0, y:0, sector:0};
 
-	let stairUp = {x:0, y:0, sector:0};
-	let stairDown = {x:0, y:0, sector:0};
+		level = initLevel(CONFIG.DUNGEON_SIZE, square_wall);
+		rooms.push(generateStairUpRoom(stairUp, CONFIG.DUNGEON_SIZE, STAIR_ROOM_POOL));
+		stairUp.x = rooms[0].x;
+		stairUp.y = rooms[0].y;
+		rooms.push(generateStairDownRoom(stairUp, stairDown, CONFIG.DUNGEON_SIZE, STAIR_ROOM_POOL));
+		stairDown.x = rooms[1].x;
+		stairDown.y = rooms[1].y;
+		generateOtherRooms(level, rooms, CONFIG.DUNGEON_SIZE, CONFIG.ROOM_TRIES, ROOM_POOL);
+		placeRoomsOnLevel(level, rooms);
+		markNodeSquares(level);
+		connectRooms(level, rooms, CONFIG.DUNGEON_SIZE);
+		populateRooms(level, rooms, torches);
+		finalizeLevel(level, stairUp, stairDown);
 
-	level = initLevel(CONFIG.DUNGEON_SIZE);
-	rooms.push(generateStairUpRoom(stairUp, CONFIG.DUNGEON_SIZE, STAIR_ROOM_POOL));
-	rooms.push(generateStairDownRoom(stairUp, stairDown, CONFIG.DUNGEON_SIZE, STAIR_ROOM_POOL));
-	generateOtherRooms(level, rooms, CONFIG.DUNGEON_SIZE, CONFIG.ROOM_TRIES, ROOM_POOL);
-	placeRoomsOnLevel(level, rooms);
-	markNodeSquares(level);
-	connectRooms(level, rooms, CONFIG.DUNGEON_SIZE);
-	populateRooms(level, rooms, torches);
-	finalizeLevel(level, stairUp, stairDown);
+		// console.log("Milliseconds: " + (millis() - startTime));
 
-	// console.log("Milliseconds: " + (millis() - startTime));
-
-	return new Level(level, stairUp, stairDown, depth, torches);
+		return new Level(level, stairUp, stairDown, depth, torches);
+	}
+	else {
+		let level = initLevel(CONFIG.DUNGEON_SIZE, square_floor);
+		let torches = [];
+		let stairUp = {
+			x: randomInt(CONFIG.DUNGEON_SIZE),
+			y: randomInt(CONFIG.DUNGEON_SIZE)
+		}
+		let stairDown = {
+			x: randomInt(CONFIG.DUNGEON_SIZE),
+			y: randomInt(CONFIG.DUNGEON_SIZE)
+		}
+		finalizeLevel(level, stairUp, stairDown);
+		return new Level(level, stairUp, stairDown, depth, torches);
+	}
 }
 
-function initLevel(size) {
+function initLevel(size, defaultValue) {
 	let level = new Array(size);
 	for(let i = 0; i < size; i++) {
 		level[i] = new Array(size);
 		for(let j = 0; j < size; j++) {
-			level[i][j] = square_wall;
+			level[i][j] = defaultValue;
 		}
 	}
 	return level;
@@ -38,12 +57,20 @@ function initLevel(size) {
 function generateStairUpRoom(stairUp, size, STAIR_ROOM_POOL) {
 	stairUp.sector = randomInt(8);
 	sectorToCoordinates(stairUp, size);
+
+	// stairUp.x += (stairUp.x % 2) - 1;
+	// stairUp.y += (stairUp.y % 2) - 1;
+
 	return new Room(random(STAIR_ROOM_POOL), stairUp.x, stairUp.y);
 }
 
 function generateStairDownRoom(stairUp, stairDown, size, STAIR_ROOM_POOL) {
 	stairDown.sector = (stairUp.sector + 4) % 8;
 	sectorToCoordinates(stairDown, size);
+
+	// stairDown.x += (stairDown.x % 2) - 1;
+	// stairDown.y += (stairDown.y % 2) - 1;
+
 	return new Room(random(STAIR_ROOM_POOL), stairDown.x, stairDown.y);
 }
 

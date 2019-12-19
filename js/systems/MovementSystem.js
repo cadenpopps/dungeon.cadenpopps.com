@@ -37,6 +37,9 @@ class MovementSystem extends System {
 			if(entity instanceof Player) {
 				this.playerWalkEvents(engine, entity);
 			}
+			else if(entity instanceof Mob) {
+				engine.sendEvent(event_entity_moved);
+			}
 
 			engine.sendEvent(event_successful_action, {'action': entity.actions.currentAction, 'entity': entity });
 

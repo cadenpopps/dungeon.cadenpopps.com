@@ -11,18 +11,18 @@ function Room(template, x, y) {
 	 *
 	 */
 
-	this.width = template.width; 
-	this.height = template.height; 
+	this.width = template.width;
+	this.height = template.height;
 
-	this.left = x - floor(this.width/2); //x coordinate of left most squares
-	this.top = y - floor(this.height/2); //top most
+	this.left = x - floor(this.width / 2); //x coordinate of left most squares
+	this.top = y - floor(this.height / 2); //top most
 	this.left += (this.left % 2) - 1;
 	this.top += (this.top % 2) - 1;
-	this.right = this.left + this.width; //x coord of first wall on right 
-	this.bottom = this.top + this.height; //x coord of first wall on right 
+	this.right = this.left + this.width; //x coord of first wall on right
+	this.bottom = this.top + this.height; //x coord of first wall on right
 
-	this.x = this.left + ceil(this.width/2);
-	this.y = this.top + ceil(this.height/2);
+	this.x = this.left + floor(this.width / 2);
+	this.y = this.top + floor(this.height / 2);
 
 	this.squares = template.squares.slice(0);
 	this.doors = new Array(template.doors.length);

@@ -22,7 +22,21 @@ class AISystem extends System {
 		switch(eventID) {
 			case event_entity_attacked:
 				if(data.attacker instanceof Player) {
-					data.target.ai.noticedPlayer = true;
+					let target = data.target;
+					let self = this;
+					target.ai.idleTimer = 100;
+					setTimeout(function() {
+						target.ai.noticedPlayer = true;
+					}, this.config.MOB_REACTION_TIME);
+				}
+				break;
+			case event_successful_action:
+				let entity = data.entity;
+				if(entity instanceof Mob && !entity.ai.noticedPlayer && entity.display.visible) {
+					let self = this;
+					setTimeout(function() {
+						entity.ai.noticedPlayer = self.checkNoticePlayer(engine, entity, engine.getPlayer());
+					}, this.config.MOB_REACTION_TIME);
 				}
 				break;
 		}
@@ -61,33 +75,40 @@ class AISystem extends System {
 	handleIdleEntity(engine, entity, player) {
 		if(entity.ai.idleTimer == 0) {
 			entity.actions.nextAction = this.determineIdleAction(engine, entity);
-			if(entity.display.visible) {
-				entity.ai.noticedPlayer = this.checkNoticePlayer(entity, player);
-				if(!entity.ai.noticedPlayer) {
-					entity.ai.idleTimer = randomInt(this.config.MIN_IDLE_TIME, this.config.MAX_IDLE_TIME);
-				}
-			}
+			entity.ai.idleTimer = randomInt(this.config.MIN_IDLE_TIME, this.config.MAX_IDLE_TIME);
 		}
 		else {
 			entity.ai.idleTimer--;
 		}
 	}
 
-	checkNoticePlayer(entity, player) {
+	checkNoticePlayer(engine, entity, player) {
 		switch(entity.direction.direction) {
 			case direction_up:
-				return entity.collision.top >= player.collision.bottom;
+				if(entity.collision.top + 1 >= player.collision.bottom) {
+					return VisionSystem.lineOfSight(engine, entity.position, player.position);
+				}
+				break;
 			case direction_right:
-				return entity.collision.left <= player.collision.right;
+				if(entity.collision.right - 1 <= player.collision.left) {
+					return VisionSystem.lineOfSight(engine, entity.position, player.position);
+				}
+				break;
 			case direction_down:
-				return entity.collision.bottom <= player.collision.top;
+				if(entity.collision.bottom - 1 <= player.collision.top) {
+					return VisionSystem.lineOfSight(engine, entity.position, player.position);
+				}
+				break;
 			case direction_left:
-				return entity.collision.bottom >= player.collision.top;
+				if(entity.collision.left + 1 >= player.collision.right) {
+					return VisionSystem.lineOfSight(engine, entity.position, player.position);
+				}
+				break;
 			default:
 				console.log("Cannot determine entity direction: " + entity.direction.direction);
-				console.log(entity);
 				return false;
 		}
+		return false;
 	}
 
 	determineIdleAction(engine, entity) {
@@ -96,6 +117,7 @@ class AISystem extends System {
 			return randomMoveAction;
 		}
 		else {
+			// console.log("test");
 			if(randomMoveAction == action_move_up) {
 				return action_move_down;
 			}

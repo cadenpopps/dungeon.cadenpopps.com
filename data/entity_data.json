@@ -1,13 +1,13 @@
 {
 	"skeleton": {
-		"health": 200,
-		"strength": 5,
+		"health": 160,
+		"strength": 15,
 		"magic": 0,
-		"intelligence": 2,
+		"speed": 5,
+		"intelligence": 20,
 		"attack_range": 1,
 		"size": 1,
 		"solid": true,
-		"speed": 4,
 		"actions": [
 			"action_none",
 			"action_move_up",
