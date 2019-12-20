@@ -2,11 +2,12 @@ class LevelSystem extends System {
 
 	constructor(config, room_pool, stair_room_pool) {
 		super([]);
-
 		this.config = config;
 		this.roomPool = room_pool;
 		this.stairRoomPool = stair_room_pool;
+	}
 
+	init(engine) {
 		this.depth = 0;
 		this.levels = [];
 	}

@@ -2,7 +2,9 @@ class ActionSystem extends System {
 
 	constructor() {
 		super([component_actions]);
+	}
 
+	init(engine) {
 		this.hitstunTimer = 0;
 	}
 

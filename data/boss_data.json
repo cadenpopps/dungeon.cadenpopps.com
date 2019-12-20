@@ -2,7 +2,7 @@
 	"blob": {
 		"health": 400,
 		"strength": 15,
-		"magic": 2,
+		"dexterity": 2,
 		"intelligence": 5,
 		"attack_range": 1,
 		"size": 2,

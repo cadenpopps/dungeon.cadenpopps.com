@@ -2,8 +2,10 @@ class InputSystem extends System {
 
 	constructor() {
 		super([]);
-		this.mobSpawnCooldown = 0;
+	}
 
+	init(engine) {
+		this.mobSpawnCooldown = 0;
 		this.inputs = [];
 
 		let self = this;

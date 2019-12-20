@@ -16,12 +16,11 @@ function IntelligenceComponent(initialIntelligence){
 	this.intelligence = initialIntelligence;
 }
 
-function MagicComponent(initialMagic){
-	this.magic = initialMagic;
+function DexterityComponent(initialDexterity){
+	this.dexterity = initialDexterity;
 }
 
 function CombatComponent(strength, magic, intelligence){
-
 	this.meleeAttackPower = strength;
 	this.meleeDefensePower = floor((strength) / 5);
 

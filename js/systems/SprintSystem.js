@@ -2,7 +2,9 @@ class SprintSystem extends System {
 
 	constructor() {
 		super([component_sprint]);
+	}
 
+	init(engine) {
 		this.sprintTimer = [];
 		this.sprintTimerMax = 20;
 		// this.combat = false;
@@ -11,8 +13,8 @@ class SprintSystem extends System {
 	run(engine) {
 		for(let entity of this.objects) {
 			// if(!this.combat) {
-				this.decrementSprintCounter(entity);
-				this.determineSprintState(engine, entity);
+			this.decrementSprintCounter(entity);
+			this.determineSprintState(engine, entity);
 			// }
 		}
 	}
@@ -24,13 +26,13 @@ class SprintSystem extends System {
 					this.sprintHandler(engine, data.entity, data.action);
 				}
 				break;
-			// case event_begin_combat:
-			// 	this.combat = true;
-			// 	this.stopAllSprinting(engine);
-			// 	break;
-			// case event_end_combat:
-			// 	this.combat = false;
-			// 	break;
+				// case event_begin_combat:
+				// 	this.combat = true;
+				// 	this.stopAllSprinting(engine);
+				// 	break;
+				// case event_end_combat:
+				// 	this.combat = false;
+				// 	break;
 		}
 	}
 

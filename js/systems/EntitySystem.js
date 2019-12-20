@@ -6,7 +6,9 @@ class EntitySystem extends System {
 		this.playerData = player_data;
 		this.entityData = entity_data;
 		this.bossData = boss_data;
+	}
 
+	init(engine) {
 		this.entities = [];
 		this.levels = [];
 		this.depth = 0;

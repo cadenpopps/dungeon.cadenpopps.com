@@ -5,22 +5,22 @@
 	"solid": true,
 	"classes": {
 		"warrior": {
-			"health": 100,
+			"health": 120,
 			"strength": 70,
-			"magic": 0,
-			"intelligence": 40
+			"dexterity": 40,
+			"intelligence": 20
 		},
 		"rogue": {
-			"health": 60,
-			"strength": 50,
-			"magic": 30,
-			"intelligence": 70
-		},
-		"mage": {
 			"health": 80,
 			"strength": 30,
-			"magic": 70,
-			"intelligence": 50
+			"dexterity": 60,
+			"intelligence": 40
+		},
+		"mage": {
+			"health": 100,
+			"strength": 20,
+			"dexterity": 40,
+			"intelligence": 70
 		}
 	},
 	"actions": [

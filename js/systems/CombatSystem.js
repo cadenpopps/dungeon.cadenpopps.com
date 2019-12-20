@@ -2,7 +2,9 @@ class CombatSystem extends System {
 
 	constructor() {
 		super([component_combat]);
+	}
 
+	init(engine) {
 		this.player;
 		this.inCombat = false;
 		this.combatTimer = 0;

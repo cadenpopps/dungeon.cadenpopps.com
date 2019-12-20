@@ -5,6 +5,8 @@ class System {
 		this.componentRequirements = componentRequirements;
 	}
 
+	init(engine) { }
+
 	addObject(object) {
 		if(this.componentRequirements.length > 0 && !this.objects.includes(object) && Utility.checkComponents(object, this.componentRequirements)) {
 			this.objects.push(object);

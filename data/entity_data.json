@@ -2,7 +2,7 @@
 	"skeleton": {
 		"health": 160,
 		"strength": 15,
-		"magic": 0,
+		"dexterity": 0,
 		"speed": 5,
 		"intelligence": 20,
 		"attack_range": 1,
