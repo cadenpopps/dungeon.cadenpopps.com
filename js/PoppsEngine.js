@@ -1,10 +1,6 @@
 class PoppsEngine {
 
 	constructor(data) {
-		this.init(data);
-	}
-
-	init(data) {
 		const config = data.config;
 		const ROOM_POOL = data.room_pool;
 		const STAIR_ROOM_POOL = data.stair_room_pool;
@@ -12,14 +8,9 @@ class PoppsEngine {
 		const ENTITY_DATA = data.entity_data;
 		const BOSS_DATA = data.boss_data;
 
-		this.running = false;
-
-		this.events = [];
-
 		this.systems = [];
 		this.systems.push(new InputSystem());
 		this.systems.push(new DisplaySystem(config.display, data.images));
-		this.systems.push(new UISystem(config.ui, data.images.ui));
 		this.systems.push(new VisionSystem(config.vision));
 		this.systems.push(new LightSystem(config.light));
 		this.systems.push(new ActionSystem());
@@ -32,20 +23,24 @@ class PoppsEngine {
 		this.systems.push(new AISystem(config.ai));
 		this.systems.push(new SprintSystem());
 
-		this.start();
-	}
+		this.UISystem = new UISystem(config.ui, data.images.ui);
+		this.systems.push(this.UISystem);
 
-	tick() {
-		this.handleEvents(this.events);
-		if(this.running) {
-			for(let s of this.systems) {
-				s.run(this);
-			}
+		this.init();
+		window.requestAnimationFrame(() => this.tick());
+
+		if(TITLE_SCREEN) {
+			this.sendEvent(event_title_screen);
 		}
-		window.requestAnimationFrame(this.tick.bind(this));
+		else {
+			this.sendEvent(event_new_game);
+		}
 	}
 
-	start() {
+	init() {
+		this.clearObjects();
+		this.UIOnly = true;
+		this.events = [];
 
 		this.DUNGEON = {
 			depth: 0,
@@ -55,21 +50,36 @@ class PoppsEngine {
 			entities: []
 		};
 
+		for(let system of this.systems) {
+			system.init(this);
+		}
+
 		window.addEventListener('resize', this.sendEvent(event_window_resized));
-		window.requestAnimationFrame(this.tick.bind(this));
-		if(TITLE_SCREEN) {
-			this.sendEvent(event_title_screen);
+	}
+
+	pause() {
+		this.UIOnly = true;
+	}
+
+	resume() {
+		this.UIOnly = false;
+	}
+
+	tick() {
+		this.handleEvents(this.events);
+		if(this.UIOnly) {
+			this.UISystem.run(this);
 		}
-		else {
-			this.sendEvent(event_new_game);
+		else{
+			for(let s of this.systems) {
+				s.run(this);
+			}
 		}
+		window.requestAnimationFrame(() => this.tick());
 	}
 
 	sendEvent(e, data = undefined, ticks = 0) {
-		if(e == event_game_over) {
-			alert('Game Over');
-		}
-		else if(ticks == 0) {
+		if(ticks == 0) {
 			this.runEvent([e, data]);
 		}
 		else {
@@ -93,16 +103,22 @@ class PoppsEngine {
 		if(DEBUG_MODE) {
 			this.printEvent(e);
 		}
+		this.handleEvent(e[0], e[1]);
 		for(let s of this.systems) {
 			s.handleEvent(this, e[0], e[1]);
 		}
-		this.handleEvent(e[0], e[1]);
 	}
 
-	handleEvent(e, data) {
-		switch(e) {
+	handleEvent(event, data) {
+		switch(event) {
 			case event_new_game:
-				this.running = true;
+				this.resume();
+				break;
+			case event_reset_game:
+				this.init();
+				break;
+			case event_game_over:
+				this.pause();
 				break;
 			case event_down_level:
 				this.DUNGEON.depth++;
@@ -120,7 +136,6 @@ class PoppsEngine {
 		for(let s of this.systems) {
 			s.addObject(object);
 		}
-
 
 		if(object instanceof Player) {
 			this.DUNGEON.player = object;

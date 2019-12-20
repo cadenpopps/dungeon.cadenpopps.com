@@ -1,6 +1,6 @@
 //constants
-const TITLE_SCREEN = false;
-const LOADING_SCREEN = false;
+const TITLE_SCREEN = true;
+const LOADING_SCREEN = true;
 const LEVEL_GEN = true;
 const DEBUG_MODE = false;
 const UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
@@ -84,7 +84,7 @@ const component_position = 0,
 	component_light = 10,
 	component_strength = 11,
 	component_intelligence = 12,
-	component_magic = 13,
+	component_dexterity = 13,
 	component_level = 14,
 	component_depth = 15,
 	component_stair = 16,
@@ -95,7 +95,7 @@ const component_position = 0,
 
 //events
 const event_new_game = 0,
-	event_begin_game = 1,
+	event_reset_game = 1,
 	event_window_resized = 2,
 
 	event_player_generated = 3,
@@ -228,7 +228,7 @@ action_to_length[action_move_right] = 100;
 action_to_length[action_move_down] = 100;
 action_to_length[action_move_left] = 100;
 
-action_to_length[action_sprint] = 65;
+action_to_length[action_sprint] = 60;
 
 action_to_length[action_melee_attack_up] = 250;
 action_to_length[action_melee_attack_right] = 250;

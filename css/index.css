@@ -21,6 +21,7 @@ html, body{
 body {
 	text-align: center;
 	background-color: black;
+	/* background-color: red; */
 	color:white;
 	font-size: 20pt;
 	font-family: 'Montserrat', monospace;
@@ -42,6 +43,23 @@ a {
 	bottom: 0;
 	right:0;
 	z-index:0;
+
+}
+
+.button {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	border-radius: 5px;
+	width: var(--button-width);
+	height: var(--button-height);
+	font-size: 24pt;
+
+	color: black;
+	background-color: white;
+
+	text-align: center;
+	cursor: pointer;
 }
 
 #titleScreen {
@@ -84,19 +102,11 @@ a {
 }
 
 #titleScreenContent>.button {
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
 	color: white;
-	border-radius: 5px;
-	width: var(--button-width);
-	height: var(--button-height);
-	font-size: 24pt;
-	text-align: left;
+	background-color: black;
 	margin: 5px 0 2px 10px;
-	cursor: pointer;
+	text-align: left;
 }
-
 
 #titleScreenContent>#playButton  {
 	font-size: 26pt;
@@ -141,6 +151,35 @@ a {
 	width: max-content;
 	margin: 0 auto;
 	font-size: 48pt;
+}
+
+#gameOverScreen {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 10;
+
+	background-color: rgba(0, 0, 0, .65);
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	visibility: hidden;
+
+	letter-spacing: 2px;
+}
+
+#gameOverScreen>#gameOverText {
+	display: block;
+	width: max-content;
+	margin: 0 auto;
+	font-size: 54pt;
+}
+
+#gameOverScreen>#playAgainButton {
+	margin-top: 30px;
 }
 
 #heartCanvas {

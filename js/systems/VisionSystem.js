@@ -2,10 +2,12 @@ class VisionSystem extends System {
 
 	constructor(config) {
 		super([component_display, component_position]);
-
-		this.player;
-		this.map;
 		this.config = config;
+	}
+
+	init(engine) {
+		this.player = undefined;
+		this.map = undefined;
 	}
 
 	run(engine) { }

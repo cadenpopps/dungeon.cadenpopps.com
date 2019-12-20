@@ -2,9 +2,10 @@ class HealthSystem extends System {
 
 	constructor(config) {
 		super([component_health]);
-
 		this.config = config;
+	}
 
+	init(engine) {
 		this.healthRegenCounter = 0;
 		this.healthRegen = true;
 	}
@@ -26,8 +27,10 @@ class HealthSystem extends System {
 	handleEvent(engine, eventID, data) {
 		switch(eventID) {
 			case event_entity_attacked:
-				if(data.target instanceof Player) { engine.sendEvent(event_player_take_damage); }
 				this.applyDamage(engine, data.target, data.healthLost);
+				if(data.target instanceof Player) {
+					engine.sendEvent(event_player_take_damage);
+				}
 				break;
 			case event_begin_combat:
 				this.healthRegen = false;

@@ -2,11 +2,11 @@ class DisplaySystem extends System {
 
 	constructor(config, images) {
 		super([component_position, component_display]);
-
 		this.config = config;
 		this.textures = images.textures;
-		this.ui = images.ui;
+	}
 
+	init(engine) {
 		this.camera = {
 			display: true,
 			x: 0,
@@ -56,7 +56,6 @@ class DisplaySystem extends System {
 		// let et = millis() - st;
 		// console.log("Time for draw loop: " + et);
 
-		this.drawUI(this.player);
 
 		// canvas.translate(width/2, height/2);
 		// canvas.rotate(45 * Math.PI / 180);
@@ -96,15 +95,15 @@ class DisplaySystem extends System {
 				break;
 			case event_player_melee_attack:
 				this.shakeCamera(this.camera, this.config.CAMERA_SHAKE_MEDIUM_SMALL);
-				engine.sendEvent(event_hitstun, { "ticks": 5 });
+				engine.sendEvent(event_hitstun, { "ticks": 4 });
 				break;
 			case event_player_spin_attack:
 				this.shakeCamera(this.camera, this.config.CAMERA_SHAKE_SMALL);
-				engine.sendEvent(event_hitstun, { "ticks": 3 });
+				engine.sendEvent(event_hitstun, { "ticks": 2 });
 				break;
 			case event_player_take_damage:
 				this.shakeCamera(this.camera, this.config.CAMERA_SHAKE_MEDIUM);
-				engine.sendEvent(event_hitstun, { "ticks": 8 });
+				engine.sendEvent(event_hitstun, { "ticks": 6 });
 				break;
 		}
 	}
@@ -252,13 +251,6 @@ class DisplaySystem extends System {
 		const b = (height / scale / 2) + border;
 		const l = -(width / scale / 2) - border;
 		return bounds.y > t && bounds.x + bounds.w < r && bounds.y + bounds.h < b && bounds.x > l;
-	}
-
-	drawUI(player) {
-		this.drawPlayerHealth(player);
-	}
-
-	drawPlayerHealth(player) {
 	}
 
 	centerCamera(camera, position, offsetX = 0, offsetY = 0) {
