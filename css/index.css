@@ -1,3 +1,21 @@
+@font-face {
+	font-family: Montserrat;
+	src: url('/fonts/Montserrat-Medium.otf');
+	font-weight: 500;
+}
+
+@font-face {
+	font-family: Montserrat;
+	src: url('/fonts/Montserrat-Regular.otf');
+	font-weight: 400;
+}
+
+@font-face {
+	font-family: Montserrat;
+	src: url('/fonts/Montserrat-Bold.otf');
+	font-weight: bold;
+}
+
 
 :root {
 	--button-width: 240px;
@@ -25,7 +43,7 @@ body {
 	color:white;
 	font-size: 20pt;
 	font-family: 'Montserrat', monospace;
-	font-weight: 600;
+	font-weight: 500;
 	display:flex;
 	flex-direction: column;
 	justify-content: center;
@@ -73,8 +91,6 @@ a {
 	background-color: black;
 	display: block;
 	visibility: hidden;
-
-	letter-spacing: 2px;
 }
 
 #titleScreen>#titleScreenContent {
@@ -92,7 +108,6 @@ a {
 	font-size: 64pt;
 	margin: -40px 0 40px 0;
 	text-align: left;
-	letter-spacing: 1px;
 }
 
 #titleScreenContent>#title>#smallTitleText {
@@ -117,17 +132,36 @@ a {
 #titleScreenContent>#helpButton  { }
 
 #helpScreen {
-	display: flex;
 	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+
+	padding: 80px 200px;
+
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
 	visibility: hidden;
 
 	color: white;
-	border: 2px solid white;
 
-	width: 200px;
-	height: 200px;
-	border-radius: 1px;
 	z-index: 11;
+}
+
+.helpTextTitle {
+	font-size: 24pt;
+	font-weight: 600;
+	display: block;
+}
+
+.helpTextBody {
+	font-size: 16pt;
+	display: block;
+	margin: 15px 0 60px 0;
 }
 
 #levelChangeScreen {
@@ -143,8 +177,6 @@ a {
 	justify-content: center;
 	align-items: center;
 	visibility: hidden;
-
-	letter-spacing: 2px;
 }
 
 #levelChangeScreen>#levelChangeText {
@@ -167,8 +199,6 @@ a {
 	justify-content: center;
 	align-items: center;
 	visibility: hidden;
-
-	letter-spacing: 2px;
 }
 
 #gameOverScreen>#gameOverText {

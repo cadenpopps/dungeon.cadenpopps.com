@@ -9,9 +9,15 @@ class UISystem extends System {
 	init(engine) {
 		this.gameCanvas = document.getElementById('game');
 		this.titleScreen = document.getElementById('titleScreen');
+		this.helpScreen = document.getElementById('helpScreen');
 		this.levelChangeScreen = document.getElementById('levelChangeScreen');
 		this.levelChangeText = document.getElementById('levelChangeText');
 		this.gameOverScreen = document.getElementById('gameOverScreen');
+
+		this.resetScreen(this.titleScreen);
+		this.resetScreen(this.helpScreen);
+		this.resetScreen(this.levelChangeScreen);
+		this.resetScreen(this.gameOverScreen);
 
 		this.drawHearts = false;
 		this.heartCanvas = document.getElementById('heartCanvas').getContext('2d');
@@ -26,25 +32,19 @@ class UISystem extends System {
 	handleEvent(engine, eventID, data) {
 		switch(eventID) {
 			case event_new_game:
-				this.fadeScreenIn(this.levelChangeScreen, this.config.LEVEL_CHANGE_FADE_IN_TIME);
-				this.drawHearts = false;
+				this.showLevelChangeScreen(engine);
 				break;
 			case event_title_screen:
 				this.showTitleScreen(engine);
 				break;
 			case event_down_level:
-				this.levelChangeText.innerHTML = 'Entering Level ' + (engine.getDepth() + 1);
-				this.fadeScreenIn(this.levelChangeScreen, this.config.LEVEL_CHANGE_FADE_IN_TIME);
-				this.drawHearts = false;
+				this.showLevelChangeScreen(engine);
 				break;
 			case event_up_level:
-				this.levelChangeText.innerHTML = 'Entering Level ' + (engine.getDepth() + 1);
-				this.fadeScreenIn(this.levelChangeScreen, this.config.LEVEL_CHANGE_FADE_IN_TIME);
-				this.drawHearts = false;
+				this.showLevelChangeScreen(engine);
 				break;
 			case event_begin_level:
-				this.fadeScreenOut(this.levelChangeScreen, this.config.LEVEL_CHANGE_FADE_OUT_TIME);
-				this.drawHearts = true;
+				this.hideLevelChangeScreen(engine);
 				break;
 			case event_player_generated:
 				this.fixHeartCanvasSize(this.player);
@@ -72,46 +72,67 @@ class UISystem extends System {
 		});
 
 		document.getElementById('helpButton').addEventListener('click', function() {
-			document.getElementById('helpScreen').style.visible = 'visible';
+			self.blurScreen(self.titleScreen, self.config.TITLE_BLUR_AMOUNT, self.config.TITLE_FADE_OUT_TIME);
+			self.fadeScreenIn(self.helpScreen, self.config.TITLE_FADE_IN_TIME);
+			document.getElementById('returnToTitleScreenButton').addEventListener('click', function() {
+				self.unblurScreen(self.titleScreen, self.config.TITLE_FADE_IN_TIME);
+				self.fadeScreenOut(self.helpScreen, self.config.TITLE_FADE_OUT_TIME);
+			});
 		});
+	}
+
+	showLevelChangeScreen(engine) {
+		this.levelChangeText.innerHTML = 'Entering Level ' + (engine.getDepth() + 1);
+		this.fadeScreenIn(this.levelChangeScreen, this.config.LEVEL_CHANGE_FADE_IN_TIME);
+		this.drawHearts = false;
+	}
+
+	hideLevelChangeScreen(engine) {
+		this.fadeScreenOut(this.levelChangeScreen, this.config.LEVEL_CHANGE_FADE_OUT_TIME);
+		this.drawHearts = true;
 	}
 
 	showGameOverScreen(engine) {
 		this.fadeScreenIn(this.gameOverScreen, this.config.GAME_OVER_FADE_IN_TIME);
-		this.blurCanvas(this.gameCanvas, this.config.GAME_OVER_FADE_IN_TIME);
+		this.blurScreen(this.gameCanvas, this.config.GAME_BLUR_AMOUNT, this.config.GAME_OVER_FADE_IN_TIME);
 		this.hideHearts();
 
 		let self = this;
 		document.getElementById('playAgainButton').addEventListener('click', function() {
 			self.fadeScreenOut(self.gameOverScreen, self.config.GAME_OVER_FADE_OUT_TIME);
-			self.unblurCanvas(self.gameCanvas, self.config.GAME_OVER_FADE_OUT_TIME);
+			self.unblurScreen(self.gameCanvas, self.config.GAME_OVER_FADE_OUT_TIME);
 			engine.sendEvent(event_reset_game);
 			engine.sendEvent(event_new_game, undefined, 20);
 		});
 	}
 
 	fadeScreenIn(screen, milliseconds) {
-		screen.style.transitionDuration = milliseconds + "ms";
+		screen.style.transitionDuration = milliseconds + 'ms';
 		screen.style.opacity = '1';
 		screen.style.visibility = 'visible';
 	}
 
 	fadeScreenOut(screen, milliseconds) {
-		screen.style.transitionDuration = milliseconds + "ms";
+		screen.style.transitionDuration = milliseconds + 'ms';
 		screen.style.opacity = '0';
 		setTimeout(function() {
 			screen.style.visibility = 'hidden';
 		}, milliseconds);
 	}
 
-	blurCanvas(canvas, milliseconds) {
-		canvas.style.transitionDuration = milliseconds + "ms";
-		canvas.style.filter = 'blur(' + this.config.CANVAS_BLUR_AMOUNT + 'px)';
+	blurScreen(screen, blurAmount, milliseconds) {
+		screen.style.transitionDuration = milliseconds + 'ms';
+		screen.style.filter = 'blur(' + blurAmount + 'px)';
 	}
 
-	unblurCanvas(canvas, milliseconds) {
-		canvas.style.transitionDuration = milliseconds + "ms";
-		canvas.style.filter = 'blur(0)';
+	unblurScreen(screen, milliseconds) {
+		screen.style.transitionDuration = milliseconds + 'ms';
+		screen.style.filter = 'blur(0)';
+	}
+
+	resetScreen(screen) {
+		screen.style.opacity = '0';
+		screen.style.visibility = 'hidden';
 	}
 
 	hideHearts() {
