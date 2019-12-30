@@ -1,4 +1,8 @@
 {
+	"textures": {
+		"NUM_FLOOR_ALTS": 2,
+		"NUM_WALL_ALTS": 0
+	},
 	"level": {
 		"DUNGEON_SIZE": 51,
 		"ROOM_TRIES": 100

@@ -69,7 +69,12 @@ class DisplaySystem extends System {
 
 	handleEvent(engine, eventID, data) {
 		switch(eventID) {
-			case event_begin_level: case event_player_moved:
+			case event_begin_level:
+				this.determineSquareTextures(engine.getMap());
+				this.cameraMoving = true;
+				this.camera.display = true;
+				break;
+			case event_player_moved:
 				this.cameraMoving = true;
 				this.camera.display = true;
 				break;
@@ -108,23 +113,14 @@ class DisplaySystem extends System {
 	}
 
 	addObject(object) {
-		if(object instanceof Level) {
-			this.map = object.map.map;
-		}
-		else if(object instanceof Square) {
+		if(object instanceof Square) {
 			if(!this.squares.includes(object)) {
-				this.determineTextures(object, this.map);
 				this.squares.push(object);
 			}
 		}
-		else {
-			if(object instanceof Player) {
-				this.player = object;
-			}
-			if(this.componentRequirements.length > 0) {
-				if(!this.entities.includes(object) && Utility.checkComponents(object, this.componentRequirements)) {
-					this.entities.push(object);
-				}
+		else if(this.componentRequirements.length > 0) {
+			if(!this.entities.includes(object) && Utility.checkComponents(object, this.componentRequirements)) {
+				this.entities.push(object);
 			}
 		}
 		super.addObject(object);
@@ -158,128 +154,133 @@ class DisplaySystem extends System {
 		}
 	}
 
-	determineTextures(square, map) {
-		for(let texture of square.textures) {
-			if(square instanceof WallSquare) {
-				let neighbors = Utility.getNeighbors(square, map);
-				let TOP = DisplaySystem.texturesConnect(square, neighbors[0]),
-					RIGHT = DisplaySystem.texturesConnect(square, neighbors[1]),
-					BOTTOM = DisplaySystem.texturesConnect(square, neighbors[2]),
-					LEFT = DisplaySystem.texturesConnect(square, neighbors[3]);
-				texture.textureElements.push(new TextureElementComponent(texture_default, 0, 0));
-				if(!TOP && LEFT && RIGHT) {
-					texture.textureElements.push(new TextureElementComponent(texture_side_top, 0, 0));
-				}
-				if(!RIGHT && TOP && BOTTOM) {
-					texture.textureElements.push(new TextureElementComponent(texture_side_right, 0, 0));
-				}
-				if(!BOTTOM && LEFT && RIGHT) {
-					texture.textureElements.push(new TextureElementComponent(texture_side_bottom, 0, 0));
-				}
-				if(!LEFT && TOP && BOTTOM) {
-					texture.textureElements.push(new TextureElementComponent(texture_side_left, 0, 0));
-				}
-				if(TOP && RIGHT) {
-					texture.textureElements.push(new TextureElementComponent(texture_out_corner_top_right, 0, 0));
-				}
-				if(RIGHT && BOTTOM) {
-					texture.textureElements.push(new TextureElementComponent(texture_out_corner_bottom_right, 0, 0));
-				}
-				if(BOTTOM && LEFT) {
-					texture.textureElements.push(new TextureElementComponent(texture_out_corner_bottom_left, 0, 0));
-				}
-				if(LEFT && TOP) {
-					texture.textureElements.push(new TextureElementComponent(texture_out_corner_top_left, 0, 0));
-				}
-				if(texture.textureElements.length == 0) {
-					texture.textureElements.push(new TextureElementComponent(texture_default, 0, 0));
-				}
-			}
-			else if(square instanceof FloorSquare) {
-				let neighbors = Utility.getNeighbors(square, map);
-				let TOP = DisplaySystem.texturesConnect(square, neighbors[0]),
-					RIGHT = DisplaySystem.texturesConnect(square, neighbors[1]),
-					BOTTOM = DisplaySystem.texturesConnect(square, neighbors[2]),
-					LEFT = DisplaySystem.texturesConnect(square, neighbors[3]);
-				let cornerNeighbors = Utility.getCornerNeighbors(square, map);
-				let TOPLEFT = DisplaySystem.texturesConnect(square, cornerNeighbors[0]),
-					TOPRIGHT = DisplaySystem.texturesConnect(square, cornerNeighbors[1]),
-					BOTTOMLEFT = DisplaySystem.texturesConnect(square, cornerNeighbors[2]),
-					BOTTOMRIGHT = DisplaySystem.texturesConnect(square, cornerNeighbors[3]);
-
-				texture.textureElements.push(new TextureElementComponent(texture_default, 0, 0));
-				if(!TOP && !RIGHT && !BOTTOM && !LEFT) {
-					texture.textureElements.push(new TextureElementComponent(texture_cross, 0, 0));
-				}
-				else if(!TOP && !RIGHT && !LEFT && BOTTOM) {
-					texture.textureElements.push(new TextureElementComponent(texture_U_bottom, 0, 0));
-				}
-				else if(!RIGHT && !BOTTOM && !TOP && LEFT) {
-					texture.textureElements.push(new TextureElementComponent(texture_U_left, 0, 0));
-				}
-				else if(!BOTTOM && !LEFT && !RIGHT && TOP) {
-					texture.textureElements.push(new TextureElementComponent(texture_U_top, 0, 0));
-				}
-				else if(!LEFT && !TOP && !BOTTOM && RIGHT) {
-					texture.textureElements.push(new TextureElementComponent(texture_U_right, 0, 0));
-				}
-				else{
-					if(!TOP && LEFT && RIGHT) {
-						texture.textureElements.push(new TextureElementComponent(texture_side_top, 0, 0));
-					}
-					if(!RIGHT && TOP && BOTTOM) {
-						texture.textureElements.push(new TextureElementComponent(texture_side_right, 0, 0));
-					}
-					if(!BOTTOM && LEFT && RIGHT) {
-						texture.textureElements.push(new TextureElementComponent(texture_side_bottom, 0, 0));
-					}
-					if(!LEFT && TOP && BOTTOM) {
-						texture.textureElements.push(new TextureElementComponent(texture_side_left, 0, 0));
-					}
-					if(!TOP && !RIGHT) {
-						texture.textureElements.push(new TextureElementComponent(texture_in_corner_top_right, 0, 0));
-					}
-					if(!RIGHT && !BOTTOM) {
-						texture.textureElements.push(new TextureElementComponent(texture_in_corner_bottom_right, 0, 0));
-					}
-					if(!BOTTOM && !LEFT) {
-						texture.textureElements.push(new TextureElementComponent(texture_in_corner_bottom_left, 0, 0));
-					}
-					if(!LEFT && !TOP) {
-						texture.textureElements.push(new TextureElementComponent(texture_in_corner_top_left, 0, 0));
-					}
-					if(TOP && RIGHT) {
-						if(!TOPRIGHT) {
+	determineSquareTextures(map) {
+		for(let i = 0; i < map.length; i++) {
+			for(let j = 0; j < map.length; j++) {
+				let square = map[i][j];
+				for(let texture of square.textures) {
+					if(square instanceof WallSquare) {
+						let neighbors = Utility.getNeighbors(square, map);
+						let TOP = DisplaySystem.texturesConnect(square, neighbors[0]),
+							RIGHT = DisplaySystem.texturesConnect(square, neighbors[1]),
+							BOTTOM = DisplaySystem.texturesConnect(square, neighbors[2]),
+							LEFT = DisplaySystem.texturesConnect(square, neighbors[3]);
+						// texture.textureElements.push(new TextureElementComponent(texture_default, 0, 0));
+						if(!TOP && LEFT && RIGHT) {
+							texture.textureElements.push(new TextureElementComponent(texture_side_top, 0, 0));
+						}
+						if(!RIGHT && TOP && BOTTOM) {
+							texture.textureElements.push(new TextureElementComponent(texture_side_right, 0, 0));
+						}
+						if(!BOTTOM && LEFT && RIGHT) {
+							texture.textureElements.push(new TextureElementComponent(texture_side_bottom, 0, 0));
+						}
+						if(!LEFT && TOP && BOTTOM) {
+							texture.textureElements.push(new TextureElementComponent(texture_side_left, 0, 0));
+						}
+						if(TOP && RIGHT) {
 							texture.textureElements.push(new TextureElementComponent(texture_out_corner_top_right, 0, 0));
 						}
-					}
-					if(RIGHT && BOTTOM) {
-						if(!BOTTOMRIGHT) {
+						if(RIGHT && BOTTOM) {
 							texture.textureElements.push(new TextureElementComponent(texture_out_corner_bottom_right, 0, 0));
 						}
-					}
-					if(BOTTOM && LEFT) {
-						if(!BOTTOMLEFT) {
+						if(BOTTOM && LEFT) {
 							texture.textureElements.push(new TextureElementComponent(texture_out_corner_bottom_left, 0, 0));
 						}
-					}
-					if(LEFT && TOP) {
-						if(!TOPLEFT) {
+						if(LEFT && TOP) {
 							texture.textureElements.push(new TextureElementComponent(texture_out_corner_top_left, 0, 0));
 						}
+						if(texture.textureElements.length == 0) {
+							texture.textureElements.push(new TextureElementComponent(texture_default, 0, 0));
+						}
+					}
+					else if(square instanceof FloorSquare) {
+						let neighbors = Utility.getNeighbors(square, map);
+						let TOP = DisplaySystem.texturesConnect(square, neighbors[0]),
+							RIGHT = DisplaySystem.texturesConnect(square, neighbors[1]),
+							BOTTOM = DisplaySystem.texturesConnect(square, neighbors[2]),
+							LEFT = DisplaySystem.texturesConnect(square, neighbors[3]);
+						let cornerNeighbors = Utility.getCornerNeighbors(square, map);
+						let TOPLEFT = DisplaySystem.texturesConnect(square, cornerNeighbors[0]),
+							TOPRIGHT = DisplaySystem.texturesConnect(square, cornerNeighbors[1]),
+							BOTTOMLEFT = DisplaySystem.texturesConnect(square, cornerNeighbors[2]),
+							BOTTOMRIGHT = DisplaySystem.texturesConnect(square, cornerNeighbors[3]);
+
+						texture.textureElements.push(new TextureElementComponent(texture_default, 0, 0));
+						if(!TOP && !RIGHT && !BOTTOM && !LEFT) {
+							texture.textureElements.push(new TextureElementComponent(texture_cross, 0, 0));
+						}
+						else if(!TOP && !RIGHT && !LEFT && BOTTOM) {
+							texture.textureElements.push(new TextureElementComponent(texture_U_bottom, 0, 0));
+						}
+						else if(!RIGHT && !BOTTOM && !TOP && LEFT) {
+							texture.textureElements.push(new TextureElementComponent(texture_U_left, 0, 0));
+						}
+						else if(!BOTTOM && !LEFT && !RIGHT && TOP) {
+							texture.textureElements.push(new TextureElementComponent(texture_U_top, 0, 0));
+						}
+						else if(!LEFT && !TOP && !BOTTOM && RIGHT) {
+							texture.textureElements.push(new TextureElementComponent(texture_U_right, 0, 0));
+						}
+						else{
+							if(!TOP && LEFT && RIGHT) {
+								texture.textureElements.push(new TextureElementComponent(texture_side_top, 0, 0));
+							}
+							if(!RIGHT && TOP && BOTTOM) {
+								texture.textureElements.push(new TextureElementComponent(texture_side_right, 0, 0));
+							}
+							if(!BOTTOM && LEFT && RIGHT) {
+								texture.textureElements.push(new TextureElementComponent(texture_side_bottom, 0, 0));
+							}
+							if(!LEFT && TOP && BOTTOM) {
+								texture.textureElements.push(new TextureElementComponent(texture_side_left, 0, 0));
+							}
+							if(!TOP && !RIGHT) {
+								texture.textureElements.push(new TextureElementComponent(texture_in_corner_top_right, 0, 0));
+							}
+							if(!RIGHT && !BOTTOM) {
+								texture.textureElements.push(new TextureElementComponent(texture_in_corner_bottom_right, 0, 0));
+							}
+							if(!BOTTOM && !LEFT) {
+								texture.textureElements.push(new TextureElementComponent(texture_in_corner_bottom_left, 0, 0));
+							}
+							if(!LEFT && !TOP) {
+								texture.textureElements.push(new TextureElementComponent(texture_in_corner_top_left, 0, 0));
+							}
+							if(TOP && RIGHT) {
+								if(!TOPRIGHT) {
+									texture.textureElements.push(new TextureElementComponent(texture_out_corner_top_right, 0, 0));
+								}
+							}
+							if(RIGHT && BOTTOM) {
+								if(!BOTTOMRIGHT) {
+									texture.textureElements.push(new TextureElementComponent(texture_out_corner_bottom_right, 0, 0));
+								}
+							}
+							if(BOTTOM && LEFT) {
+								if(!BOTTOMLEFT) {
+									texture.textureElements.push(new TextureElementComponent(texture_out_corner_bottom_left, 0, 0));
+								}
+							}
+							if(LEFT && TOP) {
+								if(!TOPLEFT) {
+									texture.textureElements.push(new TextureElementComponent(texture_out_corner_top_left, 0, 0));
+								}
+							}
+						}
+						// if(TOP && RIGHT && BOTTOM && LEFT) {
+						// }
+						// if(texture.textureElements.length = 2) {
+						// 	// texture.textureElements.push(new TextureElementComponent(texture_default, 0, 0));
+						// }
+					}
+					else {
+						texture.textureElements.push(new TextureElementComponent(texture_default, 0, 0));
+					}
+					if(texture.textureElements.length == 1 && texture.textureElements[0].element == texture_default) {
+						this.setTextureAlt(texture);
 					}
 				}
-				// if(TOP && RIGHT && BOTTOM && LEFT) {
-				// }
-				// if(texture.textureElements.length = 2) {
-				// 	// texture.textureElements.push(new TextureElementComponent(texture_default, 0, 0));
-				// }
-			}
-			else {
-				texture.textureElements.push(new TextureElementComponent(texture_default, 0, 0));
-			}
-			if(texture.textureElements.length == 1 && texture.textureElements[0].element == texture_default) {
-				this.setTextureAlt(texture);
 			}
 		}
 	}
