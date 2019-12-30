@@ -15,20 +15,8 @@ class CombatSystem extends System {
 		for(let entity of this.objects) {
 			switch(entity.actions.currentAction) {
 				case action_melee_attack:
-<<<<<<< HEAD
-					let dir = this.determineAttackDirection(entity, this.objects);
-					if(dir !== -1) {
-						entity.direction.direction = dir;
-						entity.actions.currentAction = direction_to_attack[dir];
-						this.meleeAttack(engine, entity, this.objects);
-					}
-					else {
-						engine.sendEvent(event_failed_action, { 'action': entity.actions.currentAction, 'entity': entity });
-					}
-=======
 					this.fixAttackDirection(entity, this.objects);
 					this.meleeAttack(engine, entity, this.objects);
->>>>>>> dev
 					break;
 				case action_melee_attack_up: case action_melee_attack_right: case action_melee_attack_down: case action_melee_attack_left:
 					this.meleeAttack(engine, entity, this.objects);

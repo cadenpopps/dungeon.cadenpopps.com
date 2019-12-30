@@ -8,16 +8,9 @@ function load() {
 	let config = loadConfig();
 	let images = loadImages(config.textures);
 	let room_pool = loadRoomPools();
-<<<<<<< HEAD
 	let player_data = loadPlayerData();
 	let entity_data = loadEntityData();
-=======
-	let images = loadImages();
-	let player_data = loadJSON('/data/player_data.json');
-	let entity_data = loadJSON('/data/entity_data.json');
-	let boss_data = loadJSON('/data/boss_data.json');
 
->>>>>>> dev
 	// let music = loadMusic();
 	// let sounds = loadSounds();
 
@@ -46,7 +39,6 @@ function loadRoomPools(){
 	return loadJSON('/config/roompool.json');
 }
 
-<<<<<<< HEAD
 function loadImages(textureConfig){
 	let images = {}
 	images.textures = loadTextures(textureConfig);
@@ -157,24 +149,6 @@ function loadTextures(textureConfig) {
 
 	return textures;
 }
-=======
-function loadImages(){
-	let images = [];
-
-	images.textures = [];
-	images.textures[texture_floor] = loadImage('/img/textures/floor0.jpg');
-	images.textures[texture_wall] = loadImage('/img/textures/wall0.jpg');
-	images.textures[texture_door_open] = loadImage('/img/textures/doorOpen.png');
-	images.textures[texture_door_closed] = loadImage('/img/textures/doorClosed.jpg');
-	images.textures[texture_loot_open] = loadImage('/img/textures/lootOpen.png');
-	images.textures[texture_loot_closed] = loadImage('/img/textures/lootClosed.png');
-	images.textures[texture_stair_up] = loadImage('/img/textures/stairUp.png');
-	images.textures[texture_stair_down] = loadImage('/img/textures/stairDown.png');
-
-	images.ui = [];
-	images.ui[ui_heart] = loadImage('/img/icons/heart.png');
-	images.ui[ui_empty_heart] = loadImage('/img/icons/emptyHeart.png');
->>>>>>> dev
 
 function loadUI() {
 	let ui = [];
