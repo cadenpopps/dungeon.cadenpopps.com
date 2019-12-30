@@ -42,69 +42,70 @@ function loadImages(){
 	images.textures = [];
 
 	images.textures[texture_floor] = [];
-	images.textures[texture_floor][texture_default] = loadImage('/img/textures/old/pathTexture0.png');
-	images.textures[texture_floor][texture_alt1] = loadImage('/img/textures/old/pathTexture0.png');
-	images.textures[texture_floor][texture_alt2] = loadImage('/img/textures/old/pathTexture1.png');
-	images.textures[texture_floor][texture_alt3] = loadImage('/img/textures/old/pathTexture2.png');
-	images.textures[texture_floor][texture_alt4] = loadImage('/img/textures/old/pathTexture3.png');
-	images.textures[texture_floor][texture_alt5] = loadImage('/img/textures/old/pathTexture4.png');
-	images.textures[texture_floor][texture_alt6] = loadImage('/img/textures/old/pathTexture5.png');
-	images.textures[texture_floor][texture_num_alts] = 6;
+	// images.textures[texture_floor][texture_default] = loadImage('/img/textures/old/pathTexture0.png');
+	// images.textures[texture_floor][texture_alt1] = loadImage('/img/textures/old/pathTexture0.png');
+	// images.textures[texture_floor][texture_alt2] = loadImage('/img/textures/old/pathTexture1.png');
+	// images.textures[texture_floor][texture_alt3] = loadImage('/img/textures/old/pathTexture2.png');
+	// images.textures[texture_floor][texture_alt4] = loadImage('/img/textures/old/pathTexture3.png');
+	// images.textures[texture_floor][texture_alt5] = loadImage('/img/textures/old/pathTexture4.png');
+	// images.textures[texture_floor][texture_alt6] = loadImage('/img/textures/old/pathTexture5.png');
+	// images.textures[texture_floor][texture_num_alts] = 6;
+	images.textures[texture_floor][texture_num_alts] = 0;
 
-	images.textures[texture_floor][texture_side_top] = loadImage('/img/textures/side_top.png');
-	images.textures[texture_floor][texture_side_right] = loadImage('/img/textures/side_right.png');
-	images.textures[texture_floor][texture_side_bottom] = loadImage('/img/textures/side_bottom.png');
-	images.textures[texture_floor][texture_side_left] = loadImage('/img/textures/side_left.png');
+	// images.textures[texture_floor][texture_side_top] = loadImage('/img/textures/side_top.png');
+	// images.textures[texture_floor][texture_side_right] = loadImage('/img/textures/side_right.png');
+	// images.textures[texture_floor][texture_side_bottom] = loadImage('/img/textures/side_bottom.png');
+	// images.textures[texture_floor][texture_side_left] = loadImage('/img/textures/side_left.png');
 
-	images.textures[texture_floor][texture_in_corner_top_right] = loadImage('/img/textures/corner_in_top_right.png');
-	images.textures[texture_floor][texture_in_corner_bottom_right] = loadImage('/img/textures/corner_in_bottom_right.png');
-	images.textures[texture_floor][texture_in_corner_bottom_left] = loadImage('/img/textures/corner_in_bottom_left.png');
-	images.textures[texture_floor][texture_in_corner_top_left] = loadImage('/img/textures/corner_in_top_left.png');
+	// images.textures[texture_floor][texture_in_corner_top_right] = loadImage('/img/textures/corner_in_top_right.png');
+	// images.textures[texture_floor][texture_in_corner_bottom_right] = loadImage('/img/textures/corner_in_bottom_right.png');
+	// images.textures[texture_floor][texture_in_corner_bottom_left] = loadImage('/img/textures/corner_in_bottom_left.png');
+	// images.textures[texture_floor][texture_in_corner_top_left] = loadImage('/img/textures/corner_in_top_left.png');
 
-	images.textures[texture_floor][texture_out_corner_top_right] = loadImage('/img/textures/corner_out_top_right.png');
-	images.textures[texture_floor][texture_out_corner_bottom_right] = loadImage('/img/textures/corner_out_bottom_right.png');
-	images.textures[texture_floor][texture_out_corner_bottom_left] = loadImage('/img/textures/corner_out_bottom_left.png');
-	images.textures[texture_floor][texture_out_corner_top_left] = loadImage('/img/textures/corner_out_top_left.png');
+	// images.textures[texture_floor][texture_out_corner_top_right] = loadImage('/img/textures/corner_out_top_right.png');
+	// images.textures[texture_floor][texture_out_corner_bottom_right] = loadImage('/img/textures/corner_out_bottom_right.png');
+	// images.textures[texture_floor][texture_out_corner_bottom_left] = loadImage('/img/textures/corner_out_bottom_left.png');
+	// images.textures[texture_floor][texture_out_corner_top_left] = loadImage('/img/textures/corner_out_top_left.png');
 
-	images.textures[texture_floor][texture_U_top] = loadImage('/img/textures/U_top.png');
-	images.textures[texture_floor][texture_U_right] = loadImage('/img/textures/U_right.png');
-	images.textures[texture_floor][texture_U_bottom] = loadImage('/img/textures/U_bottom.png');
-	images.textures[texture_floor][texture_U_left] = loadImage('/img/textures/U_left.png');
+	// images.textures[texture_floor][texture_U_top] = loadImage('/img/textures/U_top.png');
+	// images.textures[texture_floor][texture_U_right] = loadImage('/img/textures/U_right.png');
+	// images.textures[texture_floor][texture_U_bottom] = loadImage('/img/textures/U_bottom.png');
+	// images.textures[texture_floor][texture_U_left] = loadImage('/img/textures/U_left.png');
 
-	images.textures[texture_floor][texture_cross] = loadImage('/img/textures/cross.png');
+	// images.textures[texture_floor][texture_cross] = loadImage('/img/textures/cross.png');
 
 
 	images.textures[texture_wall] = [];
-	images.textures[texture_wall][texture_default] = loadImage('/img/textures/old/wallTexture0.png');
-	images.textures[texture_wall][texture_alt1] = loadImage('/img/textures/old/wallTexture0.png');
-	images.textures[texture_wall][texture_alt2] = loadImage('/img/textures/old/wallTexture0.png');
-	images.textures[texture_wall][texture_alt3] = loadImage('/img/textures/old/wallTexture1.png');
-	images.textures[texture_wall][texture_alt4] = loadImage('/img/textures/old/wallTexture3.png');
-	images.textures[texture_wall][texture_alt5] = loadImage('/img/textures/old/wallTexture4.png');
-	images.textures[texture_wall][texture_alt6] = loadImage('/img/textures/old/wallTexture5.png');
-	images.textures[texture_wall][texture_num_alts] = 6;
+	images.textures[texture_wall][texture_default] = loadImage('/img/textures/wall.png');
+	// images.textures[texture_wall][texture_alt1] = loadImage('/img/textures/old/wallTexture0.png');
+	// images.textures[texture_wall][texture_alt2] = loadImage('/img/textures/old/wallTexture0.png');
+	// images.textures[texture_wall][texture_alt3] = loadImage('/img/textures/old/wallTexture1.png');
+	// images.textures[texture_wall][texture_alt4] = loadImage('/img/textures/old/wallTexture3.png');
+	// images.textures[texture_wall][texture_alt5] = loadImage('/img/textures/old/wallTexture4.png');
+	// images.textures[texture_wall][texture_alt6] = loadImage('/img/textures/old/wallTexture5.png');
+	images.textures[texture_wall][texture_num_alts] = 0;
 
-	images.textures[texture_wall][texture_side_top] = loadImage('/img/textures/side_top.png');
-	images.textures[texture_wall][texture_side_right] = loadImage('/img/textures/side_right.png');
-	images.textures[texture_wall][texture_side_bottom] = loadImage('/img/textures/side_bottom.png');
-	images.textures[texture_wall][texture_side_left] = loadImage('/img/textures/side_left.png');
+	// images.textures[texture_wall][texture_side_top] = loadImage('/img/textures/side_top.png');
+	// images.textures[texture_wall][texture_side_right] = loadImage('/img/textures/side_right.png');
+	// images.textures[texture_wall][texture_side_bottom] = loadImage('/img/textures/side_bottom.png');
+	// images.textures[texture_wall][texture_side_left] = loadImage('/img/textures/side_left.png');
 
-	images.textures[texture_wall][texture_in_corner_top_right] = loadImage('/img/textures/corner_in_top_right.png');
-	images.textures[texture_wall][texture_in_corner_bottom_right] = loadImage('/img/textures/corner_in_bottom_right.png');
-	images.textures[texture_wall][texture_in_corner_bottom_left] = loadImage('/img/textures/corner_in_bottom_left.png');
-	images.textures[texture_wall][texture_in_corner_top_left] = loadImage('/img/textures/corner_in_top_left.png');
+	// images.textures[texture_wall][texture_in_corner_top_right] = loadImage('/img/textures/corner_in_top_right.png');
+	// images.textures[texture_wall][texture_in_corner_bottom_right] = loadImage('/img/textures/corner_in_bottom_right.png');
+	// images.textures[texture_wall][texture_in_corner_bottom_left] = loadImage('/img/textures/corner_in_bottom_left.png');
+	// images.textures[texture_wall][texture_in_corner_top_left] = loadImage('/img/textures/corner_in_top_left.png');
 
-	images.textures[texture_wall][texture_out_corner_top_right] = loadImage('/img/textures/corner_out_top_right.png');
-	images.textures[texture_wall][texture_out_corner_bottom_right] = loadImage('/img/textures/corner_out_bottom_right.png');
-	images.textures[texture_wall][texture_out_corner_bottom_left] = loadImage('/img/textures/corner_out_bottom_left.png');
-	images.textures[texture_wall][texture_out_corner_top_left] = loadImage('/img/textures/corner_out_top_left.png');
+	// images.textures[texture_wall][texture_out_corner_top_right] = loadImage('/img/textures/corner_out_top_right.png');
+	// images.textures[texture_wall][texture_out_corner_bottom_right] = loadImage('/img/textures/corner_out_bottom_right.png');
+	// images.textures[texture_wall][texture_out_corner_bottom_left] = loadImage('/img/textures/corner_out_bottom_left.png');
+	// images.textures[texture_wall][texture_out_corner_top_left] = loadImage('/img/textures/corner_out_top_left.png');
 
-	images.textures[texture_wall][texture_U_top] = loadImage('/img/textures/U_top.png');
-	images.textures[texture_wall][texture_U_right] = loadImage('/img/textures/U_right.png');
-	images.textures[texture_wall][texture_U_bottom] = loadImage('/img/textures/U_bottom.png');
-	images.textures[texture_wall][texture_U_left] = loadImage('/img/textures/U_left.png');
+	// images.textures[texture_wall][texture_U_top] = loadImage('/img/textures/U_top.png');
+	// images.textures[texture_wall][texture_U_right] = loadImage('/img/textures/U_right.png');
+	// images.textures[texture_wall][texture_U_bottom] = loadImage('/img/textures/U_bottom.png');
+	// images.textures[texture_wall][texture_U_left] = loadImage('/img/textures/U_left.png');
 
-	images.textures[texture_wall][texture_cross] = loadImage('/img/textures/cross.png');
+	// images.textures[texture_wall][texture_cross] = loadImage('/img/textures/cross.png');
 
 	images.textures[texture_door_closed] = [];
 	images.textures[texture_door_closed][texture_default] = loadImage('/img/textures/old/doorClosedTexture.png');

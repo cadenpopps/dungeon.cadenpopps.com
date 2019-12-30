@@ -40,7 +40,6 @@ class DisplaySystem extends System {
 
 	run(engine) {
 		background(0);
-
 		if(this.camera.display) {
 			if(this.cameraMoving) {
 				if(this.player.animation.animation == animation_idle) { this.cameraMoving = false; }
