@@ -1,60 +1,52 @@
-combat - turn entity to face other if facing wrong way
 ai - different levels of pathfinding (naive, adequate, advanced)
-display - level up screen, better health, MOVE TEXTURE CODE TO DISPLAY EXCLUSIVELY
-general - levels, inventory, loot, textures, direction/position dependent textures
+	display - level up screen, better health
+	general - levels, inventory, loot, textures, direction/position dependent textures
 
-for length 1 hallways - make door in middle spot, doors become floors
+	Ideas -
+	Stealth
+	Boss room
+	Player
+	Inventory
+	Combat
+	Stats
+	Progression
+	Level
+	More Square types
+	Liquid
+	Bookshelf
+	traps
+	hole
+	etc
+	More Rooms
+Top level (overworld)
+	Engine
+	Visual
+	More animation support
+	Audio
+	Sounds
+	Music
+	Gameplay
+	Mobs
+Custom mobs (from JSON)
+	Stats
+	Combat
+	Traps
+	NPC
 
-floor progression -
-castle
-sewer
-mine
+	Needs Improvement -
+Level gen (maze + sparse + detours)
 
-
-hud on combat/sprint
-camera shake on event
-
-Ideas
-    Player
-        Inventory
-        Combat
-        Stats
-        Progression
-    Level
-        More Square types
-            Liquid
-            Bookshelf
-			traps
-			hole
-			etc
-        More Rooms
-        Top level (overworld)
-    Engine
-        Visual
-            More animation support
-        Audio
-            Sounds
-            Music
-        Gameplay
-            Mobs
-                Custom mobs (from JSON)
-                Stats
-                Combat
-            Traps
-            NPC
-
-Sounds
-    Music
-        Main theme
-    Effects
-        Hurt sound
-        Door
-        Walking
-        Sword
-        Magic
-        Chest
-        New floor
-        Mob sounds
-        Water sound
-		Drip sound (water)
-		bruh sound effect #2
+	Sounds
+	Music
+	Main theme
+	Effects
+	Water sound
+	Hurt sound
+	Door
+	Walking
+	Sword
+	Magic
+	Chest
+	New floor
+	Mob sounds
+	Drip sound

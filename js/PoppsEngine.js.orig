@@ -4,14 +4,21 @@ class PoppsEngine {
 		const config = data.config;
 		const ROOM_POOL = data.room_pool;
 		const STAIR_ROOM_POOL = data.stair_room_pool;
+<<<<<<< HEAD
 		const images = data.images;
+=======
+>>>>>>> dev
 		const PLAYER_DATA = data.player_data;
 		const ENTITY_DATA = data.entity_data;
 		const BOSS_DATA = data.boss_data;
 
 		this.systems = [];
 		this.systems.push(new InputSystem());
+<<<<<<< HEAD
 		this.systems.push(new DisplaySystem(config.display, images));
+=======
+		this.systems.push(new DisplaySystem(config.display, data.images));
+>>>>>>> dev
 		this.systems.push(new VisionSystem(config.vision));
 		this.systems.push(new LightSystem(config.light));
 		this.systems.push(new ActionSystem());

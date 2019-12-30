@@ -4,7 +4,11 @@ class DisplaySystem extends System {
 		super([component_position, component_display]);
 		this.config = config;
 		this.textures = images.textures;
+<<<<<<< HEAD
+		this.ui = images.ui;
+=======
 	}
+>>>>>>> dev
 
 	init(engine) {
 		this.camera = {
@@ -57,9 +61,13 @@ class DisplaySystem extends System {
 			canvas.setTransform();
 		}
 
+<<<<<<< HEAD
+		this.drawUI(this.player);
+=======
 		// let et = millis() - st;
 		// console.log("Time for draw loop: " + et);
 
+>>>>>>> dev
 
 		// canvas.translate(width/2, height/2);
 		// canvas.rotate(45 * Math.PI / 180);

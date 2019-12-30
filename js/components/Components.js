@@ -16,8 +16,8 @@ function IntelligenceComponent(initialIntelligence){
 	this.intelligence = initialIntelligence;
 }
 
-function MagicComponent(initialMagic){
-	this.magic = initialMagic;
+function DexterityComponent(initialDexterity){
+	this.dexterity = initialDexterity;
 }
 
 function CombatComponent(strength, magic, intelligence){
@@ -116,8 +116,9 @@ function DepthComponent(depth){
 	this.depth = depth;
 }
 
-function AIComponent(actions, attackRange, retreatRange){
+function AIComponent(actions, attackRange){
 	this.actions = actions;
 	this.attackRange = attackRange;
-	this.retreatRange = retreatRange;
+	this.noticedPlayer = false;
+	this.idleTimer = 0;
 }

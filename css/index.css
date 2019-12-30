@@ -1,3 +1,26 @@
+@font-face {
+	font-family: Montserrat;
+	src: url('/fonts/Montserrat-Medium.otf');
+	font-weight: 500;
+}
+
+@font-face {
+	font-family: Montserrat;
+	src: url('/fonts/Montserrat-Regular.otf');
+	font-weight: 400;
+}
+
+@font-face {
+	font-family: Montserrat;
+	src: url('/fonts/Montserrat-Bold.otf');
+	font-weight: bold;
+}
+
+
+:root {
+	--button-width: 240px;
+	--button-height: 55px;
+}
 
 html, body{
 	overflow: hidden;
@@ -16,10 +39,11 @@ html, body{
 body {
 	text-align: center;
 	background-color: black;
+	/* background-color: red; */
 	color:white;
 	font-size: 20pt;
 	font-family: 'Montserrat', monospace;
-	font-weight: 600;
+	font-weight: 500;
 	display:flex;
 	flex-direction: column;
 	justify-content: center;
@@ -29,51 +53,169 @@ body {
 a {
 	text-decoration: none;
 }
-.title{
-	font-size: 3em;
-}
-.subtitle{
-	font-size:2em;
-}
 
-#game{
+#game {
 	position: absolute;
 	top: 0;
 	left: 0;
 	bottom: 0;
 	right:0;
 	z-index:0;
-}
-#game *{
-	/* display:none; */
-	z-index:-1;
+
 }
 
-#welcome{
+.button {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	border-radius: 5px;
+	width: var(--button-width);
+	height: var(--button-height);
+	font-size: 24pt;
+
+	color: black;
+	background-color: white;
+
+	text-align: center;
+	cursor: pointer;
+}
+
+#titleScreen {
 	position: absolute;
-	padding:80px;
-	z-index:1;
-}
-
-#vignette {
-	position: fixed;
-	opacity: 0;
 	top: 0;
 	left: 0;
-	width: 100%;
-	height: 100%;
-	z-index:1;
-	background-color:rgba(255,30,30,.1);
-	box-shadow: inset 0 0 50vw rgba(255,30,30,.7);
+	right: 0;
+	bottom: 0;
+	z-index: 10;
+
+	background-color: black;
+	display: block;
+	visibility: hidden;
 }
 
-#overlay {
+#titleScreen>#titleScreenContent {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+
+	width: max-content;
+	height: 100vh;
+	margin: 0 auto;
+	margin-left:80px;
+}
+
+#titleScreenContent>#title {
+	font-size: 64pt;
+	margin: -40px 0 40px 0;
+	text-align: left;
+}
+
+#titleScreenContent>#title>#smallTitleText {
+	font-size: 36pt;
+	margin: 0 0 -10px 5px;
+	display: block;
+}
+
+#titleScreenContent>.button {
+	color: white;
+	background-color: black;
+	margin: 5px 0 2px 10px;
+	text-align: left;
+}
+
+#titleScreenContent>#playButton  {
+	font-size: 26pt;
+}
+
+#titleScreenContent>#optionsButton  { }
+
+#titleScreenContent>#helpButton  { }
+
+#helpScreen {
 	position: absolute;
-	display:block;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+
+	padding: 80px 200px;
+
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
+	visibility: hidden;
+
+	color: white;
+
+	z-index: 11;
+}
+
+.helpTextTitle {
+	font-size: 24pt;
+	font-weight: 600;
+	display: block;
+}
+
+.helpTextBody {
+	font-size: 16pt;
+	display: block;
+	margin: 15px 0 60px 0;
+}
+
+#levelChangeScreen {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 10;
+
+	background-color: black;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	visibility: hidden;
+}
+
+#levelChangeScreen>#levelChangeText {
+	width: max-content;
+	margin: 0 auto;
+	font-size: 48pt;
+}
+
+#gameOverScreen {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 10;
+
+	background-color: rgba(0, 0, 0, .65);
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	visibility: hidden;
+}
+
+#gameOverScreen>#gameOverText {
+	display: block;
+	width: max-content;
+	margin: 0 auto;
+	font-size: 54pt;
+}
+
+#gameOverScreen>#playAgainButton {
+	margin-top: 30px;
+}
+
+#heartCanvas {
+	position: absolute;
 	top:0;
 	left:0;
-	right:0;
-	bottom:0;
-	background-color:black;
-	opacity: 0;
+	z-index:1;
+	width: min-content;
 }

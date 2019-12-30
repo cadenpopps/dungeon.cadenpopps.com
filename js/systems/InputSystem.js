@@ -2,50 +2,75 @@ class InputSystem extends System {
 
 	constructor() {
 		super([]);
-		this.player;
+	}
+
+	init(engine) {
 		this.mobSpawnCooldown = 0;
+		this.inputs = [];
+
+		let self = this;
+		document.addEventListener("keydown", function (e) {
+			self.keyDown(e);
+		});
+
+		document.addEventListener("keyup", function (e) {
+			self.keyUp(e);
+		});
 	}
 
 	run(engine) {
 		if(keys.includes('n') && this.mobSpawnCooldown <= 0) {
 			this.mobSpawnCooldown = 10;
-			engine.sendEvent(event_spawn_enemy_close, this.player);
+			engine.sendEvent(event_spawn_enemy_close, engine.getPlayer());
 		}
 
 		if(this.mobSpawnCooldown > 0) {
 			this.mobSpawnCooldown--;
 		}
 
-		this.player.actions.nextAction = this.determineAction();		
+		this.setPlayerAction(engine, this.inputs);
 	}
 
-	addObject(object) {
-		if(object instanceof Player) {
-			this.player = object;
+	addObject(object) { }
+
+	keyDown(event) {
+		if(!this.inputs.includes(event.keyCode)) {
+			this.inputs.unshift(event.keyCode);
 		}
 	}
 
-	determineAction() {
-		let action = action_none;
+	keyUp(event) {
+		if(this.inputs.includes(event.keyCode)) {
+			this.inputs.splice(this.inputs.indexOf(event.keyCode), 1);
+		}
+	}
 
-		if(keys.length > 0) {
+	setPlayerAction(engine, inputs) {
+		let player = engine.getPlayer();
+		if(inputs.length > 0) {
 			let highestPriority = 0;
-			for(let k of keys) {
-				let a = key_to_action[k];
-				let priority = action_to_priority[a];
-				priority = this.fixPriority(this.player, a, priority);
+			let playerAction = action_none;
+			for(let key of inputs) {
+				let action = keyCode_to_action[key];
+				let priority = action_to_priority[action];
+				priority = this.fixPriority(engine, player, action, priority);
 				if(priority > highestPriority) {
-					action = a;
+					playerAction = action;
 					highestPriority = priority;
 				}
 			}
+			player.actions.nextAction = playerAction;
 		}
-
-		return action;
+		else {
+			player.actions.nextAction = action_none;
+		}
 	}
 
-	fixPriority(player, a, priority) {
-		if(this.actionEqualsLastAction(player, a)) {
+	fixPriority(engine, player, action, priority) {
+		if(action == action_melee_attack && !CombatSystem.validMeleeAttack(engine, player)) {
+			return 0;
+		}
+		if(player.actions.lastAction == action) {
 			if(player.actions.lastActionFailed) { return 0; }
 			else { return priority - 1; }
 		}
@@ -54,6 +79,6 @@ class InputSystem extends System {
 
 
 	actionEqualsLastAction(player, a) {
-		return player.actions.lastAction == a;
+		return k;
 	}
 }

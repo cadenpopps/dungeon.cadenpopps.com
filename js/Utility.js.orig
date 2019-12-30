@@ -195,22 +195,33 @@ class Utility {
 		return findPath(board, board[mob.position.x][mob.position.y], board[player.position.x][player.position.y]);
 	}
 
+<<<<<<< HEAD
 	static walkable(x, y, map, entity, objects){
 		return Utility.positionInBounds(new PositionComponent(x, y), map.length) && Utility.squareTypeIsWalkable(map[x][y], entity) && !Utility.squareIsOccupied(x, y, entity, objects);
+=======
+	static walkable(x, y, map, entity, objects) {
+		return Utility.positionInBounds(x, y, map.length) && Utility.squareTypeIsWalkable(map[x][y], entity) && !Utility.squareIsOccupied(x, y, entity, objects);
+>>>>>>> dev
 	}
 
 	static positionOnScreen(x, y, w, h) {
 		return x > -w && x < width + w && y > -h && y < height + h;
 	}
 
+<<<<<<< HEAD
 	static positionInBounds(position, size){
 		return position.x >= 0 && position.x < size && position.y >= 0 && position.y < size;
+=======
+	static positionInBounds(x, y, size) {
+		return x >= 0 && x < size && y >= 0 && y < size;
+>>>>>>> dev
 	}
 
 	static squareInBounds(square, size) {
 		return square.position.x >= 0 && square.position.x < size && square.position.y >= 0 && square.position.y < size;
 	}
 
+<<<<<<< HEAD
 	static getNeighbors(square, map) {
 		let neighbors = new Array(4);
 		if(Utility.positionInBounds(new PositionComponent(square.position.x, square.position.y - 1), map.length)) {
@@ -246,6 +257,9 @@ class Utility {
 	}
 
 	static squareTypeIsWalkable(square, entity){
+=======
+	static squareTypeIsWalkable(square, entity) {
+>>>>>>> dev
 		return (entity instanceof Player) ? Utility.playerWalkable(square) : Utility.mobWalkable(square);
 	}
 

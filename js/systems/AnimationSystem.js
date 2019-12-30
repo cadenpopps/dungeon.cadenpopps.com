@@ -2,9 +2,10 @@ class AnimationSystem extends System {
 
 	constructor(config) {
 		super([component_animation]);
-
 		this.config = config;
+	}
 
+	init(engine) {
 		this.animationCounter = 0;
 		this.idleAnimationCounter = 0;
 	}

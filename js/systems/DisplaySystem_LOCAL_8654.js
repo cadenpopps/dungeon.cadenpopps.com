@@ -2,11 +2,11 @@ class DisplaySystem extends System {
 
 	constructor(config, images) {
 		super([component_position, component_display]);
+
 		this.config = config;
 		this.textures = images.textures;
-	}
+		this.ui = images.ui;
 
-	init(engine) {
 		this.camera = {
 			display: true,
 			x: 0,
@@ -57,9 +57,7 @@ class DisplaySystem extends System {
 			canvas.setTransform();
 		}
 
-		// let et = millis() - st;
-		// console.log("Time for draw loop: " + et);
-
+		this.drawUI(this.player);
 
 		// canvas.translate(width/2, height/2);
 		// canvas.rotate(45 * Math.PI / 180);
@@ -104,15 +102,12 @@ class DisplaySystem extends System {
 				break;
 			case event_player_melee_attack:
 				this.shakeCamera(this.camera, this.config.CAMERA_SHAKE_MEDIUM_SMALL);
-				engine.sendEvent(event_hitstun, { "ticks": 4 });
 				break;
 			case event_player_spin_attack:
 				this.shakeCamera(this.camera, this.config.CAMERA_SHAKE_SMALL);
-				engine.sendEvent(event_hitstun, { "ticks": 2 });
 				break;
 			case event_player_take_damage:
-				this.shakeCamera(this.camera, this.config.CAMERA_SHAKE_MEDIUM);
-				engine.sendEvent(event_hitstun, { "ticks": 6 });
+				this.shakeCamera(this.camera, this.config.CAMERA_SHAKE_SMALL);
 				break;
 		}
 	}
@@ -445,6 +440,32 @@ class DisplaySystem extends System {
 		const b = (height / scale / 2) + border;
 		const l = -(width / scale / 2) - border;
 		return bounds.y > t && bounds.x + bounds.w < r && bounds.y + bounds.h < b && bounds.x > l;
+	}
+
+	drawUI(player) {
+		this.drawPlayerHealth(player);
+	}
+
+	drawPlayerHealth(player) {
+		const HEART_SIZE = 30;
+		const HEART_SPACING = 4;
+		const HEART_OFFSET = 20;
+		let x = 0, y = 0;
+		let hearts = HealthSystem.getCurrentHeartAmount(player);
+		let maxHearts = HealthSystem.getMaxHeartAmount(player);
+		for(let i = 1; i <= maxHearts; i++) {
+			if(i <= hearts) {
+				image(this.ui[ui_heart], (x * HEART_SIZE) + (x * HEART_SPACING) + HEART_OFFSET, (y * HEART_SIZE) + HEART_OFFSET, HEART_SIZE, HEART_SIZE);
+			}
+			else {
+				image(this.ui[ui_empty_heart], (x * HEART_SIZE) + (x * HEART_SPACING) + HEART_OFFSET, (y * HEART_SIZE) + HEART_OFFSET, HEART_SIZE, HEART_SIZE);
+			}
+			x++;
+			if(i % 15 == 0) {
+				y++;
+				x = 0;
+			}
+		}
 	}
 
 	centerCamera(camera, position, offsetX = 0, offsetY = 0) {

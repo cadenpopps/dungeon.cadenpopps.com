@@ -33,8 +33,13 @@ class LightSystem extends System {
 				s.light.level = 0;
 			}
 		}
+<<<<<<< HEAD
+		for(let l of this.emitters[this.depth]) {
+			this.setLightLevel(map[l.position.x][l.position.y], l.lightEmitter.level - 1);
+=======
 		for(let l of this.objects) {
 			this.setLightLevel(map[l.position.x][l.position.y], l.lightEmitter.level);
+>>>>>>> dev
 			for(let octant = 0; octant < 8; octant++) {
 				this.lightTriangle(map, octant, l.position.x, l.position.y, l.lightEmitter.level);
 			}

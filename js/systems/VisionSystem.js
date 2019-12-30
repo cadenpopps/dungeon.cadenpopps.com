@@ -2,17 +2,19 @@ class VisionSystem extends System {
 
 	constructor(config) {
 		super([component_display, component_position]);
-
-		this.player;
-		this.map;
 		this.config = config;
+	}
+
+	init(engine) {
+		this.player = undefined;
+		this.map = undefined;
 	}
 
 	run(engine) { }
 
 	handleEvent(engine, eventID, data) {
 		switch (eventID) {
-			case event_player_moved: case event_begin_level: case event_spawn_enemy_close:
+			case event_player_moved: case event_entity_moved: case event_begin_level: case event_spawn_enemy_close:
 				this.vision(this.map, this.player);
 				break;
 		}
@@ -165,6 +167,95 @@ class VisionSystem extends System {
 	}
 
 	static translate(octant, x, y) {
-		return[ x * xxcomp[octant] + y * xycomp[octant], x * yxcomp[octant] + y * yycomp[octant]];
+		return[x * xxcomp[octant] + y * xycomp[octant], x * yxcomp[octant] + y * yycomp[octant]];
+	}
+
+	static isOpaque(square) {
+		return square.display.opaque;
+	}
+
+	static lineOfSight(engine, p1, p2) {
+		const LOS_PERM = .5;
+		let map = engine.getMap();
+		if(p1 == p2) {
+			return true;
+		}
+		else if(p1.y == p2.y) {
+			let start = (p1.x < p2.x) ? p1 : p2;
+			let end = (start == p1) ? p2 : p1;
+			let curSquare = map[start.x][start.y];
+			for(let x = start.x; x <= end.x; x++) {
+				if(VisionSystem.isOpaque(map[x][start.y])) {
+					return false;
+				}
+			}
+		}
+		else if(p1.x == p2.x) {
+			let start = (p1.y < p2.y) ? p1 : p2;
+			let end = (start == p1) ? p2 : p1;
+			let curSquare = map[start.x][start.y];
+			for(let y = start.y; y <= end.y; y++) {
+				if(VisionSystem.isOpaque(map[start.x][y])) {
+					return false;
+				}
+			}
+		}
+		else {
+			let start, end, x, y, slope, curSquare, direction;
+			let difX = abs(p1.x - p2.x);
+			let difY = abs(p1.y - p2.y);
+
+			if(difX <= difY) {
+				start = (p1.x <= p2.x) ? p1 : p2;
+				end = (start == p1) ? p2 : p1;
+				slope = abs(end.x - start.x) / abs(end.y - start.y);
+				direction = (start.y < end.y) ? 1 : -1;
+				x = start.x;
+				y = start.y;
+
+				let error = 0;
+
+				while(x <= end.x) {
+					if(VisionSystem.isOpaque(map[x][y])) {
+						return false;
+					}
+					if(y == end.y) {
+						break;
+					}
+					y += direction;
+					error += slope;
+					if(error > .5) {
+						x++;
+						error -= 1;
+					}
+				}
+			}
+			else {
+				start = (p1.y <= p2.y) ? p1 : p2;
+				end = (start == p1) ? p2 : p1;
+				slope = abs(end.y - start.y) / abs(end.x - start.x);
+				direction = (start.x < end.x) ? 1 : -1;
+				x = start.x;
+				y = start.y;
+
+				let error = 0;
+
+				while(y <= end.y) {
+					if(VisionSystem.isOpaque(map[x][y])) {
+						return false;
+					}
+					if(x == end.x) {
+						break;
+					}
+					x += direction;
+					error += slope;
+					if(error > .5) {
+						y++;
+						error -= 1;
+					}
+				}
+			}
+		}
+		return true;
 	}
 }
