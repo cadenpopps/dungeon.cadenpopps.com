@@ -8,8 +8,10 @@ function load() {
 	let config = loadConfig();
 	let images = loadImages(config.textures);
 	let room_pool = loadRoomPools();
-	let player_data = loadPlayerData();
-	let entity_data = loadEntityData();
+	let player_data = loadJSON('/data/player_data.json');
+	let entity_data = loadJSON('/data/entity_data.json');
+	let boss_data = loadJSON('/data/boss_data.json');
+
 
 	// let music = loadMusic();
 	// let sounds = loadSounds();

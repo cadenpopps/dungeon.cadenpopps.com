@@ -1,6 +1,6 @@
 //constants
-const TITLE_SCREEN = true;
-const LOADING_SCREEN = true;
+const TITLE_SCREEN = false;
+const LOADING_SCREEN = false;
 const LEVEL_GEN = true;
 const DEBUG_MODE = false;
 const UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
@@ -128,7 +128,7 @@ const component_position = 0,
 	component_health = 10,
 	component_light = 11,
 	component_strength = 12,
-	component_intelligence = 13,
+	component_dexterity = 13,
 	component_magic = 14,
 	component_level = 15,
 	component_depth = 16,
