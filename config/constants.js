@@ -211,20 +211,20 @@ const action_none = -1,
 	action_melee_attack_left = 24,
 	action_spin_attack = 25;
 
-const key_to_action = {
-	'w': action_move_up, //w
-	'a': action_move_left, //a
-	's': action_move_down, //s
-	'd': action_move_right, //d
-	'e': action_melee_attack, //e
-	'q': action_spin_attack, //q
-	'38': action_move_up,
-	'37': action_move_left,
-	'40': action_move_down,
-	'39': action_move_right
-	// 'e': action_melee_attack,
-	// 'q': action_spin_attack
-};
+// const key_to_action = {
+// 	'w': action_move_up, //w
+// 	'a': action_move_left, //a
+// 	's': action_move_down, //s
+// 	'd': action_move_right, //d
+// 	'e': action_melee_attack, //e
+// 	'q': action_spin_attack, //q
+// 	'38': action_move_up,
+// 	'37': action_move_left,
+// 	'40': action_move_down,
+// 	'39': action_move_right
+// 	// 'e': action_melee_attack,
+// 	// 'q': action_spin_attack
+// };
 
 const keyCode_to_action = [];
 keyCode_to_action[87] = action_move_up; //w

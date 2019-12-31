@@ -4,7 +4,8 @@ class PoppsEngine {
 		const config = data.config;
 		const ROOM_POOL = data.room_pool;
 		const STAIR_ROOM_POOL = data.stair_room_pool;
-		const images = data.images;
+		const images = data.images.textures;
+		const ui = data.images.ui;
 		const PLAYER_DATA = data.player_data;
 		const ENTITY_DATA = data.entity_data;
 		const BOSS_DATA = data.boss_data;

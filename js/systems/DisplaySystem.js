@@ -3,7 +3,7 @@ class DisplaySystem extends System {
 	constructor(config, images) {
 		super([component_position, component_display]);
 		this.config = config;
-		this.textures = images.textures;
+		this.textures = images;
 	}
 
 	init(engine) {
@@ -42,8 +42,9 @@ class DisplaySystem extends System {
 		background(0);
 		if(this.camera.display) {
 			if(this.cameraMoving) {
-				if(this.player.animation.animation == animation_idle) { this.cameraMoving = false; }
-				this.centerCamera(this.camera, this.player.position, this.player.animation.offsetX, this.player.animation.offsetY);
+				let player = engine.getPlayer();
+				if(player.animation.animation == animation_idle) { this.cameraMoving = false; }
+				this.centerCamera(this.camera, player.position, player.animation.offsetX, player.animation.offsetY);
 			}
 			canvas.translate(this.centerX + this.camera.shakeOffsetX, this.centerY + this.camera.shakeOffsetY);
 			canvas.scale(this.camera.zoom, this.camera.zoom);
@@ -200,6 +201,8 @@ class DisplaySystem extends System {
 						}
 					}
 					else if(square instanceof FloorSquare) {
+						texture.textureElements.push(new TextureElementComponent(texture_default, 0, 0));
+
 						let neighbors = Utility.getNeighbors(square, map);
 						let TOP = DisplaySystem.texturesConnect(square, neighbors[0]),
 							RIGHT = DisplaySystem.texturesConnect(square, neighbors[1]),
@@ -211,7 +214,6 @@ class DisplaySystem extends System {
 							BOTTOMLEFT = DisplaySystem.texturesConnect(square, cornerNeighbors[2]),
 							BOTTOMRIGHT = DisplaySystem.texturesConnect(square, cornerNeighbors[3]);
 
-						texture.textureElements.push(new TextureElementComponent(texture_default, 0, 0));
 						if(!TOP && !RIGHT && !BOTTOM && !LEFT) {
 							texture.textureElements.push(new TextureElementComponent(texture_cross, 0, 0));
 						}
