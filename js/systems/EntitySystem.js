@@ -156,4 +156,5 @@ class EntitySystem extends System {
 		// engine.addObject(this.player);
 		engine.sendEvent(event_entities_loaded, 0, 1);
 
+	}
 }
