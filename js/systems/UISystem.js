@@ -26,7 +26,7 @@ class UISystem extends System {
 	}
 
 	run(engine) {
-		this.drawPlayerHealth(this.heartCanvas, this.player);
+		this.drawPlayerHealth(this.heartCanvas, engine.getPlayer());
 	}
 
 	handleEvent(engine, eventID, data) {
@@ -47,7 +47,7 @@ class UISystem extends System {
 				this.hideLevelChangeScreen(engine);
 				break;
 			case event_player_generated:
-				this.fixHeartCanvasSize(this.player);
+				this.fixHeartCanvasSize(engine.getPlayer());
 				break;
 			case event_game_over:
 				this.showGameOverScreen(engine);
@@ -56,9 +56,6 @@ class UISystem extends System {
 	}
 
 	addObject(object) {
-		if(object instanceof Player) {
-			this.player = object;
-		}
 		super.addObject(object);
 	}
 

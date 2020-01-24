@@ -8,7 +8,7 @@
 		"ROOM_TRIES": 100
 	},
 	"display": {
-		"GRID_SIZE": 72,
+		"GRID_SIZE": 64,
 		"CAMERA_MOVE_SPEED": 2,
 		"CAMERA_DEFAULT_ZOOM": 1,
 		"CAMERA_SPRINT_ZOOM": 0.9,
@@ -51,6 +51,9 @@
 		"ANIMATION_SPEED": 1,
 		"IDLE_ANIMATION_SLOW_FACTOR": 8,
 		"IDLE_DELAY": 15
+	},
+	"entities": {
+		"SAFE_DISTANCE_FROM_PLAYER": 5
 	},
 	"health": {
 		"HEALTH_REGEN_TIMER": 50

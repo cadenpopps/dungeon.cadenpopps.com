@@ -1,8 +1,9 @@
 class EntitySystem extends System {
 
-	constructor(player_data, entity_data, boss_data) {
+	constructor(config, player_data, entity_data, boss_data) {
 		super([component_actions]);
 
+		this.config = config;
 		this.playerData = player_data;
 		this.entityData = entity_data;
 		this.bossData = boss_data;
@@ -10,8 +11,6 @@ class EntitySystem extends System {
 
 	init(engine) {
 		this.entities = [];
-		this.levels = [];
-		this.depth = 0;
 		this.player = this.generatePlayer();
 	}
 
@@ -28,36 +27,27 @@ class EntitySystem extends System {
 				engine.addObject(this.player);
 				engine.sendEvent(event_player_generated);
 				break;
-			case event_up_level:
-				this.depth--;
-				break;
-			case event_down_level:
-				this.depth++;
-				break;
 			case event_level_loaded:
-				if(this.player.depth.depth <= this.depth) {
-					this.fixPlayerPosition(this.player, this.levels[this.depth].stairUp, this.depth);
+				if(this.player.depth.depth <= engine.getDepth()) {
+					this.fixPlayerPosition(this.player, engine.getLevel().stairUp, engine.getDepth());
 				}
-				else if(this.player.depth.depth > this.depth) {
-					this.fixPlayerPosition(this.player, this.levels[this.depth].stairDown, this.depth);
+				else if(this.player.depth.depth > engine.getDepth()) {
+					this.fixPlayerPosition(this.player, engine.getLevel().stairDown, engine.getDepth());
 				}
-				if(this.entities.length == this.depth) {
-					this.generateEnemies(engine, this.entities, this.levels, this.entityData, this.entities.length, this.player);
+				if(this.entities.length == engine.getDepth()) {
+					this.generateEnemies(engine, this.entities, engine.getMap(), this.entityData, this.entities.length, this.player);
 					// this.generateBosses(engine, this.entities, this.levels, this.bossData, this.entities.length, this.player);
 				}
 				this.updateEntities(engine);
 				break;
 			case event_spawn_enemy_close:
-				this.generateEnemy(engine, this.player.position.x - randomInt(-4, 4), this.player.position.y - randomInt(2, 4), this.depth, this.entityData[random(Object.keys(this.entityData))]);
+				this.generateEnemy(engine, this.player.position.x - randomInt(-4, 4), this.player.position.y - randomInt(2, 4), engine.getDepth(), this.entityData[random(Object.keys(this.entityData))]);
 				break;
 		}
 	}
 
 	addObject(object) {
-		if(object instanceof Level) { this.levels[object.depth.depth] = object; }
-		else {
-			super.addObject(object);
-		}
+		super.addObject(object);
 	}
 
 	removeObject(object) {
@@ -77,14 +67,14 @@ class EntitySystem extends System {
 		return new Player(0, 0, config, playerClass, actions, animations);
 	}
 
-	generateEnemies(engine, entities, levels, entityData, depth, player) {
+	generateEnemies(engine, entities, map, entityData, depth, player) {
 		let config, entityPosition;
-		let numEntities = depth + 7;
+		let numEntities = floor(depth / 3) + 10;
 		entities.push([]);
 
 		while(numEntities > 0) {
 			config = entityData[random(Object.keys(entityData))];
-			entityPosition = this.findSafeSpawnLocation(config.size, entities[depth], player, levels[depth].map.map);
+			entityPosition = this.findSafeSpawnLocation(config.size, entities[depth], player, map);
 			if(entityPosition != undefined) {
 				this.generateEnemy(engine, entityPosition.x, entityPosition.y, depth, config);
 			}
@@ -95,7 +85,7 @@ class EntitySystem extends System {
 	generateEnemy(engine, x, y, depth, config) {
 		let animations = Utility.convertAnimationsFromConfig(config.animations);
 		let actions = Utility.convertActionsFromConfig(config.actions);
-		if(this.safeSpawnLocation(x, y, config.size, this.entities[depth], this.levels[depth].map.map)) {
+		if(this.safeSpawnLocation(x, y, config.size, this.entities[depth], engine.getMap())) {
 			let mob = new Mob(x, y, depth, config, actions, animations);
 			if(config.sprint_threshhold !== undefined) {
 				mob.components.push(component_sprint);
@@ -113,7 +103,7 @@ class EntitySystem extends System {
 		let validSquares = [];
 		for(let i = 0; i < map.length; i++) {
 			for(let j = 0; j < map[0].length; j++) {
-				if((abs(player.position.x - i) + abs(player.position.y - j)) > 10 && this.safeSpawnLocation(i, j, size, entities, map)) {
+				if((abs(player.position.x - i) + abs(player.position.y - j)) > this.config.SAFE_DISTANCE_FROM_PLAYER && this.safeSpawnLocation(i, j, size, entities, map)) {
 					validSquares.push(map[i][j].position);
 				}
 			}
@@ -160,10 +150,10 @@ class EntitySystem extends System {
 	}
 
 	updateEntities(engine) {
-		for(let e of this.entities[this.depth]) {
+		for(let e of this.entities[engine.getDepth()]) {
 			engine.addObject(e);
 		}
-		engine.addObject(this.player);
+		// engine.addObject(this.player);
 		engine.sendEvent(event_entities_loaded, 0, 1);
-	}
+
 }

@@ -5,7 +5,6 @@ class CombatSystem extends System {
 	}
 
 	init(engine) {
-		this.player;
 		this.inCombat = false;
 		this.combatTimer = 0;
 		this.combatTimerMax = 30;
@@ -28,7 +27,7 @@ class CombatSystem extends System {
 		}
 
 		if(this.inCombat) {
-			if(!this.checkInCombat(this.player, this.objects)) {
+			if(!this.checkInCombat(engine.getPlayer(), this.objects)) {
 				this.combatTimer--;
 				if(this.combatTimer == 0) {
 					this.endCombat(engine);
@@ -39,7 +38,7 @@ class CombatSystem extends System {
 			}
 		}
 		else {
-			if(this.checkInCombat(this.player, this.objects)) {
+			if(this.checkInCombat(engine.getPlayer(), this.objects)) {
 				this.beginCombat(engine);
 			}
 		}
@@ -48,7 +47,6 @@ class CombatSystem extends System {
 	handleEvent(engine, eventID, data) { }
 
 	addObject(object) {
-		if(object instanceof Player) { this.player = object; }
 		super.addObject(object);
 	}
 
