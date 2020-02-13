@@ -75,11 +75,11 @@ function loadTextures(textureConfig) {
 	let textures = [];
 
 	textures[texture_floor] = [];
-	// textures[texture_floor][texture_default] = loadImage('/img/textures/floor/floor_default.jpg');
-	// textures[texture_floor][texture_num_alts] = textureConfig.NUM_FLOOR_ALTS;
-	// for(let i = 0; i < textures[texture_floor][texture_num_alts]; i++) {
-	// 	textures[texture_floor][texture_alt1 + i] = loadImage('/img/textures/floor/floor_alt_' + (1 + i) + '.png');
-	// }
+	textures[texture_floor][texture_default] = loadImage('/img/textures/floor/floor_default.jpg');
+	textures[texture_floor][texture_num_alts] = textureConfig.NUM_FLOOR_ALTS;
+	for(let i = 0; i < textures[texture_floor][texture_num_alts]; i++) {
+		textures[texture_floor][texture_alt1 + i] = loadImage('/img/textures/floor/floor_alt_' + (1 + i) + '.png');
+	}
 
 	// textures[texture_floor][texture_alt2] = loadImage('/img/textures/floor/floor_alt_1.png');
 	// textures[texture_floor][texture_alt3] = loadImage('/img/textures/floor/floor_alt_2.png');
