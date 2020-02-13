@@ -1,187 +1,321 @@
 {
-	"size": 1,
-	"sprint_threshhold": 2,
-	"speed": 10,
-	"solid": true,
-	"classes": {
-		"warrior": {
-			"health": 120,
-			"strength": 70,
-			"dexterity": 40,
-			"intelligence": 20
-		},
-		"rogue": {
-			"health": 80,
-			"strength": 30,
-			"dexterity": 60,
-			"intelligence": 40
-		},
-		"mage": {
-			"health": 100,
-			"strength": 20,
-			"dexterity": 40,
-			"intelligence": 70
+	"warrior": {
+		"sprint_threshhold": 2,
+		"sprint_speed": 8,
+		"health": 10,
+		"actions": [
+			{
+				"action": "action_none",
+				"action_name": "Idle",
+				"cooldown": 0,
+				"time": 0
+			},
+			{
+				"action": "action_move_up",
+				"action_name": "Move up",
+				"cooldown": 12,
+				"time": 12
+			},
+			{
+				"action": "action_move_right",
+				"action_name": "Move right",
+				"cooldown": 12,
+				"time": 12
+			},
+			{
+				"action": "action_move_down",
+				"action_name": "Move down",
+				"cooldown": 12,
+				"time": 12
+			},
+			{
+				"action": "action_move_left",
+				"action_name": "Move left",
+				"cooldown": 12,
+				"time": 12
+			},
+			{
+				"action": "ability_one",
+				"action_name": "Slash",
+				"cooldown": 200,
+				"time": 100
+			},
+			{
+				"action": "ability_two",
+				"action_name": "Spin attack",
+				"cooldown": 500,
+				"time": 200
+			},
+			{
+				"action": "ability_three",
+				"action_name": "Judgement Day",
+				"cooldown": 1000,
+				"time": 400
+			}
+		],
+		"animations": {
+			"animation_idle": [
+				{"ox": 0, "oy": 0, "sprite": null},
+				{"ox": 0, "oy": 0, "sprite": null},
+				{"ox": 0, "oy": 0, "sprite": null},
+				{"ox": 0, "oy": 0, "sprite": null},
+				{"ox": 0, "oy": 0, "sprite": null},
+				{"ox": 0, "oy": 0, "sprite": null},
+				{"ox": 0, "oy": 0, "sprite": null},
+				{"ox": 0, "oy": 0, "sprite": null}
+			],
+			"animation_move_up": [
+				{"ox": 0, "oy": 0.95, "sprite": null},
+				{"ox": 0, "oy": 0.9, "sprite": null},
+				{"ox": 0, "oy": 0.8, "sprite": null},
+				{"ox": 0, "oy": 0.6, "sprite": null},
+				{"ox": 0, "oy": 0.4, "sprite": null},
+				{"ox": 0, "oy": 0.2, "sprite": null},
+				{"ox": 0, "oy": 0.1, "sprite": null},
+				{"ox": 0, "oy": 0.05, "sprite": null}
+			],
+			"animation_move_right": [
+				{"ox": -0.95, "oy": 0, "sprite": null},
+				{"ox": -0.9,  "oy": 0, "sprite": null},
+				{"ox": -0.8,  "oy": 0, "sprite": null},
+				{"ox": -0.6,  "oy": 0, "sprite": null},
+				{"ox": -0.4,  "oy": 0, "sprite": null},
+				{"ox": -0.2,  "oy": 0, "sprite": null},
+				{"ox": -0.1,  "oy": 0, "sprite": null},
+				{"ox": -0.05, "oy": 0, "sprite": null}
+			],
+			"animation_move_down": [
+				{"ox": 0, "oy": -0.95, "sprite": null},
+				{"ox": 0, "oy": -0.9,  "sprite": null},
+				{"ox": 0, "oy": -0.8,  "sprite": null},
+				{"ox": 0, "oy": -0.6,  "sprite": null},
+				{"ox": 0, "oy": -0.4,  "sprite": null},
+				{"ox": 0, "oy": -0.2,  "sprite": null},
+				{"ox": 0, "oy": -0.1,  "sprite": null},
+				{"ox": 0, "oy": -0.05, "sprite": null}
+			],
+			"animation_move_left": [
+				{"ox": 0.95, "oy": 0, "sprite": null},
+				{"ox": 0.9,  "oy": 0, "sprite": null},
+				{"ox": 0.8,  "oy": 0, "sprite": null},
+				{"ox": 0.6,  "oy": 0, "sprite": null},
+				{"ox": 0.4,  "oy": 0, "sprite": null},
+				{"ox": 0.2,  "oy": 0, "sprite": null},
+				{"ox": 0.1,  "oy": 0, "sprite": null},
+				{"ox": 0.05, "oy": 0, "sprite": null}
+			]
 		}
 	},
-	"actions": [
-		"action_none",
-		"action_move_up",
-		"action_move_right",
-		"action_move_down",
-		"action_move_left",
-		"action_sprint_up",
-		"action_sprint_right",
-		"action_sprint_down",
-		"action_sprint_left",
-		"action_melee_attack_up",
-		"action_melee_attack_right",
-		"action_melee_attack_down",
-		"action_melee_attack_left",
-		"action_spin_attack"
-	],
-	"animations": {
-		"animation_idle": [
-			{"ox": 0, "oy": 0, "sprite": null},
-			{"ox": 0, "oy": 0, "sprite": null},
-			{"ox": 0, "oy": 0, "sprite": null},
-			{"ox": 0, "oy": 0, "sprite": null},
-			{"ox": 0, "oy": 0, "sprite": null},
-			{"ox": 0, "oy": 0, "sprite": null},
-			{"ox": 0, "oy": 0, "sprite": null},
-			{"ox": 0, "oy": 0, "sprite": null}
+	"mage": {
+		"sprint_threshhold": 2,
+		"health": 8,
+		"actions": [
+			{
+				"action": "action_none",
+				"action_name": "Idle",
+				"cooldown": 0,
+				"time": 100
+			},
+			{
+				"action": "action_move_up",
+				"action_name": "Move up",
+				"cooldown": 100,
+				"time": 100
+			},
+			{
+				"action": "action_move_right",
+				"action_name": "Move right",
+				"cooldown": 100,
+				"time": 100
+			},
+			{
+				"action": "action_move_down",
+				"action_name": "Move down",
+				"cooldown": 100,
+				"time": 100
+			},
+			{
+				"action": "action_move_left",
+				"action_name": "Move left",
+				"cooldown": 100,
+				"time": 100
+			},
+			{
+				"action": "ability_one",
+				"action_name": "Slash",
+				"cooldown": 200,
+				"time": 100
+			},
+			{
+				"action": "ability_two",
+				"action_name": "Spin attack",
+				"cooldown": 500,
+				"time": 200
+			},
+			{
+				"action": "ability_three",
+				"action_name": "Judgement Day",
+				"cooldown": 1000,
+				"time": 400
+			}
 		],
-		"animation_move_up": [
-			{"ox": 0, "oy": 0.95, "sprite": null},
-			{"ox": 0, "oy": 0.9, "sprite": null},
-			{"ox": 0, "oy": 0.8, "sprite": null},
-			{"ox": 0, "oy": 0.6, "sprite": null},
-			{"ox": 0, "oy": 0.4, "sprite": null},
-			{"ox": 0, "oy": 0.2, "sprite": null},
-			{"ox": 0, "oy": 0.1, "sprite": null},
-			{"ox": 0, "oy": 0.05, "sprite": null}
+		"animations": {
+			"animation_idle": [
+				{"ox": 0, "oy": 0, "sprite": null},
+				{"ox": 0, "oy": 0, "sprite": null},
+				{"ox": 0, "oy": 0, "sprite": null},
+				{"ox": 0, "oy": 0, "sprite": null},
+				{"ox": 0, "oy": 0, "sprite": null},
+				{"ox": 0, "oy": 0, "sprite": null},
+				{"ox": 0, "oy": 0, "sprite": null},
+				{"ox": 0, "oy": 0, "sprite": null}
+			],
+			"animation_move_up": [
+				{"ox": 0, "oy": 0.95, "sprite": null},
+				{"ox": 0, "oy": 0.9, "sprite": null},
+				{"ox": 0, "oy": 0.8, "sprite": null},
+				{"ox": 0, "oy": 0.6, "sprite": null},
+				{"ox": 0, "oy": 0.4, "sprite": null},
+				{"ox": 0, "oy": 0.2, "sprite": null},
+				{"ox": 0, "oy": 0.1, "sprite": null},
+				{"ox": 0, "oy": 0.05, "sprite": null}
+			],
+			"animation_move_right": [
+				{"ox": -0.95, "oy": 0, "sprite": null},
+				{"ox": -0.9,  "oy": 0, "sprite": null},
+				{"ox": -0.8,  "oy": 0, "sprite": null},
+				{"ox": -0.6,  "oy": 0, "sprite": null},
+				{"ox": -0.4,  "oy": 0, "sprite": null},
+				{"ox": -0.2,  "oy": 0, "sprite": null},
+				{"ox": -0.1,  "oy": 0, "sprite": null},
+				{"ox": -0.05, "oy": 0, "sprite": null}
+			],
+			"animation_move_down": [
+				{"ox": 0, "oy": -0.95, "sprite": null},
+				{"ox": 0, "oy": -0.9,  "sprite": null},
+				{"ox": 0, "oy": -0.8,  "sprite": null},
+				{"ox": 0, "oy": -0.6,  "sprite": null},
+				{"ox": 0, "oy": -0.4,  "sprite": null},
+				{"ox": 0, "oy": -0.2,  "sprite": null},
+				{"ox": 0, "oy": -0.1,  "sprite": null},
+				{"ox": 0, "oy": -0.05, "sprite": null}
+			],
+			"animation_move_left": [
+				{"ox": 0.95, "oy": 0, "sprite": null},
+				{"ox": 0.9,  "oy": 0, "sprite": null},
+				{"ox": 0.8,  "oy": 0, "sprite": null},
+				{"ox": 0.6,  "oy": 0, "sprite": null},
+				{"ox": 0.4,  "oy": 0, "sprite": null},
+				{"ox": 0.2,  "oy": 0, "sprite": null},
+				{"ox": 0.1,  "oy": 0, "sprite": null},
+				{"ox": 0.05, "oy": 0, "sprite": null}
+			]
+		}
+	},
+	"rogue": {
+		"sprint_threshhold": 2,
+		"health": 7,
+		"actions": [
+			{
+				"action": "action_none",
+				"action_name": "Idle",
+				"cooldown": 0,
+				"time": 100
+			},
+			{
+				"action": "action_move_up",
+				"action_name": "Move up",
+				"cooldown": 100,
+				"time": 100
+			},
+			{
+				"action": "action_move_right",
+				"action_name": "Move right",
+				"cooldown": 100,
+				"time": 100
+			},
+			{
+				"action": "action_move_down",
+				"action_name": "Move down",
+				"cooldown": 100,
+				"time": 100
+			},
+			{
+				"action": "action_move_left",
+				"action_name": "Move left",
+				"cooldown": 100,
+				"time": 100
+			},
+			{
+				"action": "ability_one",
+				"action_name": "Slash",
+				"cooldown": 200,
+				"time": 100
+			},
+			{
+				"action": "ability_two",
+				"action_name": "Spin attack",
+				"cooldown": 500,
+				"time": 200
+			},
+			{
+				"action": "ability_three",
+				"action_name": "Judgement Day",
+				"cooldown": 1000,
+				"time": 400
+			}
 		],
-		"animation_move_right": [
-			{"ox": -0.95, "oy": 0, "sprite": null},
-			{"ox": -0.9,  "oy": 0, "sprite": null},
-			{"ox": -0.8,  "oy": 0, "sprite": null},
-			{"ox": -0.6,  "oy": 0, "sprite": null},
-			{"ox": -0.4,  "oy": 0, "sprite": null},
-			{"ox": -0.2,  "oy": 0, "sprite": null},
-			{"ox": -0.1,  "oy": 0, "sprite": null},
-			{"ox": -0.05, "oy": 0, "sprite": null}
-		],
-		"animation_move_down": [
-			{"ox": 0, "oy": -0.95, "sprite": null},
-			{"ox": 0, "oy": -0.9,  "sprite": null},
-			{"ox": 0, "oy": -0.8,  "sprite": null},
-			{"ox": 0, "oy": -0.6,  "sprite": null},
-			{"ox": 0, "oy": -0.4,  "sprite": null},
-			{"ox": 0, "oy": -0.2,  "sprite": null},
-			{"ox": 0, "oy": -0.1,  "sprite": null},
-			{"ox": 0, "oy": -0.05, "sprite": null}
-		],
-		"animation_move_left": [
-			{"ox": 0.95, "oy": 0, "sprite": null},
-			{"ox": 0.9,  "oy": 0, "sprite": null},
-			{"ox": 0.8,  "oy": 0, "sprite": null},
-			{"ox": 0.6,  "oy": 0, "sprite": null},
-			{"ox": 0.4,  "oy": 0, "sprite": null},
-			{"ox": 0.2,  "oy": 0, "sprite": null},
-			{"ox": 0.1,  "oy": 0, "sprite": null},
-			{"ox": 0.05, "oy": 0, "sprite": null}
-		],
-		"animation_sprint_up": [
-			{"ox": 0, "oy": 0.95, "sprite": null},
-			{"ox": 0, "oy": 0.9, "sprite": null},
-			{"ox": 0, "oy": 0.8, "sprite": null},
-			{"ox": 0, "oy": 0.6, "sprite": null},
-			{"ox": 0, "oy": 0.4, "sprite": null},
-			{"ox": 0, "oy": 0.2, "sprite": null},
-			{"ox": 0, "oy": 0.1, "sprite": null},
-			{"ox": 0, "oy": 0.05, "sprite": null}
-		],
-		"animation_sprint_right": [
-			{"ox": -0.95, "oy": 0, "sprite": null},
-			{"ox": -0.9,  "oy": 0, "sprite": null},
-			{"ox": -0.8,  "oy": 0, "sprite": null},
-			{"ox": -0.6,  "oy": 0, "sprite": null},
-			{"ox": -0.4,  "oy": 0, "sprite": null},
-			{"ox": -0.2,  "oy": 0, "sprite": null},
-			{"ox": -0.1,  "oy": 0, "sprite": null},
-			{"ox": -0.05, "oy": 0, "sprite": null}
-		],
-		"animation_sprint_down": [
-			{"ox": 0, "oy": -0.95, "sprite": null},
-			{"ox": 0, "oy": -0.9,  "sprite": null},
-			{"ox": 0, "oy": -0.8,  "sprite": null},
-			{"ox": 0, "oy": -0.6,  "sprite": null},
-			{"ox": 0, "oy": -0.4,  "sprite": null},
-			{"ox": 0, "oy": -0.2,  "sprite": null},
-			{"ox": 0, "oy": -0.1,  "sprite": null},
-			{"ox": 0, "oy": -0.05, "sprite": null}
-		],
-		"animation_sprint_left": [
-			{"ox": 0.95, "oy": 0, "sprite": null},
-			{"ox": 0.9,  "oy": 0, "sprite": null},
-			{"ox": 0.8,  "oy": 0, "sprite": null},
-			{"ox": 0.6,  "oy": 0, "sprite": null},
-			{"ox": 0.4,  "oy": 0, "sprite": null},
-			{"ox": 0.2,  "oy": 0, "sprite": null},
-			{"ox": 0.1,  "oy": 0, "sprite": null},
-			{"ox": 0.05, "oy": 0, "sprite": null}
-		],
-		"animation_melee_attack_up": [
-			{"ox": 0, "oy": -0.1, "sprite": null},
-			{"ox": 0, "oy": -0.2, "sprite": null},
-			{"ox": 0, "oy": -0.4, "sprite": null},
-			{"ox": 0, "oy": -0.8, "sprite": null},
-			{"ox": 0, "oy": -0.8, "sprite": null},
-			{"ox": 0, "oy": -0.4, "sprite": null},
-			{"ox": 0, "oy": -0.2, "sprite": null},
-			{"ox": 0, "oy": -0.1, "sprite": null}
-		],
-		"animation_melee_attack_right": [
-			{"ox": 0.1, "oy": 0, "sprite": null},
-			{"ox": 0.2, "oy": 0, "sprite": null},
-			{"ox": 0.4, "oy": 0, "sprite": null},
-			{"ox": 0.8, "oy": 0, "sprite": null},
-			{"ox": 0.8, "oy": 0, "sprite": null},
-			{"ox": 0.4, "oy": 0, "sprite": null},
-			{"ox": 0.2, "oy": 0, "sprite": null},
-			{"ox": 0.1, "oy": 0, "sprite": null}
-		],
-		"animation_melee_attack_down": [
-			{"ox": 0, "oy": 0.1, "sprite": null},
-			{"ox": 0, "oy": 0.2, "sprite": null},
-			{"ox": 0, "oy": 0.4, "sprite": null},
-			{"ox": 0, "oy": 0.8, "sprite": null},
-			{"ox": 0, "oy": 0.8, "sprite": null},
-			{"ox": 0, "oy": 0.4, "sprite": null},
-			{"ox": 0, "oy": 0.2, "sprite": null},
-			{"ox": 0, "oy": 0.1, "sprite": null}
-		],
-		"animation_melee_attack_left": [
-			{"ox": -0.1, "oy": 0, "sprite": null},
-			{"ox": -0.2, "oy": 0, "sprite": null},
-			{"ox": -0.4, "oy": 0, "sprite": null},
-			{"ox": -0.8, "oy": 0, "sprite": null},
-			{"ox": -0.8, "oy": 0, "sprite": null},
-			{"ox": -0.4, "oy": 0, "sprite": null},
-			{"ox": -0.2, "oy": 0, "sprite": null},
-			{"ox": -0.1, "oy": 0, "sprite": null}
-		],
-		"animation_spin_attack": [
-			{"ox": 0, "oy": 0.3, "sprite": null},
-			{"ox": 0, "oy": 0.5, "sprite": null},
-			{"ox": 0.3, "oy": 0.3, "sprite": null},
-			{"ox": 0.5, "oy": 0, "sprite": null},
-			{"ox": 0.3, "oy": -0.3, "sprite": null},
-			{"ox": 0, "oy": -0.5, "sprite": null},
-			{"ox": -0.3, "oy": -0.3, "sprite": null},
-			{"ox": -0.5, "oy": 0, "sprite": null},
-			{"ox": -0.3, "oy": 0.3, "sprite": null},
-			{"ox": 0, "oy": 0.5, "sprite": null},
-			{"ox": 0, "oy": 0.3, "sprite": null}
-		]
+		"animations": {
+			"animation_idle": [
+				{"ox": 0, "oy": 0, "sprite": null},
+				{"ox": 0, "oy": 0, "sprite": null},
+				{"ox": 0, "oy": 0, "sprite": null},
+				{"ox": 0, "oy": 0, "sprite": null},
+				{"ox": 0, "oy": 0, "sprite": null},
+				{"ox": 0, "oy": 0, "sprite": null},
+				{"ox": 0, "oy": 0, "sprite": null},
+				{"ox": 0, "oy": 0, "sprite": null}
+			],
+			"animation_move_up": [
+				{"ox": 0, "oy": 0.95, "sprite": null},
+				{"ox": 0, "oy": 0.9, "sprite": null},
+				{"ox": 0, "oy": 0.8, "sprite": null},
+				{"ox": 0, "oy": 0.6, "sprite": null},
+				{"ox": 0, "oy": 0.4, "sprite": null},
+				{"ox": 0, "oy": 0.2, "sprite": null},
+				{"ox": 0, "oy": 0.1, "sprite": null},
+				{"ox": 0, "oy": 0.05, "sprite": null}
+			],
+			"animation_move_right": [
+				{"ox": -0.95, "oy": 0, "sprite": null},
+				{"ox": -0.9,  "oy": 0, "sprite": null},
+				{"ox": -0.8,  "oy": 0, "sprite": null},
+				{"ox": -0.6,  "oy": 0, "sprite": null},
+				{"ox": -0.4,  "oy": 0, "sprite": null},
+				{"ox": -0.2,  "oy": 0, "sprite": null},
+				{"ox": -0.1,  "oy": 0, "sprite": null},
+				{"ox": -0.05, "oy": 0, "sprite": null}
+			],
+			"animation_move_down": [
+				{"ox": 0, "oy": -0.95, "sprite": null},
+				{"ox": 0, "oy": -0.9,  "sprite": null},
+				{"ox": 0, "oy": -0.8,  "sprite": null},
+				{"ox": 0, "oy": -0.6,  "sprite": null},
+				{"ox": 0, "oy": -0.4,  "sprite": null},
+				{"ox": 0, "oy": -0.2,  "sprite": null},
+				{"ox": 0, "oy": -0.1,  "sprite": null},
+				{"ox": 0, "oy": -0.05, "sprite": null}
+			],
+			"animation_move_left": [
+				{"ox": 0.95, "oy": 0, "sprite": null},
+				{"ox": 0.9,  "oy": 0, "sprite": null},
+				{"ox": 0.8,  "oy": 0, "sprite": null},
+				{"ox": 0.6,  "oy": 0, "sprite": null},
+				{"ox": 0.4,  "oy": 0, "sprite": null},
+				{"ox": 0.2,  "oy": 0, "sprite": null},
+				{"ox": 0.1,  "oy": 0, "sprite": null},
+				{"ox": 0.05, "oy": 0, "sprite": null}
+			]
+		}
 	}
 }

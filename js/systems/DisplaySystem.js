@@ -101,18 +101,18 @@ class DisplaySystem extends System {
 				this.camera.sprinting = false;
 				this.decideCameraZoomState(this.camera);
 				break;
-			case event_player_melee_attack:
-				this.shakeCamera(this.camera, this.config.CAMERA_SHAKE_MEDIUM_SMALL);
-				engine.sendEvent(event_hitstun, { "ticks": 4 });
-				break;
-			case event_player_spin_attack:
-				this.shakeCamera(this.camera, this.config.CAMERA_SHAKE_SMALL);
-				engine.sendEvent(event_hitstun, { "ticks": 2 });
-				break;
-			case event_player_take_damage:
-				this.shakeCamera(this.camera, this.config.CAMERA_SHAKE_MEDIUM);
-				engine.sendEvent(event_hitstun, { "ticks": 6 });
-				break;
+			// case event_player_melee_attack:
+			// 	this.shakeCamera(this.camera, this.config.CAMERA_SHAKE_MEDIUM_SMALL);
+			// 	engine.sendEvent(event_hitstun, { "ticks": 4 });
+			// 	break;
+			// case event_player_spin_attack:
+			// 	this.shakeCamera(this.camera, this.config.CAMERA_SHAKE_SMALL);
+			// 	engine.sendEvent(event_hitstun, { "ticks": 2 });
+			// 	break;
+			// case event_player_take_damage:
+			// 	this.shakeCamera(this.camera, this.config.CAMERA_SHAKE_MEDIUM);
+			// 	engine.sendEvent(event_hitstun, { "ticks": 6 });
+			// 	break;
 		}
 	}
 

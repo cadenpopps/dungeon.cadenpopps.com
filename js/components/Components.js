@@ -92,20 +92,35 @@ function LightEmitterComponent(emitterLevel){
 	this.level = emitterLevel;
 }
 
-function ActionComponent(actions, speed){
+function ActionsComponent(actions){
 	this.busy = 0;
-	this.speed = speed;
-	this.availible = actions;
+	this.actions = [];
+	for(let a in actions) {
+		this.actions[a] = new ActionComponent(actions[a].action, actions[a].actionName, actions[a].cooldown, actions[a].time);
+	}
 	this.nextAction = action_none;
 	this.currentAction = action_none;
 	this.lastAction = action_none;
 	this.lastActionFailed = false;
 }
 
-function SprintComponent(movesBeforeSprinting){
+function ActionComponent(actionID, actionName, actionCooldown, actionTime) {
+	this.action = actionID;
+	if(actionID == action_ability_one || actionID == action_ability_two || actionID == action_ability_three) {
+		this.abilityID = ability_string_to_constant[actionName];
+	}
+	this.actionName = actionName;
+	this.cooldown = actionCooldown;
+	this.time = actionTime;
+	this.currentCooldown = 0;
+}
+
+function SprintComponent(movesBeforeSprinting, sprintSpeed){
 	this.movesBeforeSprinting = movesBeforeSprinting;
+	this.lastMoveTime = 0;
 	this.sprintCounter = 0;
 	this.sprinting = false;
+	this.sprintSpeed = sprintSpeed;
 }
 
 function MapComponent(map){
@@ -116,8 +131,7 @@ function DepthComponent(depth){
 	this.depth = depth;
 }
 
-function AIComponent(actions, attackRange){
-	this.actions = actions;
+function AIComponent(attackRange){
 	this.attackRange = attackRange;
 	this.noticedPlayer = false;
 	this.idleTimer = 0;

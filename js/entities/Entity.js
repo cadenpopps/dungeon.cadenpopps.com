@@ -1,4 +1,4 @@
-function Entity(x, y, initialDepth, initialHealth, initialStrength, initialDexterity, initialIntelligence, size, speed, actions, animations) {
+function Entity(x, y, initialDepth, initialHealth, initialStrength, initialDexterity, initialIntelligence, size, actions, animations) {
 	this.components = [component_position, component_depth, component_health, component_strength, component_dexterity, component_magic, component_direction, component_physical, component_display, component_actions, component_animation, component_combat];
 
 	this.position = new PositionComponent(x, y);
@@ -16,5 +16,5 @@ function Entity(x, y, initialDepth, initialHealth, initialStrength, initialDexte
 	this.display = new DisplayComponent(size, size, display_transparent);
 	this.animation = new AnimationComponent(animations);
 
-	this.actions = new ActionComponent(actions, speed);
+	this.actions = new ActionsComponent(actions);
 }

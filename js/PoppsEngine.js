@@ -27,7 +27,7 @@ class PoppsEngine {
 		this.systems.push(new CombatSystem());
 		this.systems.push(new HealthSystem(config.health));
 		this.systems.push(new AISystem(config.ai));
-		this.systems.push(new SprintSystem());
+		this.systems.push(new SprintSystem(config.sprint));
 
 		this.UISystem = new UISystem(config.ui, data.images.ui);
 		this.systems.push(this.UISystem);

@@ -4,7 +4,7 @@
 		"NUM_WALL_ALTS": 0
 	},
 	"level": {
-		"DUNGEON_SIZE": 51,
+		"DUNGEON_SIZE": 35,
 		"ROOM_TRIES": 100
 	},
 	"display": {
@@ -57,6 +57,10 @@
 	},
 	"health": {
 		"HEALTH_REGEN_TIMER": 50
+	},
+	"sprint": {
+		"SPRINT_RESET_TIME_SPRINTING": 500,
+		"SPRINT_RESET_TIME_WALKING": 250
 	},
 	"ai": {
 		"MOB_REACTION_TIME": 350,
