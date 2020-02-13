@@ -310,6 +310,20 @@ class DisplaySystem extends System {
 		}
 	}
 
+	drawTexture(object, bounds) {
+		let x = bounds.x, y = bounds.y, w = bounds.w, h = bounds.h;
+		for(let texture of object.textures) {
+			for(let textureElement of texture.textureElements) {
+				if(this.textures[texture.textureType][textureElement.element] == undefined) {
+					image(this.textures[texture.textureType][texture_default], x + (this.gridSize * textureElement.xOff), y + (this.gridSize * textureElement.yOff), w, h);
+				}
+				else {
+					image(this.textures[texture.textureType][textureElement.element], x + (this.gridSize * textureElement.xOff), y + (this.gridSize * textureElement.yOff), w, h);
+				}
+			}
+		}
+	}
+
 	drawEntities(entities) {
 		for(let e of entities) {
 			if(e.display.visible) {
@@ -356,15 +370,6 @@ class DisplaySystem extends System {
 		}
 		else{
 			image(a, x, y, w, h);
-		}
-	}
-
-	drawTexture(object, bounds) {
-		let x = bounds.x, y = bounds.y, w = bounds.w, h = bounds.h;
-		for(let texture of object.textures) {
-			for(let textureElement of texture.textureElements) {
-				image(this.textures[texture.textureType][textureElement.element], x + (this.gridSize * textureElement.xOff), y + (this.gridSize * textureElement.yOff), w, h);
-			}
 		}
 	}
 

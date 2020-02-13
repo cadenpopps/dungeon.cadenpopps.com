@@ -1,6 +1,6 @@
 {
 	"textures": {
-		"NUM_FLOOR_ALTS": 2,
+		"NUM_FLOOR_ALTS": 0,
 		"NUM_WALL_ALTS": 0
 	},
 	"level": {
