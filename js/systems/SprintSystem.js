@@ -1,21 +1,29 @@
 class SprintSystem extends System {
 
-	constructor() {
+	constructor(config) {
 		super([component_sprint]);
+		this.config = config;
 	}
 
 	init(engine) {
-		this.sprintTimer = [];
-		this.sprintTimerMax = 20;
-		// this.combat = false;
+		for(let entity of this.objects) {
+			this.resetSprintCounter(entity);
+		}
 	}
 
 	run(engine) {
+		// let currentTime = millis();
 		for(let entity of this.objects) {
-			// if(!this.combat) {
-			this.decrementSprintCounter(entity);
-			this.determineSprintState(engine, entity);
-			// }
+			if(entity.sprint.sprinting) {
+				if(this.sprintTimerExpired(entity, this.config.SPRINT_RESET_TIME_SPRINTING)) {
+					this.stopSprinting(engine, entity);
+				}
+			}
+			else {
+				if(this.sprintTimerExpired(entity, this.config.SPRINT_RESET_TIME_WALKING)) {
+					this.stopSprinting(engine, entity);
+				}
+			}
 		}
 	}
 
@@ -23,49 +31,41 @@ class SprintSystem extends System {
 		switch(eventID) {
 			case event_successful_action:
 				if(data.entity.components.includes(component_sprint)) {
-					this.sprintHandler(engine, data.entity, data.action);
+					if(Utility.isMovementAction(data.action)) {
+						if(data.entity.sprint.sprinting) {
+							this.handleSprinting(engine, data.entity);
+						}
+						else {
+							this.decrementSprintCounter(engine, data.entity, data.action);
+						}
+					}
+					else {
+						if(data.entity.sprint.sprinting) {
+							this.stopSprinting(engine, data.entity);
+						}
+						else {
+							this.resetSprintCounter(data.entity);
+						}
+					}
 				}
 				break;
-				// case event_begin_combat:
-				// 	this.combat = true;
-				// 	this.stopAllSprinting(engine);
-				// 	break;
-				// case event_end_combat:
-				// 	this.combat = false;
-				// 	break;
 		}
 	}
 
-	addObject(object) {
-		if(object.components.includes(component_sprint)) {
-			super.addObject(object);
-			this.sprintTimer[object] = 0;
-		}
-	}
-
-	sprintHandler(engine, entity, action) {
-		if(Utility.isMovementAction(action)) {
-			if(entity.sprint.sprintCounter < entity.sprint.movesBeforeSprinting) {
-				entity.sprint.sprintCounter++;
-			}
-			this.resetSprintTimer(entity);
+	handleSprinting(engine, entity) {
+		if(this.sprintTimerExpired(entity, this.config.SPRINT_RESET_TIME_SPRINTING)) {
+			this.stopSprinting(engine, entity);
 		}
 		else {
-			if(entity.sprint.sprintCounter > 0) {
-				entity.sprint.sprintCounter--;
+			if(entity.actions.busy > entity.sprint.sprintSpeed) {
+				entity.actions.busy = entity.sprint.sprintSpeed;
 			}
-		}
-		this.determineSprintState(engine, entity);
-	}
-
-	determineSprintState(engine, entity) {
-		if(entity.sprint.sprinting) {
-			if(entity.sprint.sprintCounter < entity.sprint.movesBeforeSprinting) {
-				this.stopSprinting(engine, entity);
+			for(let a in entity.actions.actions) {
+				if(entity.actions.actions[a].currentCooldown > entity.sprint.sprintSpeed) {
+					entity.actions.actions[a].currentCooldown = entity.sprint.sprintSpeed;
+				}
 			}
-		}
-		else if(!entity.sprint.sprinting && entity.sprint.sprintCounter == entity.sprint.movesBeforeSprinting) {
-			this.startSprinting(engine, entity);
+			entity.sprint.lastMoveTime = millis();
 		}
 	}
 
@@ -74,7 +74,7 @@ class SprintSystem extends System {
 			engine.sendEvent(event_player_start_sprinting);
 		}
 		entity.sprint.sprinting = true;
-		this.resetSprintTimer(entity);
+		this.resetSprintCounter(entity);
 	}
 
 	stopSprinting(engine, entity) {
@@ -82,21 +82,34 @@ class SprintSystem extends System {
 			engine.sendEvent(event_player_stop_sprinting);
 		}
 		entity.sprint.sprinting = false;
-		entity.sprint.sprintCounter = 0;
+		this.resetSprintCounter(entity);
 	}
 
-	resetSprintTimer(entity) {
-		this.sprintTimer[entity] = this.sprintTimerMax;
-	}
-
-	decrementSprintCounter(entity) {
-		if(entity.sprint.sprintCounter > 0) {
-			this.sprintTimer[entity]--;
-			if(this.sprintTimer[entity] <= 0) {
+	decrementSprintCounter(engine, entity) {
+		if(entity.sprint.sprinting) {
+			entity.sprint.lastMoveTime = millis();
+		}
+		else if(entity.sprint.sprintCounter > 0) {
+			if(this.sprintTimerExpired(entity, this.config.SPRINT_RESET_TIME_WALKING)) {
+				this.resetSprintCounter(entity);
+			}
+			else {
 				entity.sprint.sprintCounter--;
-				this.resetSprintTimer(entity);
+				entity.sprint.lastMoveTime = millis();
 			}
 		}
+		else {
+			this.startSprinting(engine, entity);
+		}
+	}
+
+	resetSprintCounter(entity) {
+		entity.sprint.sprintCounter = entity.sprint.movesBeforeSprinting;
+		entity.sprint.lastMoveTime = millis();
+	}
+
+	sprintTimerExpired(entity, time) {
+		return (millis() - entity.sprint.lastMoveTime > time);
 	}
 
 	stopAllSprinting(engine) {

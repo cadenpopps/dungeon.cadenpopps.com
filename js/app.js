@@ -8,10 +8,9 @@ function load() {
 	let config = loadConfig();
 	let images = loadImages(config.textures);
 	let room_pool = loadRoomPools();
-	let player_data = loadJSON('/data/player_data.json');
-	let entity_data = loadJSON('/data/entity_data.json');
-	let boss_data = loadJSON('/data/boss_data.json');
-
+	let player_data = processEntityData(loadJSON('/data/player_data.json'));
+	let entity_data = processEntityData(loadJSON('/data/entity_data.json'));
+	let boss_data = processEntityData(loadJSON('/data/boss_data.json'));
 
 	// let music = loadMusic();
 	// let sounds = loadSounds();
@@ -33,6 +32,30 @@ function load() {
 	// document.addEventListener('contextmenu', function () { });
 }
 
+function processEntityData(entityData) {
+	let newEntityData = [];
+	for(let e in entityData) {
+
+		let entityConstant = entity_string_to_constant[e];
+		newEntityData[entityConstant] = entityData[e];
+
+		let processedActions = [];
+		for(let action of entityData[e].actions) {
+			let a = action_string_to_constant[action.action];
+			processedActions[a] = {
+				action: a,
+				actionName: action.action_name,
+				cooldown: action.cooldown,
+				time: action.time
+			};
+		}
+
+		newEntityData[entityConstant].actions = processedActions;
+
+	}
+	return newEntityData;
+}
+
 function loadConfig(){
 	return loadJSON('/config/config.json');
 }
@@ -52,11 +75,11 @@ function loadTextures(textureConfig) {
 	let textures = [];
 
 	textures[texture_floor] = [];
-	textures[texture_floor][texture_default] = loadImage('/img/textures/floor/floor_default.jpg');
-	textures[texture_floor][texture_num_alts] = textureConfig.NUM_FLOOR_ALTS;
-	for(let i = 0; i < textures[texture_floor][texture_num_alts]; i++) {
-		textures[texture_floor][texture_alt1 + i] = loadImage('/img/textures/floor/floor_alt_' + (1 + i) + '.png');
-	}
+	// textures[texture_floor][texture_default] = loadImage('/img/textures/floor/floor_default.jpg');
+	// textures[texture_floor][texture_num_alts] = textureConfig.NUM_FLOOR_ALTS;
+	// for(let i = 0; i < textures[texture_floor][texture_num_alts]; i++) {
+	// 	textures[texture_floor][texture_alt1 + i] = loadImage('/img/textures/floor/floor_alt_' + (1 + i) + '.png');
+	// }
 
 	// textures[texture_floor][texture_alt2] = loadImage('/img/textures/floor/floor_alt_1.png');
 	// textures[texture_floor][texture_alt3] = loadImage('/img/textures/floor/floor_alt_2.png');

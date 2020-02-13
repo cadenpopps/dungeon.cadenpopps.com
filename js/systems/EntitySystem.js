@@ -60,16 +60,16 @@ class EntitySystem extends System {
 	}
 
 	generatePlayer() {
-		let animations = Utility.convertAnimationsFromConfig(this.playerData.animations);
-		let actions = Utility.convertActionsFromConfig(this.playerData.actions);
-		let config = this.playerData;
-		let playerClass = this.playerData.classes.warrior;
-		return new Player(0, 0, config, playerClass, actions, animations);
+		let playerClass = class_warrior;
+		let config = this.playerData[playerClass]
+		let animations = Utility.convertAnimationsFromConfig(config.animations);
+		return new Player(0, 0, config, playerClass, config.actions, animations);
 	}
 
 	generateEnemies(engine, entities, map, entityData, depth, player) {
 		let config, entityPosition;
 		let numEntities = floor(depth / 3) + 10;
+		numEntities = 0;
 		entities.push([]);
 
 		while(numEntities > 0) {
@@ -84,13 +84,9 @@ class EntitySystem extends System {
 
 	generateEnemy(engine, x, y, depth, config) {
 		let animations = Utility.convertAnimationsFromConfig(config.animations);
-		let actions = Utility.convertActionsFromConfig(config.actions);
+		// let actions = Utility.convertActionsFromConfig(config.actions);
 		if(this.safeSpawnLocation(x, y, config.size, this.entities[depth], engine.getMap())) {
-			let mob = new Mob(x, y, depth, config, actions, animations);
-			if(config.sprint_threshhold !== undefined) {
-				mob.components.push(component_sprint);
-				mob.sprint = new SprintComponent(config.sprint_threshhold);
-			}
+			let mob = new Mob(x, y, depth, config, config.actions, animations);
 			this.entities[depth].push(mob);
 			engine.addObject(mob);
 			engine.sendEvent(event_entity_spawned, mob);
@@ -155,5 +151,6 @@ class EntitySystem extends System {
 		}
 		// engine.addObject(this.player);
 		engine.sendEvent(event_entities_loaded, 0, 1);
+	}
 
 }

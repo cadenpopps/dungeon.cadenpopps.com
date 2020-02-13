@@ -1,0 +1,82 @@
+
+Attacks -
+	Template -
+		Ability 1 - Low cooldown, low damage, low commitment and cost
+		Ability 2 - Defensive option - heal, shield, crowd control
+		Ability 3 - Ultimate - Most specialized to class. Teleport, big AOE, special effects, etc
+	Warrior -
+		Basic slash - Single target adjacent to player
+		Spin attack - Low damage AOE attack with increased armor, small knockback effect
+		Judgment Day - Jump to target and stun, take reduced damage, do big single target damage
+	Mage -
+		Fireball - Shoots a fireball in a straight line towards the nearest enemy (medium range)
+		Lifesteal - Player sets a zone which steals enemy HP and refills player's
+			Could be OP so zone needs to be small also need spellcasting UI/controls
+		Electric death - 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ai - different levels of pathfinding (naive, adequate, advanced)
+	display - level up screen, better health
+	general - levels, inventory, loot, textures, direction/position dependent textures
+
+	Ideas -
+	Stealth
+	Boss room
+	Player
+	Inventory
+	Combat
+	Stats
+	Progression
+	Level
+	More Square types
+	Liquid
+	Bookshelf
+	traps
+	hole
+	etc
+	More Rooms
+Top level (overworld)
+	Engine
+	Visual
+	More animation support
+	Audio
+	Sounds
+	Music
+	Gameplay
+	Mobs
+Custom mobs (from JSON)
+	Stats
+	Combat
+	Traps
+	NPC
+
+	Needs Improvement -
+Level gen (maze + sparse + detours)
+
+	Sounds
+	Music
+	Main theme
+	Effects
+	Water sound
+	Hurt sound
+	Door
+	Walking
+	Sword
+	Magic
+	Chest
+	New floor
+	Mob sounds
+	Drip sound

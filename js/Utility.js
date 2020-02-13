@@ -286,10 +286,6 @@ class Utility {
 		return action > action_move && action <= action_move_left;
 	}
 
-	static isSprintAction(action) {
-		return action > action_sprint && action <= action_sprint_left;
-	}
-
 	static convertMovementToSprint(action) {
 		switch(action) {
 			case action_move_up:

@@ -11,8 +11,15 @@ class ActionSystem extends System {
 	run(engine) {
 		if(this.hitstunTimer == 0) {
 			for(let entity of this.objects) {
+
+				for(let a in entity.actions.actions) {
+					if(entity.actions.actions[a].currentCooldown > 0) {
+						entity.actions.actions[a].currentCooldown--;
+					}
+				}
+
 				if(entity.actions.busy > 0) {
-					entity.actions.busy -= entity.actions.speed;
+					entity.actions.busy--;
 				}
 				else{
 					this.setCurrentAction(entity, engine);
@@ -43,12 +50,13 @@ class ActionSystem extends System {
 		entity.actions.nextAction = action_none;
 	}
 
-	handleSuccessfulAction(engine, entity, action) {
-		entity.actions.busy = action_to_length[action];
+	setCooldowns(entity, action) {
+		entity.actions.busy = entity.actions.actions[action].time;
+		entity.actions.actions[action].currentCooldown = entity.actions.actions[action].cooldown;
+	}
 
-		if(entity.components.includes(component_sprint) && Utility.isMovementAction(action)) {
-			this.handleSprinting(entity, engine);
-		}
+	handleSuccessfulAction(engine, entity, action) {
+		this.setCooldowns(entity, action);
 
 		entity.animation.animation = action_to_animation[action];
 		engine.sendEvent(event_new_animation, entity);
@@ -59,7 +67,7 @@ class ActionSystem extends System {
 	}
 
 	handleFailedAction(engine, entity) {
-		entity.actions.busy = 3;
+		this.setCooldowns(entity, action_none);
 
 		// entity.animation.animation = action_to_animation[entity.actions.currentAction];
 		// engine.sendEvent(event_new_animation, entity);
@@ -67,11 +75,5 @@ class ActionSystem extends System {
 		entity.actions.lastActionFailed = true;
 		entity.actions.lastAction = entity.actions.currentAction;
 		entity.actions.currentAction = action_none;
-	}
-
-	handleSprinting(entity, engine) {
-		if(entity.sprint.sprinting) {
-			entity.actions.busy = action_to_length[action_sprint];
-		}
 	}
 }

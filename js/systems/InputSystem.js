@@ -54,7 +54,7 @@ class InputSystem extends System {
 				let action = keyCode_to_action[key];
 				let priority = action_to_priority[action];
 				priority = this.fixPriority(engine, player, action, priority);
-				if(priority > highestPriority) {
+				if(priority > highestPriority && player.actions.actions[action].currentCooldown == 0) {
 					playerAction = action;
 					highestPriority = priority;
 				}
@@ -67,12 +67,13 @@ class InputSystem extends System {
 	}
 
 	fixPriority(engine, player, action, priority) {
-		if(action == action_melee_attack && !CombatSystem.validMeleeAttack(engine, player)) {
-			return 0;
-		}
 		if(player.actions.lastAction == action) {
-			if(player.actions.lastActionFailed) { return 0; }
-			else { return priority - 1; }
+			if(player.actions.lastActionFailed) {
+				return 0;
+			}
+			else {
+				return priority - .1;
+			}
 		}
 		return priority;
 	}
