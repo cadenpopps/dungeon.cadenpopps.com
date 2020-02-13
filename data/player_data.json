@@ -1,7 +1,7 @@
 {
 	"warrior": {
 		"sprint_threshhold": 2,
-		"sprint_speed": 8,
+		"sprint_speed": 7,
 		"health": 10,
 		"actions": [
 			{
