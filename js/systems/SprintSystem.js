@@ -21,7 +21,7 @@ class SprintSystem extends System {
 			}
 			else {
 				if(this.sprintTimerExpired(entity, this.config.SPRINT_RESET_TIME_WALKING)) {
-					this.stopSprinting(engine, entity);
+					this.resetSprintCounter(entity);
 				}
 			}
 		}
@@ -49,6 +49,10 @@ class SprintSystem extends System {
 					}
 				}
 				break;
+			case event_up_level: case event_down_level:
+				this.stopAllSprinting(engine);
+				break;
+
 		}
 	}
 
@@ -62,7 +66,7 @@ class SprintSystem extends System {
 			}
 			for(let a in entity.actions.actions) {
 				if(entity.actions.actions[a].currentCooldown > entity.sprint.sprintSpeed) {
-					entity.actions.actions[a].currentCooldown = entity.sprint.sprintSpeed;
+					entity.actions.actions[a].currentCooldown = entity.sprint.sprintSpeed + 1;
 				}
 			}
 			entity.sprint.lastMoveTime = millis();

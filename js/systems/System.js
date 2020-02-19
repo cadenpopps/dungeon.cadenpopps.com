@@ -7,6 +7,8 @@ class System {
 
 	init(engine) { }
 
+	run(engine) { }
+
 	addObject(object) {
 		if(this.componentRequirements.length > 0 && !this.objects.includes(object) && Utility.checkComponents(object, this.componentRequirements)) {
 			this.objects.push(object);

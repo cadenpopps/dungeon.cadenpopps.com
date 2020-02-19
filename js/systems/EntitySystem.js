@@ -9,72 +9,30 @@ class EntitySystem extends System {
 		this.bossData = boss_data;
 	}
 
-	init(engine) {
-		this.entities = [];
-		this.player = this.generatePlayer();
-	}
-
-	run(engine) {
-		// for(let e of this.objects) {
-		// 	if(e instanceof Mob) {
-		// 	}
-		// }
-	}
-
 	handleEvent(engine, eventID, data) {
 		switch(eventID) {
-			case event_new_game:
-				engine.addObject(this.player);
-				engine.sendEvent(event_player_generated);
-				break;
-			case event_level_loaded:
-				if(this.player.depth.depth <= engine.getDepth()) {
-					this.fixPlayerPosition(this.player, engine.getLevel().stairUp, engine.getDepth());
-				}
-				else if(this.player.depth.depth > engine.getDepth()) {
-					this.fixPlayerPosition(this.player, engine.getLevel().stairDown, engine.getDepth());
-				}
-				if(this.entities.length == engine.getDepth()) {
-					this.generateEnemies(engine, this.entities, engine.getMap(), this.entityData, this.entities.length, this.player);
-					// this.generateBosses(engine, this.entities, this.levels, this.bossData, this.entities.length, this.player);
-				}
-				this.updateEntities(engine);
-				break;
 			case event_spawn_enemy_close:
-				this.generateEnemy(engine, this.player.position.x - randomInt(-4, 4), this.player.position.y - randomInt(2, 4), engine.getDepth(), this.entityData[random(Object.keys(this.entityData))]);
+				this.generateEnemy(engine, engine.getPlayer().position.x - randomInt(-4, 4), engine.getPlayer().position.y - randomInt(2, 4), engine.getDepth(), this.entityData[random(Object.keys(this.entityData))]);
 				break;
 		}
 	}
 
-	addObject(object) {
-		super.addObject(object);
-	}
-
-	removeObject(object) {
-		for(let level of this.entities) {
-			if(level.includes(object)) {
-				level.splice(level.indexOf(object), 1);
-			}
-		}
-		super.removeObject(object);
-	}
-
-	generatePlayer() {
+	generatePlayer(engine) {
 		let playerClass = class_warrior;
 		let config = this.playerData[playerClass]
 		let animations = Utility.convertAnimationsFromConfig(config.animations);
-		return new Player(0, 0, config, playerClass, config.actions, animations);
+		engine.addObject(new Player(0, 0, config, playerClass, config.actions, animations));
+		engine.sendEvent(event_player_generated);
 	}
 
-	generateEnemies(engine, entities, map, entityData, depth, player) {
+	generateEntities(engine, map, depth) {
 		let config, entityPosition;
 		let numEntities = floor(depth / 3) + 10;
-		numEntities = 0;
-		entities.push([]);
+		let entities = [];
 
 		while(numEntities > 0) {
-			config = entityData[random(Object.keys(entityData))];
-			entityPosition = this.findSafeSpawnLocation(config.size, entities[depth], player, map);
+			config = this.entityData[random(Object.keys(this.entityData))];
+			entityPosition = this.findSafeSpawnLocation(config.size, entities[depth], engine.getPlayer(), map);
 			if(entityPosition != undefined) {
 				this.generateEnemy(engine, entityPosition.x, entityPosition.y, depth, config);
 			}
@@ -84,15 +42,11 @@ class EntitySystem extends System {
 
 	generateEnemy(engine, x, y, depth, config) {
 		let animations = Utility.convertAnimationsFromConfig(config.animations);
-		// let actions = Utility.convertActionsFromConfig(config.actions);
 		if(this.safeSpawnLocation(x, y, config.size, this.entities[depth], engine.getMap())) {
 			let mob = new Mob(x, y, depth, config, config.actions, animations);
-			this.entities[depth].push(mob);
+			// this.entities[depth].push(mob);
 			engine.addObject(mob);
-			engine.sendEvent(event_entity_spawned, mob);
-			return true;
 		}
-		return false;
 	}
 
 	findSafeSpawnLocation(size, entities, player, map) {
@@ -139,17 +93,10 @@ class EntitySystem extends System {
 		}
 	}
 
-	fixPlayerPosition(player, stair, depth) {
-		player.position.x = stair.x;
-		player.position.y = stair.y;
-		player.depth.depth = depth;
-	}
-
 	updateEntities(engine) {
-		for(let e of this.entities[engine.getDepth()]) {
-			engine.addObject(e);
-		}
-		// engine.addObject(this.player);
-		engine.sendEvent(event_entities_loaded, 0, 1);
+		// for(let e of this.entities[engine.getDepth()]) {
+		// 	engine.addObject(e);
+		// }
+		// engine.sendEvent(event_entities_loaded, 0, 1);
 	}
 }

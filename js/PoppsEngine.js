@@ -15,25 +15,39 @@ class PoppsEngine {
 		const boss_data = data.boss_data;
 
 		this.systems = [];
-		this.systems.push(new InputSystem());
-		this.systems.push(new DisplaySystem(config.display, images));
-		this.systems.push(new VisionSystem(config.vision));
-		this.systems.push(new LightSystem(config.light));
-		this.systems.push(new ActionSystem());
-		this.systems.push(new MovementSystem());
-		this.systems.push(new LevelSystem(config.level, room_pool, stair_room_pool));
-		this.systems.push(new EntitySystem(config.entities, player_data, entity_data, boss_data));
-		this.systems.push(new AnimationSystem(config.animation));
-		this.systems.push(new CombatSystem());
-		this.systems.push(new HealthSystem(config.health));
-		this.systems.push(new AISystem(config.ai));
-		this.systems.push(new SprintSystem(config.sprint));
+		this.InputSystem = new InputSystem();
+		this.DisplaySystem = new DisplaySystem(config.display, images);
+		this.VisionSystem = new VisionSystem(config.vision);
+		this.LightSystem = new LightSystem(config.light);
+		this.ActionSystem = new ActionSystem();
+		this.MovementSystem = new MovementSystem();
+		this.LevelSystem = new LevelSystem(config.level, room_pool, stair_room_pool);
+		this.EntitySystem = new EntitySystem(config.entities, player_data, entity_data, boss_data);
+		this.AnimationSystem = new AnimationSystem(config.animation);
+		this.CombatSystem = new CombatSystem();
+		this.HealthSystem = new HealthSystem(config.health);
+		this.AISystem = new AISystem(config.ai);
+		this.SprintSystem = new SprintSystem(config.sprint);
+
+		this.systems.push(this.InputSystem);
+		this.systems.push(this.DisplaySystem);
+		this.systems.push(this.VisionSystem);
+		this.systems.push(this.LightSystem);
+		this.systems.push(this.ActionSystem);
+		this.systems.push(this.MovementSystem);
+		this.systems.push(this.LevelSystem);
+		this.systems.push(this.EntitySystem);
+		this.systems.push(this.AnimationSystem);
+		this.systems.push(this.CombatSystem);
+		this.systems.push(this.HealthSystem);
+		this.systems.push(this.AISystem);
+		this.systems.push(this.SprintSystem);
 
 		this.UISystem = new UISystem(config.ui, data.images.ui);
 		this.systems.push(this.UISystem);
 
+
 		this.init();
-		window.requestAnimationFrame(() => this.tick());
 
 		if(TITLE_SCREEN) {
 			this.sendEvent(event_title_screen);
@@ -46,9 +60,10 @@ class PoppsEngine {
 	init() {
 		this.clearObjects();
 		this.UIOnly = true;
+		this.FOCUSED = true;
 		this.events = [];
 
-		this.DUNGEON = {
+		this.Dungeon = {
 			depth: 0,
 			player: undefined,
 			map: undefined,
@@ -61,6 +76,14 @@ class PoppsEngine {
 		}
 
 		window.addEventListener('resize', this.sendEvent(event_window_resized));
+		let self = this;
+		window.addEventListener("focus", function () {
+			self.tick();
+		});
+		window.addEventListener("blur", function () {
+			window.cancelAnimationFrame(self.requestID);
+		});
+		this.tick();
 	}
 
 	pause() {
@@ -81,7 +104,7 @@ class PoppsEngine {
 				s.run(this);
 			}
 		}
-		window.requestAnimationFrame(() => this.tick());
+		this.requestID = window.requestAnimationFrame(() => this.tick());
 	}
 
 	sendEvent(e, data = undefined, ticks = 0) {
@@ -118,6 +141,14 @@ class PoppsEngine {
 	handleEvent(event, data) {
 		switch(event) {
 			case event_new_game:
+				this.Dungeon.entities.push([]);
+				this.EntitySystem.generatePlayer(this);
+				this.LevelSystem.generateLevel(this, this.Dungeon.depth);
+				this.EntitySystem.generateEntities(this, this.Dungeon.levels[this.Dungeon.depth], this.Dungeon.depth);
+				this.LightSystem.generateTorches(this, this.Dungeon.levels[this.Dungeon.depth].map.map, this.Dungeon.levels[this.Dungeon.depth].rooms);
+				this.clearObjects();
+				this.loadObjects(this.Dungeon.depth);
+				this.sendEvent(event_begin_level, this.Dungeon.levels[this.Dungeon.depth], LOADING_SCREEN_TIME);
 				this.resume();
 				break;
 			case event_reset_game:
@@ -127,13 +158,24 @@ class PoppsEngine {
 				this.pause();
 				break;
 			case event_down_level:
-				this.DUNGEON.depth++;
+				this.Dungeon.depth++;
+				if(this.Dungeon.depth == this.Dungeon.levels.length) {
+					this.Dungeon.entities.push([]);
+					this.LevelSystem.generateLevel(this, this.Dungeon.depth);
+					this.EntitySystem.generateEntities(this, this.Dungeon.levels[this.Dungeon.depth], this.Dungeon.depth);
+					this.LightSystem.generateTorches(this, this.Dungeon.levels[this.Dungeon.depth].map.map, this.Dungeon.levels[this.Dungeon.depth].rooms);
+				}
+				this.clearObjects();
+				this.loadObjects(this.Dungeon.depth);
+				this.sendEvent(event_begin_level, this.Dungeon.levels[this.Dungeon.depth], LOADING_SCREEN_TIME);
 				break;
 			case event_up_level:
-				this.DUNGEON.depth--;
+				this.Dungeon.depth--;
+				this.clearObjects();
+				this.loadObjects(this.Dungeon.depth);
+				this.sendEvent(event_begin_level, this.Dungeon.levels[this.Dungeon.depth], LOADING_SCREEN_TIME);
 				break;
 			case event_new_level:
-				this.DUNGEON.entities.push([]);
 				break;
 		}
 	}
@@ -144,17 +186,21 @@ class PoppsEngine {
 		}
 
 		if(object instanceof Player) {
-			this.DUNGEON.player = object;
+			this.Dungeon.player = object;
 		}
 
 		if(object instanceof Level) {
-			this.DUNGEON.levels[object.depth.depth] = object;
-			this.DUNGEON.map = object.map.map;
+			this.Dungeon.levels[this.Dungeon.depth] = object;
+			for (let i = 0; i < this.Dungeon.levels[this.Dungeon.depth].map.map.length; i++) {
+				for (let j = 0; j < this.Dungeon.levels[this.Dungeon.depth].map.map.length; j++) {
+					this.addObject(this.Dungeon.levels[this.Dungeon.depth].map.map[i][j]);
+				}
+			}
 		}
 
 		if(object instanceof Entity) {
-			if(!this.DUNGEON.entities[object.depth.depth].includes(object)) {
-				this.DUNGEON.entities[object.depth.depth].push(object);
+			if(!this.Dungeon.entities[this.Dungeon.depth].includes(object)) {
+				this.Dungeon.entities[this.Dungeon.depth].push(object);
 			}
 		}
 	}
@@ -164,9 +210,9 @@ class PoppsEngine {
 			s.removeObject(object);
 		}
 
-		if(object instanceof Mob) {
-			if(this.DUNGEON.entities[object.depth.depth].includes(object)) {
-				this.DUNGEON.entities[object.depth.depth].splice(this.DUNGEON.entities[object.depth.depth].indexOf(object), 1);
+		if(object instanceof Entity) {
+			if(this.Dungeon.entities[object.depth.depth].includes(object)) {
+				this.Dungeon.entities[object.depth.depth].splice(this.Dungeon.entities[object.depth.depth].indexOf(object), 1);
 			}
 		}
 	}
@@ -175,6 +221,24 @@ class PoppsEngine {
 		for(let s of this.systems) {
 			s.clearObjects();
 		}
+	}
+
+	loadObjects(depth) {
+		for (let i = 0; i < this.Dungeon.levels[depth].map.map.length; i++) {
+			for (let j = 0; j < this.Dungeon.levels[depth].map.map.length; j++) {
+				this.addObject(this.Dungeon.levels[depth].map.map[i][j]);
+			}
+		}
+
+		this.sendEvent(event_level_loaded, this.Dungeon.levels[depth]);
+
+		for(let e of this.Dungeon.entities[depth]) {
+			this.addObject(e);
+		}
+
+		this.sendEvent(event_entities_loaded);
+
+		this.addObject(this.Dungeon.player);
 	}
 
 	printEvent(e) {
@@ -186,23 +250,23 @@ class PoppsEngine {
 	}
 
 	getDepth() {
-		return this.DUNGEON.depth;
+		return this.Dungeon.depth;
 	}
 
 	getPlayer() {
-		return this.DUNGEON.player;
+		return this.Dungeon.player;
 	}
 
 	getMap() {
-		return this.DUNGEON.map;
+		return this.Dungeon.levels[this.Dungeon.depth].map.map;
 	}
 
 	getLevel() {
-		return this.DUNGEON.levels[this.DUNGEON.depth];
+		return this.Dungeon.levels[this.Dungeon.depth];
 	}
 
 	getEntities() {
-		return this.DUNGEON.entities[this.DUNGEON.depth];
+		return this.Dungeon.entities[this.Dungeon.depth];
 	}
 
 }

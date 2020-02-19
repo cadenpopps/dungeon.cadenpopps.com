@@ -1,10 +1,13 @@
 class Square {
 	constructor (x, y, textures, solid, opaque) {
-		this.components = [component_position, component_display, component_texture, component_physical, component_light];
+		this.components = [component_position, component_display, component_texture, component_light];
 		this.position = new PositionComponent(x, y);
 		this.display = new DisplayComponent(1, 1, opaque);
+		if(solid) {
+			this.components.push(component_collision);
+			this.collision = new CollisionComponent(x, y, 1, 1);
+		}
 		this.textures = textures;
-		this.physical = new PhysicalComponent(solid, 1);
 		this.light = new LightComponent();
 	}
 }
@@ -41,8 +44,10 @@ class DoorSquare extends WallSquare {
 	}
 
 	open() {
+		this.components.splice(this.components.indexOf(component_collision), 1);
 		this.opened = true;
-		this.physical.solid = false;
+		// this.collision = undefined;
+		// this.collision.solid = false;
 		this.display.opaque = false;
 		this.textures[1].textureType = texture_door_open;
 	}

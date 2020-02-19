@@ -196,7 +196,7 @@ class Utility {
 	}
 
 	static walkable(x, y, map, entity, objects){
-		return Utility.positionInBounds(new PositionComponent(x, y), map.length) && Utility.squareTypeIsWalkable(map[x][y], entity) && !Utility.squareIsOccupied(x, y, entity, objects);
+		return Utility.positionInBounds(new PositionComponent(x, y), map.length) && Utility.squareIsWalkable(map[x][y], entity) && !Utility.squareIsOccupied(x, y, entity, objects);
 	}
 
 	static positionOnScreen(x, y, w, h) {
@@ -245,21 +245,21 @@ class Utility {
 		return neighbors;
 	}
 
-	static squareTypeIsWalkable(square, entity){
+	static squareIsWalkable(square, entity){
 		return (entity instanceof Player) ? Utility.playerWalkable(square) : Utility.mobWalkable(square);
 	}
 
 	static playerWalkable(square) {
-		return (!square.physical.solid || square instanceof DoorSquare || square instanceof StairUpSquare || square instanceof StairDownSquare);
+		return (!square.components.includes(component_collision) || square instanceof DoorSquare || square instanceof StairUpSquare || square instanceof StairDownSquare);
 	}
 
 	static mobWalkable(square) {
-		return !(square.physical.solid);
+		return !square.components.includes(component_collision);
 	}
 
 	static squareIsOccupied(x, y, entity, objects) {
 		for(let o of objects) {
-			if(entity != o) {
+			if(entity != o && o.components.includes(component_collision)) {
 				if(Utility.collision(new CollisionComponent(x, y, 1), o.collision)) {
 					return true;
 				}

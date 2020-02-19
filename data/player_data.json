@@ -1,8 +1,8 @@
 {
 	"warrior": {
-		"sprint_threshhold": 2,
-		"sprint_speed": 7,
-		"health": 10,
+		"sprint_threshhold": 3,
+		"sprint_speed": 6,
+		"health": 100,
 		"actions": [
 			{
 				"action": "action_none",
@@ -13,26 +13,26 @@
 			{
 				"action": "action_move_up",
 				"action_name": "Move up",
-				"cooldown": 12,
-				"time": 12
+				"cooldown": 9,
+				"time": 9
 			},
 			{
 				"action": "action_move_right",
 				"action_name": "Move right",
-				"cooldown": 12,
-				"time": 12
+				"cooldown": 9,
+				"time": 9
 			},
 			{
 				"action": "action_move_down",
 				"action_name": "Move down",
-				"cooldown": 12,
-				"time": 12
+				"cooldown": 9,
+				"time": 9
 			},
 			{
 				"action": "action_move_left",
 				"action_name": "Move left",
-				"cooldown": 12,
-				"time": 12
+				"cooldown": 9,
+				"time": 9
 			},
 			{
 				"action": "ability_one",

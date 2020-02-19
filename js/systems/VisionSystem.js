@@ -5,28 +5,20 @@ class VisionSystem extends System {
 		this.config = config;
 	}
 
-	init(engine) {
-		this.player = undefined;
-		this.map = undefined;
-	}
+	init(engine) { }
 
 	run(engine) { }
 
 	handleEvent(engine, eventID, data) {
 		switch (eventID) {
 			case event_player_moved: case event_entity_moved: case event_begin_level: case event_spawn_enemy_close:
-				this.vision(this.map, this.player);
+				this.vision(engine.getMap(), engine.getPlayer());
 				break;
 		}
 	}
 
-	addObject(object) {
-		if(object instanceof Player) { this.player = object; }
-		else if(object instanceof Level) { this.map = object.map.map; }
-		else if(!(object instanceof Square)) {
-			super.addObject(object);
-		}
-	}
+	// addObject(object) {
+	// }
 
 	vision(map, player) {
 		for(let r of map) {

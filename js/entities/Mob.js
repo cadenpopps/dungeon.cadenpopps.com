@@ -1,6 +1,13 @@
 Mob.prototype = Object.create(Entity.prototype);
 function Mob(x, y, depth, config, actions, animations) {
-	Entity.call(this, x, y, depth, config.health + depth, config.strength + depth, config.dexterity + depth, config.intelligence + depth, config.size, actions, animations);
+	Entity.call(this, x, y, depth, config.size, display_opaque, physical_solid, animations);
+
+	this.components.push(component_direction, component_combat, component_actions, component_collision);
+
+	this.health = new HealthComponent(config.health);
+	this.direction = new DirectionComponent(direction_down);
+	this.combat = new CombatComponent(initialStrength, initialDexterity, initialIntelligence);
+	this.actions = new ActionsComponent(actions);
 
 	if(config.solid) {
 		this.components.push(component_collision);

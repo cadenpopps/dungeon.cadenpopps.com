@@ -1,6 +1,6 @@
 //constants
 const TITLE_SCREEN = false;
-const LOADING_SCREEN = false;
+const LOADING_SCREEN_TIME = 30;
 const LEVEL_GEN = true;
 const DEBUG_MODE = false;
 const UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
@@ -47,7 +47,7 @@ for(let i = 0; i < light_range; i++) {
 
 light_level_to_light[light_level_to_light.length - 1] = light_level_to_light[light_level_to_light.length - 2];
 
-const light_level_player = 4, light_level_torch = light_max - 2;
+const light_level_player = 3, light_level_torch = light_max - 2;
 
 // console.log(light_level_to_light);
 // console.log(light_level_to_shadow);
@@ -121,22 +121,21 @@ const component_position = 0,
 	component_texture = 3,
 	component_animation = 4,
 	component_actions = 5,
-	component_physical = 6,
-	component_sprint = 7,
-	component_direction = 8,
-	component_map = 9,
-	component_health = 10,
-	component_light = 11,
-	component_strength = 12,
-	component_dexterity = 13,
-	component_magic = 14,
-	component_level = 15,
-	component_depth = 16,
-	component_stair = 17,
-	component_combat = 18,
-	component_ai = 19,
-	component_light_emitter = 20,
-	component_collision = 21;
+	component_sprint = 6,
+	component_direction = 7,
+	component_map = 8,
+	component_health = 9,
+	component_light = 10,
+	component_strength = 11,
+	component_dexterity = 12,
+	component_magic = 13,
+	component_level = 14,
+	component_depth = 15,
+	component_stair = 16,
+	component_combat = 17,
+	component_ai = 18,
+	component_light_emitter = 19,
+	component_collision = 20;
 
 //events
 const event_new_game = 0,

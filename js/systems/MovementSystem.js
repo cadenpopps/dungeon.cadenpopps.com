@@ -1,53 +1,87 @@
 class MovementSystem extends System {
 
 	constructor() {
-		super([component_position, component_physical, component_actions]);
+		super([component_position, component_collision, component_actions]);
+	}
+
+	init() {
+		this.movementFrozen = true;
 	}
 
 	run(engine) {
-		for(let entity of this.objects) {
-			switch(entity.actions.currentAction) {
-				case action_move_up: case action_move_right: case action_move_down: case action_move_left:
-					this.move(engine, entity, this.objects);
-					break;
+		if(!this.movementFrozen) {
+			for(let entity of this.objects) {
+				switch(entity.actions.currentAction) {
+					case action_move_up: case action_move_right: case action_move_down: case action_move_left:
+						this.moveFromAction(engine, entity, this.objects);
+						break;
+				}
 			}
 		}
 	}
 
-	handleEvent(engine, eventID) {
-		// switch(eventID) { }
+	handleEvent(engine, eventID, data) {
+		switch(eventID) {
+			case event_level_loaded:
+				let player = engine.getPlayer();
+				if(player.depth.depth <= engine.getDepth()) {
+					this.fixPlayerPosition(player, data.stairUp);
+				}
+				else if(player.depth.depth > engine.getDepth()) {
+					this.fixPlayerPosition(player, data.stairDown);
+				}
+				player.depth.depth = engine.getDepth();
+				break;
+			case event_up_level: case event_down_level:
+				this.movementFrozen = true;
+				break;
+			case event_begin_level:
+				this.movementFrozen = false;
+				break;
+		}
 	}
 
-	addObject(object) {
-		super.addObject(object);
+	fixPlayerPosition(player, stair) {
+		player.position.x = stair.x;
+		player.position.y = stair.y;
+		player.collision.top = stair.y;
+		player.collision.right = stair.x + player.collision.width;
+		player.collision.bottom = stair.y + player.collision.height;
+		player.collision.left = stair.x;
 	}
 
-	move(engine, entity, objects) {
-		let destination = MovementSystem.getDestination(entity, entity.actions.currentAction);
+	move(engine, entity, objects, destination) {
 		if(destination != undefined && MovementSystem.validMove(engine, entity, destination)) {
 			entity.direction.direction = action_to_direction[entity.actions.currentAction];
 			entity.position.x = destination.x;
 			entity.position.y = destination.y;
 
 			entity.collision.top = destination.y;
-			entity.collision.right = destination.x + entity.physical.size;
-			entity.collision.bottom = destination.y + entity.physical.size;
+			entity.collision.right = destination.x + entity.collision.width;
+			entity.collision.bottom = destination.y + entity.collision.height;
 			entity.collision.left = destination.x;
 
+			engine.sendEvent(event_successful_action, {'action': entity.actions.currentAction, 'entity': entity });
+			return true;
+		}
+		else {
+			entity.actions.lastAction = entity.actions.currentAction;
+			entity.actions.currentAction = action_none;
+			return false;
+		}
+	}
+
+	moveFromAction(engine, entity, objects) {
+		let destination = MovementSystem.getDestination(entity, entity.actions.currentAction);
+		if(this.move(engine, entity, objects, destination)) {
 			if(entity instanceof Player) {
 				this.playerWalkEvents(engine, entity);
 			}
 			else if(entity instanceof Mob) {
 				engine.sendEvent(event_entity_moved);
 			}
-
-			engine.sendEvent(event_successful_action, {'action': entity.actions.currentAction, 'entity': entity });
-
 		}
-		else {
-			entity.actions.lastAction = entity.actions.currentAction;
-			entity.actions.currentAction = action_none;
-		}
+
 	}
 
 	playerWalkEvents(engine, player) {
@@ -84,8 +118,8 @@ class MovementSystem extends System {
 
 	static validMove(engine, entity, destination) {
 		let validMove = true;
-		for(let i = destination.x; i < destination.x + entity.physical.size; i++) {
-			for(let j = destination.y; j < destination.y + entity.physical.size; j++) {
+		for(let i = destination.x; i < destination.x + entity.collision.width; i++) {
+			for(let j = destination.y; j < destination.y + entity.collision.height; j++) {
 				if(!Utility.walkable(i, j, engine.getMap(), entity, engine.getEntities())) {
 					validMove = false;
 				}

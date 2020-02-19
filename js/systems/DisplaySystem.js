@@ -18,9 +18,6 @@ class DisplaySystem extends System {
 			zoom: this.config.CAMERA_DEFAULT_ZOOM
 		};
 
-		this.squares = [];
-		this.entities = [];
-
 		this.cameraZoomTimer = undefined;
 		this.cameraShakeTimer = undefined;
 		this.cameraMoving = false;
@@ -44,12 +41,12 @@ class DisplaySystem extends System {
 				if(player.animation.animation == animation_idle) { this.cameraMoving = false; }
 				this.centerCamera(this.camera, player.position, player.animation.offsetX, player.animation.offsetY);
 			}
+
 			canvas.translate(this.centerX + this.camera.shakeOffsetX, this.centerY + this.camera.shakeOffsetY);
 			canvas.scale(this.camera.zoom, this.camera.zoom);
 
-
-			this.drawSquares(this.squares);
-			this.drawEntities(this.entities);
+			this.drawSquares(engine.getMap());
+			this.drawEntities(engine.getEntities());
 			this.drawLights(this.objects);
 			this.drawMobHealth(this.objects);
 
@@ -101,49 +98,19 @@ class DisplaySystem extends System {
 				this.camera.sprinting = false;
 				this.decideCameraZoomState(this.camera);
 				break;
-			// case event_player_melee_attack:
-			// 	this.shakeCamera(this.camera, this.config.CAMERA_SHAKE_MEDIUM_SMALL);
-			// 	engine.sendEvent(event_hitstun, { "ticks": 4 });
-			// 	break;
-			// case event_player_spin_attack:
-			// 	this.shakeCamera(this.camera, this.config.CAMERA_SHAKE_SMALL);
-			// 	engine.sendEvent(event_hitstun, { "ticks": 2 });
-			// 	break;
-			// case event_player_take_damage:
-			// 	this.shakeCamera(this.camera, this.config.CAMERA_SHAKE_MEDIUM);
-			// 	engine.sendEvent(event_hitstun, { "ticks": 6 });
-			// 	break;
+				// case event_player_melee_attack:
+				// 	this.shakeCamera(this.camera, this.config.CAMERA_SHAKE_MEDIUM_SMALL);
+				// 	engine.sendEvent(event_hitstun, { "ticks": 4 });
+				// 	break;
+				// case event_player_spin_attack:
+				// 	this.shakeCamera(this.camera, this.config.CAMERA_SHAKE_SMALL);
+				// 	engine.sendEvent(event_hitstun, { "ticks": 2 });
+				// 	break;
+				// case event_player_take_damage:
+				// 	this.shakeCamera(this.camera, this.config.CAMERA_SHAKE_MEDIUM);
+				// 	engine.sendEvent(event_hitstun, { "ticks": 6 });
+				// 	break;
 		}
-	}
-
-	addObject(object) {
-		if(object instanceof Square) {
-			if(!this.squares.includes(object)) {
-				this.squares.push(object);
-			}
-		}
-		else if(this.componentRequirements.length > 0) {
-			if(!this.entities.includes(object) && Utility.checkComponents(object, this.componentRequirements)) {
-				this.entities.push(object);
-			}
-		}
-		super.addObject(object);
-	}
-
-	removeObject(object) {
-		if(this.squares.indexOf(object) !== -1) {
-			this.squares.splice(this.squares.indexOf(object), 1);
-		}
-		else if(this.entities.indexOf(object) !== -1) {
-			this.entities.splice(this.entities.indexOf(object), 1);
-		}
-		super.removeObject(object);
-	}
-
-	clearObjects(object) {
-		this.squares = [];
-		this.entities = [];
-		super.clearObjects();
 	}
 
 	static texturesConnect(t1, t2) {
@@ -299,12 +266,14 @@ class DisplaySystem extends System {
 		}
 	}
 
-	drawSquares(squares) {
-		for(let s of squares) {
-			if(s.display.discovered) {
-				let bounds = this.getDrawBounds(s);
-				if(this.onScreen(bounds, this.camera.zoom)) {
-					this.drawTexture(s, bounds);
+	drawSquares(map) {
+		for(let r of map) {
+			for(let s of r) {
+				if(s.display.discovered) {
+					let bounds = this.getDrawBounds(s);
+					if(this.onScreen(bounds, this.camera.zoom)) {
+						this.drawTexture(s, bounds);
+					}
 				}
 			}
 		}
@@ -339,8 +308,22 @@ class DisplaySystem extends System {
 						//========NEED TEXTURES========
 						let x = bounds.x, y = bounds.y, w = bounds.w, h = bounds.h;
 						if(e instanceof Torch) {
-							fill(255, 230, 140, .7);
-							ellipse(x, y, w, h);
+							fill(255, 220, 130, .75);
+							switch(e.direction.direction) {
+								case direction_up:
+									arc(x, y, w, Math.PI, 2 * Math.PI);
+									break;
+								case direction_right:
+									arc(x, y, h, Math.PI / 2, 1.5 * Math.PI, true);
+									break;
+								case direction_down:
+									arc(x, y, w, 0, Math.PI);
+									break;
+								case direction_left:
+									arc(x, y, h, Math.PI / 2, 1.5 * Math.PI);
+									break;
+							}
+							// ellipse(x, y, w, h);
 						}
 						else {
 							fill(255, 100, 100);
@@ -374,13 +357,11 @@ class DisplaySystem extends System {
 	}
 
 	drawLights(objects) {
-		// let st = millis();
 		for(let o of objects) {
 			if(o.display.discovered && o.components.includes(component_light)) {
 				this.lightSquare(o);
 			}
 		}
-		// console.log(millis() - st);
 	}
 
 	lightSquare(o) {

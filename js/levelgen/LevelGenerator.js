@@ -25,7 +25,7 @@ function generateLevel(CONFIG, depth, ROOM_POOL, STAIR_ROOM_POOL) {
 
 		// console.log("Milliseconds: " + (millis() - startTime));
 
-		return new Level(level, stairUp, stairDown, depth, torches);
+		return new Level(level, rooms, stairUp, stairDown, depth, torches);
 	}
 	else {
 		let level = initLevel(CONFIG.DUNGEON_SIZE, square_floor);
@@ -352,44 +352,8 @@ function fillBetweenNodes(level, node1, node2) {
 }
 
 function populateRooms(level, rooms, torches) {
-	for(let r of rooms) {
-		placeTorchInRoom(level, r, torches);
-	}
 }
 
-function placeTorchInRoom(level, room, torches) {
-	if(room.width > 5 && room.height > 5 && !oneIn(5)) {
-		let dir = randomInt(4);
-		let x = 0, y = 0;
-		switch(dir) {
-			case direction_up:
-				x = room.left + randomInt(2, room.width - 2);
-				y = room.top;
-				dir = direction_down;
-				if(level[x][y] == square_door) { return; }
-				break;
-			case direction_right:
-				x = room.right - 1;
-				y = room.top + randomInt(2, room.height - 2);
-				dir = direction_left;
-				if(level[x][y] == square_door) { return; }
-				break;
-			case direction_down:
-				x = room.left + randomInt(2, room.width - 2);
-				y = room.bottom - 1;
-				dir = direction_up;
-				if(level[x][y] == square_door) { return; }
-				break;
-			case direction_left:
-				x = room.left;
-				y = room.top + randomInt(2, room.height - 2);
-				dir = direction_right;
-				if(level[x][y] == square_door) { return; }
-				break;
-		}
-		torches.push(new Torch(x, y, dir));
-	}
-}
 
 function finalizeLevel(level, stairUp, stairDown) {
 	level[stairUp.x][stairUp.y] = square_stair_up;
