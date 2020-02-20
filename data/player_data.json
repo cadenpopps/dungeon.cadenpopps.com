@@ -3,6 +3,9 @@
 		"sprint_threshhold": 3,
 		"sprint_speed": 6,
 		"health": 100,
+		"attackDamage": 20,
+		"magicDamage": 0,
+		"armor": 10,
 		"actions": [
 			{
 				"action": "action_none",
@@ -57,12 +60,10 @@
 			"animation_idle": [
 				{"ox": 0, "oy": 0, "sprite": null},
 				{"ox": 0, "oy": 0, "sprite": null},
+				{"ox": 0.05, "oy": 0.08, "sprite": null},
 				{"ox": 0, "oy": 0, "sprite": null},
 				{"ox": 0, "oy": 0, "sprite": null},
-				{"ox": 0, "oy": 0, "sprite": null},
-				{"ox": 0, "oy": 0, "sprite": null},
-				{"ox": 0, "oy": 0, "sprite": null},
-				{"ox": 0, "oy": 0, "sprite": null}
+				{"ox": -0.05, "oy": 0.08, "sprite": null}
 			],
 			"animation_move_up": [
 				{"ox": 0, "oy": 0.95, "sprite": null},
@@ -109,6 +110,9 @@
 	"mage": {
 		"sprint_threshhold": 2,
 		"health": 8,
+		"attackDamage": 0,
+		"magicDamage": 15,
+		"armor": 8,
 		"actions": [
 			{
 				"action": "action_none",
@@ -215,6 +219,9 @@
 	"rogue": {
 		"sprint_threshhold": 2,
 		"health": 7,
+		"attackDamage": 12,
+		"magicDamage": 8,
+		"armor": 10,
 		"actions": [
 			{
 				"action": "action_none",

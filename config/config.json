@@ -51,11 +51,11 @@
 	},
 	"animation": {
 		"ANIMATION_SPEED": 1,
-		"IDLE_ANIMATION_SLOW_FACTOR": 8,
-		"IDLE_DELAY": 15
+		"IDLE_ANIMATION_SLOW_FACTOR": 20,
+		"IDLE_DELAY": 50
 	},
 	"entities": {
-		"SAFE_DISTANCE_FROM_PLAYER": 5
+		"SAFE_DISTANCE_FROM_PLAYER": 10
 	},
 	"health": {
 		"HEALTH_REGEN_TIMER": 50
@@ -68,5 +68,6 @@
 		"MOB_REACTION_TIME": 350,
 		"MIN_IDLE_TIME": 60,
 		"MAX_IDLE_TIME": 250
-	}
+	},
+	"abilities": { }
 }

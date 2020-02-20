@@ -27,6 +27,7 @@ class PoppsEngine {
 		this.CombatSystem = new CombatSystem();
 		this.HealthSystem = new HealthSystem(config.health);
 		this.AISystem = new AISystem(config.ai);
+		this.AbilitySystem = new AbilitySystem(config.abilities);
 		this.SprintSystem = new SprintSystem(config.sprint);
 
 		this.systems.push(this.InputSystem);

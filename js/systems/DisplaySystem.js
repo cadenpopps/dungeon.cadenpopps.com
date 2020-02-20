@@ -39,7 +39,7 @@ class DisplaySystem extends System {
 			if(this.cameraMoving) {
 				let player = engine.getPlayer();
 				if(player.animation.animation == animation_idle) { this.cameraMoving = false; }
-				this.centerCamera(this.camera, player.position, player.animation.offsetX, player.animation.offsetY);
+				this.centerCamera(this.camera, player);
 			}
 
 			canvas.translate(this.centerX + this.camera.shakeOffsetX, this.centerY + this.camera.shakeOffsetY);
@@ -430,9 +430,16 @@ class DisplaySystem extends System {
 		return bounds.y > t && bounds.x + bounds.w < r && bounds.y + bounds.h < b && bounds.x > l;
 	}
 
-	centerCamera(camera, position, offsetX = 0, offsetY = 0) {
-		camera.x = position.x + offsetX;
-		camera.y = position.y + offsetY;
+	centerCamera(camera, player) {
+		if(player.animation.animation == animation_idle) {
+			camera.x = player.position.x;
+			camera.y = player.position.y;
+		}
+		else {
+			camera.x = player.position.x + player.animation.offsetX;
+			camera.y = player.position.y + player.animation.offsetY;
+			// camera.y = player.position.y + player.animation.animations[offsetY;
+		}
 		//if(entity.position.x > camera.x) {
 		//	camera.x = floor(camera.x * 40 + 1) / 40;
 		//	cameraMoveTimer = setTimeout(function() {moveCamera(camera, entity, direction)}, this.config.CAMERA_MOVE_SPEED);

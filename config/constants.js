@@ -135,7 +135,8 @@ const component_position = 0,
 	component_combat = 17,
 	component_ai = 18,
 	component_light_emitter = 19,
-	component_collision = 20;
+	component_collision = 20,
+	component_abilities = 21;
 
 //events
 const event_new_game = 0,

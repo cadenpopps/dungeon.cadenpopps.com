@@ -6,7 +6,7 @@ function Player(x, y, config, playerClass, actions, animations) {
 
 	this.direction = new DirectionComponent(direction_down);
 	this.health = new HealthComponent(config.health);
-	this.combat = new CombatComponent(config.initialStrength, config.initialDexterity, config.initialIntelligence);
+	this.combat = new CombatComponent(config.attackDamage, config.magicDamage, config.armor);
 	this.actions = new ActionsComponent(actions);
 	this.sprint = new SprintComponent(config.sprint_threshhold, config.sprint_speed);
 	this.lightEmitter = new LightEmitterComponent(light_level_player);

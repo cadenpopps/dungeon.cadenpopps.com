@@ -21,18 +21,18 @@ class EntitySystem extends System {
 		let playerClass = class_warrior;
 		let config = this.playerData[playerClass]
 		let animations = Utility.convertAnimationsFromConfig(config.animations);
-		engine.addObject(new Player(0, 0, config, playerClass, config.actions, animations));
+		engine.addObject(new Player(-1, -1, config, playerClass, config.actions, animations));
 		engine.sendEvent(event_player_generated);
 	}
 
-	generateEntities(engine, map, depth) {
+	generateEntities(engine, level, depth) {
 		let config, entityPosition;
 		let numEntities = floor(depth / 3) + 10;
 		let entities = [];
 
 		while(numEntities > 0) {
 			config = this.entityData[random(Object.keys(this.entityData))];
-			entityPosition = this.findSafeSpawnLocation(config.size, entities[depth], engine.getPlayer(), map);
+			entityPosition = this.findSafeSpawnLocation(config.size, entities[depth], engine.getPlayer(), level.map.map);
 			if(entityPosition != undefined) {
 				this.generateEnemy(engine, entityPosition.x, entityPosition.y, depth, config);
 			}
@@ -42,9 +42,8 @@ class EntitySystem extends System {
 
 	generateEnemy(engine, x, y, depth, config) {
 		let animations = Utility.convertAnimationsFromConfig(config.animations);
-		if(this.safeSpawnLocation(x, y, config.size, this.entities[depth], engine.getMap())) {
+		if(this.safeSpawnLocation(x, y, config.size, engine.getEntities(), engine.getMap())) {
 			let mob = new Mob(x, y, depth, config, config.actions, animations);
-			// this.entities[depth].push(mob);
 			engine.addObject(mob);
 		}
 	}
@@ -64,15 +63,17 @@ class EntitySystem extends System {
 	safeSpawnLocation(x, y, size, entities, map) {
 		for(let i = x; i < x + size; i++) {
 			for(let j = y; j < y + size; j++) {
-				if(map[i][j].physical.solid) {
+				if(map[i][j].components.includes(component_collision)) {
 					return false;
 				}
 			}
 		}
 		let col = new CollisionComponent(x, y, size);
-		for(let e of entities) {
-			if(Utility.collision(col, e.collision)) {
-				return false;
+		if(entities !== undefined) {
+			for(let e of entities) {
+				if(Utility.collision(col, e.collision)) {
+					return false;
+				}
 			}
 		}
 		return true;

@@ -1,6 +1,6 @@
 Torch.prototype = Object.create(Entity.prototype);
 function Torch(x, y, direction, depth) {
-	Entity.call(this, x, y, depth, .35, display_opaque, physical_non_solid, null);
+	Entity.call(this, x, y, depth, .25, display_opaque, physical_non_solid, null);
 
 	this.components.push(component_light_emitter, component_direction);
 	this.direction = new DirectionComponent(direction);

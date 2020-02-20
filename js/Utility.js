@@ -38,7 +38,7 @@ class Utility {
 	}
 
 	static entityDistance(e1, e2) {
-		if(e1.physical.size == 1 && e2.physical.size == 1) {
+		if(e1.collision.width == 1 && e1.collision.height == 1 && e2.collision.width == 1 && e2.collision.height == 1) {
 			return Utility.distance(e1.position, e2.position);
 		}
 		else {

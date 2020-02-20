@@ -53,12 +53,13 @@ class AISystem extends System {
 	}
 
 	determineAction(engine, entity, player) {
-		if(Utility.entityDistance(entity, player) <= entity.ai.attackRange) {
-			return this.getAttackAction(entity, player);
-		}
-		else{
-			return this.getMoveCloserAction(engine, entity, player);
-		}
+		return randomInt(11, 14);
+		// if(Utility.entityDistance(entity, player) <= entity.ai.attackRange) {
+		// 	return this.getAttackAction(entity, player);
+		// }
+		// else{
+		// 	return this.getMoveCloserAction(engine, entity, player);
+		// }
 	}
 
 	getAttackAction(entity, player) {

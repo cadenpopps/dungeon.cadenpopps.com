@@ -1,12 +1,11 @@
 {
 	"skeleton": {
 		"health": 160,
-		"strength": 15,
-		"dexterity": 0,
-		"intelligence": 20,
+		"attackDamage": 8,
+		"magicDamage": 0,
+		"armor": 5,
 		"attack_range": 1,
 		"size": 1,
-		"solid": true,
 		"actions": [
 			{
 				"action": "action_none",

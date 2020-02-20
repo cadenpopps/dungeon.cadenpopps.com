@@ -22,12 +22,22 @@ class AnimationSystem extends System {
 				this.idleAnimationCounter = 0;
 			}
 			for(let o of this.objects) {
-				o.animation.stage++;
-				// console.log(o);
-				if(o.animation.stage == o.animation.animations[o.animation.animation].length) {
-					this.startIdleAnimation(o);
+				if(o.animation.animation == animation_idle) {
+					if(this.idleAnimationCounter == 0) {
+						o.animation.stage++;
+						if(o.animation.stage == o.animation.animations[o.animation.animation].length) {
+							this.startIdleAnimation(o);
+						}
+						this.updateAnimation(o);
+					}
 				}
-				this.updateAnimation(o);
+				else {
+					o.animation.stage++;
+					if(o.animation.stage == o.animation.animations[o.animation.animation].length) {
+						this.startIdleAnimation(o);
+					}
+					this.updateAnimation(o);
+				}
 				// if((o.animation.nextAnimation == animation_idle && this.idleAnimationCounter == 0) || o.animation.nextAnimation != animation_idle) {
 				// 	if(o.animation.stage == o.animation.animations[o.animation.animation].length) {
 				// 		this.startAnimation(o, action_none);

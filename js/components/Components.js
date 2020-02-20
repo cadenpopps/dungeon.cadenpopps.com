@@ -20,12 +20,10 @@ function DexterityComponent(initialDexterity){
 	this.dexterity = initialDexterity;
 }
 
-function CombatComponent(strength, magic, intelligence){
-	this.meleeAttackPower = strength;
-	this.meleeDefensePower = floor((strength) / 5);
-
-	this.magicAttackPower = (magic * intelligence) / 2;
-	this.magicDefensePower = (strength * magic) / 8;
+function CombatComponent(attackDamage, magicDamage, armor){
+	this.attackDamage = attackDamage;
+	this.magicDamage = magicDamage;
+	this.armor = armor;
 }
 
 function DirectionComponent(direction){
@@ -135,4 +133,7 @@ function AIComponent(attackRange){
 	this.attackRange = attackRange;
 	this.noticedPlayer = false;
 	this.idleTimer = 0;
+}
+
+function AbilitiesComponent(){
 }
