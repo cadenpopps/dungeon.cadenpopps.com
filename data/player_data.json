@@ -9,51 +9,57 @@
 		"actions": [
 			{
 				"action": "action_none",
-				"action_name": "Idle",
 				"cooldown": 0,
 				"time": 0
 			},
 			{
 				"action": "action_move_up",
-				"action_name": "Move up",
 				"cooldown": 9,
 				"time": 9
 			},
 			{
 				"action": "action_move_right",
-				"action_name": "Move right",
 				"cooldown": 9,
 				"time": 9
 			},
 			{
 				"action": "action_move_down",
-				"action_name": "Move down",
 				"cooldown": 9,
 				"time": 9
 			},
 			{
 				"action": "action_move_left",
-				"action_name": "Move left",
 				"cooldown": 9,
 				"time": 9
 			},
 			{
-				"action": "ability_one",
-				"action_name": "Slash",
+				"action": "action_ability_one",
+				"cooldown": 40,
+				"time": 10
+			},
+			{
+				"action": "action_ability_two",
 				"cooldown": 200,
-				"time": 100
+				"time": 40
 			},
 			{
-				"action": "ability_two",
-				"action_name": "Spin attack",
-				"cooldown": 500,
-				"time": 200
+				"action": "action_ability_three",
+				"cooldown": 600,
+				"time": 60
+			}
+		],
+		"abilities": [
+			{
+				"ability_name": "Slash",
+				"ability_type": "melee"
 			},
 			{
-				"action": "ability_three",
-				"action_name": "Judgement Day",
-				"cooldown": 1000,
-				"time": 400
+				"ability_name": "Spin attack",
+				"ability_type": "aoe"
+			},
+			{
+				"ability_name": "Judgement day",
+				"ability_type": "smite"
 			}
 		],
 		"animations": {
@@ -116,51 +122,57 @@
 		"actions": [
 			{
 				"action": "action_none",
-				"action_name": "Idle",
 				"cooldown": 0,
 				"time": 100
 			},
 			{
 				"action": "action_move_up",
-				"action_name": "Move up",
 				"cooldown": 100,
 				"time": 100
 			},
 			{
 				"action": "action_move_right",
-				"action_name": "Move right",
 				"cooldown": 100,
 				"time": 100
 			},
 			{
 				"action": "action_move_down",
-				"action_name": "Move down",
 				"cooldown": 100,
 				"time": 100
 			},
 			{
 				"action": "action_move_left",
-				"action_name": "Move left",
 				"cooldown": 100,
 				"time": 100
 			},
 			{
-				"action": "ability_one",
-				"action_name": "Slash",
+				"action": "action_ability_one",
 				"cooldown": 200,
-				"time": 100
+				"time": 10
 			},
 			{
-				"action": "ability_two",
-				"action_name": "Spin attack",
+				"action": "action_ability_two",
+				"cooldown": 500,
+				"time": 15
+			},
+			{
+				"action": "action_ability_three",
+				"cooldown": 500,
+				"time": 30
+			}
+		],
+		"abilities": [
+			{
+				"ability_name": "Slash",
+				"ability_type": "melee",
+				"cooldown": 100,
+				"time": 30
+			},
+			{
+				"ability_name": "Spin attack",
+				"ability_type": "aoe",
 				"cooldown": 500,
 				"time": 200
-			},
-			{
-				"action": "ability_three",
-				"action_name": "Judgement Day",
-				"cooldown": 1000,
-				"time": 400
 			}
 		],
 		"animations": {
@@ -225,51 +237,57 @@
 		"actions": [
 			{
 				"action": "action_none",
-				"action_name": "Idle",
 				"cooldown": 0,
 				"time": 100
 			},
 			{
 				"action": "action_move_up",
-				"action_name": "Move up",
 				"cooldown": 100,
 				"time": 100
 			},
 			{
 				"action": "action_move_right",
-				"action_name": "Move right",
 				"cooldown": 100,
 				"time": 100
 			},
 			{
 				"action": "action_move_down",
-				"action_name": "Move down",
 				"cooldown": 100,
 				"time": 100
 			},
 			{
 				"action": "action_move_left",
-				"action_name": "Move left",
 				"cooldown": 100,
 				"time": 100
 			},
 			{
-				"action": "ability_one",
-				"action_name": "Slash",
+				"action": "action_ability_one",
 				"cooldown": 200,
 				"time": 100
 			},
 			{
-				"action": "ability_two",
-				"action_name": "Spin attack",
+				"action": "action_ability_two",
 				"cooldown": 500,
 				"time": 200
 			},
 			{
-				"action": "ability_three",
-				"action_name": "Judgement Day",
+				"action": "action_ability_three",
 				"cooldown": 1000,
 				"time": 400
+			}
+		],
+		"abilities": [
+			{
+				"ability_name": "Slash",
+				"ability_type": "melee"
+			},
+			{
+				"ability_name": "Spin attack",
+				"ability_type": "aoe"
+			},
+			{
+				"ability_name": "Judgement Day",
+				"ability_type": "smite"
 			}
 		],
 		"animations": {

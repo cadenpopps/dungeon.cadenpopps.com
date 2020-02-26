@@ -44,13 +44,26 @@ function processEntityData(entityData) {
 			let a = action_string_to_constant[action.action];
 			processedActions[a] = {
 				action: a,
-				actionName: action.action_name,
 				cooldown: action.cooldown,
 				time: action.time
 			};
 		}
 
+		let processedAbilities = [];
+		let i = 0;
+		for(let ability of entityData[e].abilities) {
+			let a = ability_type_string_to_constant[ability.ability_type];
+			processedAbilities[i] = {
+				abilityName: ability.ability_name,
+				abilityType: a,
+				cooldown: ability.cooldown,
+				time: ability.time
+			};
+			i++;
+		}
+
 		newEntityData[entityConstant].actions = processedActions;
+		newEntityData[entityConstant].abilities = processedAbilities;
 
 	}
 	return newEntityData;

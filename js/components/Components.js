@@ -94,7 +94,7 @@ function ActionsComponent(actions){
 	this.busy = 0;
 	this.actions = [];
 	for(let a in actions) {
-		this.actions[a] = new ActionComponent(actions[a].action, actions[a].actionName, actions[a].cooldown, actions[a].time);
+		this.actions[a] = new ActionComponent(actions[a].action, actions[a].cooldown, actions[a].time);
 	}
 	this.nextAction = action_none;
 	this.currentAction = action_none;
@@ -102,12 +102,8 @@ function ActionsComponent(actions){
 	this.lastActionFailed = false;
 }
 
-function ActionComponent(actionID, actionName, actionCooldown, actionTime) {
+function ActionComponent(actionID, actionCooldown, actionTime) {
 	this.action = actionID;
-	if(actionID == action_ability_one || actionID == action_ability_two || actionID == action_ability_three) {
-		this.abilityID = ability_string_to_constant[actionName];
-	}
-	this.actionName = actionName;
 	this.cooldown = actionCooldown;
 	this.time = actionTime;
 	this.currentCooldown = 0;
@@ -135,5 +131,16 @@ function AIComponent(attackRange){
 	this.idleTimer = 0;
 }
 
-function AbilitiesComponent(){
+function AbilitiesComponent(abilities){
+	this.abilities = [];
+	for(let a of abilities) {
+		this.abilities.push(new AbilityComponent(a));
+	}
+}
+
+function AbilityComponent(ability){
+	this.name = ability.abilityName;
+	this.type = ability.abilityType;
+	this.cooldown = ability.cooldown;
+	this.time = ability.time;
 }

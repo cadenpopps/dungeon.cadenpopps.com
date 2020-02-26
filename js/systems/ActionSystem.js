@@ -58,8 +58,10 @@ class ActionSystem extends System {
 	handleSuccessfulAction(engine, entity, action) {
 		this.setCooldowns(entity, action);
 
-		entity.animation.animation = action_to_animation[action];
-		engine.sendEvent(event_new_animation, entity);
+		if(action_to_animation[action] !== undefined && entity.animation.animations[action_to_animation[action]] !== undefined) {
+			entity.animation.animation = action_to_animation[action];
+			engine.sendEvent(event_new_animation, entity);
+		}
 
 		entity.actions.lastActionFailed = false;
 		entity.actions.lastAction = action;

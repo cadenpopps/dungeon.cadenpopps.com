@@ -10,35 +10,31 @@
 		"actions": [
 			{
 				"action": "action_none",
-				"action_name": "Idle",
 				"cooldown": 0,
 				"time": 100
 			},
 			{
 				"action": "action_move_up",
-				"action_name": "Move up",
 				"cooldown": 100,
 				"time": 100
 			},
 			{
 				"action": "action_move_right",
-				"action_name": "Move right",
 				"cooldown": 100,
 				"time": 100
 			},
 			{
 				"action": "action_move_down",
-				"action_name": "Move down",
 				"cooldown": 100,
 				"time": 100
 			},
 			{
 				"action": "action_move_left",
-				"action_name": "Move left",
 				"cooldown": 100,
 				"time": 100
 			}
 		],
+		"abilities": [],
 		"animations": {
 			"animation_idle": [
 				{"ox": 0, "oy": 0, "sprite": null},

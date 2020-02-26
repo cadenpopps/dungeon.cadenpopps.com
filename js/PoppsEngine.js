@@ -43,6 +43,7 @@ class PoppsEngine {
 		this.systems.push(this.HealthSystem);
 		this.systems.push(this.AISystem);
 		this.systems.push(this.SprintSystem);
+		this.systems.push(this.AbilitySystem);
 
 		this.UISystem = new UISystem(config.ui, data.images.ui);
 		this.systems.push(this.UISystem);

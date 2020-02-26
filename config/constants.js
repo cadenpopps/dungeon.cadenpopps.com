@@ -211,7 +211,6 @@ animation_strings_to_constants['animation_move_right'] = animation_move_right;
 animation_strings_to_constants['animation_move_down'] = animation_move_down;
 animation_strings_to_constants['animation_move_left'] = animation_move_left;
 
-
 // Actions
 const action_none = 0,
 
@@ -234,9 +233,9 @@ action_string_to_constant['action_move_right'] = action_move_right;
 action_string_to_constant['action_move_down'] = action_move_down;
 action_string_to_constant['action_move_left'] = action_move_left;
 
-action_string_to_constant['ability_one'] = action_ability_one;
-action_string_to_constant['ability_two'] = action_ability_two;
-action_string_to_constant['ability_three'] = action_ability_three;
+action_string_to_constant['action_ability_one'] = action_ability_one;
+action_string_to_constant['action_ability_two'] = action_ability_two;
+action_string_to_constant['action_ability_three'] = action_ability_three;
 
 const keyCode_to_action = [];
 keyCode_to_action[87] = action_move_up;  		//w
@@ -286,17 +285,33 @@ action_to_animation[action_move_right] = animation_move_right;
 action_to_animation[action_move_down] = animation_move_down;
 action_to_animation[action_move_left] = animation_move_left;
 
+// Ability types
+const ability_type_melee = 0,
+	ability_type_aoe = 1,
+	ability_type_aoe_ranged = 2,
+	ability_type_skillshot = 3,
+	ability_type_smite = 4
+;
+
+const ability_type_string_to_constant = [];
+ability_type_string_to_constant['melee'] = ability_type_melee;
+ability_type_string_to_constant['aoe'] = ability_type_aoe;
+ability_type_string_to_constant['aoe_ranged'] = ability_type_aoe_ranged;
+ability_type_string_to_constant['skillshot'] = ability_type_skillshot;
+ability_type_string_to_constant['smite'] = ability_type_smite;
+
+
 // Abilities
 const ability_slash = 0,
 	ability_spin_attack = 1,
 	ability_judgement_day = 2
 
-	// ability_spin_attack = 3,
-	// ability_spin_attack = 4,
-	// ability_spin_attack = 5,
-	// ability_spin_attack = 6,
-	// ability_spin_attack = 7,
-	// ability_spin_attack = 8,
+// ability_spin_attack = 3,
+// ability_spin_attack = 4,
+// ability_spin_attack = 5,
+// ability_spin_attack = 6,
+// ability_spin_attack = 7,
+// ability_spin_attack = 8,
 
 ;
 
