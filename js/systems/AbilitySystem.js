@@ -24,7 +24,7 @@ class AbilitySystem extends System {
 
 	handleAbility(engine, entity, ability) {
 		if(ability !== undefined) {
-			switch(ability.type) {
+			switch(ability.abilityType) {
 				case ability_type_melee:
 					this.handleMeleeAbility(engine, entity, ability);
 					break;
@@ -44,12 +44,11 @@ class AbilitySystem extends System {
 		}
 	}
 
-
 	// add effects, buffs
 
-
 	handleMeleeAbility(engine, entity, ability) {
-		console.log("melee: " + entity);
+		let squares = Utility.getSquaresInFront(engine, entity, ability.range);
+		let targets = Utility.getEntitiesInSquares(engine, squares);
 
 		engine.sendEvent(event_successful_action, {'action': entity.actions.currentAction, 'entity': entity });
 	}

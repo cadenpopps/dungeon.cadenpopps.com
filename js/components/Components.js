@@ -1,41 +1,41 @@
-function PositionComponent(x, y){
+function PositionComponent(x, y) {
 	this.x = x;
 	this.y = y;
 }
 
-function HealthComponent(initialHealth){
+function HealthComponent(initialHealth) {
 	this.maxHealth = initialHealth;
 	this.health = initialHealth;
 }
 
-function StrengthComponent(initialStrength){
+function StrengthComponent(initialStrength) {
 	this.strength = initialStrength;
 }
 
-function IntelligenceComponent(initialIntelligence){
+function IntelligenceComponent(initialIntelligence) {
 	this.intelligence = initialIntelligence;
 }
 
-function DexterityComponent(initialDexterity){
+function DexterityComponent(initialDexterity) {
 	this.dexterity = initialDexterity;
 }
 
-function CombatComponent(attackDamage, magicDamage, armor){
+function CombatComponent(attackDamage, magicDamage, armor) {
 	this.attackDamage = attackDamage;
 	this.magicDamage = magicDamage;
 	this.armor = armor;
 }
 
-function DirectionComponent(direction){
+function DirectionComponent(direction) {
 	this.direction = direction;
 }
 
-function PhysicalComponent(solid, size){
+function PhysicalComponent(solid, size) {
 	this.solid = solid;
 	this.size = size;
 }
 
-function CollisionComponent(x, y, w, h){
+function CollisionComponent(x, y, w, h) {
 	if(h === undefined) {
 		h = w;
 	}
@@ -47,11 +47,11 @@ function CollisionComponent(x, y, w, h){
 	this.height = h;
 }
 
-function MovementComponent(speed){
+function MovementComponent(speed) {
 	this.speed = speed;
 }
 
-function DisplayComponent(width, height, opaque, offsetX = 0, offsetY = 0){
+function DisplayComponent(width, height, opaque, offsetX = 0, offsetY = 0) {
 	this.width = width;
 	this.height = height;
 	this.visible = false;
@@ -62,7 +62,7 @@ function DisplayComponent(width, height, opaque, offsetX = 0, offsetY = 0){
 	this.offsetY = offsetY;
 }
 
-function AnimationComponent(animations){
+function AnimationComponent(animations) {
 	this.offsetX = 0;
 	this.offsetY = 0;
 	this.stage = 0;
@@ -82,15 +82,15 @@ function TextureElementComponent(element = texture_default, xOff = 0, yOff = 0) 
 	this.yOff = yOff;
 }
 
-function LightComponent(){
+function LightComponent() {
 	this.level = 0;
 }
 
-function LightEmitterComponent(emitterLevel){
+function LightEmitterComponent(emitterLevel) {
 	this.level = emitterLevel;
 }
 
-function ActionsComponent(actions){
+function ActionsComponent(actions) {
 	this.busy = 0;
 	this.actions = [];
 	for(let a in actions) {
@@ -109,7 +109,7 @@ function ActionComponent(actionID, actionCooldown, actionTime) {
 	this.currentCooldown = 0;
 }
 
-function SprintComponent(movesBeforeSprinting, sprintSpeed){
+function SprintComponent(movesBeforeSprinting, sprintSpeed) {
 	this.movesBeforeSprinting = movesBeforeSprinting;
 	this.lastMoveTime = 0;
 	this.sprintCounter = 0;
@@ -117,30 +117,33 @@ function SprintComponent(movesBeforeSprinting, sprintSpeed){
 	this.sprintSpeed = sprintSpeed;
 }
 
-function MapComponent(map){
+function MapComponent(map) {
 	this.map = map;
 }
 
-function DepthComponent(depth){
+function DepthComponent(depth) {
 	this.depth = depth;
 }
 
-function AIComponent(attackRange){
+function AIComponent(attackRange) {
 	this.attackRange = attackRange;
 	this.noticedPlayer = false;
 	this.idleTimer = 0;
 }
 
-function AbilitiesComponent(abilities){
+function AbilitiesComponent(abilities) {
 	this.abilities = [];
 	for(let a of abilities) {
 		this.abilities.push(new AbilityComponent(a));
 	}
 }
 
-function AbilityComponent(ability){
-	this.name = ability.abilityName;
-	this.type = ability.abilityType;
-	this.cooldown = ability.cooldown;
-	this.time = ability.time;
+function AbilityComponent(ability) {
+	for(let prop in ability) {
+		this[prop] = ability[prop];
+	}
+	// this.name = ability.abilityName;
+	// this.type = ability.abilityType;
+	// this.cooldown = ability.cooldown;
+	// this.time = ability.time;
 }

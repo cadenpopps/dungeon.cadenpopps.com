@@ -52,13 +52,9 @@ function processEntityData(entityData) {
 		let processedAbilities = [];
 		let i = 0;
 		for(let ability of entityData[e].abilities) {
-			let a = ability_type_string_to_constant[ability.ability_type];
-			processedAbilities[i] = {
-				abilityName: ability.ability_name,
-				abilityType: a,
-				cooldown: ability.cooldown,
-				time: ability.time
-			};
+			let a = ability_type_string_to_constant[ability.abilityType];
+			processedAbilities[i] = ability;
+			processedAbilities[i].abilityType = a;
 			i++;
 		}
 

@@ -48,10 +48,12 @@ class CombatSystem extends System {
 		}
 	}
 
-	handleEvent(engine, eventID, data) { }
+	handleEvent(engine, eventID, data) {
+		switch(eventID) {
+			case event_entity_attacked:
 
-	addObject(object) {
-		super.addObject(object);
+				break;
+		}
 	}
 
 	resetCombatTimer() {

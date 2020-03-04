@@ -50,26 +50,33 @@
 		],
 		"abilities": [
 			{
-				"ability_name": "Slash",
-				"ability_type": "melee"
+				"abilityName": "Slash",
+				"abilityType": "melee",
+				"damageType": "attack",
+				"baseDamage": 10,
+				"range": 2
 			},
 			{
-				"ability_name": "Spin attack",
-				"ability_type": "aoe"
+				"abilityName": "Spin attack",
+				"abilityType": "aoe",
+				"damageType": "attack",
+				"baseDamage": 5,
+				"range": 1
 			},
 			{
-				"ability_name": "Judgement day",
-				"ability_type": "smite"
+				"abilityName": "Judgement day",
+				"abilityType": "smite",
+				"damageType": "attack",
+				"baseDamage": 50,
+				"range": 8
 			}
 		],
 		"animations": {
 			"animation_idle": [
 				{"ox": 0, "oy": 0, "sprite": null},
 				{"ox": 0, "oy": 0, "sprite": null},
-				{"ox": 0.05, "oy": 0.08, "sprite": null},
 				{"ox": 0, "oy": 0, "sprite": null},
-				{"ox": 0, "oy": 0, "sprite": null},
-				{"ox": -0.05, "oy": 0.08, "sprite": null}
+				{"ox": 0, "oy": 0, "sprite": null}
 			],
 			"animation_move_up": [
 				{"ox": 0, "oy": 0.95, "sprite": null},
@@ -163,16 +170,22 @@
 		],
 		"abilities": [
 			{
-				"ability_name": "Slash",
-				"ability_type": "melee",
-				"cooldown": 100,
-				"time": 30
+				"abilityName": "Slash",
+				"abilityType": "melee",
+				"damageType": "attack",
+				"baseDamage": "10"
 			},
 			{
-				"ability_name": "Spin attack",
-				"ability_type": "aoe",
-				"cooldown": 500,
-				"time": 200
+				"abilityName": "Spin attack",
+				"abilityType": "aoe",
+				"damageType": "attack",
+				"baseDamage": "5"
+			},
+			{
+				"abilityName": "Judgement day",
+				"abilityType": "smite",
+				"damageType": "attack",
+				"baseDamage": "50"
 			}
 		],
 		"animations": {
@@ -278,16 +291,22 @@
 		],
 		"abilities": [
 			{
-				"ability_name": "Slash",
-				"ability_type": "melee"
+				"abilityName": "Slash",
+				"abilityType": "melee",
+				"damageType": "attack",
+				"baseDamage": "10"
 			},
 			{
-				"ability_name": "Spin attack",
-				"ability_type": "aoe"
+				"abilityName": "Spin attack",
+				"abilityType": "aoe",
+				"damageType": "attack",
+				"baseDamage": "5"
 			},
 			{
-				"ability_name": "Judgement Day",
-				"ability_type": "smite"
+				"abilityName": "Judgement day",
+				"abilityType": "smite",
+				"damageType": "attack",
+				"baseDamage": "50"
 			}
 		],
 		"animations": {

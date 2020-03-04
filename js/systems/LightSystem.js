@@ -24,46 +24,48 @@ class LightSystem extends System {
 	}
 
 	generateTorches(engine, level, rooms) {
-		for(let room of rooms) {
-			if(room.width >= 5 && room.height >= 5) {
-				let torchChance = this.config.ROOM_TORCH_CHANCE;
-				let fullWalls = [];
-				while(random() < torchChance && fullWalls.length < 3) {
-					let dir = randomInt(4);
-					while(fullWalls.includes(dir)) {
-						dir = randomInt(4);
-					}
-					fullWalls.push(dir);
-					let x = 0, y = 0;
-					switch(dir) {
-						case direction_up:
-							x = room.left + randomInt(2, room.width - 2);
-							y = room.top;
-							dir = direction_down;
-							if(level[x][room.top - 1] instanceof DoorSquare) { continue; }
-							break;
-						case direction_right:
-							x = room.right - 1;
-							y = room.top + randomInt(2, room.height - 2);
-							dir = direction_left;
-							if(level[room.right][y] instanceof DoorSquare) { continue; }
-							break;
-						case direction_down:
-							x = room.left + randomInt(2, room.width - 2);
-							y = room.bottom - 1;
-							dir = direction_up;
-							if(level[x][room.bottom] instanceof DoorSquare) { continue; }
-							break;
-						case direction_left:
-							x = room.left;
-							y = room.top + randomInt(2, room.height - 2);
-							dir = direction_right;
-							if(level[room.left - 1][y] instanceof DoorSquare) { continue; }
-							break;
-					}
+		if(DO_LEVEL_GEN) {
+			for(let room of rooms) {
+				if(room.width >= 5 && room.height >= 5) {
+					let torchChance = this.config.ROOM_TORCH_CHANCE;
+					let fullWalls = [];
+					while(random() < torchChance && fullWalls.length < 3) {
+						let dir = randomInt(4);
+						while(fullWalls.includes(dir)) {
+							dir = randomInt(4);
+						}
+						fullWalls.push(dir);
+						let x = 0, y = 0;
+						switch(dir) {
+							case direction_up:
+								x = room.left + randomInt(2, room.width - 2);
+								y = room.top;
+								dir = direction_down;
+								if(level[x][room.top - 1] instanceof DoorSquare) { continue; }
+								break;
+							case direction_right:
+								x = room.right - 1;
+								y = room.top + randomInt(2, room.height - 2);
+								dir = direction_left;
+								if(level[room.right][y] instanceof DoorSquare) { continue; }
+								break;
+							case direction_down:
+								x = room.left + randomInt(2, room.width - 2);
+								y = room.bottom - 1;
+								dir = direction_up;
+								if(level[x][room.bottom] instanceof DoorSquare) { continue; }
+								break;
+							case direction_left:
+								x = room.left;
+								y = room.top + randomInt(2, room.height - 2);
+								dir = direction_right;
+								if(level[room.left - 1][y] instanceof DoorSquare) { continue; }
+								break;
+						}
 
-					engine.addObject(new Torch(x, y, dir, engine.getDepth()));
-					torchChance -= this.config.CHANCE_ADDITIONAL_TORCH;
+						engine.addObject(new Torch(x, y, dir, engine.getDepth()));
+						torchChance -= this.config.CHANCE_ADDITIONAL_TORCH;
+					}
 				}
 			}
 		}

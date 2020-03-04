@@ -1,5 +1,5 @@
 function generateLevel(CONFIG, depth, ROOM_POOL, STAIR_ROOM_POOL) {
-	if(LEVEL_GEN) {
+	if(DO_LEVEL_GEN) {
 		let startTime = millis();
 
 		let level;

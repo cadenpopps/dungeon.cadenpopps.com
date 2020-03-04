@@ -1,7 +1,7 @@
 //constants
 const TITLE_SCREEN = false;
-const LOADING_SCREEN_TIME = 30;
-const LEVEL_GEN = true;
+const LOADING_SCREEN_TIME = 20;
+const DO_LEVEL_GEN = true;
 const DEBUG_MODE = false;
 const UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
 const OPEN = 0, CLOSED = 1;

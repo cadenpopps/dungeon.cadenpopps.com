@@ -29,6 +29,85 @@ class Utility {
 		entity.actions.currentAction = action_none;
 	}
 
+	static getSquaresInFront(engine, entity, range) {
+		//better if arguments are engine, positon, direction, range
+		let squares = [];
+		let map = engine.getMap();
+		switch(entity.direction.direction) {
+			case direction_up:
+				for(let i = 0; i < range; i++) {
+					for(let j = 0; j < range - i; j++) {
+						if(entity.position.y - (i + 1) >= 0) {
+							if(entity.position.x - j >= 0) {
+								squares.push(map[entity.position.x - j][entity.position.y - (i + 1)]);
+							}
+							if(j != 0 && entity.position.x + j < map.length) {
+								squares.push(map[entity.position.x + j][entity.position.y - (i + 1)]);
+							}
+						}
+					}
+				}
+				break;
+			case direction_right:
+				for(let i = 0; i < range; i++) {
+					for(let j = 0; j < range - i; j++) {
+						if(entity.position.x + (i + 1) < map.length) {
+							if(entity.position.y - j >= 0) {
+								squares.push(map[entity.position.x + (i + 1)][entity.position.y - j]);
+							}
+							if(j != 0 && entity.position.y + j < map.length) {
+								squares.push(map[entity.position.x + (i + 1)][entity.position.y + j]);
+							}
+						}
+					}
+				}
+				break;
+			case direction_down:
+				for(let i = 0; i < range; i++) {
+					for(let j = 0; j < range - i; j++) {
+						if(entity.position.y + (i + 1) < map.length) {
+							if(entity.position.x - j >= 0) {
+								squares.push(map[entity.position.x - j][entity.position.y + (i + 1)]);
+							}
+							if(j != 0 && entity.position.x + j < map.length) {
+								squares.push(map[entity.position.x + j][entity.position.y + (i + 1)]);
+							}
+						}
+					}
+				}
+				break;
+			case direction_left:
+				for(let i = 0; i < range; i++) {
+					for(let j = 0; j < range - i; j++) {
+						if(entity.position.x - (i + 1) >= 0) {
+							if(entity.position.y - j >= 0) {
+								squares.push(map[entity.position.x - (i + 1)][entity.position.y - j]);
+							}
+							if(j != 0 && entity.position.y + j < map.length) {
+								squares.push(map[entity.position.x - (i + 1)][entity.position.y + j]);
+							}
+						}
+					}
+				}
+				break;
+		}
+		return squares;
+	}
+
+	static getEntitiesInSquares(engine, squares) {
+		let entities = [];
+		let elist = engine.getEntities();
+		for(let s of squares) {
+			for(let e of elist) {
+				if(e.components.includes(component_collision) && Utility.collision(e.collision, new CollisionComponent(s.position.x, s.position.y, 1))) {
+					entities.push(e);
+				}
+			}
+		}
+		console.log(entities);
+		return entities;
+	}
+
 	static entityWithinRange(e1, e2, dist) {
 		return abs(e1.position.x - e2.position.x) < dist && abs(e1.position.y - e2.position.y) < dist;
 	}

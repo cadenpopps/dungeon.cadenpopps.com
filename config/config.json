@@ -4,8 +4,8 @@
 		"NUM_WALL_ALTS": 0
 	},
 	"level": {
-		"DUNGEON_SIZE": 35,
-		"ROOM_TRIES": 100
+		"DUNGEON_SIZE": 25,
+		"ROOM_TRIES": 25
 	},
 	"display": {
 		"GRID_SIZE": 64,
