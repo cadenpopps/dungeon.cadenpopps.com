@@ -3,6 +3,9 @@
 		"NUM_FLOOR_ALTS": 0,
 		"NUM_WALL_ALTS": 0
 	},
+	"combat": {
+		"COMBAT_TIMER": 200
+	},
 	"level": {
 		"DUNGEON_SIZE": 25,
 		"ROOM_TRIES": 25

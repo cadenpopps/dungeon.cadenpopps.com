@@ -165,12 +165,17 @@ const event_new_game = 0,
 
 	event_begin_combat = 40,
 	event_end_combat = 41,
-	event_entity_attacked = 42,
-
-	event_player_take_damage = 45,
+	event_melee_ability = 42,
+	event_aoe_ability = 43,
+	event_aoe_ranged_ability = 44,
+	event_skillshot_ability = 45,
+	event_smite_ability = 46,
 
 	event_entity_spawned = 50,
 	event_spawn_enemy_close = 51,
+
+	event_entity_take_damage = 60,
+	event_player_take_damage = 61,
 
 	event_title_screen = 999,
 	event_game_over = 1000

@@ -15,7 +15,7 @@ class HealthSystem extends System {
 			if(this.healthRegenCounter % this.config.HEALTH_REGEN_TIMER == 0) {
 				for(let o of this.objects) {
 					if(o.health.health < o.health.maxHealth) {
-						o.health.health+=5;
+						o.health.health += 2;
 					}
 				}
 				this.healthRegenCounter = 1;
@@ -26,9 +26,9 @@ class HealthSystem extends System {
 
 	handleEvent(engine, eventID, data) {
 		switch(eventID) {
-			case event_entity_attacked:
-				this.applyDamage(engine, data.target, data.healthLost);
-				if(data.target instanceof Player) {
+			case event_entity_take_damage:
+				this.applyDamage(engine, data.entity, data.healthLost);
+				if(data.entity instanceof Player) {
 					engine.sendEvent(event_player_take_damage);
 				}
 				break;

@@ -24,7 +24,7 @@ class PoppsEngine {
 		this.LevelSystem = new LevelSystem(config.level, room_pool, stair_room_pool);
 		this.EntitySystem = new EntitySystem(config.entities, player_data, entity_data, boss_data);
 		this.AnimationSystem = new AnimationSystem(config.animation);
-		this.CombatSystem = new CombatSystem();
+		this.CombatSystem = new CombatSystem(config.combat);
 		this.HealthSystem = new HealthSystem(config.health);
 		this.AISystem = new AISystem(config.ai);
 		this.AbilitySystem = new AbilitySystem(config.abilities);

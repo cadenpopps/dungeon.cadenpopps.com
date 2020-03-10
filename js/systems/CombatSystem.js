@@ -1,88 +1,50 @@
 class CombatSystem extends System {
 
-	constructor() {
+	constructor(config) {
 		super([component_combat]);
+		this.config = config;
 	}
 
 	init(engine) {
 		this.inCombat = false;
 		this.combatTimer = 0;
-		this.combatTimerMax = 30;
 	}
 
 	run(engine) {
-		for(let entity of this.objects) {
-			switch(entity.actions.currentAction) {
-				// case action_melee_attack:
-				// 	let dir = this.determineAttackDirection(entity, this.objects);
-				// 	if(dir != -1) {
-				// 		entity.actions.currentAction = action_melee_attack + dir + 1;
-				// 		entity.direction.direction = dir;
-				// 		this.meleeAttack(engine, entity, this.objects);
-				// 	}
-				// 	break;
-				// case action_melee_attack_up: case action_melee_attack_right: case action_melee_attack_down: case action_melee_attack_left:
-				// 	this.meleeAttack(engine, entity, this.objects);
-				// 	break;
-				// case action_spin_attack:
-				// 	this.spinAttack(engine, entity, this.objects);
-				// 	break;
-			}
-		}
-
-		if(this.inCombat) {
-			if(!this.checkInCombat(engine.getPlayer(), this.objects)) {
-				this.combatTimer--;
-				if(this.combatTimer == 0) {
-					this.endCombat(engine);
-				}
-			}
-			else {
-				this.resetCombatTimer();
-			}
-		}
-		else {
-			if(this.checkInCombat(engine.getPlayer(), this.objects)) {
-				this.beginCombat(engine);
+		if(this.combatTimer > 0) {
+			this.combatTimer--;
+			if(this.combatTimer == 0) {
+				console.log("end");
+				engine.sendEvent(event_end_combat);
 			}
 		}
 	}
 
 	handleEvent(engine, eventID, data) {
 		switch(eventID) {
-			case event_entity_attacked:
-
+			case event_melee_ability:
+				this.meleeAttack(engine, data.entity, data.target, data.ability);
+				this.resetCombatTimer(engine);
 				break;
 		}
 	}
 
-	resetCombatTimer() {
-		this.combatTimer = this.combatTimerMax;
-	}
-
-	beginCombat(engine) {
-		if(!this.inCombat) {
+	resetCombatTimer(engine) {
+		if(this.combatTimer == 0) {
 			engine.sendEvent(event_begin_combat);
-			this.resetCombatTimer();
-			this.inCombat = true;
+			console.log("begin");
 		}
+		this.combatTimer = this.config.COMBAT_TIMER;
 	}
 
-	endCombat(engine) {
-		if(this.inCombat) {
-			engine.sendEvent(event_end_combat);
-			this.inCombat = false;
-		}
-	}
-
-	checkInCombat(player, objects) {
-		for(let o of objects) {
-			if(o instanceof Mob && o.ai.noticedPlayer && o.display.visible) {
-				return true;
-			}
-		}
-		return false;
-	}
+	// checkInCombat(player, objects) {
+	// 	for(let o of objects) {
+	// 		if(o instanceof Mob && o.ai.noticedPlayer && o.display.visible) {
+	// 			return true;
+	// 		}
+	// 	}
+	// 	return false;
+	// }
 
 	determineAttackDirection(entity, objects) {
 		for(let o of objects) {
@@ -94,22 +56,11 @@ class CombatSystem extends System {
 		return -1;
 	}
 
-	meleeAttack(engine, entity, objects) {
-		for(let o of objects) {
-			if(entity != o) {
-				if(Utility.collision(Utility.getCollisionInFrontOf(entity), o.collision)) {
-					let healthLost = max(0, (entity.combat.meleeAttackPower * 1.5) - o.combat.meleeDefensePower);
-					if(entity instanceof Player) {
-						engine.sendEvent(event_player_melee_attack);
-					}
-					engine.sendEvent(event_entity_attacked, { 'attacker': entity, 'target': o, 'healthLost': healthLost });
-					engine.sendEvent(event_successful_action, { 'action': entity.actions.currentAction, 'entity': entity });
-					this.beginCombat(engine);
-					return;
-				}
-			}
-		}
-		engine.sendEvent(event_failed_action, { 'action': entity.actions.currentAction, 'entity': entity });
+	meleeAttack(engine, entity, target, ability) {
+		let healthLost = max(0, entity.combat.attackDamage - target.combat.armor);
+		engine.sendEvent(event_entity_take_damage, {'entity': target, 'healthLost': healthLost });
+		// this.beginCombat(engine);
+		return;
 	}
 
 	spinAttack(engine, entity, objects) {

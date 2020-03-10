@@ -49,6 +49,11 @@ class AbilitySystem extends System {
 	handleMeleeAbility(engine, entity, ability) {
 		let squares = Utility.getSquaresInFront(engine, entity, ability.range);
 		let targets = Utility.getEntitiesInSquares(engine, squares);
+		for(let t of targets) {
+			if(t != entity && t.components.includes(component_combat)) {
+				engine.sendEvent(event_melee_ability, {'entity': entity, 'target': t, 'ability': ability});
+			}
+		}
 
 		engine.sendEvent(event_successful_action, {'action': entity.actions.currentAction, 'entity': entity });
 	}

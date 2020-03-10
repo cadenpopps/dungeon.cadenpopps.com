@@ -82,14 +82,14 @@ class DisplaySystem extends System {
 			case event_window_resized:
 				this.resize();
 				break;
-			case event_begin_combat:
-				this.camera.combat = true;
-				this.decideCameraZoomState(this.camera);
-				break;
-			case event_end_combat:
-				this.camera.combat = false;
-				this.decideCameraZoomState(this.camera);
-				break;
+				// case event_begin_combat:
+				// 	this.camera.combat = true;
+				// 	this.decideCameraZoomState(this.camera);
+				// 	break;
+				// case event_end_combat:
+				// 	this.camera.combat = false;
+				// 	this.decideCameraZoomState(this.camera);
+				// 	break;
 			case event_player_start_sprinting:
 				this.camera.sprinting = true;
 				this.decideCameraZoomState(this.camera);
@@ -106,10 +106,11 @@ class DisplaySystem extends System {
 				// 	this.shakeCamera(this.camera, this.config.CAMERA_SHAKE_SMALL);
 				// 	engine.sendEvent(event_hitstun, { "ticks": 2 });
 				// 	break;
-				// case event_player_take_damage:
-				// 	this.shakeCamera(this.camera, this.config.CAMERA_SHAKE_MEDIUM);
-				// 	engine.sendEvent(event_hitstun, { "ticks": 6 });
-				// 	break;
+				//event_entity_take_damage
+			case event_entity_take_damage:
+				this.shakeCamera(this.camera, data.healthLost);
+				// engine.sendEvent(event_hitstun, { "ticks": 6 });
+				break;
 		}
 	}
 
@@ -323,7 +324,6 @@ class DisplaySystem extends System {
 									arc(x, y, h, Math.PI / 2, 1.5 * Math.PI);
 									break;
 							}
-							// ellipse(x, y, w, h);
 						}
 						else {
 							fill(255, 100, 100);
@@ -350,6 +350,23 @@ class DisplaySystem extends System {
 				fill(200, 20, 40);
 			}
 			rect(x + (this.gridSize / 8), y + (this.gridSize / 8), w - (this.gridSize / 4), h - (this.gridSize / 4));
+			if(object instanceof Player) {
+				fill(255, 255, 0);
+				switch(object.direction.direction) {
+					case direction_up:
+						ellipse(x + (this.gridSize / 2), y + (this.gridSize / 2) - (this.gridSize / 3), (this.gridSize / 6), (this.gridSize / 6));
+						break;
+					case direction_right:
+						ellipse(x + (this.gridSize / 2) + (this.gridSize / 3), y + (this.gridSize / 2), (this.gridSize / 6), (this.gridSize / 6));
+						break;
+					case direction_down:
+						ellipse(x + (this.gridSize / 2), y + (this.gridSize / 2) + (this.gridSize / 3), (this.gridSize / 6), (this.gridSize / 6));
+						break;
+					case direction_left:
+						ellipse(x + (this.gridSize / 2) - (this.gridSize / 3), y + (this.gridSize / 2), (this.gridSize / 6), (this.gridSize / 6));
+						break;
+				}
+			}
 		}
 		else{
 			image(a, x, y, w, h);
@@ -490,12 +507,22 @@ class DisplaySystem extends System {
 	}
 
 	shakeCamera(camera, shakeAmount) {
-		let self = this;
 		clearTimeout(this.cameraShakeTimer);
-		if(shakeAmount > 0) {
-			camera.shakeOffestX = ((shakeAmount % 2 == 0) ? -1 : 1) * (randomInt(0, shakeAmount * this.config.CAMERA_SHAKE_MULTIPLIER) + this.config.CAMERA_SHAKE_CONSTANT);
-			camera.shakeOffsetY = random(-1, 1) * this.config.CAMERA_SHAKE_CONSTANT / 2 * shakeAmount;
-			this.cameraShakeTimer = setTimeout(function() { self.shakeCamera(camera, shakeAmount - 1); }, this.config.CAMERA_SHAKE_SPEED);
+		this.shakeCameraHelper(camera, random(2 * Math.PI), shakeAmount * 2);
+	}
+
+	shakeCameraHelper(camera, angle, shakeAmount) {
+		let self = this;
+		if(shakeAmount > 2) {
+			// camera.shakeOffsetX = ((step % 2 == 0) ? -1 : 1) * (randomInt(shakeAmount - .1, shakeAmount) * step / 5);
+			// camera.shakeOffsetY = ((step % 2 == 0) ? -1 : 1) * (randomInt(shakeAmount - .1, shakeAmount) * step / 5);
+			camera.shakeOffsetX = shakeAmount * Math.cos(angle);
+			camera.shakeOffsetY = shakeAmount * Math.sin(angle);
+			angle += random(Math.PI * .8, Math.PI * 1.2);
+			if(angle > (2 * Math.PI)) {
+				angle = angle - (2 * Math.PI);
+			}
+			this.cameraShakeTimer = setTimeout(function() { self.shakeCameraHelper(camera, angle, shakeAmount * .8); }, this.config.CAMERA_SHAKE_SPEED);
 		}
 		else{
 			camera.shakeOffsetX = 0;

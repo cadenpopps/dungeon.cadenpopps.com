@@ -99,12 +99,14 @@ class Utility {
 		let elist = engine.getEntities();
 		for(let s of squares) {
 			for(let e of elist) {
-				if(e.components.includes(component_collision) && Utility.collision(e.collision, new CollisionComponent(s.position.x, s.position.y, 1))) {
+				if(e.components.includes(component_position) && e.position.x == s.position.x && e.position.y == s.position.y) {
+					entities.push(e);
+				}
+				else if(e.components.includes(component_collision) && Utility.collision(e.collision, new CollisionComponent(s.position.x, s.position.y, 1))) {
 					entities.push(e);
 				}
 			}
 		}
-		console.log(entities);
 		return entities;
 	}
 

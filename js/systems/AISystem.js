@@ -20,16 +20,16 @@ class AISystem extends System {
 
 	handleEvent(engine, eventID, data) {
 		switch(eventID) {
-			case event_entity_attacked:
-				if(data.attacker instanceof Player) {
-					let target = data.target;
-					let self = this;
-					target.ai.idleTimer = 100;
-					setTimeout(function() {
-						target.ai.noticedPlayer = true;
-					}, this.config.MOB_REACTION_TIME);
-				}
-				break;
+			// case event_entity_attacked:
+			// 	if(data.attacker instanceof Player) {
+			// 		let target = data.target;
+			// 		let self = this;
+			// 		target.ai.idleTimer = 100;
+			// 		setTimeout(function() {
+			// 			target.ai.noticedPlayer = true;
+			// 		}, this.config.MOB_REACTION_TIME);
+			// 	}
+			// 	break;
 			case event_successful_action:
 				let entity = data.entity;
 				if(entity instanceof Mob && !entity.ai.noticedPlayer && entity.display.visible) {

@@ -1,6 +1,6 @@
 {
 	"skeleton": {
-		"health": 160,
+		"health": 40,
 		"attackDamage": 8,
 		"magicDamage": 0,
 		"armor": 5,
