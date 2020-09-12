@@ -7,8 +7,8 @@
 		"COMBAT_TIMER": 200
 	},
 	"level": {
-		"DUNGEON_SIZE": 25,
-		"ROOM_TRIES": 25
+		"DUNGEON_SIZE": 39,
+		"ROOM_TRIES": 50
 	},
 	"display": {
 		"GRID_SIZE": 64,

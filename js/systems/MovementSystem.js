@@ -65,6 +65,7 @@ class MovementSystem extends System {
 			return true;
 		}
 		else {
+			entity.direction.direction = action_to_direction[entity.actions.currentAction];
 			entity.actions.lastAction = entity.actions.currentAction;
 			entity.actions.currentAction = action_none;
 			return false;

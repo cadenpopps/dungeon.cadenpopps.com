@@ -508,7 +508,7 @@ class DisplaySystem extends System {
 
 	shakeCamera(camera, shakeAmount) {
 		clearTimeout(this.cameraShakeTimer);
-		this.shakeCameraHelper(camera, random(2 * Math.PI), shakeAmount * 2);
+		this.shakeCameraHelper(camera, random(2 * Math.PI), shakeAmount);
 	}
 
 	shakeCameraHelper(camera, angle, shakeAmount) {

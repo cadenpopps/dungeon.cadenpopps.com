@@ -29,20 +29,19 @@ class Utility {
 		entity.actions.currentAction = action_none;
 	}
 
-	static getSquaresInFront(engine, entity, range) {
-		//better if arguments are engine, positon, direction, range
+	static getSquaresInFront(engine, position, direction, range) {
 		let squares = [];
 		let map = engine.getMap();
-		switch(entity.direction.direction) {
+		switch(direction) {
 			case direction_up:
 				for(let i = 0; i < range; i++) {
 					for(let j = 0; j < range - i; j++) {
-						if(entity.position.y - (i + 1) >= 0) {
-							if(entity.position.x - j >= 0) {
-								squares.push(map[entity.position.x - j][entity.position.y - (i + 1)]);
+						if(position.y - (i + 1) >= 0) {
+							if(position.x - j >= 0) {
+								squares.push(map[position.x - j][position.y - (i + 1)]);
 							}
-							if(j != 0 && entity.position.x + j < map.length) {
-								squares.push(map[entity.position.x + j][entity.position.y - (i + 1)]);
+							if(j != 0 && position.x + j < map.length) {
+								squares.push(map[position.x + j][position.y - (i + 1)]);
 							}
 						}
 					}
@@ -51,12 +50,12 @@ class Utility {
 			case direction_right:
 				for(let i = 0; i < range; i++) {
 					for(let j = 0; j < range - i; j++) {
-						if(entity.position.x + (i + 1) < map.length) {
-							if(entity.position.y - j >= 0) {
-								squares.push(map[entity.position.x + (i + 1)][entity.position.y - j]);
+						if(position.x + (i + 1) < map.length) {
+							if(position.y - j >= 0) {
+								squares.push(map[position.x + (i + 1)][position.y - j]);
 							}
-							if(j != 0 && entity.position.y + j < map.length) {
-								squares.push(map[entity.position.x + (i + 1)][entity.position.y + j]);
+							if(j != 0 && position.y + j < map.length) {
+								squares.push(map[position.x + (i + 1)][position.y + j]);
 							}
 						}
 					}
@@ -65,12 +64,12 @@ class Utility {
 			case direction_down:
 				for(let i = 0; i < range; i++) {
 					for(let j = 0; j < range - i; j++) {
-						if(entity.position.y + (i + 1) < map.length) {
-							if(entity.position.x - j >= 0) {
-								squares.push(map[entity.position.x - j][entity.position.y + (i + 1)]);
+						if(position.y + (i + 1) < map.length) {
+							if(position.x - j >= 0) {
+								squares.push(map[position.x - j][position.y + (i + 1)]);
 							}
-							if(j != 0 && entity.position.x + j < map.length) {
-								squares.push(map[entity.position.x + j][entity.position.y + (i + 1)]);
+							if(j != 0 && position.x + j < map.length) {
+								squares.push(map[position.x + j][position.y + (i + 1)]);
 							}
 						}
 					}
@@ -79,17 +78,30 @@ class Utility {
 			case direction_left:
 				for(let i = 0; i < range; i++) {
 					for(let j = 0; j < range - i; j++) {
-						if(entity.position.x - (i + 1) >= 0) {
-							if(entity.position.y - j >= 0) {
-								squares.push(map[entity.position.x - (i + 1)][entity.position.y - j]);
+						if(position.x - (i + 1) >= 0) {
+							if(position.y - j >= 0) {
+								squares.push(map[position.x - (i + 1)][position.y - j]);
 							}
-							if(j != 0 && entity.position.y + j < map.length) {
-								squares.push(map[entity.position.x - (i + 1)][entity.position.y + j]);
+							if(j != 0 && position.y + j < map.length) {
+								squares.push(map[position.x - (i + 1)][position.y + j]);
 							}
 						}
 					}
 				}
 				break;
+		}
+		return squares;
+	}
+
+	static getSquaresAround(engine, position, range) {
+		let squares = [];
+		let map = engine.getMap();
+		for(let i = position.x - range; i <= position.x + range; i++) {
+			for(let j = position.y - range; j <= position.y + range; j++) {
+				if(Utility.positionInBounds(new PositionComponent(i, j), engine.getMap().length)) {
+					squares.push(map[i][j]);
+				}
+			}
 		}
 		return squares;
 	}

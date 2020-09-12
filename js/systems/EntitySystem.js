@@ -27,12 +27,12 @@ class EntitySystem extends System {
 
 	generateEntities(engine, level, depth) {
 		let config, entityPosition;
-		let numEntities = floor(depth / 3) + 10;
+		let numEntities = floor(random(level.rooms.length * .75, level.rooms.length * 1.5));
 		let entities = [];
 
 		while(numEntities > 0) {
 			config = this.entityData[random(Object.keys(this.entityData))];
-			entityPosition = this.findSafeSpawnLocation(config.size, entities[depth], engine.getPlayer(), level.map.map);
+			entityPosition = this.findSafeSpawnLocation(config.size, entities[depth], level.stairUp, level.map.map);
 			if(entityPosition != undefined) {
 				this.generateEnemy(engine, entityPosition.x, entityPosition.y, depth, config);
 			}
@@ -48,11 +48,11 @@ class EntitySystem extends System {
 		}
 	}
 
-	findSafeSpawnLocation(size, entities, player, map) {
+	findSafeSpawnLocation(size, entities, stairUp, map) {
 		let validSquares = [];
 		for(let i = 0; i < map.length; i++) {
 			for(let j = 0; j < map[0].length; j++) {
-				if((abs(player.position.x - i) + abs(player.position.y - j)) > this.config.SAFE_DISTANCE_FROM_PLAYER && this.safeSpawnLocation(i, j, size, entities, map)) {
+				if((abs(stairUp.x - i) + abs(stairUp.y - j)) > this.config.SAFE_DISTANCE_FROM_PLAYER && this.safeSpawnLocation(i, j, size, entities, map)) {
 					validSquares.push(map[i][j].position);
 				}
 			}

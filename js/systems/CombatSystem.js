@@ -14,7 +14,6 @@ class CombatSystem extends System {
 		if(this.combatTimer > 0) {
 			this.combatTimer--;
 			if(this.combatTimer == 0) {
-				console.log("end");
 				engine.sendEvent(event_end_combat);
 			}
 		}
@@ -26,25 +25,19 @@ class CombatSystem extends System {
 				this.meleeAttack(engine, data.entity, data.target, data.ability);
 				this.resetCombatTimer(engine);
 				break;
+			case event_melee_ability:
+				this.meleeAttack(engine, data.entity, data.target, data.ability);
+				this.resetCombatTimer(engine);
+				break;
 		}
 	}
 
 	resetCombatTimer(engine) {
 		if(this.combatTimer == 0) {
 			engine.sendEvent(event_begin_combat);
-			console.log("begin");
 		}
 		this.combatTimer = this.config.COMBAT_TIMER;
 	}
-
-	// checkInCombat(player, objects) {
-	// 	for(let o of objects) {
-	// 		if(o instanceof Mob && o.ai.noticedPlayer && o.display.visible) {
-	// 			return true;
-	// 		}
-	// 	}
-	// 	return false;
-	// }
 
 	determineAttackDirection(entity, objects) {
 		for(let o of objects) {
