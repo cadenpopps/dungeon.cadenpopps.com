@@ -16,6 +16,13 @@ class Utility {
 		return true;
 	}
 
+	static entityHasDepth(entity) {
+		for(let component of entity.components) {
+			if(component instanceof DepthComponent) return true;
+		}
+		return false;
+	}
+
 	static entityActionSuccessful(entity) {
 		entity.actions.busy = action_length[entity.actions.currentAction];
 

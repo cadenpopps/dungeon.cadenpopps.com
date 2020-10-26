@@ -10,6 +10,14 @@ const physical_solid = true, physical_non_solid = false;
 const display_opaque = true, display_transparent = false;
 const entity_active_range = 20;
 
+//defaults
+const DEFAULT_PLAYER_SIZE = 1;
+const DEFAULT_PLAYER_HEALTH = 100;
+const DEFAULT_PLAYER_ATTACK_DAMAGE = 10;
+const DEFAULT_PLAYER_MAGIC_DAMAGE = 10;
+const DEFAULT_PLAYER_ARMOR = 10;
+
+
 //vision
 const CENTER_SQUARE = 0, TOP_LEFT = 1, BOTTOM_RIGHT = 2, UPPER_BOUND = 3, LOWER_BOUND = 4;
 const PERM = .5;

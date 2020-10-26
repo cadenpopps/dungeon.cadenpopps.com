@@ -1,7 +1,7 @@
 class GameSystem {
 
 	constructor(componentSignature) {
-		this.entities = [];
+		this.entities = {}
 		this.componentSignature = componentSignature;
 	}
 
@@ -9,20 +9,22 @@ class GameSystem {
 
 	run(engine) { }
 
-	addEntity(ID, components) {
-		if(this.componentSignature.length > 0 && !(ID in this.entities) && Utility.checkComponents(components, this.componentSignature)) {
-			this.entities[ID] = components;
+	addEntity(entity) {
+		if(this.componentSignature.length > 0 && !(entity.ID in this.entities) && Utility.checkComponents(entity.components, this.componentSignature)) {
+			this.entities[entity.ID] = entity;
 		}
 	}
 
-	destroyEntity(ID) {
+	destroyEntity(entity) {
+		if(entity.ID in this.entities) {
+			delete this.entities[entity.ID];
+		}
+	}
+
+	destroyEntityByID(ID) {
 		if(ID in this.entities) {
 			delete this.entities[ID];
 		}
-	}
-
-	clearEntities() {
-		this.entities = [];
 	}
 
 	handleEvent(engine, eventID, data) { }

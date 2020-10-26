@@ -62,8 +62,9 @@ class PoppsEngine {
 
 		Utility.debugLog("Initializing PoppsEngine");
 
-		this.entities = [];
+		this.entities = {}
 		this.events = [];
+		this.depth = 0;
 
 		this.UIOnly = true;
 		this.FOCUSED = true;
@@ -181,8 +182,7 @@ class PoppsEngine {
 	}
 
 	createEntity(components) {
-		let id = this.getFreeID();
-		this.addEntity(id, components);
+		this.addEntity(new GameEntity(this.getFreeID(), components));
 	}
 
 	getFreeID() {
@@ -193,17 +193,17 @@ class PoppsEngine {
 		return ID;
 	}
 
-	addEntity(ID, components) {
-		this.entities[ID] = components;
+	addEntity(entity) {
+
+		this.entities[entity.ID] = entity;
 
 		for(let s of this.systems) {
-			s.addEntity(ID, componenets);
+			s.addEntity(entity);
 		}
 
 		// if(object instanceof Player) {
 		// 	this.Dungeon.player = object;
 		// }
-
 		// if(object instanceof Level) {
 		// 	this.Dungeon.levels[this.Dungeon.depth] = object;
 		// 	for (let i = 0; i < this.Dungeon.levels[this.Dungeon.depth].map.map.length; i++) {
@@ -212,7 +212,6 @@ class PoppsEngine {
 		// 		}
 		// 	}
 		// }
-
 		// if(object instanceof Entity) {
 		// 	if(!this.Dungeon.entities[this.Dungeon.depth].includes(object)) {
 		// 		this.Dungeon.entities[this.Dungeon.depth].push(object);
@@ -220,45 +219,69 @@ class PoppsEngine {
 		// }
 	}
 
-	destroyEntity(ID) {
+	destroyEntity(entity) {
+		if(entity.ID in this.entities) {
+			delete this.entities[entity.ID];
+		}
+
+		for(let s of this.systems) {
+			s.destroyEntity(entity);
+		}
+	}
+
+	destroyEntityByID(ID) {
 		if(ID in this.entities) {
 			delete this.entities[ID];
 		}
-
 		for(let s of this.systems) {
-			s.destroyEntity(object);
+			s.destroyEntityByID(ID);
 		}
-
-		// if(object instanceof Entity) {
-		// 	if(this.Dungeon.entities[object.depth.depth].includes(object)) {
-		// 		this.Dungeon.entities[object.depth.depth].splice(this.Dungeon.entities[object.depth.depth].indexOf(object), 1);
-		// 	}
-		// }
 	}
 
 	clearEntities() {
-		this.entities = [];
-		for(let s of this.systems) {
-			s.clearEntities();
+		for(let entityID in this.entities) {
+			if(!Utility.entityHasDepth(this.entities[entityID])) {
+				this.destroyEntityByID(entityID);
+			}
 		}
 	}
 
-	loadObjects(depth) {
-		for (let i = 0; i < this.Dungeon.levels[depth].map.map.length; i++) {
-			for (let j = 0; j < this.Dungeon.levels[depth].map.map.length; j++) {
-				this.addObject(this.Dungeon.levels[depth].map.map[i][j]);
+	//LOCAL STORAGE vs SESSION STORAGE ??? for saving runs after page exit
+	saveLevel() {
+
+		let level_data = {};
+
+		if(sessionStorage.length > 0) {
+			level_data = JSON.parse(sessionStorage.LEVEL_DATA);
+		}
+
+		level_data[this.depth] = [];
+
+		for(let entityID in this.entities) {
+			if(!Utility.entityHasDepth(this.entities[entityID])) {
+				level_data[this.depth].push(this.entities[entitiyID]);
 			}
 		}
+	}
 
-		this.sendEvent(event_level_loaded, this.Dungeon.levels[depth]);
+	loadLevel(levelDepth) {
 
-		for(let e of this.Dungeon.entities[depth]) {
-			this.addObject(e);
+		this.clearEntities();
+
+		let level_data = {};
+		if(sessionStorage.length > 0) {
+			level_data = JSON.parse(sessionStorage.LEVEL_DATA);
+		}
+		else {
+			alert("Error loading level, sessionStorage has no data");
 		}
 
-		this.sendEvent(event_entities_loaded);
+		for(let entityWithoutDepth of level_data[levelDepth]) {
+			this.addEntity(entityWithoutDepth);
+		}
 
-		this.addObject(this.Dungeon.player);
+		this.depth = levelDepth;
+		this.sendEvent(event_level_loaded, this.depth);
 	}
 
 	printEvent(e) {
@@ -268,25 +291,4 @@ class PoppsEngine {
 			}
 		}
 	}
-
-	getDepth() {
-		return this.Dungeon.depth;
-	}
-
-	getPlayer() {
-		return this.Dungeon.player;
-	}
-
-	getMap() {
-		return this.Dungeon.levels[this.Dungeon.depth].map.map;
-	}
-
-	getLevel() {
-		return this.Dungeon.levels[this.Dungeon.depth];
-	}
-
-	getEntities() {
-		return this.Dungeon.entities[this.Dungeon.depth];
-	}
-
 }
