@@ -1,4 +1,4 @@
-class VisionSystem extends System {
+class VisionSystem extends GameSystem {
 
 	constructor(config) {
 		super([component_display, component_position]);

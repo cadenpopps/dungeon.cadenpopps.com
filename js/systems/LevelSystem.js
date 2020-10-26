@@ -1,4 +1,4 @@
-class LevelSystem extends System {
+class LevelSystem extends GameSystem {
 
 	constructor(config, room_pool, stair_room_pool) {
 		super([]);

@@ -48,7 +48,6 @@ class PoppsEngine {
 		this.UISystem = new UISystem(config.ui, data.images.ui);
 		this.systems.push(this.UISystem);
 
-
 		this.init();
 
 		if(TITLE_SCREEN) {
@@ -60,24 +59,21 @@ class PoppsEngine {
 	}
 
 	init() {
-		this.clearObjects();
-		this.UIOnly = true;
-		this.FOCUSED = true;
+
+		Utility.debugLog("Initializing PoppsEngine");
+
+		this.entities = [];
 		this.events = [];
 
-		this.Dungeon = {
-			depth: 0,
-			player: undefined,
-			map: undefined,
-			levels: [],
-			entities: []
-		};
+		this.UIOnly = true;
+		this.FOCUSED = true;
 
 		for(let system of this.systems) {
 			system.init(this);
 		}
 
 		window.addEventListener('resize', this.sendEvent(event_window_resized));
+
 		let self = this;
 		window.addEventListener("focus", function () {
 			self.tick();
@@ -85,7 +81,9 @@ class PoppsEngine {
 		window.addEventListener("blur", function () {
 			window.cancelAnimationFrame(self.requestID);
 		});
+
 		this.tick();
+
 	}
 
 	pause() {
@@ -97,11 +95,11 @@ class PoppsEngine {
 	}
 
 	tick() {
-		this.handleEvents(this.events);
 		if(this.UIOnly) {
 			this.UISystem.run(this);
 		}
 		else{
+			this.handleEvents(this.events);
 			for(let s of this.systems) {
 				s.run(this);
 			}
@@ -182,46 +180,66 @@ class PoppsEngine {
 		}
 	}
 
-	addObject(object) {
-		for(let s of this.systems) {
-			s.addObject(object);
-		}
-
-		if(object instanceof Player) {
-			this.Dungeon.player = object;
-		}
-
-		if(object instanceof Level) {
-			this.Dungeon.levels[this.Dungeon.depth] = object;
-			for (let i = 0; i < this.Dungeon.levels[this.Dungeon.depth].map.map.length; i++) {
-				for (let j = 0; j < this.Dungeon.levels[this.Dungeon.depth].map.map.length; j++) {
-					this.addObject(this.Dungeon.levels[this.Dungeon.depth].map.map[i][j]);
-				}
-			}
-		}
-
-		if(object instanceof Entity) {
-			if(!this.Dungeon.entities[this.Dungeon.depth].includes(object)) {
-				this.Dungeon.entities[this.Dungeon.depth].push(object);
-			}
-		}
+	createEntity(components) {
+		let id = this.getFreeID();
+		this.addEntity(id, components);
 	}
 
-	removeObject(object) {
-		for(let s of this.systems) {
-			s.removeObject(object);
+	getFreeID() {
+		let ID = 1;
+		while(ID in this.entities) {
+			ID++;
 		}
-
-		if(object instanceof Entity) {
-			if(this.Dungeon.entities[object.depth.depth].includes(object)) {
-				this.Dungeon.entities[object.depth.depth].splice(this.Dungeon.entities[object.depth.depth].indexOf(object), 1);
-			}
-		}
+		return ID;
 	}
 
-	clearObjects() {
+	addEntity(ID, components) {
+		this.entities[ID] = components;
+
 		for(let s of this.systems) {
-			s.clearObjects();
+			s.addEntity(ID, componenets);
+		}
+
+		// if(object instanceof Player) {
+		// 	this.Dungeon.player = object;
+		// }
+
+		// if(object instanceof Level) {
+		// 	this.Dungeon.levels[this.Dungeon.depth] = object;
+		// 	for (let i = 0; i < this.Dungeon.levels[this.Dungeon.depth].map.map.length; i++) {
+		// 		for (let j = 0; j < this.Dungeon.levels[this.Dungeon.depth].map.map.length; j++) {
+		// 			this.addObject(this.Dungeon.levels[this.Dungeon.depth].map.map[i][j]);
+		// 		}
+		// 	}
+		// }
+
+		// if(object instanceof Entity) {
+		// 	if(!this.Dungeon.entities[this.Dungeon.depth].includes(object)) {
+		// 		this.Dungeon.entities[this.Dungeon.depth].push(object);
+		// 	}
+		// }
+	}
+
+	destroyEntity(ID) {
+		if(ID in this.entities) {
+			delete this.entities[ID];
+		}
+
+		for(let s of this.systems) {
+			s.destroyEntity(object);
+		}
+
+		// if(object instanceof Entity) {
+		// 	if(this.Dungeon.entities[object.depth.depth].includes(object)) {
+		// 		this.Dungeon.entities[object.depth.depth].splice(this.Dungeon.entities[object.depth.depth].indexOf(object), 1);
+		// 	}
+		// }
+	}
+
+	clearEntities() {
+		this.entities = [];
+		for(let s of this.systems) {
+			s.clearEntities();
 		}
 	}
 

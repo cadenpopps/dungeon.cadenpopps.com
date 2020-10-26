@@ -1,4 +1,4 @@
-class AbilitySystem extends System {
+class AbilitySystem extends GameSystem {
 
 	constructor() {
 		super([component_abilities]);

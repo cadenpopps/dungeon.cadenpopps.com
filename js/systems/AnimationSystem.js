@@ -1,4 +1,4 @@
-class AnimationSystem extends System {
+class AnimationSystem extends GameSystem {
 
 	constructor(config) {
 		super([component_animation]);

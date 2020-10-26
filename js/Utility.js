@@ -1,5 +1,9 @@
 class Utility {
 
+	static debugLog(message) {
+		if(DEBUG_MODE) console.log(message);
+	}
+
 	static collision(o1, o2) {
 		return !(o1.top >= o2.bottom || o1.right <= o2.left || o1.bottom <= o2.top || o1.left >= o2.right);
 	}

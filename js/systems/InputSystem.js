@@ -1,7 +1,7 @@
-class InputSystem extends System {
+class InputSystem extends GameSystem {
 
 	constructor() {
-		super([]);
+		super([component_controller]);
 	}
 
 	init(engine) {

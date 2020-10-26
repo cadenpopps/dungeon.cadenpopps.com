@@ -147,3 +147,7 @@ function AbilityComponent(ability) {
 	// this.cooldown = ability.cooldown;
 	// this.time = ability.time;
 }
+
+function ControllerComponent() {
+	this.inputs = [];
+}

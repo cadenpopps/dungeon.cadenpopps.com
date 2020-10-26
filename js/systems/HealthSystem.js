@@ -1,4 +1,4 @@
-class HealthSystem extends System {
+class HealthSystem extends GameSystem {
 
 	constructor(config) {
 		super([component_health]);

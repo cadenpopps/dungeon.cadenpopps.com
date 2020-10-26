@@ -1,4 +1,4 @@
-class EntitySystem extends System {
+class EntitySystem extends GameSystem {
 
 	constructor(config, player_data, entity_data, boss_data) {
 		super([component_actions]);

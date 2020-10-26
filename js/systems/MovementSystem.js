@@ -1,4 +1,4 @@
-class MovementSystem extends System {
+class MovementSystem extends GameSystem {
 
 	constructor() {
 		super([component_position, component_collision, component_actions]);

@@ -17,10 +17,12 @@
 
 function Player(ID, components) {
 	this.id = ID;
+	console.log(components);
 	this.components = {}
 	for(let component in components) {
 		this.components[component] = components[component];
 	}
+
 	// this.components = {
 	// 	component_health = new HealthComponent(config.health);
 	// 	component_direction = new DirectionComponent(direction_down);

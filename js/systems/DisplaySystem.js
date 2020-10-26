@@ -1,4 +1,4 @@
-class DisplaySystem extends System {
+class DisplaySystem extends GameSystem {
 
 	constructor(config, images) {
 		super([component_position, component_display]);

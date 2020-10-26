@@ -1,4 +1,4 @@
-class SprintSystem extends System {
+class SprintSystem extends GameSystem {
 
 	constructor(config) {
 		super([component_sprint]);

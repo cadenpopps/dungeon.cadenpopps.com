@@ -1,4 +1,4 @@
-class LightSystem extends System {
+class LightSystem extends GameSystem {
 
 	constructor(config) {
 		super([component_light_emitter]);

@@ -1,4 +1,4 @@
-class UISystem extends System {
+class UISystem extends GameSystem {
 
 	constructor(config, images) {
 		super([]);

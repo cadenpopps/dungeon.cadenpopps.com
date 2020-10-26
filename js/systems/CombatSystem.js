@@ -1,4 +1,4 @@
-class CombatSystem extends System {
+class CombatSystem extends GameSystem {
 
 	constructor(config) {
 		super([component_combat]);

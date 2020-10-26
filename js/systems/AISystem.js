@@ -1,4 +1,4 @@
-class AISystem extends System {
+class AISystem extends GameSystem {
 
 	constructor(config) {
 		super([component_ai]);
