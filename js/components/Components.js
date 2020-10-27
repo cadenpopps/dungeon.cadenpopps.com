@@ -49,31 +49,43 @@ function CollisionComponent(x, y, w, h) {
 
 function MovementComponent(speed) {
 	this.speed = speed;
+	this.currentCooldown = 0;
 }
 
-function DisplayComponent(width, height, opaque, offsetX = 0, offsetY = 0) {
+function DisplayComponent(width, height, offsetX = 0, offsetY = 0) {
 	this.width = width;
 	this.height = height;
+	this.offsetX = offsetX;
+	this.offsetY = offsetY;
+	this.lightLevel = 0;
+}
+
+function SquareComponent(type) {
+	this.type = type;
 	this.visible = false;
 	this.discovered = false;
 	this.discoveredCounter = 0;
 	this.opaque = opaque;
-	this.offsetX = offsetX;
-	this.offsetY = offsetY;
 }
 
 function AnimationComponent(animations) {
-	this.offsetX = 0;
-	this.offsetY = 0;
-	this.stage = 0;
-	this.sprite = undefined;
-	this.animation = animation_idle;
-	this.animations = animations;
+	if(animations == -1) {
+		this.animation = animation_no_animations_yet;
+	}
+	else {
+		this.offsetX = 0;
+		this.offsetY = 0;
+		this.stage = 0;
+		this.sprite = undefined;
+		this.animation = animation_idle;
+		this.animations = animations;
+	}
 }
 
 function TextureComponent(type) {
 	this.textureType = type;
-	this.textureElements = [];
+	this.textureSubtype = texture_default;
+	// this.textureElements = [];
 }
 
 function TextureElementComponent(element = texture_default, xOff = 0, yOff = 0) {
@@ -92,10 +104,10 @@ function LightEmitterComponent(emitterLevel) {
 
 function ActionsComponent(actions) {
 	this.busy = 0;
-	this.actions = [];
-	for(let a in actions) {
-		this.actions[a] = new ActionComponent(actions[a].action, actions[a].cooldown, actions[a].time);
-	}
+	this.actions = actions
+	// for(let a in actions) {
+	// 	this.actions[a] = new ActionComponent(actions[a].action, actions[a].cooldown, actions[a].time);
+	// }
 	this.nextAction = action_none;
 	this.currentAction = action_none;
 	this.lastAction = action_none;
@@ -142,10 +154,7 @@ function AbilityComponent(ability) {
 	for(let prop in ability) {
 		this[prop] = ability[prop];
 	}
-	// this.name = ability.abilityName;
-	// this.type = ability.abilityType;
-	// this.cooldown = ability.cooldown;
-	// this.time = ability.time;
+	this.currentCooldown = 0;
 }
 
 function ControllerComponent() {

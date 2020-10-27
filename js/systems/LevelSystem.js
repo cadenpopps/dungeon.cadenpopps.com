@@ -1,5 +1,7 @@
 class LevelSystem extends GameSystem {
 
+	//HANDLE LEVEL EVENTS LIKE DOORS, CHESTS, STAIRS, INTERACTABLES
+
 	constructor(config, room_pool, stair_room_pool) {
 		super([]);
 		this.config = config;

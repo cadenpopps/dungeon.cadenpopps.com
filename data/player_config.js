@@ -6,48 +6,6 @@
 		"attackDamage": 20,
 		"magicDamage": 0,
 		"armor": 10,
-		"actions": [
-			{
-				"action": "action_none",
-				"cooldown": 0,
-				"time": 0
-			},
-			{
-				"action": "action_move_up",
-				"cooldown": 9,
-				"time": 9
-			},
-			{
-				"action": "action_move_right",
-				"cooldown": 9,
-				"time": 9
-			},
-			{
-				"action": "action_move_down",
-				"cooldown": 9,
-				"time": 9
-			},
-			{
-				"action": "action_move_left",
-				"cooldown": 9,
-				"time": 9
-			},
-			{
-				"action": "action_ability_one",
-				"cooldown": 40,
-				"time": 10
-			},
-			{
-				"action": "action_ability_two",
-				"cooldown": 200,
-				"time": 20
-			},
-			{
-				"action": "action_ability_three",
-				"cooldown": 600,
-				"time": 60
-			}
-		],
 		"abilities": [
 			{
 				"abilityName": "Slash",
@@ -126,48 +84,6 @@
 		"attackDamage": 0,
 		"magicDamage": 15,
 		"armor": 8,
-		"actions": [
-			{
-				"action": "action_none",
-				"cooldown": 0,
-				"time": 100
-			},
-			{
-				"action": "action_move_up",
-				"cooldown": 100,
-				"time": 100
-			},
-			{
-				"action": "action_move_right",
-				"cooldown": 100,
-				"time": 100
-			},
-			{
-				"action": "action_move_down",
-				"cooldown": 100,
-				"time": 100
-			},
-			{
-				"action": "action_move_left",
-				"cooldown": 100,
-				"time": 100
-			},
-			{
-				"action": "action_ability_one",
-				"cooldown": 200,
-				"time": 10
-			},
-			{
-				"action": "action_ability_two",
-				"cooldown": 500,
-				"time": 15
-			},
-			{
-				"action": "action_ability_three",
-				"cooldown": 500,
-				"time": 30
-			}
-		],
 		"abilities": [
 			{
 				"abilityName": "Slash",
@@ -247,48 +163,6 @@
 		"attackDamage": 12,
 		"magicDamage": 8,
 		"armor": 10,
-		"actions": [
-			{
-				"action": "action_none",
-				"cooldown": 0,
-				"time": 100
-			},
-			{
-				"action": "action_move_up",
-				"cooldown": 100,
-				"time": 100
-			},
-			{
-				"action": "action_move_right",
-				"cooldown": 100,
-				"time": 100
-			},
-			{
-				"action": "action_move_down",
-				"cooldown": 100,
-				"time": 100
-			},
-			{
-				"action": "action_move_left",
-				"cooldown": 100,
-				"time": 100
-			},
-			{
-				"action": "action_ability_one",
-				"cooldown": 200,
-				"time": 100
-			},
-			{
-				"action": "action_ability_two",
-				"cooldown": 500,
-				"time": 200
-			},
-			{
-				"action": "action_ability_three",
-				"cooldown": 1000,
-				"time": 400
-			}
-		],
 		"abilities": [
 			{
 				"abilityName": "Slash",

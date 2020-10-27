@@ -6,33 +6,6 @@
 		"armor": 5,
 		"attack_range": 1,
 		"size": 1,
-		"actions": [
-			{
-				"action": "action_none",
-				"cooldown": 0,
-				"time": 100
-			},
-			{
-				"action": "action_move_up",
-				"cooldown": 100,
-				"time": 100
-			},
-			{
-				"action": "action_move_right",
-				"cooldown": 100,
-				"time": 100
-			},
-			{
-				"action": "action_move_down",
-				"cooldown": 100,
-				"time": 100
-			},
-			{
-				"action": "action_move_left",
-				"cooldown": 100,
-				"time": 100
-			}
-		],
 		"abilities": [],
 		"animations": {
 			"animation_idle": [

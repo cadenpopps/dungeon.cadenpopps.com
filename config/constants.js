@@ -16,7 +16,27 @@ const DEFAULT_PLAYER_HEALTH = 100;
 const DEFAULT_PLAYER_ATTACK_DAMAGE = 10;
 const DEFAULT_PLAYER_MAGIC_DAMAGE = 10;
 const DEFAULT_PLAYER_ARMOR = 10;
+const DEFAULT_PLAYER_ACTIONS = [
+	action_move_up,
+	action_move_right,
+	action_move_down,
+	action_move_left,
+	action_ability_primary,
+	action_ability_secondary,
+	action_ability_special
+]
 
+const DEFAULT_ENEMY_SIZE = 1;
+const DEFAULT_ENEMY_HEALTH = 50;
+const DEFAULT_ENEMY_ATTACK_DAMAGE = 10;
+const DEFAULT_ENEMY_MAGIC_DAMAGE = 10;
+const DEFAULT_ENEMY_ARMOR = 10;
+const DEFAULT_ENEMY_ACTIONS = [
+	action_move_up,
+	action_move_right,
+	action_move_down,
+	action_move_left
+]
 
 //vision
 const CENTER_SQUARE = 0, TOP_LEFT = 1, BOTTOM_RIGHT = 2, UPPER_BOUND = 3, LOWER_BOUND = 4;
@@ -64,17 +84,18 @@ const light_level_player = 3, light_level_torch = light_max - 2;
 const direction_up = 0, direction_right = 1, direction_down = 2, direction_left = 3;
 
 //square constants
-const square_floor = 0, square_wall = 1, square_door = 2, square_stair_down = 3, square_stair_up = 4, square_loot = 5;
+const square_floor = 0, square_wall = 1, square_door = 2, square_stair = 3, square_level_origin = 4;
+
+//interactables
+const interactable_door = 0, interactable_stair = 1;
 
 //texture constants
 const texture_floor = 0,
 	texture_wall = 1,
 	texture_door_closed = 2,
 	texture_door_open = 3,
-	texture_loot_closed = 4,
-	texture_loot_open = 5,
-	texture_stair_up = 6,
-	texture_stair_down = 7;
+	texture_stair = 6,
+	texture_level_origin = 7;
 
 const texture_default = 0,
 	texture_alt1 = 1,
@@ -145,7 +166,8 @@ const component_position = 0,
 	component_light_emitter = 19,
 	component_collision = 20,
 	component_abilities = 21,
-	component_controller = 22;
+	component_controller = 22,
+	component_interactable = 23;
 
 //events
 const event_new_game = 0,
@@ -195,9 +217,7 @@ const class_warrior = 0,
 	class_mage = 1,
 	class_rogue = 2,
 	entity_skeleton = 3,
-	boss_blob = 4
-
-;
+	boss_blob = 4 ;
 
 const entity_string_to_constant = [];
 entity_string_to_constant['warrior'] = class_warrior;
@@ -209,12 +229,11 @@ entity_string_to_constant['blob'] = boss_blob;
 
 // Animations
 const animation_idle = 0,
-
 	animation_move_up = 1,
 	animation_move_right = 2,
 	animation_move_down = 3,
-	animation_move_left = 4
-;
+	animation_move_left = 4,
+	animation_no_animations_yet = 1000;
 
 const animation_strings_to_constants = [];
 
