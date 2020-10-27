@@ -8,9 +8,9 @@ function load() {
 	let config = loadConfig();
 	let images = loadImages(config.textures);
 	let room_pool = loadRoomPools();
-	let player_data = processEntityData(loadJSON('/data/player_data.json'));
-	let entity_data = processEntityData(loadJSON('/data/entity_data.json'));
-	let boss_data = processEntityData(loadJSON('/data/boss_data.json'));
+	let player_config = processEntityData(loadJSON('/data/player_config.json'));
+	let enemy_config = processEntityData(loadJSON('/data/enemy_config.json'));
+	let boss_config = processEntityData(loadJSON('/data/boss_config.json'));
 
 	// let music = loadMusic();
 	// let sounds = loadSounds();
@@ -20,9 +20,9 @@ function load() {
 		'room_pool': room_pool[0],
 		'stair_room_pool': room_pool[1],
 		'images': images,
-		'player_data': player_data,
-		'entity_data': entity_data,
-		'boss_data': boss_data
+		'player_config': player_config,
+		'enemy_config': enemy_config,
+		'boss_config': boss_config
 		// 'music': music,
 		// 'sounds': sounds
 	};
@@ -39,15 +39,15 @@ function processEntityData(entityData) {
 		let entityConstant = entity_string_to_constant[e];
 		newEntityData[entityConstant] = entityData[e];
 
-		let processedActions = [];
-		for(let action of entityData[e].actions) {
-			let a = action_string_to_constant[action.action];
-			processedActions[a] = {
-				action: a,
-				cooldown: action.cooldown,
-				time: action.time
-			};
-		}
+		// let processedActions = [];
+		// for(let action of entityData[e].actions) {
+		// 	let a = action_string_to_constant[action.action];
+		// 	processedActions[a] = {
+		// 		action: a,
+		// 		cooldown: action.cooldown,
+		// 		time: action.time
+		// 	};
+		// }
 
 		let processedAbilities = [];
 		let i = 0;
@@ -58,7 +58,7 @@ function processEntityData(entityData) {
 			i++;
 		}
 
-		newEntityData[entityConstant].actions = processedActions;
+		// newEntityData[entityConstant].actions = processedActions;
 		newEntityData[entityConstant].abilities = processedAbilities;
 
 	}
@@ -165,21 +165,27 @@ function loadTextures(textureConfig) {
 	textures[texture_door_open][texture_default] = loadImage('/img/textures/old/doorOpenedTexture.png');
 	textures[texture_door_open][texture_num_alts] = 0;
 
-	textures[texture_loot_closed] = [];
-	textures[texture_loot_closed][texture_default] = loadImage('/img/textures/old/lootClosedTexture.png');
-	textures[texture_loot_closed][texture_num_alts] = 0;
+	// textures[texture_loot_closed] = [];
+	// textures[texture_loot_closed][texture_default] = loadImage('/img/textures/old/lootClosedTexture.png');
+	// textures[texture_loot_closed][texture_num_alts] = 0;
 
-	textures[texture_loot_open] = [];
-	textures[texture_loot_open][texture_default] = loadImage('/img/textures/old/lootOpenedTexture.png');
-	textures[texture_loot_open][texture_num_alts] = 0;
+	// textures[texture_loot_open] = [];
+	// textures[texture_loot_open][texture_default] = loadImage('/img/textures/old/lootOpenedTexture.png');
+	// textures[texture_loot_open][texture_num_alts] = 0;
 
-	textures[texture_stair_up] = [];
-	textures[texture_stair_up][texture_default] = loadImage('/img/textures/stairUp.png');
-	textures[texture_stair_up][texture_num_alts] = 0;
+	textures[texture_stair] = [];
+	textures[texture_stair][texture_default] = loadImage('/img/textures/stairUp.png');
+	textures[texture_stair][texture_num_alts] = 0;
+	// textures[texture_stair_up] = [];
+	// textures[texture_stair_up][texture_default] = loadImage('/img/textures/stairUp.png');
+	// textures[texture_stair_up][texture_num_alts] = 0;
 
-	textures[texture_stair_down] = [];
-	textures[texture_stair_down][texture_default] = loadImage('/img/textures/stairDown.png');
-	textures[texture_stair_down][texture_num_alts] = 0;
+	textures[texture_level_origin] = [];
+	textures[texture_level_origin][texture_default] = loadImage('/img/textures/stairDown.png');
+	textures[texture_level_origin][texture_num_alts] = 0;
+	// textures[texture_stair_down] = [];
+	// textures[texture_stair_down][texture_default] = loadImage('/img/textures/stairDown.png');
+	// textures[texture_stair_down][texture_num_alts] = 0;
 
 	return textures;
 }

@@ -2,41 +2,13 @@
 const TITLE_SCREEN = false;
 const LOADING_SCREEN_TIME = 20;
 const DO_LEVEL_GEN = true;
-const DEBUG_MODE = false;
+const DEBUG_MODE = true;
 const UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
 const OPEN = 0, CLOSED = 1;
 const entity_player = 0, entity_mob = 1;
 const physical_solid = true, physical_non_solid = false;
 const display_opaque = true, display_transparent = false;
 const entity_active_range = 20;
-
-//defaults
-const DEFAULT_PLAYER_SIZE = 1;
-const DEFAULT_PLAYER_HEALTH = 100;
-const DEFAULT_PLAYER_ATTACK_DAMAGE = 10;
-const DEFAULT_PLAYER_MAGIC_DAMAGE = 10;
-const DEFAULT_PLAYER_ARMOR = 10;
-const DEFAULT_PLAYER_ACTIONS = [
-	action_move_up,
-	action_move_right,
-	action_move_down,
-	action_move_left,
-	action_ability_primary,
-	action_ability_secondary,
-	action_ability_special
-]
-
-const DEFAULT_ENEMY_SIZE = 1;
-const DEFAULT_ENEMY_HEALTH = 50;
-const DEFAULT_ENEMY_ATTACK_DAMAGE = 10;
-const DEFAULT_ENEMY_MAGIC_DAMAGE = 10;
-const DEFAULT_ENEMY_ARMOR = 10;
-const DEFAULT_ENEMY_ACTIONS = [
-	action_move_up,
-	action_move_right,
-	action_move_down,
-	action_move_left
-]
 
 //vision
 const CENTER_SQUARE = 0, TOP_LEFT = 1, BOTTOM_RIGHT = 2, UPPER_BOUND = 3, LOWER_BOUND = 4;
@@ -174,11 +146,11 @@ const event_new_game = 0,
 	event_reset_game = 1,
 	event_window_resized = 2,
 
-	event_player_generated = 3,
-	event_down_level = 4,
-	event_up_level = 5,
+	event_level_generated = 3,
+	event_player_generated = 4,
+	event_down_level = 5,
 	event_new_level = 6,
-	event_level_loaded = 7,
+	event_new_player = 7,
 	event_entities_loaded = 8,
 	event_begin_level = 9,
 
@@ -210,7 +182,61 @@ const event_new_game = 0,
 
 	event_title_screen = 999,
 	event_game_over = 1000
+;
 
+const event_to_string = [];
+	event_to_string[0]= "event_new_game";
+	event_to_string[1]= "event_reset_game";
+	event_to_string[2]= "event_window_resized";
+	event_to_string[3]= "event_level_generated";
+	event_to_string[4]= "event_player_generated";
+	event_to_string[5]= "event_down_level";
+	event_to_string[6]= "event_new_level";
+	event_to_string[8]= "event_entities_loaded";
+	event_to_string[9]= "event_begin_level";
+	event_to_string[10]= "event_player_moved";
+	event_to_string[11]= "event_entity_moved";
+	event_to_string[12]= "event_player_start_sprinting";
+	event_to_string[13]= "event_player_stop_sprinting";
+	event_to_string[14]= "event_open_door";
+	event_to_string[20]= "event_successful_action";
+	event_to_string[21]= "event_failed_action";
+	event_to_string[30]= "event_new_animation";
+	event_to_string[31]= "event_hitstun";
+	event_to_string[40]= "event_begin_combat";
+	event_to_string[41]= "event_end_combat";
+	event_to_string[42]= "event_melee_ability";
+	event_to_string[43]= "event_aoe_ability";
+	event_to_string[44]= "event_aoe_ranged_ability";
+	event_to_string[45]= "event_skillshot_ability";
+	event_to_string[46]= "event_smite_ability";
+	event_to_string[50]= "event_entity_spawned";
+	event_to_string[51]= "event_spawn_enemy_close";
+	event_to_string[60]= "event_entity_take_damage";
+	event_to_string[61]= "event_player_take_damage";
+	event_to_string[999]= "event_title_screen";
+	event_to_string[1000]= "event_game_over"
+
+
+
+
+// Actions
+const action_none = 0,
+
+	action_move = 10,
+	action_move_up = 11,
+	action_move_right = 12,
+	action_move_down = 13,
+	action_move_left = 14,
+
+	action_ability_primary = 20,
+	action_ability_secondary = 21,
+	action_ability_special = 22
+
+	// action_ability_one = 20,
+	// action_ability_two = 21,
+	// action_ability_three = 22
+;
 
 // Entity constants
 const class_warrior = 0,
@@ -218,6 +244,52 @@ const class_warrior = 0,
 	class_rogue = 2,
 	entity_skeleton = 3,
 	boss_blob = 4 ;
+
+// Entity defaults
+// PLAYER
+const DEFAULT_PLAYER_SIZE = 1;
+const DEFAULT_PLAYER_HEALTH = 100;
+const DEFAULT_PLAYER_ATTACK_DAMAGE = 10;
+const DEFAULT_PLAYER_MAGIC_DAMAGE = 10;
+const DEFAULT_PLAYER_ARMOR = 10;
+const DEFAULT_PLAYER_ACTIONS = [
+	action_move_up,
+	action_move_right,
+	action_move_down,
+	action_move_left,
+	action_ability_primary,
+	action_ability_secondary,
+	action_ability_special
+];
+
+const DEFAULT_CONTROLLER_LAYOUT = {}
+DEFAULT_CONTROLLER_LAYOUT[87] = action_move_up;  		//w
+DEFAULT_CONTROLLER_LAYOUT[68] = action_move_right;  	//d
+DEFAULT_CONTROLLER_LAYOUT[83] = action_move_down; 		//s
+DEFAULT_CONTROLLER_LAYOUT[65] = action_move_left; 		//a
+DEFAULT_CONTROLLER_LAYOUT
+DEFAULT_CONTROLLER_LAYOUT[38] = action_move_up;
+DEFAULT_CONTROLLER_LAYOUT[39] = action_move_right
+DEFAULT_CONTROLLER_LAYOUT[40] = action_move_down;
+DEFAULT_CONTROLLER_LAYOUT[37] = action_move_left;
+DEFAULT_CONTROLLER_LAYOUT
+DEFAULT_CONTROLLER_LAYOUT[49] = action_ability_primary;    	//1
+DEFAULT_CONTROLLER_LAYOUT[50] = action_ability_secondary;   //2
+DEFAULT_CONTROLLER_LAYOUT[51] = action_ability_special; 	//3
+
+//ENEMY
+const DEFAULT_ENEMY_SIZE = 1;
+const DEFAULT_ENEMY_HEALTH = 50;
+const DEFAULT_ENEMY_ATTACK_DAMAGE = 10;
+const DEFAULT_ENEMY_MAGIC_DAMAGE = 10;
+const DEFAULT_ENEMY_ARMOR = 10;
+const DEFAULT_ENEMY_ACTIONS = [
+	action_move_up,
+	action_move_right,
+	action_move_down,
+	action_move_left
+]
+
 
 const entity_string_to_constant = [];
 entity_string_to_constant['warrior'] = class_warrior;
@@ -244,46 +316,38 @@ animation_strings_to_constants['animation_move_right'] = animation_move_right;
 animation_strings_to_constants['animation_move_down'] = animation_move_down;
 animation_strings_to_constants['animation_move_left'] = animation_move_left;
 
-// Actions
-const action_none = 0,
 
-	action_move = 10,
-	action_move_up = 11,
-	action_move_right = 12,
-	action_move_down = 13,
-	action_move_left = 14,
+// const action_string_to_constant = [];
+// action_string_to_constant['action_none'] = action_none;
 
-	action_ability_one = 20,
-	action_ability_two = 21,
-	action_ability_three = 22
-;
+// action_string_to_constant['action_move_up'] = action_move_up;
+// action_string_to_constant['action_move_right'] = action_move_right;
+// action_string_to_constant['action_move_down'] = action_move_down;
+// action_string_to_constant['action_move_left'] = action_move_left;
 
-const action_string_to_constant = [];
-action_string_to_constant['action_none'] = action_none;
-
-action_string_to_constant['action_move_up'] = action_move_up;
-action_string_to_constant['action_move_right'] = action_move_right;
-action_string_to_constant['action_move_down'] = action_move_down;
-action_string_to_constant['action_move_left'] = action_move_left;
-
-action_string_to_constant['action_ability_one'] = action_ability_one;
-action_string_to_constant['action_ability_two'] = action_ability_two;
-action_string_to_constant['action_ability_three'] = action_ability_three;
+// action_string_to_constant['action_ability_one'] = action_ability_one;
+// action_string_to_constant['action_ability_two'] = action_ability_two;
+// action_string_to_constant['action_ability_three'] = action_ability_three;
 
 const keyCode_to_action = [];
 keyCode_to_action[87] = action_move_up;  		//w
 keyCode_to_action[68] = action_move_right;  	//d
 keyCode_to_action[83] = action_move_down; 		//s
 keyCode_to_action[65] = action_move_left; 		//a
-
-keyCode_to_action[49] = action_ability_one;    	//1
-keyCode_to_action[50] = action_ability_two;    	//2
-keyCode_to_action[51] = action_ability_three; 	//3
-
+//arrows
 keyCode_to_action[38] = action_move_up;
 keyCode_to_action[39] = action_move_right
 keyCode_to_action[40] = action_move_down;
 keyCode_to_action[37] = action_move_left;
+
+keyCode_to_action[49] = action_ability_primary;    	//1
+keyCode_to_action[50] = action_ability_secondary;   //2
+keyCode_to_action[51] = action_ability_special; 	//3
+
+// keyCode_to_action[49] = action_ability_one;    	//1
+// keyCode_to_action[50] = action_ability_two;    	//2
+// keyCode_to_action[51] = action_ability_three; 	//3
+
 
 const action_to_priority = [];
 action_to_priority[action_none] = 0;
@@ -293,9 +357,12 @@ action_to_priority[action_move_left] = 3;
 action_to_priority[action_move_down] = 3;
 action_to_priority[action_move_right] = 3;
 
-action_to_priority[action_ability_one] = 4;
-action_to_priority[action_ability_two] = 4;
-action_to_priority[action_ability_three] = 4;
+action_to_priority[action_ability_primary] = 4;
+action_to_priority[action_ability_secondary] = 4;
+action_to_priority[action_ability_special] = 4;
+// action_to_priority[action_ability_one] = 4;
+// action_to_priority[action_ability_two] = 4;
+// action_to_priority[action_ability_three] = 4;
 
 const action_to_direction = [];
 action_to_direction[action_move_up] = direction_up;

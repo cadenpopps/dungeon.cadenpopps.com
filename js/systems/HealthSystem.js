@@ -41,18 +41,6 @@ class HealthSystem extends GameSystem {
 		}
 	}
 
-	static getHealthPercent(entity){
-		return entity.health.health / entity.health.maxHealth;
-	}
-
-	static getCurrentHeartAmount(entity){
-		return floor(entity.health.health / 10);
-	}
-
-	static getMaxHeartAmount(entity){
-		return floor(entity.health.maxHealth / 10);
-	}
-
 	applyDamage(engine, object, healthLost) {
 		object.health.health -= healthLost;
 		this.checkDead(engine, object);

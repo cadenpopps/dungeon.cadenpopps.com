@@ -6,7 +6,7 @@ class AISystem extends GameSystem {
 	}
 
 	run(engine) {
-		for(let entity of this.objects) {
+		for(let entity of this.entities) {
 			if(Utility.distance(entity.position, engine.getPlayer().position) < entity_active_range) {
 				if(entity.ai.noticedPlayer) {
 					this.handleActiveEntity(engine, entity, engine.getPlayer());
@@ -40,10 +40,6 @@ class AISystem extends GameSystem {
 				}
 				break;
 		}
-	}
-
-	addObject(object) {
-		super.addObject(object);
 	}
 
 	handleActiveEntity(engine, entity, player) {

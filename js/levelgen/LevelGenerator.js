@@ -25,7 +25,11 @@ function generateLevel(CONFIG, depth, ROOM_POOL, STAIR_ROOM_POOL) {
 
 		// console.log("Milliseconds: " + (millis() - startTime));
 
-		return new Level(level, rooms, stairUp, stairDown, depth, torches);
+		return {
+			"level_origin": stairUp,
+			"squares": level
+		};
+			// level, rooms, stairUp, stairDown, depth, torches);
 	}
 	else {
 		let level = initLevel(CONFIG.DUNGEON_SIZE, square_floor);
@@ -356,8 +360,8 @@ function populateRooms(level, rooms, torches) {
 
 
 function finalizeLevel(level, stairUp, stairDown) {
-	level[stairUp.x][stairUp.y] = square_stair_up;
-	level[stairDown.x][stairDown.y] = square_stair_down;
+	level[stairUp.x][stairUp.y] = square_level_origin;
+	level[stairDown.x][stairDown.y] = square_stair;
 
 	for(let i = 0; i < level.length; i++) {
 		for(let j = 0; j < level.length; j++) {
@@ -369,62 +373,63 @@ function finalizeLevel(level, stairUp, stairDown) {
 					level[i][j] = square_wall;
 				}
 			}
-			switch(level[i][j]) {
-				case square_floor:
-					level[i][j] = new FloorSquare(i, j);
-					break;
-				case square_wall:
-					level[i][j] = new WallSquare(i, j);
-					break;
-				case square_door:
-					level[i][j] = new DoorSquare(i, j);
-					break;
-				case square_stair_up:
-					level[i][j] = new StairUpSquare(i, j);
-					break;
-				case square_stair_down:
-					level[i][j] = new StairDownSquare(i, j);
-					break;
-				case square_loot:
-					level[i][j] = new FloorSquare(i, j);
-					break;
-				default:
-					console.log('Not recognized squaretype: ' + level[i][j]);
-					level[i][j] = new Square(i, j, level[i][j]);
-					break;
-			}
+			level[i][j] = SquareTemplate(i, j, level[i][j]);
+			// switch(level[i][j]) {
+			// 	case square_floor:
+			// 		level[i][j] = SquareTemplate(i, j, square_floor);
+			// 		break;
+			// 	case square_wall:
+			// 		level[i][j] = SquareTemplate(i, j, square_floor);
+			// 		break;
+			// 	case square_door:
+			// 		level[i][j] = SquareTemplate(i, j, square_floor);
+			// 		break;
+			// 	case square_stair_up:
+			// 		level[i][j] = SquareTemplate(i, j, square_floor);
+			// 		break;
+			// 	case square_stair_down:
+			// 		level[i][j] = SquareTemplate(i, j, square_floor);
+			// 		break;
+			// 	case square_loot:
+			// 		level[i][j] = SquareTemplate(i, j, square_floor);
+			// 		break;
+			// 	default:
+			// 		console.log('Not recognized squaretype: ' + level[i][j]);
+			// 		level[i][j] = SquareTemplate(i, j, square_floor);
+			// 		break;
+			// }
 		}
 	}
 
 
-	let blanks = [];
+	// let blanks = [];
 
-	for(let i = 1; i < level.length - 1; i++) {
-		for(let j = 1; j < level.length - 1; j++) {
-			if(level[i][j] instanceof WallSquare && !(level[i - 1][j - 1] instanceof FloorSquare || level[i][j - 1] instanceof FloorSquare || level[i + 1][j - 1] instanceof FloorSquare || level[i - 1][j] instanceof FloorSquare || level[i + 1][j] instanceof FloorSquare || level[i - 1][j + 1] instanceof FloorSquare || level[i][j + 1] instanceof FloorSquare || level[i + 1][j + 1] instanceof FloorSquare)){
-				blanks.push(level[i][j]);
-			}
-		}
-	}
+	// for(let i = 1; i < level.length - 1; i++) {
+	// 	for(let j = 1; j < level.length - 1; j++) {
+	// 		if(level[i][j] instanceof WallSquare && !(level[i - 1][j - 1] instanceof FloorSquare || level[i][j - 1] instanceof FloorSquare || level[i + 1][j - 1] instanceof FloorSquare || level[i - 1][j] instanceof FloorSquare || level[i + 1][j] instanceof FloorSquare || level[i - 1][j + 1] instanceof FloorSquare || level[i][j + 1] instanceof FloorSquare || level[i + 1][j + 1] instanceof FloorSquare)){
+	// 			blanks.push(level[i][j]);
+	// 		}
+	// 	}
+	// }
 
-	for(let i = 1; i < level.length - 1; i++) {
-		if(!(level[i - 1][1] instanceof FloorSquare || level[i][1] instanceof FloorSquare || level[i + 1][1] instanceof FloorSquare)){
-			blanks.push(level[i][0]);
-		}
-		if(!(level[1][i - 1] instanceof FloorSquare || level[1][i] instanceof FloorSquare || level[1][i + 1] instanceof FloorSquare)){
-			blanks.push(level[0][i]);
-		}
-		if(!(level[i - 1][level.length - 2] instanceof FloorSquare || level[i][level.length - 2] instanceof FloorSquare || level[i + 1][level.length - 2] instanceof FloorSquare)){
-			blanks.push(level[i][level.length - 1]);
-		}
-		if(!(level[level.length - 2][i - 1] instanceof FloorSquare || level[level.length - 2][i] instanceof FloorSquare || level[level.length - 2][i + 1] instanceof FloorSquare)){
-			blanks.push(level[level.length - 1][i]);
-		}
-	}
+	// for(let i = 1; i < level.length - 1; i++) {
+	// 	if(!(level[i - 1][1] instanceof FloorSquare || level[i][1] instanceof FloorSquare || level[i + 1][1] instanceof FloorSquare)){
+	// 		blanks.push(level[i][0]);
+	// 	}
+	// 	if(!(level[1][i - 1] instanceof FloorSquare || level[1][i] instanceof FloorSquare || level[1][i + 1] instanceof FloorSquare)){
+	// 		blanks.push(level[0][i]);
+	// 	}
+	// 	if(!(level[i - 1][level.length - 2] instanceof FloorSquare || level[i][level.length - 2] instanceof FloorSquare || level[i + 1][level.length - 2] instanceof FloorSquare)){
+	// 		blanks.push(level[i][level.length - 1]);
+	// 	}
+	// 	if(!(level[level.length - 2][i - 1] instanceof FloorSquare || level[level.length - 2][i] instanceof FloorSquare || level[level.length - 2][i + 1] instanceof FloorSquare)){
+	// 		blanks.push(level[level.length - 1][i]);
+	// 	}
+	// }
 
-	for(let b of blanks) {
-		level[b.position.x][b.position.y] = new BlankSquare(b.position.x, b.position.y);
-	}
+	// for(let b of blanks) {
+	// 	level[b.position.x][b.position.y] = new BlankSquare(b.position.x, b.position.y);
+	// }
 }
 
 function Node(x, y, connected) {

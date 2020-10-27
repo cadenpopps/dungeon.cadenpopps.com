@@ -8,10 +8,15 @@ class Utility {
 		return !(o1.top >= o2.bottom || o1.right <= o2.left || o1.bottom <= o2.top || o1.left >= o2.right);
 	}
 
-	static checkComponents(object, requirements) {
-		for(var i = 0; i < requirements.length; i++) {
-			if(object.components.indexOf(requirements[i]) === -1)
-				return false;
+
+	//Store entity components in [] ??? or fix prop names?
+	static checkComponents(entityComponents, systemComponents) {
+		if(Object.keys(entityComponents).length > 6) {
+			console.log(Object.keys(entityComponents));
+			console.log(systemComponents);
+		}
+		for(let component of systemComponents) {
+			if(!(component in entityComponents)) return false;
 		}
 		return true;
 	}
@@ -22,6 +27,20 @@ class Utility {
 		}
 		return false;
 	}
+
+	static getHealthPercent(entity){
+		return entity.component_health.health / entity.component_health.maxHealth;
+	}
+
+	static getCurrentHeartAmount(entity){
+		return floor(entity.component_health.health / 10);
+	}
+
+	static getMaxHeartAmount(entity){
+		console.log(entity);
+		return floor(entity.component_health.maxHealth / 10);
+	}
+
 
 	static entityActionSuccessful(entity) {
 		entity.actions.busy = action_length[entity.actions.currentAction];

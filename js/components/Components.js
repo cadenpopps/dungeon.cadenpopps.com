@@ -157,6 +157,6 @@ function AbilityComponent(ability) {
 	this.currentCooldown = 0;
 }
 
-function ControllerComponent() {
-	this.inputs = [];
+function ControllerComponent(controls) {
+	this.inputs = controls
 }

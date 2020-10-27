@@ -8,8 +8,8 @@ function PlayerTemplate(x = 0, y = 0, depth = 0, size = DEFAULT_PLAYER_SIZE, hea
 		component_health: new HealthComponent(health),
 		component_combat: new CombatComponent(attackDamage, magicDamage, armor),
 		component_actions: new ActionsComponent(DEFAULT_PLAYER_ACTIONS),
+		component_controller: new ControllerComponent(DEFAULT_CONTROLLER_LAYOUT),
 		component_abilities: new AbilitiesComponent(abilities),
-		component_controller: new ControllerComponent(DEFAULT_CONTROLLER_LAYOUT)
 		component_animation: new AnimationComponent(animations)
 
 		// component_sprint: new SprintComponent(DEFAULT_SPRIN, config.sprint_speed),
@@ -27,11 +27,11 @@ function EnemyTemplate(x = 0, y = 0, size = DEFAULT_ENEMY_SIZE, direction = rand
 		component_combat: new CombatComponent(attackDamage, magicDamage, armor),
 		component_actions: new ActionsComponent(actions),
 		component_abilities: new AbilitiesComponent(abilities),
-		component_animation: new AnimationComponent(animations),
+		component_animation: new AnimationComponent(animations)
 	}
 }
 
-function Square (x, y, type) {
+function SquareTemplate(x, y, type) {
 	if(type == square_wall) {
 		return {
 			component_position: new PositionComponent(x, y),
@@ -68,21 +68,17 @@ function Square (x, y, type) {
 		return {
 			component_position: new PositionComponent(x, y),
 			component_display: new DisplayComponent(1, 1),
-			component_texture: new TextureComponent(texture_level_origin),
+			component_texture: new TextureComponent(texture_level_origin)
 		}
 	}
 }
 
-function TorchTemplate(x = 0, y = 0, size = DEFAULT_ENEMY_SIZE, direction = randomInt(0, 3), health = DEFAULT_ENEMY_HEALTH, attackDamage = DEFAULT_ENEMY_ATTACK_DAMAGE, magicDamage = DEFAULT_ENEMY_MAGIC_DAMAGE, armor = DEFAULT_ENEMY_ARMOR, actions = DEFAULT_ENEMY_ACTIONS, abilities, animations = -1) {
+function TorchTemplate(x = 0, y = 0, size = 1, direction = randomInt(0, 3)) {
 	return {
 		component_position: new PositionComponent(x, y),
 		component_display: new DisplayComponent(size, size),
-		component_collision: new CollisionComponent(x, y, size, size),
 		component_direction: new DirectionComponent(direction),
-		component_health: new HealthComponent(health),
-		component_combat: new CombatComponent(attackDamage, magicDamage, armor),
-		component_actions: new ActionsComponent(actions),
-		component_abilities: new AbilitiesComponent(abilities),
-		component_animation: new AnimationComponent(animations),
+		component_texture: new TextureComponent(texture_torch)
+		// component_animation: new AnimationComponent(animations),
 	}
 }

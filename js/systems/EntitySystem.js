@@ -11,6 +11,17 @@ class EntitySystem extends GameSystem {
 
 	handleEvent(engine, eventID, data) {
 		switch(eventID) {
+			case event_new_player:
+				this.generatePlayer(engine);
+				break;
+			case event_level_generated:
+				for(let ID in this.entities) {
+					if(component_controller in this.entities[ID]) {
+						this.entities[ID].position.x = data.levelOrigin.x;
+						this.entities[ID].position.y = data.levelOrigin.y;
+					}
+				}
+				break;
 			case event_spawn_enemy_close:
 				this.generateEnemy(engine, engine.getPlayer().position.x - randomInt(-4, 4), engine.getPlayer().position.y - randomInt(2, 4), engine.getDepth(), this.entityData[random(Object.keys(this.entityData))]);
 				break;
@@ -19,10 +30,11 @@ class EntitySystem extends GameSystem {
 
 	generatePlayer(engine) {
 		let playerClass = class_warrior;
-		let config = this.playerData[playerClass]
+		let config = this.playerData[playerClass];
 		let animations = Utility.convertAnimationsFromConfig(config.animations);
-		engine.addObject(new Player(-1, -1, config, playerClass, config.actions, animations));
-		engine.sendEvent(event_player_generated);
+		let player = PlayerTemplate(-1, -1, 0, 1, config.health, config.attackDamage, config.magicDamage, config.armor, config.abilities, animations);
+		engine.createEntity(player);
+		engine.sendEvent(event_player_generated, {}, 1);
 	}
 
 	generateEntities(engine, level, depth) {
@@ -44,7 +56,7 @@ class EntitySystem extends GameSystem {
 		let animations = Utility.convertAnimationsFromConfig(config.animations);
 		if(this.safeSpawnLocation(x, y, config.size, engine.getEntities(), engine.getMap())) {
 			let mob = new Mob(x, y, depth, config, config.actions, animations);
-			engine.addObject(mob);
+			engine.createEntity(mob);
 		}
 	}
 
@@ -96,7 +108,7 @@ class EntitySystem extends GameSystem {
 
 	updateEntities(engine) {
 		// for(let e of this.entities[engine.getDepth()]) {
-		// 	engine.addObject(e);
+		// 	engine.createEntity(e);
 		// }
 		// engine.sendEvent(event_entities_loaded, 0, 1);
 	}

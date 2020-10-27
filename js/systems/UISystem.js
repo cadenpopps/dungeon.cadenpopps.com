@@ -1,7 +1,7 @@
 class UISystem extends GameSystem {
 
 	constructor(config, images) {
-		super([]);
+		super([component_controller]);
 		this.config = config;
 		this.images = images;
 	}
@@ -26,28 +26,29 @@ class UISystem extends GameSystem {
 	}
 
 	run(engine) {
-		this.drawPlayerHealth(this.heartCanvas, engine.getPlayer());
+		this.drawPlayerHealth(this.heartCanvas, this.entities[0]);
 	}
 
 	handleEvent(engine, eventID, data) {
 		switch(eventID) {
 			case event_new_game:
-				this.showLevelChangeScreen(engine);
+				this.showLevelChangeScreen(0);
 				break;
 			case event_title_screen:
 				this.showTitleScreen(engine);
 				break;
 			case event_down_level:
-				this.showLevelChangeScreen(engine);
+				this.showLevelChangeScreen(data.depth);
 				break;
-			case event_up_level:
-				this.showLevelChangeScreen(engine);
-				break;
+			// case event_up_level:
+			// 	this.showLevelChangeScreen(engine);
+			// 	break;
 			case event_begin_level:
 				this.hideLevelChangeScreen(engine);
 				break;
 			case event_player_generated:
-				this.fixHeartCanvasSize(engine.getPlayer());
+				console.log(this.entities);
+				this.fixHeartCanvasSize(Object.keys(this.entities)[0]);
 				break;
 			case event_game_over:
 				this.showGameOverScreen(engine);
@@ -78,8 +79,8 @@ class UISystem extends GameSystem {
 		});
 	}
 
-	showLevelChangeScreen(engine) {
-		this.levelChangeText.innerHTML = 'Entering Level ' + (engine.getDepth() + 1);
+	showLevelChangeScreen(depth) {
+		this.levelChangeText.innerHTML = 'Entering Level ' + (depth + 1);
 		this.fadeScreenIn(this.levelChangeScreen, this.config.LEVEL_CHANGE_FADE_IN_TIME);
 		this.drawHearts = false;
 	}
@@ -140,8 +141,8 @@ class UISystem extends GameSystem {
 	drawPlayerHealth(heartCanvas, player) {
 		if(this.drawHearts) {
 			let x = 0, y = 0;
-			for(let i = 1; i <= HealthSystem.getMaxHeartAmount(player); i++) {
-				if(i <= HealthSystem.getCurrentHeartAmount(player)) {
+			for(let i = 1; i <= Utility.getMaxHeartAmount(player); i++) {
+				if(i <= Utility.getCurrentHeartAmount(player)) {
 					heartCanvas.drawImage(this.images[ui_heart], (x * this.config.HEART_SIZE) + (x * this.config.HEART_SPACING), (y * this.config.HEART_SIZE), this.config.HEART_SIZE, this.config.HEART_SIZE);
 				}
 				else {
@@ -158,7 +159,7 @@ class UISystem extends GameSystem {
 
 	fixHeartCanvasSize(player) {
 		let heartCanvas = document.getElementById('heartCanvas');
-		let heartAmount = HealthSystem.getMaxHeartAmount(player);
+		let heartAmount = Utility.getMaxHeartAmount(player);
 		let w = (this.config.HEART_SPACING + this.config.HEART_SIZE) * this.config.HEARTS_PER_ROW;
 		let h = (this.config.HEART_SPACING + this.config.HEART_SIZE) * ceil(heartAmount / this.config.HEARTS_PER_ROW);
 		heartCanvas.width = w;

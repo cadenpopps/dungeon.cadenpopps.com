@@ -11,21 +11,21 @@ class LevelSystem extends GameSystem {
 
 	handleEvent(engine, eventID, data) {
 		switch(eventID) {
-			// case event_entities_loaded:
-			// 	if(LOADING_SCREEN) {
-			// 		engine.sendEvent(event_begin_level, this.levels[engine.getDepth()], 60);
-			// 	}
-			// 	else {
-			// 		engine.sendEvent(event_begin_level, this.levels[engine.getDepth()], 1);
-			// 	}
-			// 	break;
+			case event_new_level:
+				let levelOrigin = this.generateLevel(engine, data.depth);
+				engine.sendEvent(event_level_generated, {levelOrigin: levelOrigin}, 1);
+				break;
 		}
 	}
 
 	generateLevel(engine, depth) {
 		let level = generateLevel(this.config, depth, this.roomPool, this.stairRoomPool);
-		engine.addObject(level);
-		return level;
+		for(let row of level.squares) {
+			for(let square of row) {
+				engine.createEntity(square);
+			}
+		}
+		return level.level_origin;
 	}
 
 }

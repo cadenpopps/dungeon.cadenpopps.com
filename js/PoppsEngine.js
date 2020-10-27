@@ -10,40 +10,40 @@ class PoppsEngine {
 		const images = data.images.textures;
 		const ui = data.images.ui;
 
-		const player_data = data.player_data;
-		const entity_data = data.entity_data;
-		const boss_data = data.boss_data;
+		const player_config = data.player_config;
+		const enemy_config = data.enemy_config;
+		const boss_config = data.boss_config;
 
 		this.systems = [];
-		this.InputSystem = new InputSystem();
-		this.DisplaySystem = new DisplaySystem(config.display, images);
-		this.VisionSystem = new VisionSystem(config.vision);
-		this.LightSystem = new LightSystem(config.light);
-		this.ActionSystem = new ActionSystem();
-		this.MovementSystem = new MovementSystem();
+		// this.InputSystem = new InputSystem();
+		// this.DisplaySystem = new DisplaySystem(config.display, images);
+		// this.VisionSystem = new VisionSystem(config.vision);
+		// this.LightSystem = new LightSystem(config.light);
+		// this.ActionSystem = new ActionSystem();
+		// this.MovementSystem = new MovementSystem();
 		this.LevelSystem = new LevelSystem(config.level, room_pool, stair_room_pool);
-		this.EntitySystem = new EntitySystem(config.entities, player_data, entity_data, boss_data);
-		this.AnimationSystem = new AnimationSystem(config.animation);
-		this.CombatSystem = new CombatSystem(config.combat);
-		this.HealthSystem = new HealthSystem(config.health);
-		this.AISystem = new AISystem(config.ai);
-		this.AbilitySystem = new AbilitySystem(config.abilities);
-		this.SprintSystem = new SprintSystem(config.sprint);
+		this.EntitySystem = new EntitySystem(config.entities, player_config, enemy_config, boss_config);
+		// this.AnimationSystem = new AnimationSystem(config.animation);
+		// this.CombatSystem = new CombatSystem(config.combat);
+		// this.HealthSystem = new HealthSystem(config.health);
+		// this.AISystem = new AISystem(config.ai);
+		// this.AbilitySystem = new AbilitySystem(config.abilities);
+		// this.SprintSystem = new SprintSystem(config.sprint);
 
-		this.systems.push(this.InputSystem);
-		this.systems.push(this.DisplaySystem);
-		this.systems.push(this.VisionSystem);
-		this.systems.push(this.LightSystem);
-		this.systems.push(this.ActionSystem);
-		this.systems.push(this.MovementSystem);
+		// this.systems.push(this.InputSystem);
+		// this.systems.push(this.DisplaySystem);
+		// this.systems.push(this.VisionSystem);
+		// this.systems.push(this.LightSystem);
+		// this.systems.push(this.ActionSystem);
+		// this.systems.push(this.MovementSystem);
 		this.systems.push(this.LevelSystem);
 		this.systems.push(this.EntitySystem);
-		this.systems.push(this.AnimationSystem);
-		this.systems.push(this.CombatSystem);
-		this.systems.push(this.HealthSystem);
-		this.systems.push(this.AISystem);
-		this.systems.push(this.SprintSystem);
-		this.systems.push(this.AbilitySystem);
+		// this.systems.push(this.AnimationSystem);
+		// this.systems.push(this.CombatSystem);
+		// this.systems.push(this.HealthSystem);
+		// this.systems.push(this.AISystem);
+		// this.systems.push(this.SprintSystem);
+		// this.systems.push(this.AbilitySystem);
 
 		this.UISystem = new UISystem(config.ui, data.images.ui);
 		this.systems.push(this.UISystem);
@@ -66,7 +66,7 @@ class PoppsEngine {
 		this.events = [];
 		this.depth = 0;
 
-		this.UIOnly = true;
+		this.UIOnly = false;
 		this.FOCUSED = true;
 
 		for(let system of this.systems) {
@@ -130,9 +130,7 @@ class PoppsEngine {
 	}
 
 	runEvent(e) {
-		if(DEBUG_MODE) {
-			this.printEvent(e);
-		}
+		Utility.debugLog(event_to_string[e[0]]);
 		this.handleEvent(e[0], e[1]);
 		for(let s of this.systems) {
 			s.handleEvent(this, e[0], e[1]);
@@ -142,15 +140,19 @@ class PoppsEngine {
 	handleEvent(event, data) {
 		switch(event) {
 			case event_new_game:
-				this.Dungeon.entities.push([]);
-				this.EntitySystem.generatePlayer(this);
-				this.LevelSystem.generateLevel(this, this.Dungeon.depth);
-				this.EntitySystem.generateEntities(this, this.Dungeon.levels[this.Dungeon.depth], this.Dungeon.depth);
-				this.LightSystem.generateTorches(this, this.Dungeon.levels[this.Dungeon.depth].map.map, this.Dungeon.levels[this.Dungeon.depth].rooms);
-				this.clearObjects();
-				this.loadObjects(this.Dungeon.depth);
-				this.sendEvent(event_begin_level, this.Dungeon.levels[this.Dungeon.depth], LOADING_SCREEN_TIME);
-				this.resume();
+				this.clearEntities();
+				this.sendEvent(event_new_level, {depth: this.depth});
+				this.sendEvent(event_new_player);
+				// this.sendEvent(generate_new_level, this.Dungeon.levels[this.depth]);
+				// this.EntitySystem.generatePlayer(this);
+				// this.LevelSystem.generateLevel(this, this.depth);
+				// this.EntitySystem.generateEntities(this, this.Dungeon.levels[this.depth], this.depth);
+				// this.LightSystem.generateTorches(this, this.Dungeon.levels[this.depth].map.map, this.Dungeon.levels[this.depth].rooms);
+				// this.loadEntities(this.depth);
+				// this.sendEvent(event_begin_level, this.Dungeon.levels[this.depth], LOADING_SCREEN_TIME);
+				break;
+			case event_level_generated:
+				this.sendEvent(event_begin_level, {depth: this.depth}, LOADING_SCREEN_TIME);
 				break;
 			case event_reset_game:
 				this.init();
@@ -159,25 +161,23 @@ class PoppsEngine {
 				this.pause();
 				break;
 			case event_down_level:
-				this.Dungeon.depth++;
-				if(this.Dungeon.depth == this.Dungeon.levels.length) {
+				this.depth++;
+				if(this.depth == this.Dungeon.levels.length) {
 					this.Dungeon.entities.push([]);
-					this.LevelSystem.generateLevel(this, this.Dungeon.depth);
-					this.EntitySystem.generateEntities(this, this.Dungeon.levels[this.Dungeon.depth], this.Dungeon.depth);
-					this.LightSystem.generateTorches(this, this.Dungeon.levels[this.Dungeon.depth].map.map, this.Dungeon.levels[this.Dungeon.depth].rooms);
+					this.LevelSystem.generateLevel(this, this.depth);
+					this.EntitySystem.generateEntities(this, this.Dungeon.levels[this.depth], this.depth);
+					this.LightSystem.generateTorches(this, this.Dungeon.levels[this.depth].map.map, this.Dungeon.levels[this.depth].rooms);
 				}
-				this.clearObjects();
-				this.loadObjects(this.Dungeon.depth);
-				this.sendEvent(event_begin_level, this.Dungeon.levels[this.Dungeon.depth], LOADING_SCREEN_TIME);
+				this.clearEntities();
+				// this.loadEntities(this.depth);
+				this.sendEvent(event_begin_level, this.Dungeon.levels[this.depth], LOADING_SCREEN_TIME);
 				break;
-			case event_up_level:
-				this.Dungeon.depth--;
-				this.clearObjects();
-				this.loadObjects(this.Dungeon.depth);
-				this.sendEvent(event_begin_level, this.Dungeon.levels[this.Dungeon.depth], LOADING_SCREEN_TIME);
-				break;
-			case event_new_level:
-				break;
+			// case event_up_level:
+			// 	this.depth--;
+			// 	this.clearEntities();
+			// 	// this.loadEntities(this.depth);
+			// 	this.sendEvent(event_begin_level, this.Dungeon.levels[this.depth], LOADING_SCREEN_TIME);
+			// 	break;
 		}
 	}
 
@@ -195,7 +195,7 @@ class PoppsEngine {
 
 	addEntity(entity) {
 
-		this.entities[entity.ID] = entity;
+		this.entities[entity.ID] = entity.components;
 
 		for(let s of this.systems) {
 			s.addEntity(entity);
@@ -205,43 +205,43 @@ class PoppsEngine {
 		// 	this.Dungeon.player = object;
 		// }
 		// if(object instanceof Level) {
-		// 	this.Dungeon.levels[this.Dungeon.depth] = object;
-		// 	for (let i = 0; i < this.Dungeon.levels[this.Dungeon.depth].map.map.length; i++) {
-		// 		for (let j = 0; j < this.Dungeon.levels[this.Dungeon.depth].map.map.length; j++) {
-		// 			this.addObject(this.Dungeon.levels[this.Dungeon.depth].map.map[i][j]);
+		// 	this.Dungeon.levels[this.depth] = object;
+		// 	for (let i = 0; i < this.Dungeon.levels[this.depth].map.map.length; i++) {
+		// 		for (let j = 0; j < this.Dungeon.levels[this.depth].map.map.length; j++) {
+		// 			this.addObject(this.Dungeon.levels[this.depth].map.map[i][j]);
 		// 		}
 		// 	}
 		// }
 		// if(object instanceof Entity) {
-		// 	if(!this.Dungeon.entities[this.Dungeon.depth].includes(object)) {
-		// 		this.Dungeon.entities[this.Dungeon.depth].push(object);
+		// 	if(!this.Dungeon.entities[this.depth].includes(object)) {
+		// 		this.Dungeon.entities[this.depth].push(object);
 		// 	}
 		// }
 	}
 
-	destroyEntity(entity) {
-		if(entity.ID in this.entities) {
-			delete this.entities[entity.ID];
-		}
+	// destroyEntity(entity) {
+	// 	if(entity.ID in this.entities) {
+	// 		delete this.entities[entity.ID];
+	// 	}
 
-		for(let s of this.systems) {
-			s.destroyEntity(entity);
-		}
-	}
+	// 	for(let s of this.systems) {
+	// 		s.destroyEntity(entity);
+	// 	}
+	// }
 
-	destroyEntityByID(ID) {
+	destroyEntity(ID) {
 		if(ID in this.entities) {
 			delete this.entities[ID];
 		}
 		for(let s of this.systems) {
-			s.destroyEntityByID(ID);
+			s.destroyEntity(ID);
 		}
 	}
 
 	clearEntities() {
-		for(let entityID in this.entities) {
-			if(!Utility.entityHasDepth(this.entities[entityID])) {
-				this.destroyEntityByID(entityID);
+		for(let ID in this.entities) {
+			if(!Utility.entityHasDepth(this.entities[ID])) {
+				this.destroyEntity(ID);
 			}
 		}
 	}
@@ -284,11 +284,11 @@ class PoppsEngine {
 		this.sendEvent(event_level_loaded, this.depth);
 	}
 
-	printEvent(e) {
-		for(key in window) {
-			if(e[0] == window[key] && key.includes('event_')) {
-				console.log(key);
-			}
-		}
-	}
+	// printEvent(e) {
+	// 	for(key in window) {
+	// 		if(e[0] == window[key] && key.includes('event_')) {
+	// 			Utility.debugLog(key);
+	// 		}
+	// 	}
+	// }
 }
