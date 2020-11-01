@@ -11,8 +11,8 @@ class Utility {
 
 	//Store entity components in [] ??? or fix prop names?
 	static checkComponents(entityComponents, systemComponents) {
-		if(Object.keys(entityComponents).length > 6) {
-			console.log(Object.keys(entityComponents));
+		if(entityComponents.length > 6) {
+			console.log(entityComponents);
 			console.log(systemComponents);
 		}
 		for(let component of systemComponents) {
