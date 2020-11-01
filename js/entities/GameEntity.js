@@ -1,7 +1,7 @@
 function GameEntity(ID, components) {
 	this.ID = ID;
 	// console.log("ID: " + ID + "\tComponents: " + components);
-	this.components = {}
+	this.components = [];
 	for(let componentID in components) {
 		this.components[componentID] = components[componentID];
 	}

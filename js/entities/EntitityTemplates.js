@@ -1,5 +1,5 @@
 function PlayerTemplate(x = 0, y = 0, depth = 0, size = DEFAULT_PLAYER_SIZE, health = DEFAULT_PLAYER_HEALTH, attackDamage = DEFAULT_PLAYER_ATTACK_DAMAGE, magicDamage = DEFAULT_PLAYER_MAGIC_DAMAGE, armor = DEFAULT_PLAYER_ARMOR, abilities, animations = -1) {
-	return {
+	return [
 		component_position: new PositionComponent(x, y),
 		component_depth: new DepthComponent(depth),
 		component_display: new DisplayComponent(size, size),
@@ -14,7 +14,7 @@ function PlayerTemplate(x = 0, y = 0, depth = 0, size = DEFAULT_PLAYER_SIZE, hea
 
 		// component_sprint: new SprintComponent(DEFAULT_SPRIN, config.sprint_speed),
 		// component_lightEmitter: new LightEmitterComponent(light_level_player),
-	}
+	]
 }
 
 function EnemyTemplate(x = 0, y = 0, size = DEFAULT_ENEMY_SIZE, direction = randomInt(0, 3), health = DEFAULT_ENEMY_HEALTH, attackDamage = DEFAULT_ENEMY_ATTACK_DAMAGE, magicDamage = DEFAULT_ENEMY_MAGIC_DAMAGE, armor = DEFAULT_ENEMY_ARMOR, actions = DEFAULT_ENEMY_ACTIONS, abilities, animations = -1) {
