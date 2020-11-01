@@ -48,7 +48,7 @@ class UISystem extends GameSystem {
 				break;
 			case event_player_generated:
 				console.log(this.entities);
-				this.fixHeartCanvasSize(Object.keys(this.entities)[0]);
+				this.fixHeartCanvasSize(this.entities[Object.keys(this.entities)[0]]);
 				break;
 			case event_game_over:
 				this.showGameOverScreen(engine);
