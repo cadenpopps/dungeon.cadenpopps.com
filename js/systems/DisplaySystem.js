@@ -87,15 +87,14 @@ class DisplaySystem extends GameSystem {
 				break;
 			case event_camera_ready:
 				this.canvas.ready = true;
-				this.canvas.centerX = this.centerX + (data.camera.x * this.gridSize);
-				this.canvas.centerY = this.centerY + (data.camera.y * this.gridSize);
-				this.zoom = data.camera.zoom;
-				console.log(this.canvas);
+				this.canvas.zoom = data.camera.zoom;
+				this.canvas.centerX = this.canvas.zoom * (data.camera.x * this.gridSize);
+				this.canvas.centerY = this.canvas.zoom * (data.camera.y * this.gridSize);
 				break;
 			case event_camera_moved:
-				this.canvas.centerX = this.centerX + (data.camera.x * this.gridSize);
-				this.canvas.centerY = this.centerY + (data.camera.y * this.gridSize);
-				this.zoom = data.camera.zoom;
+				this.canvas.zoom = data.camera.zoom;
+				this.canvas.centerX = this.canvas.zoom * (data.camera.x * this.gridSize);
+				this.canvas.centerY = this.canvas.zoom * (data.camera.y * this.gridSize);
 				break;
 			case event_down_level:
 				this.camera.display = false;
@@ -137,11 +136,10 @@ class DisplaySystem extends GameSystem {
 
 	getDrawBounds(entity) {
 		let bounds = {};
-		bounds.x = this.canvas.centerX - (this.gridSize * (entity[component_position].x + entity[component_display].offsetX));
-		bounds.y = this.canvas.centerY - (this.gridSize * (entity[component_position].y + entity[component_display].offsetY));
+		bounds.x = (this.gridSize * (entity[component_position].x + entity[component_display].offsetX)) - this.canvas.centerX;
+		bounds.y = (this.gridSize * (entity[component_position].y + entity[component_display].offsetY)) - this.canvas.centerY;
 		bounds.w = entity[component_display].width * this.gridSize;
 		bounds.h = entity[component_display].height * this.gridSize;
-		console.log(bounds);
 		return bounds;
 	}
 
