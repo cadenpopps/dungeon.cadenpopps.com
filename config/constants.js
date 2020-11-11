@@ -192,6 +192,7 @@ const event_to_string = [];
 	event_to_string[4]= "event_player_generated";
 	event_to_string[5]= "event_down_level";
 	event_to_string[6]= "event_new_level";
+	event_to_string[7]= "event_new_player";
 	event_to_string[8]= "event_entities_loaded";
 	event_to_string[9]= "event_begin_level";
 	event_to_string[10]= "event_player_moved";

@@ -1,5 +1,5 @@
 
-Attacks -
+Attacks
 	Template -
 		Ability 1 - Low cooldown, low damage, low commitment and cost
 		Ability 2 - Defensive option - heal, shield, crowd control
@@ -12,71 +12,49 @@ Attacks -
 		Fireball - Shoots a fireball in a straight line towards the nearest enemy (medium range)
 		Lifesteal - Player sets a zone which steals enemy HP and refills player's
 			Could be OP so zone needs to be small also need spellcasting UI/controls
-		Electric death - 
+		Electric death -
 
+Systems
+	TextureSystem
+		Runs after level generation, or after a system changes the level (interactable)
+		Determines the static (or animated) texture of each square, and connects it to surrounding squares
+	CameraSystem
+		Controls camera position, zoom, acceleration/velocity, shaking, and other camera features
+	ControllerSystem
+	InventorySystem
+	ItemSystem
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-ai - different levels of pathfinding (naive, adequate, advanced)
-	display - level up screen, better health
-	general - levels, inventory, loot, textures, direction/position dependent textures
-
-	Ideas -
-	Stealth
-	Boss room
+Ideas
+	Mechanics
+		Stealth
 	Player
-	Inventory
-	Combat
-	Stats
-	Progression
-	Level
-	More Square types
-	Liquid
-	Bookshelf
-	traps
-	hole
-	etc
-	More Rooms
-Top level (overworld)
+		Inventory
+		Stats
+		XP/Progression
+	Enemies
+		different levels of pathfinding (naive, adequate, advanced)
+	World
+		Boss room
+		More Square types
+		Liquid
+		Bookshelf
+		traps
+		hole
+		More Rooms
+		Top level (overworld)
 	Engine
-	Visual
-	More animation support
-	Audio
-	Sounds
-	Music
-	Gameplay
-	Mobs
-Custom mobs (from JSON)
-	Stats
-	Combat
-	Traps
-	NPC
+		More animation support
+		Sound effects
+			Walking
+			Taking damage
+			Door open/close
+			Chest open/close
+			Mob sounds
+			Water/Drip
+			Sword
+			Magic
+		Music
+			Main theme
+			Combat
+			Level up/end of level
 
-	Needs Improvement -
-Level gen (maze + sparse + detours)
-
-	Sounds
-	Music
-	Main theme
-	Effects
-	Water sound
-	Hurt sound
-	Door
-	Walking
-	Sword
-	Magic
-	Chest
-	New floor
-	Mob sounds
-	Drip sound

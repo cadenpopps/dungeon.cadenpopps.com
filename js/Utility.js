@@ -8,17 +8,15 @@ class Utility {
 		return !(o1.top >= o2.bottom || o1.right <= o2.left || o1.bottom <= o2.top || o1.left >= o2.right);
 	}
 
-
-	//Store entity components in [] ??? or fix prop names?
 	static checkComponents(entityComponents, systemComponents) {
-		if(entityComponents.length > 6) {
-			console.log(entityComponents);
-			console.log(systemComponents);
-		}
 		for(let component of systemComponents) {
 			if(!(component in entityComponents)) return false;
 		}
 		return true;
+	}
+
+	static entityHasComponent(entity, component) {
+		return component in entity;
 	}
 
 	static entityHasDepth(entity) {
@@ -28,17 +26,16 @@ class Utility {
 		return false;
 	}
 
-	static getHealthPercent(entity){
-		return entity.component_health.health / entity.component_health.maxHealth;
+	static getHealthPercent(entity) {
+		return entity[component_health].currentHealth / entity[component_health].maxHealth;
 	}
 
 	static getCurrentHeartAmount(entity){
-		return floor(entity.component_health.health / 10);
+		return floor(entity[component_health].currentHealth / 10);
 	}
 
 	static getMaxHeartAmount(entity){
-		console.log(entity);
-		return floor(entity.component_health.maxHealth / 10);
+		return floor(entity[component_health].maxHealth / 10);
 	}
 
 

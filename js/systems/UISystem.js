@@ -26,7 +26,7 @@ class UISystem extends GameSystem {
 	}
 
 	run(engine) {
-		this.drawPlayerHealth(this.heartCanvas, this.entities[0]);
+		this.drawPlayerHealth(this.heartCanvas, this.entities[Object.keys(this.entities)[0]]);
 	}
 
 	handleEvent(engine, eventID, data) {
@@ -40,14 +40,10 @@ class UISystem extends GameSystem {
 			case event_down_level:
 				this.showLevelChangeScreen(data.depth);
 				break;
-			// case event_up_level:
-			// 	this.showLevelChangeScreen(engine);
-			// 	break;
 			case event_begin_level:
 				this.hideLevelChangeScreen(engine);
 				break;
 			case event_player_generated:
-				console.log(this.entities);
 				this.fixHeartCanvasSize(this.entities[Object.keys(this.entities)[0]]);
 				break;
 			case event_game_over:

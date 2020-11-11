@@ -15,14 +15,14 @@ class PoppsEngine {
 		const boss_config = data.boss_config;
 
 		this.systems = [];
+		this.LevelSystem = new LevelSystem(config.level, room_pool, stair_room_pool);
+		this.EntitySystem = new EntitySystem(config.entities, player_config, enemy_config, boss_config);
+		this.DisplaySystem = new DisplaySystem(config.display, images);
 		// this.InputSystem = new InputSystem();
-		// this.DisplaySystem = new DisplaySystem(config.display, images);
 		// this.VisionSystem = new VisionSystem(config.vision);
 		// this.LightSystem = new LightSystem(config.light);
 		// this.ActionSystem = new ActionSystem();
 		// this.MovementSystem = new MovementSystem();
-		this.LevelSystem = new LevelSystem(config.level, room_pool, stair_room_pool);
-		this.EntitySystem = new EntitySystem(config.entities, player_config, enemy_config, boss_config);
 		// this.AnimationSystem = new AnimationSystem(config.animation);
 		// this.CombatSystem = new CombatSystem(config.combat);
 		// this.HealthSystem = new HealthSystem(config.health);
@@ -30,14 +30,14 @@ class PoppsEngine {
 		// this.AbilitySystem = new AbilitySystem(config.abilities);
 		// this.SprintSystem = new SprintSystem(config.sprint);
 
+		this.systems.push(this.LevelSystem);
+		this.systems.push(this.EntitySystem);
+		this.systems.push(this.DisplaySystem);
 		// this.systems.push(this.InputSystem);
-		// this.systems.push(this.DisplaySystem);
 		// this.systems.push(this.VisionSystem);
 		// this.systems.push(this.LightSystem);
 		// this.systems.push(this.ActionSystem);
 		// this.systems.push(this.MovementSystem);
-		this.systems.push(this.LevelSystem);
-		this.systems.push(this.EntitySystem);
 		// this.systems.push(this.AnimationSystem);
 		// this.systems.push(this.CombatSystem);
 		// this.systems.push(this.HealthSystem);
@@ -141,8 +141,8 @@ class PoppsEngine {
 		switch(event) {
 			case event_new_game:
 				this.clearEntities();
-				this.sendEvent(event_new_level, {depth: this.depth});
 				this.sendEvent(event_new_player);
+				this.sendEvent(event_new_level, {depth: this.depth});
 				// this.sendEvent(generate_new_level, this.Dungeon.levels[this.depth]);
 				// this.EntitySystem.generatePlayer(this);
 				// this.LevelSystem.generateLevel(this, this.depth);

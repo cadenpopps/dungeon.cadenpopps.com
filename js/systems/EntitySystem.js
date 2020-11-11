@@ -17,8 +17,8 @@ class EntitySystem extends GameSystem {
 			case event_level_generated:
 				for(let ID in this.entities) {
 					if(component_controller in this.entities[ID]) {
-						this.entities[ID].position.x = data.levelOrigin.x;
-						this.entities[ID].position.y = data.levelOrigin.y;
+						this.entities[ID][component_position].x = data.levelOrigin.x;
+						this.entities[ID][component_position].y = data.levelOrigin.y;
 					}
 				}
 				break;

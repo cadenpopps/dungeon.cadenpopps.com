@@ -41,7 +41,7 @@ function SquareTemplate(x, y, type) {
 	else if(type == square_floor) {
 		components[component_position] = new PositionComponent(x, y);
 		components[component_display] = new DisplayComponent(1, 1);
-		components[component_texture] = new Texturecomponent(texture_floor);
+		components[component_texture] = new TextureComponent(texture_floor);
 	}
 	else if(type == square_door) {
 		components[component_position] = new PositionComponent(x, y);

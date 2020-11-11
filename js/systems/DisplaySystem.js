@@ -9,8 +9,8 @@ class DisplaySystem extends GameSystem {
 	init(engine) {
 		this.camera = {
 			display: true,
-			x: 0,
-			y: 0,
+			x: 20,
+			y: 20,
 			shakeOffsetX : 0,
 			shakeOffsetY : 0,
 			combat: false,
@@ -35,22 +35,36 @@ class DisplaySystem extends GameSystem {
 
 	run(engine) {
 		background(0);
+
 		if(this.camera.display) {
+
 			if(this.cameraMoving) {
-				let player = engine.getPlayer();
-				if(player.animation.animation == animation_idle) { this.cameraMoving = false; }
-				this.centerCamera(this.camera, player);
+				// let player = engine.getPlayer();
+				// if(player.animation.animation == animation_idle) { this.cameraMoving = false; }
+				// this.centerCamera(this.camera, player);
 			}
 
+			//move to camera event handler
 			canvas.translate(this.centerX + this.camera.shakeOffsetX, this.centerY + this.camera.shakeOffsetY);
 			canvas.scale(this.camera.zoom, this.camera.zoom);
 
-			this.drawSquares(engine.getMap());
-			this.drawEntities(engine.getEntities());
-			this.drawLights(this.objects);
-			this.drawMobHealth(this.objects);
+			for(let ID in this.entities) {
+				if(Utility.entityHasComponent(this.entities[ID], component_animation)) {
+					this.drawEntityWithAnimation(this.entities[ID]);
+				}
+				else {
+					this.drawEntityWithoutAnimation(this.entities[ID]);
+				}
+
+			}
+
+			// this.drawSquares(engine.getMap());
+			// this.drawEntities(engine.getEntities());
+			// this.drawLights(this.objects);
+			// this.drawMobHealth(this.objects);
 
 			canvas.setTransform();
+
 		}
 
 		// let et = millis() - st;
@@ -68,7 +82,8 @@ class DisplaySystem extends GameSystem {
 	handleEvent(engine, eventID, data) {
 		switch(eventID) {
 			case event_begin_level:
-				this.determineSquareTextures(engine.getMap());
+				// MOVE THIS TO TEXTURE SYSTEM
+				// this.determineSquareTextures(engine.getMap());
 				this.cameraMoving = true;
 				this.camera.display = true;
 				break;
@@ -76,7 +91,7 @@ class DisplaySystem extends GameSystem {
 				this.cameraMoving = true;
 				this.camera.display = true;
 				break;
-			case event_up_level: case event_down_level:
+			case event_down_level:
 				this.camera.display = false;
 				break;
 			case event_window_resized:
@@ -112,6 +127,37 @@ class DisplaySystem extends GameSystem {
 				// engine.sendEvent(event_hitstun, { "ticks": 6 });
 				break;
 		}
+	}
+
+
+	drawEntityWithAnimation(entity) {
+
+	}
+
+	drawEntityWithoutAnimation(entity) {
+		// if(squareEntity[component_display].discovered) {
+		let bounds = this.getDrawBounds(entity);
+		// if(this.onScreen(bounds, this.camera.zoom)) {
+			this.drawTexture(entity, bounds);
+		// }
+		// }
+	}
+
+	drawTexture(entity, bounds) {
+		let x = bounds.x, y = bounds.y, w = bounds.w, h = bounds.h;
+		// for(let texture of object.textures) {
+		// 	for(let textureElement of texture.textureElements) {
+		let texture = entity[component_texture];
+		// console.log(this.textures[texture.type]);
+		if(this.textures[texture.type][texture.subtype] == undefined) {
+			console.log("undefined");
+			image(this.textures[texture.type][texture_default], x, y, w, h);
+		}
+		else {
+			image(this.textures[texture.type][texture.subtype], x, y, w, h);
+		}
+		// }
+		// }
 	}
 
 	static texturesConnect(t1, t2) {
@@ -239,7 +285,7 @@ class DisplaySystem extends GameSystem {
 			for(let j = 0; j < map.length; j++) {
 				let square = map[i][j];
 				for(let texture of square.textures) {
-					switch(texture.textureType) {
+					switch(texture.type) {
 						case texture_wall: case texture_floor:
 							DisplaySystem.determineTextureType(square, texture, map);
 							break;
@@ -256,9 +302,9 @@ class DisplaySystem extends GameSystem {
 	}
 
 	setTextureAlt(texture) {
-		if(this.textures[texture.textureType][texture_num_alts] > 0) {
-			let rand = random(texture_probability_distribution[this.textures[texture.textureType][texture_num_alts] + 1]);
-			for(let i = 0; i < this.textures[texture.textureType][texture_num_alts] + 1; i++) {
+		if(this.textures[texture.type][texture_num_alts] > 0) {
+			let rand = random(texture_probability_distribution[this.textures[texture.type][texture_num_alts] + 1]);
+			for(let i = 0; i < this.textures[texture.type][texture_num_alts] + 1; i++) {
 				if(rand < texture_probability_distribution[i]) {
 					texture.textureElements[0].element = texture_default + i;
 					return;
@@ -267,32 +313,15 @@ class DisplaySystem extends GameSystem {
 		}
 	}
 
-	drawSquares(map) {
-		for(let r of map) {
-			for(let s of r) {
-				if(s.display.discovered) {
-					let bounds = this.getDrawBounds(s);
-					if(this.onScreen(bounds, this.camera.zoom)) {
-						this.drawTexture(s, bounds);
-					}
-				}
+	drawSquare(squareEntity) {
+		if(squareEntity[component_display].discovered) {
+			let bounds = this.getDrawBounds(s);
+			if(this.onScreen(bounds, this.camera.zoom)) {
+				this.drawTexture(s, bounds);
 			}
 		}
 	}
 
-	drawTexture(object, bounds) {
-		let x = bounds.x, y = bounds.y, w = bounds.w, h = bounds.h;
-		for(let texture of object.textures) {
-			for(let textureElement of texture.textureElements) {
-				if(this.textures[texture.textureType][textureElement.element] == undefined) {
-					image(this.textures[texture.textureType][texture_default], x + (this.gridSize * textureElement.xOff), y + (this.gridSize * textureElement.yOff), w, h);
-				}
-				else {
-					image(this.textures[texture.textureType][textureElement.element], x + (this.gridSize * textureElement.xOff), y + (this.gridSize * textureElement.yOff), w, h);
-				}
-			}
-		}
-	}
 
 	drawEntities(entities) {
 		for(let e of entities) {
@@ -429,13 +458,13 @@ class DisplaySystem extends GameSystem {
 		}
 	}
 
-	getDrawBounds(object) {
-		return {
-			'x': this.gridSize * (object.position.x + object.display.offsetX - this.camera.x),
-			'y': this.gridSize * (object.position.y + object.display.offsetY - this.camera.y),
-			'w': object.display.width * this.gridSize,
-			'h': object.display.height * this.gridSize
-		};
+	getDrawBounds(entity) {
+		let bounds = {};
+		bounds.x = this.gridSize * (entity[component_position].x + entity[component_display].offsetX - this.camera.x);
+		bounds.y = this.gridSize * (entity[component_position].y + entity[component_display].offsetY - this.camera.y);
+		bounds.w = entity[component_display].width * this.gridSize;
+		bounds.h = entity[component_display].height * this.gridSize;
+		return bounds;
 	}
 
 	onScreen(bounds, scale) {

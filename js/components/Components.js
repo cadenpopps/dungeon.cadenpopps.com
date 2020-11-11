@@ -5,7 +5,7 @@ function PositionComponent(x, y) {
 
 function HealthComponent(initialHealth) {
 	this.maxHealth = initialHealth;
-	this.health = initialHealth;
+	this.currentHealth = initialHealth;
 }
 
 function StrengthComponent(initialStrength) {
@@ -82,9 +82,9 @@ function AnimationComponent(animations) {
 	}
 }
 
-function TextureComponent(type) {
-	this.textureType = type;
-	this.textureSubtype = texture_default;
+function TextureComponent(type, subtype = texture_default) {
+	this.type = type;
+	this.subtype = texture_default;
 	// this.textureElements = [];
 }
 
@@ -159,4 +159,8 @@ function AbilityComponent(ability) {
 
 function ControllerComponent(controls) {
 	this.inputs = controls
+}
+
+function InteractableComponent(type) {
+	this.type = type;
 }
