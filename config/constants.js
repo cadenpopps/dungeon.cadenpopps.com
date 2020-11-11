@@ -180,6 +180,9 @@ const event_new_game = 0,
 	event_entity_take_damage = 60,
 	event_player_take_damage = 61,
 
+	event_camera_ready = 70,
+	event_camera_moved = 71,
+
 	event_title_screen = 999,
 	event_game_over = 1000
 ;
@@ -214,6 +217,8 @@ const event_to_string = [];
 	event_to_string[50]= "event_entity_spawned";
 	event_to_string[51]= "event_spawn_enemy_close";
 	event_to_string[60]= "event_entity_take_damage";
+	event_to_string[70]= "event_camera_ready";
+	event_to_string[71]= "event_camera_moved";
 	event_to_string[61]= "event_player_take_damage";
 	event_to_string[999]= "event_title_screen";
 	event_to_string[1000]= "event_game_over"

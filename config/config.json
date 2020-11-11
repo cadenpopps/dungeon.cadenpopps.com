@@ -11,7 +11,9 @@
 		"ROOM_TRIES": 50
 	},
 	"display": {
-		"GRID_SIZE": 64,
+		"GRID_SIZE": 64
+	},
+	"camera": {
 		"CAMERA_MOVE_SPEED": 2,
 		"CAMERA_DEFAULT_ZOOM": 1,
 		"CAMERA_SPRINT_ZOOM": 0.9,

@@ -18,6 +18,7 @@ class PoppsEngine {
 		this.LevelSystem = new LevelSystem(config.level, room_pool, stair_room_pool);
 		this.EntitySystem = new EntitySystem(config.entities, player_config, enemy_config, boss_config);
 		this.DisplaySystem = new DisplaySystem(config.display, images);
+		this.CameraSystem = new CameraSystem(config.camera);
 		// this.InputSystem = new InputSystem();
 		// this.VisionSystem = new VisionSystem(config.vision);
 		// this.LightSystem = new LightSystem(config.light);
@@ -33,6 +34,7 @@ class PoppsEngine {
 		this.systems.push(this.LevelSystem);
 		this.systems.push(this.EntitySystem);
 		this.systems.push(this.DisplaySystem);
+		this.systems.push(this.CameraSystem);
 		// this.systems.push(this.InputSystem);
 		// this.systems.push(this.VisionSystem);
 		// this.systems.push(this.LightSystem);

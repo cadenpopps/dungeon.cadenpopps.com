@@ -7,17 +7,6 @@ class DisplaySystem extends GameSystem {
 	}
 
 	init(engine) {
-		this.camera = {
-			display: true,
-			x: 20,
-			y: 20,
-			shakeOffsetX : 0,
-			shakeOffsetY : 0,
-			combat: false,
-			sprinting: false,
-			zoom: this.config.CAMERA_DEFAULT_ZOOM
-		};
-
 		this.cameraZoomTimer = undefined;
 		this.cameraShakeTimer = undefined;
 		this.cameraMoving = false;
@@ -29,6 +18,18 @@ class DisplaySystem extends GameSystem {
 		this.centerX = floor(width / 2);
 		this.centerY = floor(height / 2);
 
+		this.canvas = {
+			ready: false,
+			centerX: this.centerX,
+			centerY: this.centerY,
+			zoom: 1
+		}
+
+		// this.cameraReady = false;
+		// this.cameraX = 0;
+		// this.cameraY = 0;
+		// this.zoom = 1;
+
 		this.gridSize = this.config.GRID_SIZE;
 		this.halfGridSize = this.gridSize / 2;
 	}
@@ -36,17 +37,14 @@ class DisplaySystem extends GameSystem {
 	run(engine) {
 		background(0);
 
-		if(this.camera.display) {
-
-			if(this.cameraMoving) {
-				// let player = engine.getPlayer();
-				// if(player.animation.animation == animation_idle) { this.cameraMoving = false; }
-				// this.centerCamera(this.camera, player);
-			}
+		if(this.canvas.ready) {
+			// let player = engine.getPlayer();
+			// if(player.animation.animation == animation_idle) { this.cameraMoving = false; }
+			// this.centerCamera(this.camera, player);
 
 			//move to camera event handler
-			canvas.translate(this.centerX + this.camera.shakeOffsetX, this.centerY + this.camera.shakeOffsetY);
-			canvas.scale(this.camera.zoom, this.camera.zoom);
+			canvas.translate(this.canvas.centerX, this.canvas.centerY);
+			canvas.scale(this.canvas.zoom, this.canvas.zoom);
 
 			for(let ID in this.entities) {
 				if(Utility.entityHasComponent(this.entities[ID], component_animation)) {
@@ -64,8 +62,8 @@ class DisplaySystem extends GameSystem {
 			// this.drawMobHealth(this.objects);
 
 			canvas.setTransform();
-
 		}
+
 
 		// let et = millis() - st;
 		// console.log("Time for draw loop: " + et);
@@ -84,12 +82,20 @@ class DisplaySystem extends GameSystem {
 			case event_begin_level:
 				// MOVE THIS TO TEXTURE SYSTEM
 				// this.determineSquareTextures(engine.getMap());
-				this.cameraMoving = true;
-				this.camera.display = true;
+				// this.cameraMoving = true;
+				// this.camera.display = true;
 				break;
-			case event_player_moved:
-				this.cameraMoving = true;
-				this.camera.display = true;
+			case event_camera_ready:
+				this.canvas.ready = true;
+				this.canvas.centerX = this.centerX + (data.camera.x * this.gridSize);
+				this.canvas.centerY = this.centerY + (data.camera.y * this.gridSize);
+				this.zoom = data.camera.zoom;
+				console.log(this.canvas);
+				break;
+			case event_camera_moved:
+				this.canvas.centerX = this.centerX + (data.camera.x * this.gridSize);
+				this.canvas.centerY = this.centerY + (data.camera.y * this.gridSize);
+				this.zoom = data.camera.zoom;
 				break;
 			case event_down_level:
 				this.camera.display = false;
@@ -129,6 +135,24 @@ class DisplaySystem extends GameSystem {
 		}
 	}
 
+	getDrawBounds(entity) {
+		let bounds = {};
+		bounds.x = this.canvas.centerX - (this.gridSize * (entity[component_position].x + entity[component_display].offsetX));
+		bounds.y = this.canvas.centerY - (this.gridSize * (entity[component_position].y + entity[component_display].offsetY));
+		bounds.w = entity[component_display].width * this.gridSize;
+		bounds.h = entity[component_display].height * this.gridSize;
+		console.log(bounds);
+		return bounds;
+	}
+
+	onScreen(bounds, scale) {
+		const border = max(bounds.w, bounds.h) + 10;
+		const t = -(height / scale / 2) - border;
+		const r = (width / scale / 2) + border;
+		const b = (height / scale / 2) + border;
+		const l = -(width / scale / 2) - border;
+		return bounds.y > t && bounds.x + bounds.w < r && bounds.y + bounds.h < b && bounds.x > l;
+	}
 
 	drawEntityWithAnimation(entity) {
 
@@ -138,7 +162,7 @@ class DisplaySystem extends GameSystem {
 		// if(squareEntity[component_display].discovered) {
 		let bounds = this.getDrawBounds(entity);
 		// if(this.onScreen(bounds, this.camera.zoom)) {
-			this.drawTexture(entity, bounds);
+		this.drawTexture(entity, bounds);
 		// }
 		// }
 	}
@@ -458,42 +482,6 @@ class DisplaySystem extends GameSystem {
 		}
 	}
 
-	getDrawBounds(entity) {
-		let bounds = {};
-		bounds.x = this.gridSize * (entity[component_position].x + entity[component_display].offsetX - this.camera.x);
-		bounds.y = this.gridSize * (entity[component_position].y + entity[component_display].offsetY - this.camera.y);
-		bounds.w = entity[component_display].width * this.gridSize;
-		bounds.h = entity[component_display].height * this.gridSize;
-		return bounds;
-	}
-
-	onScreen(bounds, scale) {
-		const border = max(bounds.w, bounds.h) + 10;
-		const t = -(height / scale / 2) - border;
-		const r = (width / scale / 2) + border;
-		const b = (height / scale / 2) + border;
-		const l = -(width / scale / 2) - border;
-		return bounds.y > t && bounds.x + bounds.w < r && bounds.y + bounds.h < b && bounds.x > l;
-	}
-
-	centerCamera(camera, player) {
-		if(player.animation.animation == animation_idle) {
-			camera.x = player.position.x;
-			camera.y = player.position.y;
-		}
-		else {
-			camera.x = player.position.x + player.animation.offsetX;
-			camera.y = player.position.y + player.animation.offsetY;
-			// camera.y = player.position.y + player.animation.animations[offsetY;
-		}
-		//if(entity.position.x > camera.x) {
-		//	camera.x = floor(camera.x * 40 + 1) / 40;
-		//	cameraMoveTimer = setTimeout(function() {moveCamera(camera, entity, direction)}, this.config.CAMERA_MOVE_SPEED);
-		//}
-		//else{
-		//	clearTimeout(cameraMoveTimer);
-		//}
-	}
 
 	decideCameraZoomState(camera) {
 		if(camera.combat) {

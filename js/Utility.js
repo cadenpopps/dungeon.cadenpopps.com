@@ -1,7 +1,14 @@
 class Utility {
 
 	static debugLog(message) {
-		if(DEBUG_MODE) console.log(message);
+		if(DEBUG_MODE) {
+			if(message != undefined) {
+				console.log(message);
+			}
+			else {
+				console.log("No event string found");
+			}
+		}
 	}
 
 	static collision(o1, o2) {
