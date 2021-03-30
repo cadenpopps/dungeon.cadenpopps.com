@@ -52,11 +52,12 @@ function MovementComponent(speed) {
 	this.currentCooldown = 0;
 }
 
-function DisplayComponent(width, height, offsetX = 0, offsetY = 0) {
+function DisplayComponent(width, height, offsetX = 0, offsetY = 0, z = 0) {
 	this.width = width;
 	this.height = height;
 	this.offsetX = offsetX;
 	this.offsetY = offsetY;
+	this.z = z;
 	this.lightLevel = 0;
 }
 
@@ -105,9 +106,9 @@ function LightEmitterComponent(emitterLevel) {
 function ActionsComponent(actions) {
 	this.busy = 0;
 	this.actions = actions
-	// for(let a in actions) {
-	// 	this.actions[a] = new ActionComponent(actions[a].action, actions[a].cooldown, actions[a].time);
-	// }
+	for(let a in actions) {
+		this.actions[a] = new ActionComponent(actions[a].action, actions[a].cooldown, actions[a].time);
+	}
 	this.nextAction = action_none;
 	this.currentAction = action_none;
 	this.lastAction = action_none;
@@ -159,6 +160,18 @@ function AbilityComponent(ability) {
 
 function ControllerComponent(controls) {
 	this.inputs = controls
+}
+
+function CameraComponent(position) {
+	this.ready = false;
+	this.smoothFrames = 4;
+	this.cameraX = position.x;
+	this.cameraY = position.y;
+	this.shakeOffsetX = 0;
+	this.shakeOffsetY = 0;
+	// this.combat = false;
+	// this.sprinting = false;
+	this.zoom = 1;
 }
 
 function InteractableComponent(type) {

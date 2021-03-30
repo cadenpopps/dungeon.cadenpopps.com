@@ -1,36 +1,27 @@
 class CameraSystem extends GameSystem {
 
 	constructor(config) {
-		super([component_controller]);
+		super([component_position, component_camera]);
 		this.config = config;
 	}
 
 	init(engine) {
-		this.camera = {
-			ready: false,
-			x: 0,
-			y: 0,
-			targetX: 0,
-			targetY: 0,
-			shakeOffsetX : 0,
-			shakeOffsetY : 0,
-			combat: false,
-			sprinting: false,
-			zoom: this.config.CAMERA_DEFAULT_ZOOM
-		};
-
 		this.cameraZoomTimer = undefined;
 		this.cameraShakeTimer = undefined;
 		this.cameraMoving = false;
 	}
 
 	run(engine) {
-		for(let ID in this.entities) {
-			this.centerCamera(this.entities[ID][component_position]);
-		}
+		// for(let ID in this.entities) {
+		// 	this.centerCamera(this.entities[ID][component_position]);
+		// }
 
-		if(this.camera.x != this.camera.targetX || this.camera.y != this.camera.targetY) {
-			this.panCamera(engine);
+		// if(this.camera.x != this.camera.targetX || this.camera.y != this.camera.targetY) {
+		// 	this.panCamera(engine);
+		// }
+
+		for(let ID in this.entities) {
+			this.updateCamera(engine, this.entities[ID]);
 		}
 	}
 
@@ -38,14 +29,14 @@ class CameraSystem extends GameSystem {
 		switch(eventID) {
 			case event_begin_level:
 				for(let ID in this.entities) {
-					this.snapCamera(this.entities[ID][component_position]);
-					this.camera.ready = true;
-					engine.sendEvent(event_camera_ready, {camera: this.camera});
+					this.snapCamera(engine, this.entities[ID]);
+					engine.sendEvent(event_camera_updated, {camera: this.entities[ID][component_camera]});
 				}
 				break;
 			case event_player_moved:
-				let player = this.entities[Object.keys(this.entities)[0]];
-				this.centerCamera(player[component_position]);
+				for(let ID in this.entities) {
+					this.entities[ID][camera_component].smoothFrames = this.config.CAMERA_MOVE_SPEED;
+				}
 				break;
 		}
 	}
@@ -62,14 +53,23 @@ class CameraSystem extends GameSystem {
 		engine.sendEvent(event_camera_moved, {camera: this.camera});
 	}
 
-	centerCamera(position) {
-		this.camera.targetX = position.x;
-		this.camera.targetY = position.y;
+	updateCamera(engine, entity) {
+		if(entity[component_camera].smoothFrame > 0) {
+			let difX = entity[component_position].x - entity[component_camera].cameraX;
+			let difY = entity[component_position].y - entity[component_camera].cameraY;
+			difX = (difX / this.config.CAMERA_MOVE_SPEED) * entity[component_camera].smoothFrame
+			difY = (difY / this.config.CAMERA_MOVE_SPEED) * entity[component_camera].smoothFrame
+			entity[component_camera].cameraX += difX;
+			entity[component_camera].cameraY += difY;
+			entity[component_camera].smoothFrame--;
+			engine.sendEvent(event_camera_updated, {camera: this.entities[ID][component_camera]});
+		}
 	}
 
-	snapCamera(position) {
-		this.camera.x = position.x;
-		this.camera.y = position.y;
+	snapCamera(engine, entity) {
+		entity[component_camera].cameraX = entity[component_position].x;
+		entity[component_camera].cameraY = entity[component_position].y;
+		entity[component_camera].smoothFrame = 0;
 	}
 
 }

@@ -19,16 +19,10 @@ class InputSystem extends GameSystem {
 	}
 
 	run(engine) {
-		if(keys.includes('n') && this.mobSpawnCooldown <= 0) {
-			this.mobSpawnCooldown = 10;
-			engine.sendEvent(event_spawn_enemy_close, engine.getPlayer());
+		for(let ID in this.entities) {
+			console.log(this.entities[ID]);
+			this.setAction(engine, this.entities[ID], this.inputs);
 		}
-
-		if(this.mobSpawnCooldown > 0) {
-			this.mobSpawnCooldown--;
-		}
-
-		this.setPlayerAction(engine, this.inputs);
 	}
 
 	addObject(object) { }
@@ -45,30 +39,29 @@ class InputSystem extends GameSystem {
 		}
 	}
 
-	setPlayerAction(engine, inputs) {
-		let player = engine.getPlayer();
+	setAction(engine, entity, inputs) {
 		if(inputs.length > 0) {
 			let highestPriority = 0;
 			let playerAction = action_none;
 			for(let key of inputs) {
 				let action = keyCode_to_action[key];
 				let priority = action_to_priority[action];
-				priority = this.fixPriority(engine, player, action, priority);
-				if(priority > highestPriority && player.actions.actions[action].currentCooldown == 0) {
+				priority = this.fixPriority(engine, entity, action, priority);
+				if(priority > highestPriority && entity[component_actions].actions[action].currentCooldown == 0) {
 					playerAction = action;
 					highestPriority = priority;
 				}
 			}
-			player.actions.nextAction = playerAction;
+			entity[component_actions].nextAction = playerAction;
 		}
 		else {
-			player.actions.nextAction = action_none;
+			entity[component_actions].nextAction = action_none;
 		}
 	}
 
-	fixPriority(engine, player, action, priority) {
-		if(player.actions.lastAction == action) {
-			if(player.actions.lastActionFailed) {
+	fixPriority(engine, entity, action, priority) {
+		if(entity[component_actions].lastAction == action) {
+			if(entity[component_actions].lastActionFailed) {
 				return 0;
 			}
 			else {

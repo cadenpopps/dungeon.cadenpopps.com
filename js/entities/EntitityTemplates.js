@@ -3,6 +3,7 @@ function PlayerTemplate(x = 0, y = 0, depth = 0, size = DEFAULT_PLAYER_SIZE, hea
 	components[component_position] = new PositionComponent(x, y);
 	components[component_depth] = new DepthComponent(depth);
 	components[component_display] = new DisplayComponent(size, size);
+	components[component_camera] = new CameraComponent(x, y);
 	components[component_collision] = new CollisionComponent(x, y, size, size);
 	components[component_direction] = new DirectionComponent(direction_down);
 	components[component_health] = new HealthComponent(health);

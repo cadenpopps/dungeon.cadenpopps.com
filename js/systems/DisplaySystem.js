@@ -25,11 +25,6 @@ class DisplaySystem extends GameSystem {
 			zoom: 1
 		}
 
-		// this.cameraReady = false;
-		// this.cameraX = 0;
-		// this.cameraY = 0;
-		// this.zoom = 1;
-
 		this.gridSize = this.config.GRID_SIZE;
 		this.halfGridSize = this.gridSize / 2;
 	}
@@ -37,32 +32,37 @@ class DisplaySystem extends GameSystem {
 	run(engine) {
 		background(0);
 
-		if(this.canvas.ready) {
-			// let player = engine.getPlayer();
-			// if(player.animation.animation == animation_idle) { this.cameraMoving = false; }
-			// this.centerCamera(this.camera, player);
+		// if(this.canvas.ready) {
+		// let player = engine.getPlayer();
+		// if(player.animation.animation == animation_idle) { this.cameraMoving = false; }
+		// this.centerCamera(this.camera, player);
 
-			//move to camera event handler
-			canvas.translate(this.canvas.centerX, this.canvas.centerY);
-			canvas.scale(this.canvas.zoom, this.canvas.zoom);
+		//move to camera event handler
+		// canvas.translate(data.camera.x, data.camera.y);
+		// canvas.scale(data.camera.zoom, data.camera.zoom);
 
-			for(let ID in this.entities) {
-				if(Utility.entityHasComponent(this.entities[ID], component_animation)) {
-					this.drawEntityWithAnimation(this.entities[ID]);
-				}
-				else {
-					this.drawEntityWithoutAnimation(this.entities[ID]);
-				}
+		canvas.translate(this.centerX - (this.gridSize * this.canvas.centerX), this.centerY - (this.gridSize * this.canvas.centerY));
+		canvas.scale(this.canvas.zoom, this.canvas.zoom);
 
+		for(let ID in this.entities) {
+			if(!Utility.entityHasComponent(this.entities[ID], component_animation)) {
+				this.drawEntityWithoutAnimation(this.entities[ID]);
 			}
-
-			// this.drawSquares(engine.getMap());
-			// this.drawEntities(engine.getEntities());
-			// this.drawLights(this.objects);
-			// this.drawMobHealth(this.objects);
-
-			canvas.setTransform();
 		}
+		for(let ID in this.entities) {
+			if(Utility.entityHasComponent(this.entities[ID], component_animation)) {
+				this.drawEntityWithAnimation(this.entities[ID]);
+			}
+		}
+
+		// this.drawSquares(engine.getMap());
+		// this.drawEntities(engine.getEntities());
+		// this.drawLights(this.objects);
+		// this.drawMobHealth(this.objects);
+
+		canvas.setTransform();
+
+		// }
 
 
 		// let et = millis() - st;
@@ -85,17 +85,24 @@ class DisplaySystem extends GameSystem {
 				// this.cameraMoving = true;
 				// this.camera.display = true;
 				break;
-			case event_camera_ready:
-				this.canvas.ready = true;
+			case event_camera_updated:
+				this.canvas.centerX = data.camera.cameraX;
+				this.canvas.centerY = data.camera.cameraY;
 				this.canvas.zoom = data.camera.zoom;
-				this.canvas.centerX = this.canvas.zoom * (data.camera.x * this.gridSize);
-				this.canvas.centerY = this.canvas.zoom * (data.camera.y * this.gridSize);
 				break;
-			case event_camera_moved:
-				this.canvas.zoom = data.camera.zoom;
-				this.canvas.centerX = this.canvas.zoom * (data.camera.x * this.gridSize);
-				this.canvas.centerY = this.canvas.zoom * (data.camera.y * this.gridSize);
-				break;
+				// case event_camera_ready:
+				// 	canvas.translate(this.canvas.centerX, this.canvas.centerY);
+				// 	canvas.scale(this.canvas.zoom, this.canvas.zoom);
+				// 	this.canvas.ready = true;
+				// 	this.canvas.zoom = data.camera.zoom;
+				// 	this.canvas.centerX = this.canvas.zoom * (data.camera.x * this.gridSize);
+				// 	this.canvas.centerY = this.canvas.zoom * (data.camera.y * this.gridSize);
+				// 	break;
+				// case event_camera_moved:
+				// 	this.canvas.zoom = data.camera.zoom;
+				// 	this.canvas.centerX = this.canvas.zoom * (data.camera.x * this.gridSize);
+				// 	this.canvas.centerY = this.canvas.zoom * (data.camera.y * this.gridSize);
+				// 	break;
 			case event_down_level:
 				this.camera.display = false;
 				break;
@@ -153,16 +160,16 @@ class DisplaySystem extends GameSystem {
 	}
 
 	drawEntityWithAnimation(entity) {
-
+		let bounds = this.getDrawBounds(entity);
+		let x = bounds.x, y = bounds.y, w = bounds.w, h = bounds.h;
+		fill(255, 0, 0);
+		rect(x, y, w, h);
 	}
 
 	drawEntityWithoutAnimation(entity) {
 		// if(squareEntity[component_display].discovered) {
 		let bounds = this.getDrawBounds(entity);
-		// if(this.onScreen(bounds, this.camera.zoom)) {
 		this.drawTexture(entity, bounds);
-		// }
-		// }
 	}
 
 	drawTexture(entity, bounds) {

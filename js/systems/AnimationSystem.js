@@ -1,7 +1,7 @@
 class AnimationSystem extends GameSystem {
 
 	constructor(config) {
-		super([component_animation]);
+		super([component_display, component_animation]);
 		this.config = config;
 	}
 
