@@ -1,0 +1,58 @@
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>Down the Dungeon</title>
+        <link rel="stylesheet" type="text/css" href="/css/index.css" />
+        <!-- <script type="text/javascript" src="lib/popps.js"></script> -->
+
+        <script
+            type="text/javascript"
+            src="/js/components/Components.js"
+        ></script>
+        <script type="text/javascript" src="/bundle.min.js"></script>
+    </head>
+
+    <body>
+        <canvas id="game"></canvas>
+        <div id="titleScreen">
+            <div id="titleScreenContent">
+                <div id="title">
+                    <span id="smallTitleText">DOWN THE</span>DUNGEON
+                </div>
+                <div id="playButton" class="button">Play</div>
+                <div id="optionsButton" class="button">Options</div>
+                <div id="helpButton" class="button">Help</div>
+            </div>
+        </div>
+        <div id="helpScreen">
+            <div id="helpText">
+                <span class="helpTextTitle">OBJECTIVE</span>
+                <span class="helpTextBody"
+                    >Search for the stair in each level to descend to the depths
+                    of the dungeon. Defeat enemies, collect loot, and level up
+                    to increase your chances of survival!</span
+                >
+                <span class="helpTextTitle">CONTROLS</span>
+                <span class="helpTextBody"
+                    >The default controls are as follows:
+                    <br />
+                    <ul>
+                        <li>Movement</li>
+                        <li>Abilities</li>
+                        <li>Pause</li>
+                        <li></li>
+                    </ul>
+                </span>
+            </div>
+            <div id="returnToTitleScreenButton" class="button">Back</div>
+        </div>
+        <div id="levelChangeScreen">
+            <div id="levelChangeText">Entering level 1</div>
+        </div>
+        <div id="gameOverScreen">
+            <div id="gameOverText">GAME OVER</div>
+            <div id="playAgainButton" class="button">Play Again</div>
+        </div>
+        <canvas id="heartCanvas"></canvas>
+    </body>
+</html>
