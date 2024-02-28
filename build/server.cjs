@@ -2,11 +2,13 @@ var http = require("http");
 var fs = require("fs");
 var path = require("path");
 
-http.createServer(function (request: any, response: any) {
+const port = 4200;
+
+http.createServer(function (request, response) {
     console.log("Starting server...");
 
-    var filePath = "." + request.url;
-    if (filePath == "./") filePath = "./index.html";
+    var filePath = "./build" + request.url;
+    if (filePath == "./build/") filePath = "./build/index.html";
 
     var extname = path.extname(filePath);
     var contentType = "text/html";
@@ -31,11 +33,14 @@ http.createServer(function (request: any, response: any) {
             break;
     }
 
-    fs.readFile(filePath, function (error: any, content: any) {
+    fs.readFile(filePath, function (error, content) {
         if (error) {
             if (error.code == "ENOENT") {
-                fs.readFile("./404.html", function (error: any, content: any) {
-                    response.writeHead(200, { "Content-Type": contentType });
+                fs.readFile("./build/404.html", function (error, content) {
+                    console.log(error);
+                    response.writeHead(200, {
+                        "Content-Type": contentType,
+                    });
                     response.end(content, "utf-8");
                 });
             } else {
@@ -52,5 +57,5 @@ http.createServer(function (request: any, response: any) {
             response.end(content, "utf-8");
         }
     });
-}).listen(8125);
-console.log("Server running at http://127.0.0.1:8125/");
+}).listen(port);
+console.log(`Server running at http://127.0.0.1:${port}/`);

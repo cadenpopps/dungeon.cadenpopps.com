@@ -2,14 +2,16 @@
     "name": "downthedungeon",
     "version": "1.0.0",
     "description": "Web based roguelike",
-    "main": "app.ts",
+    "main": "server.cjs",
     "type": "module",
+    "base": "./build",
     "directories": {
         "lib": "lib"
     },
     "scripts": {
         "build": "tsc",
-        "dev": "ts-node --esm app.ts",
+        "serve": "node build/server.cjs",
+        "watch": "tsc -w",
         "test": "jest"
     },
     "author": "Caden Popps",

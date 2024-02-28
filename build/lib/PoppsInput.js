@@ -1,125 +1,109 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.listen = exports.keyUpListener = exports.keyDownListener = exports.keyPressedListener = exports.mousedraggedListener = exports.mouseupListener = exports.listenMouseDown = exports.listenMouseClicked = exports.listenMouseMoved = exports.keyboard = exports.mouse = void 0;
 const DRAGDIST = 15;
 var mouseDragStartX = 0, mouseDragStartY = 0;
-exports.mouse = {
+export var mouse = {
     x: 0,
     y: 0,
     leftClick: false,
     rightClick: false,
     dragging: false,
 };
-exports.keyboard = {
-    key: undefined,
-    keycode: undefined,
+document.addEventListener("mousedown", function () {
+    mouse.leftClick = true;
+});
+document.addEventListener("mouseup", function () {
+    mouse.leftClick = false;
+});
+export var keyboard = {
+    lastKey: "",
+    lastKeycode: "",
+    keys: [],
 };
-function listenMouseMoved(callback) {
-    return document.addEventListener("mousemove", function (event) {
-        exports.mouse.x = event.pageX;
-        exports.mouse.y = event.pageY;
-        callback(event);
-    });
-}
-exports.listenMouseMoved = listenMouseMoved;
-function listenMouseClicked(callback) {
-    return document.addEventListener("click", function (event) {
-        exports.mouse.x = event.pageX;
-        exports.mouse.y = event.pageY;
-        callback(event);
-    });
-}
-exports.listenMouseClicked = listenMouseClicked;
-function listenMouseDown(callback) {
-    document.addEventListener("mousedown", function (event) {
-        exports.mouse.leftClick = true;
-        exports.mouse.x = event.pageX;
-        exports.mouse.y = event.pageY;
-        callback(event);
-    });
-}
-exports.listenMouseDown = listenMouseDown;
-function mouseupListener(event) {
-    mouseDown = false;
-    mouseX = event.pageX;
-    mouseY = event.pageY;
-    mouseU();
-}
-exports.mouseupListener = mouseupListener;
-function mousedraggedListener(event) {
-    cancelClick = true;
-    mouseX = event.pageX;
-    mouseY = event.pageY;
-    mouseDragged();
-}
-exports.mousedraggedListener = mousedraggedListener;
-function keyPressedListener(event) {
-    key = event.key;
-    keycode = event.code;
-    keyPressed();
-}
-exports.keyPressedListener = keyPressedListener;
-function keyDownListener(event) {
-    key = event.key;
-    keycode = event.code;
-    keyDown();
-}
-exports.keyDownListener = keyDownListener;
-function keyUpListener(event) {
-    key = event.key;
-    keycode = event.code;
-    keyUp();
-}
-exports.keyUpListener = keyUpListener;
-function listen(event) {
-    switch (event) {
-        case "mousemoved":
-            break;
-        case "mouseclicked":
-            break;
-        case "mousedown":
-            break;
-        case "mouseup":
-            document.addEventListener("mouseup", function (event) {
-                mouseupListener(event);
-            });
-            break;
-        case "mousedragged":
-            document.addEventListener("mousedown", function (event) {
-                mouseDown = true;
-                dStartx = event.pageX;
-                dStarty = event.pageX;
-            });
-            document.addEventListener("mousemove", function (event) {
-                if (mouseDown &&
-                    abs(dStartx - event.pageX) > DRAGDIST &&
-                    abs(dStarty - event.pageY) > DRAGDIST) {
-                    mousedraggedListener(event);
-                }
-            });
-            document.addEventListener("mouseup", function () {
-                mouseDown = false;
-            });
-            break;
-        case "keypressed":
-            document.addEventListener("keypress", function (event) {
-                keyPressedListener(event);
-            });
-            break;
-        case "keydown":
-            document.addEventListener("keydown", function (event) {
-                keyDownListener(event);
-            });
-            break;
-        case "keyup":
-            document.addEventListener("keyup", function (event) {
-                keyUpListener(event);
-            });
-            break;
-        case "windowresized":
-            window.addEventListener("resize", windowResizedListener);
-            break;
+document.addEventListener("keydown", function (event) {
+    if (!keyboard.keys.includes(event.key)) {
+        keyboard.keys.push(event.key);
     }
+});
+document.addEventListener("keyup", function (event) {
+    keyboard.keys = keyboard.keys.filter(function (key) {
+        return key !== event.key;
+    });
+});
+export function listenMouseMoved(callback) {
+    document.addEventListener("mousemove", function (event) {
+        mouse.x = event.pageX;
+        mouse.y = event.pageY;
+        callback(event);
+    });
 }
-exports.listen = listen;
+export function listenMouseClicked(callback) {
+    document.addEventListener("click", function (event) {
+        mouse.x = event.pageX;
+        mouse.y = event.pageY;
+        callback(event);
+    });
+}
+export function listenMouseDown(callback) {
+    document.addEventListener("mousedown", function (event) {
+        mouse.x = event.pageX;
+        mouse.y = event.pageY;
+        callback(event);
+    });
+}
+export function listenMouseUp(callback) {
+    document.addEventListener("mouseup", function (event) {
+        mouse.x = event.pageX;
+        mouse.y = event.pageY;
+        callback(event);
+    });
+}
+export function listenMouseDragged(callback) {
+    document.addEventListener("mousedown", function (event) {
+        mouse.leftClick = true;
+        mouse.x = event.pageX;
+        mouse.y = event.pageY;
+        mouseDragStartX = mouse.x;
+        mouseDragStartY = mouse.y;
+    });
+    document.addEventListener("mousemove", function (event) {
+        if (mouse.dragging) {
+            mouse.x = event.pageX;
+            mouse.y = event.pageY;
+            callback();
+        }
+        else if (mouse.leftClick &&
+            (Math.abs(mouseDragStartX - event.pageX) > DRAGDIST ||
+                Math.abs(mouseDragStartY - event.pageY) > DRAGDIST)) {
+            mouse.x = event.pageX;
+            mouse.y = event.pageY;
+            mouse.dragging = true;
+            callback();
+        }
+    });
+    document.addEventListener("mouseup", function (event) {
+        mouse.dragging = false;
+        mouse.x = event.pageX;
+        mouse.y = event.pageY;
+    });
+}
+export function listenKeyPressed(callback) {
+    document.addEventListener("keypress", function (event) {
+        keyboard.lastKey = event.key;
+        keyboard.lastKeycode = event.code;
+        callback();
+    });
+}
+export function listenKeyDown(callback) {
+    document.addEventListener("keydown", function (event) {
+        keyboard.lastKey = event.key;
+        keyboard.lastKeycode = event.code;
+        callback();
+    });
+}
+export function listenKeyUp(callback) {
+    document.addEventListener("keyup", function (event) {
+        keyboard.lastKey = event.key;
+        keyboard.lastKeycode = event.code;
+        callback();
+    });
+}
 //# sourceMappingURL=PoppsInput.js.map
