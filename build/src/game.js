@@ -28,9 +28,9 @@ systems.push(new CameraSystem(eventManager, entityManager));
 systems.push(new LevelSystem(eventManager, entityManager));
 eventManager.addEvent(Event.new_game);
 entityManager.addEntity([
-    new PositionComponent(50, 50, 0),
+    new PositionComponent(20, 20, 0),
     new VelocityComponent(0, 0),
-    new VisibleComponent({ r: 0, g: 255, b: 255 }, 1),
+    new VisibleComponent([0, 255, 255], 1),
     new CollisionComponent(),
     new ControllerComponent(),
     new CameraComponent(0, 0, 0, 74, 1),

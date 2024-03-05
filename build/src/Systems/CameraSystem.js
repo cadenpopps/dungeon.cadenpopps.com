@@ -6,8 +6,8 @@ export default class CameraSystem extends System {
         super(SystemType.Camera, eventManager, entityManager, [
             ComponentType.Camera,
         ]);
-        this.CAMERA_SPEED_DAMPER = 0.9;
-        this.CAMERA_ACCEL_DIVIDER = 300;
+        this.CAMERA_SPEED_DAMPER = 0.88;
+        this.CAMERA_ACCEL_DIVIDER = 250;
     }
     logic() {
         for (let entityId of this.entities) {
@@ -24,14 +24,9 @@ export default class CameraSystem extends System {
         const cam = this.entityManager.data[ComponentType.Camera].get(entityId);
         const pos = this.entityManager.data[ComponentType.Position].get(entityId);
         cam.z = pos.z;
-        if (abs(cam.x - pos.x) > 0.5) {
+        if (abs(cam.x - pos.x) > 0.01) {
             cam.accx = (pos.x - cam.x) / this.CAMERA_ACCEL_DIVIDER;
             cam.velx += cam.accx;
-            cam.x += cam.velx;
-            cam.velx *= this.CAMERA_SPEED_DAMPER;
-        }
-        else if (abs(cam.x - pos.x) > 0.05) {
-            cam.accx = 0;
             cam.x += cam.velx;
             cam.velx *= this.CAMERA_SPEED_DAMPER;
         }
@@ -40,14 +35,9 @@ export default class CameraSystem extends System {
             cam.velx = 0;
             cam.accx = 0;
         }
-        if (abs(cam.y - pos.y) > 0.5) {
+        if (abs(cam.y - pos.y) > 0.01) {
             cam.accy = (pos.y - cam.y) / this.CAMERA_ACCEL_DIVIDER;
             cam.vely += cam.accy;
-            cam.y += cam.vely;
-            cam.vely *= this.CAMERA_SPEED_DAMPER;
-        }
-        else if (abs(cam.y - pos.y) > 0.05) {
-            cam.accy = 0;
             cam.y += cam.vely;
             cam.vely *= this.CAMERA_SPEED_DAMPER;
         }
@@ -61,7 +51,7 @@ export default class CameraSystem extends System {
         const cam = this.entityManager.data[ComponentType.Camera].get(entityId);
         const con = this.entityManager.data[ComponentType.Controller].get(entityId);
         if (con.zoom_in) {
-            if (cam.zoom >= 40) {
+            if (cam.zoom >= 20) {
                 con.zoom_in = false;
                 cam.zoom -= 2;
                 cam.visibleDistance = floor(1500 / cam.zoom);

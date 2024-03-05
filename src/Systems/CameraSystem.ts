@@ -8,8 +8,8 @@ import { Event, EventManager } from "../EventManager.js";
 import { System, SystemType } from "../System.js";
 
 export default class CameraSystem extends System {
-    private CAMERA_SPEED_DAMPER = 0.9;
-    private CAMERA_ACCEL_DIVIDER = 300;
+    private CAMERA_SPEED_DAMPER = 0.88;
+    private CAMERA_ACCEL_DIVIDER = 250;
 
     constructor(eventManager: EventManager, entityManager: EntityManager) {
         super(SystemType.Camera, eventManager, entityManager, [
@@ -41,13 +41,9 @@ export default class CameraSystem extends System {
         ) as PositionComponent;
 
         cam.z = pos.z;
-        if (abs(cam.x - pos.x) > 0.5) {
+        if (abs(cam.x - pos.x) > 0.01) {
             cam.accx = (pos.x - cam.x) / this.CAMERA_ACCEL_DIVIDER;
             cam.velx += cam.accx;
-            cam.x += cam.velx;
-            cam.velx *= this.CAMERA_SPEED_DAMPER;
-        } else if (abs(cam.x - pos.x) > 0.05) {
-            cam.accx = 0;
             cam.x += cam.velx;
             cam.velx *= this.CAMERA_SPEED_DAMPER;
         } else {
@@ -56,13 +52,9 @@ export default class CameraSystem extends System {
             cam.accx = 0;
         }
 
-        if (abs(cam.y - pos.y) > 0.5) {
+        if (abs(cam.y - pos.y) > 0.01) {
             cam.accy = (pos.y - cam.y) / this.CAMERA_ACCEL_DIVIDER;
             cam.vely += cam.accy;
-            cam.y += cam.vely;
-            cam.vely *= this.CAMERA_SPEED_DAMPER;
-        } else if (abs(cam.y - pos.y) > 0.05) {
-            cam.accy = 0;
             cam.y += cam.vely;
             cam.vely *= this.CAMERA_SPEED_DAMPER;
         } else {
@@ -81,7 +73,7 @@ export default class CameraSystem extends System {
         ) as ControllerComponent;
 
         if (con.zoom_in) {
-            if (cam.zoom >= 40) {
+            if (cam.zoom >= 20) {
                 con.zoom_in = false;
                 cam.zoom -= 2;
                 cam.visibleDistance = floor(1500 / cam.zoom);

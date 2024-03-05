@@ -14,7 +14,8 @@
         "noUnusedLocals": true /* Enable error reporting when local variables aren't read. */,
         "noUnusedParameters": true /* Raise an error when a function parameter isn't read. */,
         "allowUnreachableCode": true /* Disable error reporting for unreachable code. */,
-        "skipLibCheck": true /* Skip type checking all .d.ts files. */
+        "skipLibCheck": true /* Skip type checking all .d.ts files. */,
+        "resolveJsonModule": true /* Skip type checking all .d.ts files. */
     },
     "exclude": ["./tests", "./jest*"]
 }

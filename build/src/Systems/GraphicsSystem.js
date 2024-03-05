@@ -48,7 +48,7 @@ export default class GraphicsSystem extends System {
             for (let entityId of visibleEntities) {
                 const pos = this.entityManager.data[ComponentType.Position].get(entityId);
                 const vis = this.entityManager.data[ComponentType.Visible].get(entityId);
-                this.canvas.fill(vis.color.r, vis.color.g, vis.color.b, vis.color.a);
+                this.canvas.fill(vis.r, vis.g, vis.b, vis.a);
                 this.canvas.rect(pos.x, pos.y, 1, 1);
                 if (vis.layer > 0) {
                     this.canvas.fill(0, 0, 0);

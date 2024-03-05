@@ -68,7 +68,7 @@ export function listenMouseDragged(callback) {
         if (mouse.dragging) {
             mouse.x = event.pageX;
             mouse.y = event.pageY;
-            callback();
+            callback(event);
         }
         else if (mouse.leftClick &&
             (Math.abs(mouseDragStartX - event.pageX) > DRAGDIST ||
@@ -76,7 +76,7 @@ export function listenMouseDragged(callback) {
             mouse.x = event.pageX;
             mouse.y = event.pageY;
             mouse.dragging = true;
-            callback();
+            callback(event);
         }
     });
     document.addEventListener("mouseup", function (event) {

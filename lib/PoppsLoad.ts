@@ -1,9 +1,11 @@
 // export function loadJSON(path: string): Object {
 //     var req = new XMLHttpRequest();
 //     req.overrideMimeType("application/json");
+//     console.log(path);
 //     req.open("GET", path, false);
 //     req.send(null);
 //     if (req.readyState == 4 && req.status == 200) {
+//         console.log(req.responseText);
 //         return JSON.parse(req.responseText);
 //     } else {
 //         console.log("Error loading JSON");

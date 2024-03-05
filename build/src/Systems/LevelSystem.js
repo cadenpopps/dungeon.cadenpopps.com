@@ -1,3 +1,4 @@
+import DungeonTown from "../../content/levels/Levels.js";
 import { ComponentType } from "../Component.js";
 import CollisionComponent from "../Components/CollisionComponent.js";
 import LevelComponent from "../Components/LevelComponent.js";
@@ -10,6 +11,7 @@ export default class LevelSystem extends System {
         super(SystemType.Level, eventManager, entityManager, [
             ComponentType.Level,
         ]);
+        this.currentLevel = new LevelComponent(-1);
     }
     logic() { }
     handleEvent(event) {
@@ -26,9 +28,8 @@ export default class LevelSystem extends System {
         }
     }
     loadLevelZero() {
-        const levelZero = this.levelGen(0);
-        this.currentLevel = levelZero;
-        this.loadLevel(levelZero);
+        console.log(DungeonTown);
+        this.loadLevel(DungeonTown);
     }
     loadLevelDown() {
         for (let entityId of this.entities) {
@@ -55,7 +56,6 @@ export default class LevelSystem extends System {
         this.currentLevel = level;
         level.entityIds = this.entityManager.addEntities(level.entities);
     }
-    levelFromJSON(level) { }
     levelGen(depth) {
         const newLevel = new LevelComponent(depth);
         const w = 100;
@@ -66,11 +66,7 @@ export default class LevelSystem extends System {
                     newLevel.entities.push([
                         new CollisionComponent(),
                         new PositionComponent(x, y, depth),
-                        new VisibleComponent({
-                            r: 30,
-                            g: 30,
-                            b: 30,
-                        }),
+                        new VisibleComponent([30, 30, 30]),
                     ]);
                 }
                 else {
@@ -78,21 +74,17 @@ export default class LevelSystem extends System {
                         newLevel.entities.push([
                             new CollisionComponent(),
                             new PositionComponent(x, y, depth),
-                            new VisibleComponent({
-                                r: 30,
-                                g: 30,
-                                b: 30,
-                            }),
+                            new VisibleComponent([30, 30, 30]),
                         ]);
                     }
                     else {
                         newLevel.entities.push([
                             new PositionComponent(x, y, depth),
-                            new VisibleComponent({
-                                r: 100 - (x % 2) * 10,
-                                g: 100 - (y % 2) * 10,
-                                b: 150,
-                            }),
+                            new VisibleComponent([
+                                100 - (x % 2) * 10,
+                                100 - (y % 2) * 10,
+                                150,
+                            ]),
                         ]);
                     }
                 }

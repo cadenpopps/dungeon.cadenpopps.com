@@ -1,3 +1,4 @@
+import DungeonTown from "../../content/levels/Levels.js";
 import { ComponentType } from "../Component.js";
 import CollisionComponent from "../Components/CollisionComponent.js";
 import LevelComponent from "../Components/LevelComponent.js";
@@ -8,12 +9,13 @@ import { Event, EventManager } from "../EventManager.js";
 import { System, SystemType } from "../System.js";
 
 export default class LevelSystem extends System {
-    private currentLevel!: LevelComponent;
+    private currentLevel: LevelComponent;
 
     constructor(eventManager: EventManager, entityManager: EntityManager) {
         super(SystemType.Level, eventManager, entityManager, [
             ComponentType.Level,
         ]);
+        this.currentLevel = new LevelComponent(-1);
     }
 
     public logic(): void {}
@@ -33,10 +35,12 @@ export default class LevelSystem extends System {
     }
 
     private loadLevelZero(): void {
-        const levelZero = this.levelGen(0);
+        console.log(DungeonTown);
+        this.loadLevel(DungeonTown);
+        // this.levelFromJSON();
+        // const levelZero = this.levelGen(0);
+
         // console.log(JSON.stringify(levelZero));
-        this.currentLevel = levelZero;
-        this.loadLevel(levelZero);
     }
 
     private loadLevelDown(): void {
@@ -71,8 +75,6 @@ export default class LevelSystem extends System {
         level.entityIds = this.entityManager.addEntities(level.entities);
     }
 
-    private levelFromJSON(level: Array<Array<number>>) {}
-
     private levelGen(depth: number): LevelComponent {
         const newLevel = new LevelComponent(depth);
         const w = 100;
@@ -83,31 +85,23 @@ export default class LevelSystem extends System {
                     newLevel.entities.push([
                         new CollisionComponent(),
                         new PositionComponent(x, y, depth),
-                        new VisibleComponent({
-                            r: 30,
-                            g: 30,
-                            b: 30,
-                        }),
+                        new VisibleComponent([30, 30, 30]),
                     ]);
                 } else {
                     if (Math.random() < 0.1) {
                         newLevel.entities.push([
                             new CollisionComponent(),
                             new PositionComponent(x, y, depth),
-                            new VisibleComponent({
-                                r: 30,
-                                g: 30,
-                                b: 30,
-                            }),
+                            new VisibleComponent([30, 30, 30]),
                         ]);
                     } else {
                         newLevel.entities.push([
                             new PositionComponent(x, y, depth),
-                            new VisibleComponent({
-                                r: 100 - (x % 2) * 10,
-                                g: 100 - (y % 2) * 10,
-                                b: 150,
-                            }),
+                            new VisibleComponent([
+                                100 - (x % 2) * 10,
+                                100 - (y % 2) * 10,
+                                150,
+                            ]),
                         ]);
                     }
                 }
