@@ -1,25 +1,52 @@
-import PoppsCanvas from "../lib/PoppsCanvas.js";
-import * as PoppsInput from "../lib/PoppsInput.js";
+import { PoppsEngine } from "../lib/PoppsEngine.js";
+import CameraComponent from "./Components/CameraComponent.js";
+import CollisionComponent from "./Components/CollisionComponent.js";
+import ControllerComponent from "./Components/ControllerComponent.js";
+import MovementComponent from "./Components/MovementComponent.js";
+import PositionComponent from "./Components/PositionComponent.js";
+import VelocityComponent from "./Components/VelocityComponent.js";
+import VisibleComponent from "./Components/VisibleComponent.js";
+import { EntityManager } from "./EntityManager.js";
+import { Event, EventManager } from "./EventManager.js";
+import { System } from "./System.js";
+import CameraSystem from "./Systems/CameraSystem.js";
+import GraphicsSystem from "./Systems/GraphicsSystem.js";
+import InputSystem from "./Systems/InputSystem.js";
+import LevelSystem from "./Systems/LevelSystem.js";
+import MovementSystem from "./Systems/MovementSystem.js";
+import PhysicsSystem from "./Systems/PhysicsSystem.js";
+import PlayerSystem from "./Systems/PlayerSystem.js";
 
-var testFn = function () {
-    console.log(PoppsInput.keyboard.keys);
-};
+let engine = new PoppsEngine();
+let eventManager = new EventManager();
+let entityManager = new EntityManager(eventManager);
+let systems = Array<System>();
+systems.push(new GraphicsSystem(eventManager, entityManager));
+systems.push(new InputSystem(eventManager, entityManager));
+systems.push(new PlayerSystem(eventManager, entityManager));
+systems.push(new MovementSystem(eventManager, entityManager));
+systems.push(new PhysicsSystem(eventManager, entityManager));
+systems.push(new CameraSystem(eventManager, entityManager));
+systems.push(new LevelSystem(eventManager, entityManager));
 
-PoppsInput.listenKeyDown(testFn);
+eventManager.addEvent(Event.new_game);
 
-let c = new PoppsCanvas();
+entityManager.addEntity([
+    new PositionComponent(50, 50, 0),
+    new VelocityComponent(0, 0),
+    new VisibleComponent({ r: 0, g: 255, b: 255 }, 1),
+    new CollisionComponent(),
+    new ControllerComponent(),
+    new CameraComponent(0, 0, 0, 74, 1),
+    new MovementComponent(),
+]);
 
-var x = 0;
-c.loop(() => {
-    c.background(0, 0, 0);
-    c.fill(255, 0, 0);
-    c.rect(x, 0, 20, 20);
-    x += 10;
-    if (x > c.width) {
-        x = 0;
+engine.loop(gameLoop);
+
+function gameLoop() {
+    eventManager.tick();
+    entityManager.tick();
+    for (let s of systems) {
+        s.tick();
     }
-});
-
-setTimeout(() => {
-    c.stop();
-}, 3000);
+}

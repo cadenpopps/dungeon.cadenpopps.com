@@ -7,16 +7,18 @@ export class PoppsEngine {
         if (typeof callback == "function") {
             this.looping = true;
             this.tickCallback = callback;
+            this.tick();
         }
-    }
-    stop() {
-        this.looping = false;
     }
     tick() {
         if (this.looping) {
             this.tickCallback();
-            this.tick();
+            this.ticks++;
+            setTimeout(this.tick.bind(this), 0);
         }
+    }
+    stop() {
+        this.looping = false;
     }
     resetTickCount() {
         this.ticks = 0;

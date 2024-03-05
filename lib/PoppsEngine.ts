@@ -7,21 +7,23 @@ export class PoppsEngine {
         if (typeof callback == "function") {
             this.looping = true;
             this.tickCallback = callback;
-        }
-    }
-
-    public stop() {
-        this.looping = false;
-    }
-
-    public tick() {
-        if (this.looping) {
-            this.tickCallback();
             this.tick();
         }
     }
 
-    public resetTickCount() {
+    public tick(): void {
+        if (this.looping) {
+            this.tickCallback();
+            this.ticks++;
+            setTimeout(this.tick.bind(this), 0);
+        }
+    }
+
+    public stop(): void {
+        this.looping = false;
+    }
+
+    public resetTickCount(): void {
         this.ticks = 0;
     }
 }

@@ -85,25 +85,30 @@ export function listenMouseDragged(callback) {
         mouse.y = event.pageY;
     });
 }
+export function listenScroll(callback) {
+    window.addEventListener("wheel", (event) => {
+        callback(event);
+    });
+}
 export function listenKeyPressed(callback) {
     document.addEventListener("keypress", function (event) {
         keyboard.lastKey = event.key;
         keyboard.lastKeycode = event.code;
-        callback();
+        callback(event.key);
     });
 }
 export function listenKeyDown(callback) {
     document.addEventListener("keydown", function (event) {
         keyboard.lastKey = event.key;
         keyboard.lastKeycode = event.code;
-        callback();
+        callback(event.key);
     });
 }
 export function listenKeyUp(callback) {
     document.addEventListener("keyup", function (event) {
         keyboard.lastKey = event.key;
         keyboard.lastKeycode = event.code;
-        callback();
+        callback(event.key);
     });
 }
 //# sourceMappingURL=PoppsInput.js.map

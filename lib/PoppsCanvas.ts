@@ -22,8 +22,6 @@ export default class PoppsCanvas {
         ) as CanvasRenderingContext2D;
         this.parentElement.append(this.canvasElement);
         this.resizeCanvas();
-        console.log(this.width);
-        console.log(this.height);
     }
 
     private initResizeListener(): void {
@@ -137,7 +135,7 @@ export default class PoppsCanvas {
         this.canvas.font = `${this.fontSize}${this.font}`;
     }
 
-    public clearCanvas() {
+    public clearCanvas(): void {
         this.canvas.clearRect(0, 0, this.width, this.height);
     }
 

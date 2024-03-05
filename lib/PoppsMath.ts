@@ -75,7 +75,7 @@ export function randomInt(max?: number): number {
     if (!max || max <= 0) {
         return 0;
     } else {
-        return Math.floor(this.random(max));
+        return Math.floor(random(max));
     }
 }
 
@@ -86,9 +86,9 @@ export function randomInt(max?: number): number {
  */
 export function randomIntInRange(val1: number, val2: number): number {
     if (val1 > val2) {
-        return Math.floor(this.randomInRange(val1, val2));
+        return Math.floor(randomInRange(val1, val2));
     } else {
-        return Math.floor(this.randomInRange(val2, val1));
+        return Math.floor(randomInRange(val2, val1));
     }
 }
 
@@ -110,7 +110,7 @@ export function round(value: number, decimals?: number): number {
  * @returns true if a randomly generated number between 0 and chance is less than 1
  */
 export function oneIn(chance: number): boolean {
-    return 1 > this.random(chance);
+    return 1 > random(chance);
 }
 
 /**
@@ -149,12 +149,12 @@ export function max(val1: number, val2: number): number {
 
 /**
  * @param value value to constrain between low and high
- * @param min the minimum cutoff (inclusive)
- * @param max the maximum cutoff (inclusive)
+ * @param minV the minimum cutoff (inclusive)
+ * @param maxV the maximum cutoff (inclusive)
  * @returns the value if it is between min and max, otherwise the min or max
  */
-export function constrain(value: number, min: number, max: number): number {
-    return this.min(this.max(value, min), max);
+export function constrain(value: number, minV: number, maxV: number): number {
+    return min(max(value, minV), maxV);
 }
 
 /**
@@ -172,7 +172,7 @@ export function map(
     min2: number,
     max2: number
 ): number {
-    value = this.constrain(value, min1, max1);
+    value = constrain(value, min1, max1);
     const scale = (max2 - min2) / (max1 - min1);
     return min2 + (value - min1) * scale;
 }

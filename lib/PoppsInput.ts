@@ -22,6 +22,7 @@ export var mouse = {
 //     canvasX = r.left + scrollLeft;
 //     canvasY = r.top + scrollTop;
 // });
+
 document.addEventListener("mousedown", function () {
     mouse.leftClick = true;
 });
@@ -33,7 +34,7 @@ document.addEventListener("mouseup", function () {
 export var keyboard = {
     lastKey: "",
     lastKeycode: "",
-    keys: [] as String[],
+    keys: [] as string[],
 };
 
 document.addEventListener("keydown", function (event: KeyboardEvent) {
@@ -132,6 +133,16 @@ export function listenMouseDragged(callback: Function): void {
 }
 
 /**
+ * @param callback function to call whenever the mousewheel event fires
+ * @returns void
+ */
+export function listenScroll(callback: Function): void {
+    window.addEventListener("wheel", (event) => {
+        callback(event);
+    });
+}
+
+/**
  * @param callback function to call whenever the keypress event fires
  * @returns void
  */
@@ -139,7 +150,7 @@ export function listenKeyPressed(callback: Function): void {
     document.addEventListener("keypress", function (event: KeyboardEvent) {
         keyboard.lastKey = event.key;
         keyboard.lastKeycode = event.code;
-        callback();
+        callback(event.key);
     });
 }
 
@@ -151,7 +162,7 @@ export function listenKeyDown(callback: Function): void {
     document.addEventListener("keydown", function (event: KeyboardEvent) {
         keyboard.lastKey = event.key;
         keyboard.lastKeycode = event.code;
-        callback();
+        callback(event.key);
     });
 }
 
@@ -163,6 +174,6 @@ export function listenKeyUp(callback: Function): void {
     document.addEventListener("keyup", function (event: KeyboardEvent) {
         keyboard.lastKey = event.key;
         keyboard.lastKeycode = event.code;
-        callback();
+        callback(event.key);
     });
 }

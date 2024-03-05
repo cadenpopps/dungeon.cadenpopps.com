@@ -12,8 +12,6 @@ export default class PoppsCanvas {
         this.canvas = this.canvasElement.getContext("2d");
         this.parentElement.append(this.canvasElement);
         this.resizeCanvas();
-        console.log(this.width);
-        console.log(this.height);
     }
     initResizeListener() {
         window.addEventListener("resize", () => {
