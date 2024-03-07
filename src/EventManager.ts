@@ -28,6 +28,6 @@ export enum Event {
     entity_created,
     entity_destroyed,
     entity_modified,
-    level_down,
-    level_up,
+    level_change,
+    level_loaded,
 }

@@ -1,5 +1,5 @@
 import { floor } from "../../lib/PoppsMath.js";
-import { Component, ComponentType } from "../Component.js";
+import { Component, CType } from "../Component.js";
 
 export default class CameraComponent extends Component {
     public x: number;
@@ -20,7 +20,7 @@ export default class CameraComponent extends Component {
         zoom: number,
         priority: number
     ) {
-        super(ComponentType.Camera);
+        super(CType.Camera);
         this.x = x;
         this.y = y;
         this.z = z;

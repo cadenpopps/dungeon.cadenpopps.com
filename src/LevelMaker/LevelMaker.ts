@@ -11,7 +11,10 @@ import { System } from ".././System.js";
 import CameraSystem from ".././Systems/CameraSystem.js";
 import GraphicsSystem from ".././Systems/GraphicsSystem.js";
 import InputSystem from ".././Systems/InputSystem.js";
+import { CType, Component } from "../Component.js";
 import CollisionComponent from "../Components/CollisionComponent.js";
+import PlayerComponent from "../Components/PlayerComponent.js";
+import GameSystem from "../Systems/GameSystem.js";
 import MovementSystem from "../Systems/MovementSystem.js";
 import PhysicsSystem from "../Systems/PhysicsSystem.js";
 import PlayerSystem from "../Systems/PlayerSystem.js";
@@ -21,6 +24,7 @@ let engine = new PoppsEngine();
 let eventManager = new EventManager();
 let entityManager = new EntityManager(eventManager);
 let systems = Array<System>();
+systems.push(new GameSystem(eventManager, entityManager));
 systems.push(new GraphicsSystem(eventManager, entityManager));
 systems.push(new InputSystem(eventManager, entityManager));
 systems.push(new PhysicsSystem(eventManager, entityManager));
@@ -31,15 +35,18 @@ systems.push(new LevelMakerSystem(eventManager, entityManager));
 
 eventManager.addEvent(Event.new_game);
 
-entityManager.addEntity([
-    new PositionComponent(5, 5, 0),
-    new VelocityComponent(0, 0),
-    new VisibleComponent([0, 255, 255], 1),
-    new CollisionComponent(),
-    new ControllerComponent(),
-    new CameraComponent(0, 0, 0, 50, 1),
-    new MovementComponent(),
-]);
+entityManager.addEntity(
+    new Map<CType, Component>([
+        [CType.Position, new PositionComponent(5, 5, 0)],
+        [CType.Velocity, new VelocityComponent(0, 0)],
+        [CType.Visible, new VisibleComponent([0, 255, 255], 1)],
+        [CType.Collision, new CollisionComponent()],
+        [CType.Controller, new ControllerComponent()],
+        [CType.Camera, new CameraComponent(0, 0, 0, 20, 1)],
+        [CType.Movement, new MovementComponent(100)],
+        [CType.Player, new PlayerComponent()],
+    ])
+);
 
 engine.loop(gameLoop);
 

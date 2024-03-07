@@ -1,12 +1,12 @@
 import { abs, ceil, floor, round } from "../../lib/PoppsMath.js";
-import { ComponentType } from "../Component.js";
+import { CType } from "../Component.js";
 import PositionComponent from "../Components/PositionComponent.js";
 import { System, SystemType } from "../System.js";
 export default class PhysicsSystem extends System {
     constructor(eventManager, entityManager) {
         super(SystemType.Physics, eventManager, entityManager, [
-            ComponentType.Position,
-            ComponentType.Collision,
+            CType.Position,
+            CType.Collision,
         ]);
         this.counter = 0;
         this.subGrid = new Array();
@@ -20,22 +20,27 @@ export default class PhysicsSystem extends System {
         this.counter = 0;
         this.physics();
     }
-    handleEvent(event) { }
+    handleEvent(event) {
+        switch (event) {
+        }
+    }
     physics() {
         for (let i = 1; i < this.subGrid.length - 1; i++) {
             for (let j = 1; j < this.subGrid[i].length - 1; j++) {
                 for (let entityId of this.subGrid[i][j]) {
-                    if (this.entityManager.data[ComponentType.Velocity].has(entityId)) {
-                        const position = this.entityManager.data[ComponentType.Position].get(entityId);
-                        const velocity = this.entityManager.data[ComponentType.Velocity].get(entityId);
-                        const collision = this.entityManager.data[ComponentType.Collision].get(entityId);
-                        collision.collided = false;
-                        position.x += velocity.x;
-                        position.y += velocity.y;
+                    if (this.entityManager
+                        .getEntity(entityId)
+                        .has(CType.Velocity)) {
+                        const pos = this.entityManager.get(entityId, CType.Position);
+                        const vel = this.entityManager.get(entityId, CType.Velocity);
+                        const col = this.entityManager.get(entityId, CType.Collision);
+                        col.collided = false;
+                        pos.x += vel.x;
+                        pos.y += vel.y;
                         if (this.collision(entityId, i, j)) {
-                            collision.collided = true;
-                            position.x -= velocity.x;
-                            position.y -= velocity.y;
+                            col.collided = true;
+                            pos.x -= vel.x;
+                            pos.y -= vel.y;
                         }
                     }
                 }
@@ -45,8 +50,8 @@ export default class PhysicsSystem extends System {
     setCenterPoint() {
         let priority = -1;
         for (let entityId of this.entities) {
-            if (this.entityManager.data[ComponentType.Camera].has(entityId)) {
-                const cam = this.entityManager.data[ComponentType.Camera].get(entityId);
+            if (this.entityManager.getEntity(entityId).has(CType.Camera)) {
+                const cam = this.entityManager.get(entityId, CType.Camera);
                 if (cam.priority > priority) {
                     this.centerPoint.x = round(cam.x);
                     this.centerPoint.y = round(cam.y);
@@ -59,7 +64,7 @@ export default class PhysicsSystem extends System {
     filterEntitiesByDistance() {
         const filteredEntities = new Array();
         for (let entityId of this.entities) {
-            const pos = this.entityManager.data[ComponentType.Position].get(entityId);
+            const pos = this.entityManager.get(entityId, CType.Position);
             if (abs(pos.x - this.centerPoint.x) < this.visibleDistance &&
                 abs(pos.y - this.centerPoint.y) < this.visibleDistance) {
                 filteredEntities.push(entityId);
@@ -78,7 +83,7 @@ export default class PhysicsSystem extends System {
             }
         }
         for (let entityId of filteredEntities) {
-            const pos = this.entityManager.data[ComponentType.Position].get(entityId);
+            const pos = this.entityManager.get(entityId, CType.Position);
             const newX = floor((pos.x - this.centerPoint.x + this.visibleDistance - 1) /
                 gridSize);
             const newY = floor((pos.y - this.centerPoint.y + this.visibleDistance - 1) /
@@ -89,7 +94,7 @@ export default class PhysicsSystem extends System {
     getBiggestEntitySize(filteredEntities) {
         let biggestEntitySize = 1;
         for (let entityId of filteredEntities) {
-            const col = this.entityManager.data[ComponentType.Collision].get(entityId);
+            const col = this.entityManager.get(entityId, CType.Collision);
             if (col.size > biggestEntitySize) {
                 biggestEntitySize = col.size;
             }
@@ -112,10 +117,10 @@ export default class PhysicsSystem extends System {
     }
     collided(ent1, ent2) {
         this.counter++;
-        const pos1 = this.entityManager.data[ComponentType.Position].get(ent1);
-        const col1 = this.entityManager.data[ComponentType.Collision].get(ent1);
-        const pos2 = this.entityManager.data[ComponentType.Position].get(ent2);
-        const col2 = this.entityManager.data[ComponentType.Collision].get(ent2);
+        const pos1 = this.entityManager.get(ent1, CType.Position);
+        const col1 = this.entityManager.get(ent1, CType.Collision);
+        const pos2 = this.entityManager.get(ent2, CType.Position);
+        const col2 = this.entityManager.get(ent2, CType.Collision);
         return (pos1.x < pos2.x + col2.size &&
             pos1.x + col1.size > pos2.x &&
             pos1.y < pos2.y + col2.size &&

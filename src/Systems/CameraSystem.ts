@@ -1,5 +1,5 @@
 import { abs, floor } from "../../lib/PoppsMath.js";
-import { ComponentType } from "../Component.js";
+import { CType } from "../Component.js";
 import CameraComponent from "../Components/CameraComponent.js";
 import ControllerComponent from "../Components/ControllerComponent.js";
 import PositionComponent from "../Components/PositionComponent.js";
@@ -12,19 +12,15 @@ export default class CameraSystem extends System {
     private CAMERA_ACCEL_DIVIDER = 250;
 
     constructor(eventManager: EventManager, entityManager: EntityManager) {
-        super(SystemType.Camera, eventManager, entityManager, [
-            ComponentType.Camera,
-        ]);
+        super(SystemType.Camera, eventManager, entityManager, [CType.Camera]);
     }
 
     public logic(): void {
         for (let entityId of this.entities) {
-            if (this.entityManager.data[ComponentType.Position].has(entityId)) {
+            if (this.entityManager.getEntity(entityId).has(CType.Position)) {
                 this.moveCamera(entityId);
             }
-            if (
-                this.entityManager.data[ComponentType.Controller].has(entityId)
-            ) {
+            if (this.entityManager.getEntity(entityId).has(CType.Controller)) {
                 this.zoomCamera(entityId);
             }
         }
@@ -33,12 +29,14 @@ export default class CameraSystem extends System {
     public handleEvent(event: Event): void {}
 
     private moveCamera(entityId: number): void {
-        const cam = this.entityManager.data[ComponentType.Camera].get(
-            entityId
-        ) as CameraComponent;
-        const pos = this.entityManager.data[ComponentType.Position].get(
-            entityId
-        ) as PositionComponent;
+        const cam = this.entityManager.get<CameraComponent>(
+            entityId,
+            CType.Camera
+        );
+        const pos = this.entityManager.get<PositionComponent>(
+            entityId,
+            CType.Position
+        );
 
         cam.z = pos.z;
         if (abs(cam.x - pos.x) > 0.01) {
@@ -65,12 +63,14 @@ export default class CameraSystem extends System {
     }
 
     private zoomCamera(entityId: number): void {
-        const cam = this.entityManager.data[ComponentType.Camera].get(
-            entityId
-        ) as CameraComponent;
-        const con = this.entityManager.data[ComponentType.Controller].get(
-            entityId
-        ) as ControllerComponent;
+        const cam = this.entityManager.get<CameraComponent>(
+            entityId,
+            CType.Camera
+        );
+        const con = this.entityManager.get<ControllerComponent>(
+            entityId,
+            CType.Controller
+        );
 
         if (con.zoom_in) {
             if (cam.zoom >= 20) {

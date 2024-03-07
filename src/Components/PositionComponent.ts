@@ -1,4 +1,4 @@
-import { Component, ComponentType } from "../Component.js";
+import { Component, CType } from "../Component.js";
 
 export default class PositionComponent extends Component {
     public x: number;
@@ -6,7 +6,7 @@ export default class PositionComponent extends Component {
     public z: number;
 
     constructor(x: number, y: number, z: number) {
-        super(ComponentType.Position);
+        super(CType.Position);
         this.x = x || 0;
         this.y = y || 0;
         this.z = z || 0;

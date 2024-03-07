@@ -1,0 +1,1 @@
+{"version":3,"file":"TileComponent.js","sourceRoot":"","sources":["../../../src/LevelMaker/TileComponent.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,EAAE,KAAK,EAAE,MAAM,iBAAiB,CAAC;AAEnD,MAAM,CAAC,OAAO,OAAO,aAAc,SAAQ,SAAS;IAGhD,YAAY,IAAY;QACpB,KAAK,CAAC,KAAK,CAAC,IAAI,CAAC,CAAC;QAClB,IAAI,CAAC,IAAI,GAAG,IAAI,CAAC;IACrB,CAAC;CACJ"}

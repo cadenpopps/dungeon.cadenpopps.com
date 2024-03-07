@@ -3,19 +3,22 @@ export class Component {
         this.type = type;
     }
 }
-export var ComponentType;
-(function (ComponentType) {
-    ComponentType[ComponentType["Game"] = 0] = "Game";
-    ComponentType[ComponentType["Controller"] = 1] = "Controller";
-    ComponentType[ComponentType["Position"] = 2] = "Position";
-    ComponentType[ComponentType["Velocity"] = 3] = "Velocity";
-    ComponentType[ComponentType["Collision"] = 4] = "Collision";
-    ComponentType[ComponentType["Visible"] = 5] = "Visible";
-    ComponentType[ComponentType["Movement"] = 6] = "Movement";
-    ComponentType[ComponentType["Camera"] = 7] = "Camera";
-    ComponentType[ComponentType["Level"] = 8] = "Level";
-    ComponentType[ComponentType["Interactable"] = 9] = "Interactable";
-})(ComponentType || (ComponentType = {}));
+export var CType;
+(function (CType) {
+    CType[CType["Game"] = 0] = "Game";
+    CType[CType["Controller"] = 1] = "Controller";
+    CType[CType["Position"] = 2] = "Position";
+    CType[CType["Velocity"] = 3] = "Velocity";
+    CType[CType["Collision"] = 4] = "Collision";
+    CType[CType["Visible"] = 5] = "Visible";
+    CType[CType["Movement"] = 6] = "Movement";
+    CType[CType["Camera"] = 7] = "Camera";
+    CType[CType["Level"] = 8] = "Level";
+    CType[CType["LevelEntry"] = 9] = "LevelEntry";
+    CType[CType["LevelExit"] = 10] = "LevelExit";
+    CType[CType["Player"] = 11] = "Player";
+    CType[CType["Interactable"] = 12] = "Interactable";
+})(CType || (CType = {}));
 export var Direction;
 (function (Direction) {
     Direction[Direction["NORTH"] = 0] = "NORTH";

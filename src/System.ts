@@ -1,11 +1,11 @@
-import { ComponentType } from "./Component.js";
+import { CType } from "./Component.js";
 import { EntityManager } from "./EntityManager.js";
 import { Event, EventManager } from "./EventManager.js";
 
 export abstract class System {
     public type: SystemType;
     public paused: boolean;
-    public requiredComponents: Array<ComponentType>;
+    public requiredComponents: Array<CType>;
     public entities: Array<number>;
     protected eventManager: EventManager;
     protected entityManager: EntityManager;
@@ -14,7 +14,7 @@ export abstract class System {
         type: SystemType,
         eventManager: EventManager,
         entityManager: EntityManager,
-        requiredComponents: Array<ComponentType>
+        requiredComponents: Array<CType>
     ) {
         this.type = type;
         this.paused = false;
@@ -45,7 +45,7 @@ export abstract class System {
     public abstract logic(): void;
 
     public refreshEntities(): void {
-        this.entities = this.entityManager.getEntitiesWithComponentTypes(
+        this.entities = this.entityManager.getSystemEntities(
             this.requiredComponents
         );
     }

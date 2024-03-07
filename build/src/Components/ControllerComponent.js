@@ -1,7 +1,7 @@
-import { Component, ComponentType } from "../Component.js";
+import { Component, CType } from "../Component.js";
 export default class ControllerComponent extends Component {
     constructor() {
-        super(ComponentType.Controller);
+        super(CType.Controller);
         this.up = false;
         this.right = false;
         this.down = false;

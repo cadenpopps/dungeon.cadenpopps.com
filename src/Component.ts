@@ -1,12 +1,12 @@
 export class Component {
-    public type: ComponentType;
+    public type: CType;
 
-    constructor(type: ComponentType) {
+    constructor(type: CType) {
         this.type = type;
     }
 }
 
-export enum ComponentType {
+export enum CType {
     Game,
     Controller,
     Position,
@@ -16,6 +16,9 @@ export enum ComponentType {
     Movement,
     Camera,
     Level,
+    LevelEntry,
+    LevelExit,
+    Player,
     Interactable,
 }
 

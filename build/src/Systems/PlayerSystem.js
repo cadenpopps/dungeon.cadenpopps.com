@@ -1,31 +1,31 @@
-import { ComponentType, Direction } from "../Component.js";
+import { CType, Direction } from "../Component.js";
 import { Event } from "../EventManager.js";
 import { System, SystemType } from "../System.js";
 export default class PlayerSystem extends System {
     constructor(eventManager, entityManager) {
         super(SystemType.Player, eventManager, entityManager, [
-            ComponentType.Controller,
-            ComponentType.Movement,
+            CType.Controller,
+            CType.Movement,
         ]);
     }
     logic() {
         for (let entityId of this.entities) {
-            const controller = this.entityManager.data[ComponentType.Controller].get(entityId);
-            const movement = this.entityManager.data[ComponentType.Movement].get(entityId);
-            this.determineMovement(controller, movement);
+            const con = this.entityManager.get(entityId, CType.Controller);
+            const mov = this.entityManager.get(entityId, CType.Movement);
+            this.determineMovement(con, mov);
         }
     }
     handleEvent(event) {
         switch (event) {
             case Event.level_down:
-                for (let entitiyId of this.entities) {
-                    const pos = this.entityManager.data[ComponentType.Position].get(entitiyId);
+                for (let entityId of this.entities) {
+                    const pos = this.entityManager.get(entityId, CType.Position);
                     pos.z++;
                 }
                 break;
             case Event.level_up:
-                for (let entitiyId of this.entities) {
-                    const pos = this.entityManager.data[ComponentType.Position].get(entitiyId);
+                for (let entityId of this.entities) {
+                    const pos = this.entityManager.get(entityId, CType.Position);
                     pos.z--;
                 }
                 break;

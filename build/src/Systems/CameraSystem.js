@@ -1,28 +1,26 @@
 import { abs, floor } from "../../lib/PoppsMath.js";
-import { ComponentType } from "../Component.js";
+import { CType } from "../Component.js";
 import { System, SystemType } from "../System.js";
 export default class CameraSystem extends System {
     constructor(eventManager, entityManager) {
-        super(SystemType.Camera, eventManager, entityManager, [
-            ComponentType.Camera,
-        ]);
+        super(SystemType.Camera, eventManager, entityManager, [CType.Camera]);
         this.CAMERA_SPEED_DAMPER = 0.88;
         this.CAMERA_ACCEL_DIVIDER = 250;
     }
     logic() {
         for (let entityId of this.entities) {
-            if (this.entityManager.data[ComponentType.Position].has(entityId)) {
+            if (this.entityManager.getEntity(entityId).has(CType.Position)) {
                 this.moveCamera(entityId);
             }
-            if (this.entityManager.data[ComponentType.Controller].has(entityId)) {
+            if (this.entityManager.getEntity(entityId).has(CType.Controller)) {
                 this.zoomCamera(entityId);
             }
         }
     }
     handleEvent(event) { }
     moveCamera(entityId) {
-        const cam = this.entityManager.data[ComponentType.Camera].get(entityId);
-        const pos = this.entityManager.data[ComponentType.Position].get(entityId);
+        const cam = this.entityManager.get(entityId, CType.Camera);
+        const pos = this.entityManager.get(entityId, CType.Position);
         cam.z = pos.z;
         if (abs(cam.x - pos.x) > 0.01) {
             cam.accx = (pos.x - cam.x) / this.CAMERA_ACCEL_DIVIDER;
@@ -48,8 +46,8 @@ export default class CameraSystem extends System {
         }
     }
     zoomCamera(entityId) {
-        const cam = this.entityManager.data[ComponentType.Camera].get(entityId);
-        const con = this.entityManager.data[ComponentType.Controller].get(entityId);
+        const cam = this.entityManager.get(entityId, CType.Camera);
+        const con = this.entityManager.get(entityId, CType.Controller);
         if (con.zoom_in) {
             if (cam.zoom >= 20) {
                 con.zoom_in = false;

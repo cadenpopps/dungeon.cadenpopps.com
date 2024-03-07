@@ -1,11 +1,11 @@
 import * as PoppsInput from "../../lib/PoppsInput.js";
-import { ComponentType } from "../Component.js";
+import { CType } from "../Component.js";
 import { Event } from "../EventManager.js";
 import { System, SystemType } from "../System.js";
 export default class InputSystem extends System {
     constructor(eventManager, entityManager) {
         super(SystemType.Input, eventManager, entityManager, [
-            ComponentType.Controller,
+            CType.Controller,
         ]);
         PoppsInput.listenKeyDown(this.keyDownHandler.bind(this));
         PoppsInput.listenKeyUp(this.keyUpHandler.bind(this));
@@ -15,7 +15,7 @@ export default class InputSystem extends System {
     handleEvent(event) { }
     keyDownHandler(key) {
         for (let entityId of this.entities) {
-            const controller = this.entityManager.data[ComponentType.Controller].get(entityId);
+            const controller = this.entityManager.get(entityId, CType.Controller);
             switch (key) {
                 case "n":
                     this.eventManager.addEvent(Event.level_down);
@@ -48,7 +48,7 @@ export default class InputSystem extends System {
     }
     keyUpHandler(key) {
         for (let entityId of this.entities) {
-            const controller = this.entityManager.data[ComponentType.Controller].get(entityId);
+            const controller = this.entityManager.get(entityId, CType.Controller);
             switch (key) {
                 case "w":
                 case "W":
@@ -75,12 +75,12 @@ export default class InputSystem extends System {
     }
     scrollHandler(event) {
         for (let entityId of this.entities) {
-            const controller = this.entityManager.data[ComponentType.Controller].get(entityId);
-            if (event.deltaY > 0) {
+            const controller = this.entityManager.get(entityId, CType.Controller);
+            if (event.deltaY < 0) {
                 controller.zoom_in = false;
                 controller.zoom_out = true;
             }
-            else if (event.deltaY < 0) {
+            else if (event.deltaY > 0) {
                 controller.zoom_in = true;
                 controller.zoom_out = false;
             }

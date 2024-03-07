@@ -1,10 +1,13 @@
-import { ComponentType } from "./Component.js";
+import { CType } from "./Component.js";
 import { Event } from "./EventManager.js";
 export class EntityManager {
     constructor(eventManager) {
+        this.CTypes = Object.keys(CType).length / 2;
         this.eventManager = eventManager;
-        this.entities = new Array();
-        this.data = [...Array(Object.keys(ComponentType).length / 2)].map(() => new Map());
+        this.entities = new Map();
+        for (let i = 0; i < this.CTypes; i++) {
+            this.entities.set(i, new Map());
+        }
         this.destroyQueue = new Array();
         this.idCounter = 0;
     }
@@ -17,13 +20,28 @@ export class EntityManager {
             }
         }
     }
+    getEntity(entityId) {
+        const entity = this.entities.get(entityId);
+        if (entity !== undefined) {
+            return entity;
+        }
+        throw new Error(`Entity ${entityId} not found`);
+    }
+    get(entityId, CType) {
+        const entity = this.entities.get(entityId);
+        if (entity !== undefined) {
+            const component = entity.get(CType);
+            if (component !== undefined) {
+                return component;
+            }
+            throw new Error(`Entity ${entityId} does not have component ${CType}`);
+        }
+        throw new Error(`Entity ${entityId} not found`);
+    }
     addEntity(components) {
         const entityId = this.idCounter;
         this.idCounter++;
-        this.entities.push(entityId);
-        for (let c of components) {
-            this.data[c.type].set(entityId, c);
-        }
+        this.entities.set(entityId, components);
         this.eventManager.addEvent(Event.entity_created);
         return entityId;
     }
@@ -31,19 +49,15 @@ export class EntityManager {
         const entityIds = new Array();
         for (let entity of entities) {
             const entityId = this.idCounter;
-            entityIds.push(entityId);
             this.idCounter++;
-            this.entities.push(entityId);
-            for (let c of entity) {
-                this.data[c.type].set(entityId, c);
-            }
+            this.entities.set(entityId, entity);
+            entityIds.push(entityId);
         }
         this.eventManager.addEvent(Event.entity_created);
         return entityIds;
     }
     removeEntity(entityId) {
-        let index = this.entities.indexOf(entityId);
-        if (index !== -1) {
+        if (this.entities.has(entityId)) {
             this.destroyQueue.push(entityId);
             this.eventManager.addEvent(Event.entity_destroyed);
         }
@@ -51,8 +65,7 @@ export class EntityManager {
     removeEntities(entityIds) {
         let entitiesDestroyed = false;
         for (let entityId of entityIds) {
-            let index = this.entities.indexOf(entityId);
-            if (index !== -1) {
+            if (this.entities.has(entityId)) {
                 this.destroyQueue.push(entityId);
                 entitiesDestroyed = true;
             }
@@ -63,31 +76,24 @@ export class EntityManager {
     }
     destroyEntities() {
         for (let entityId of this.destroyQueue) {
-            let index = this.entities.indexOf(entityId);
-            this.entities.splice(index, 1);
-            for (let componentList of this.data) {
-                componentList.delete(entityId);
-            }
+            this.entities.delete(entityId);
         }
         this.destroyQueue = new Array();
     }
-    getEntitiesWithComponentTypes(componentRequirements) {
+    getSystemEntities(componentRequirements) {
         const entitiesWithComponents = new Array();
-        for (let entityId of this.entities) {
+        for (let entity of this.entities.entries()) {
             let missingComponent = false;
-            for (let componentType of componentRequirements) {
-                if (!this.data[componentType].has(entityId)) {
+            for (let CType of componentRequirements) {
+                if (!entity[1].has(CType)) {
                     missingComponent = true;
                 }
             }
             if (!missingComponent) {
-                entitiesWithComponents.push(entityId);
+                entitiesWithComponents.push(entity[0]);
             }
         }
         return entitiesWithComponents;
-    }
-    getComponentList(componentType) {
-        return this.data[componentType];
     }
 }
 //# sourceMappingURL=EntityManager.js.map

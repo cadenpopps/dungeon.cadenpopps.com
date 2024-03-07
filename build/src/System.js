@@ -24,7 +24,7 @@ export class System {
         }
     }
     refreshEntities() {
-        this.entities = this.entityManager.getEntitiesWithComponentTypes(this.requiredComponents);
+        this.entities = this.entityManager.getSystemEntities(this.requiredComponents);
     }
 }
 export var SystemType;

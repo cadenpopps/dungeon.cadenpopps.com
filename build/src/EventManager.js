@@ -22,7 +22,7 @@ export var Event;
     Event[Event["entity_created"] = 1] = "entity_created";
     Event[Event["entity_destroyed"] = 2] = "entity_destroyed";
     Event[Event["entity_modified"] = 3] = "entity_modified";
-    Event[Event["level_down"] = 4] = "level_down";
-    Event[Event["level_up"] = 5] = "level_up";
+    Event[Event["level_change"] = 4] = "level_change";
+    Event[Event["level_loaded"] = 5] = "level_loaded";
 })(Event || (Event = {}));
 //# sourceMappingURL=EventManager.js.map

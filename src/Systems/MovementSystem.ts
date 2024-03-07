@@ -1,4 +1,5 @@
-import { ComponentType, Direction } from "../Component.js";
+import { floor } from "../../lib/PoppsMath.js";
+import { CType, Direction } from "../Component.js";
 import MovementComponent from "../Components/MovementComponent.js";
 import VelocityComponent from "../Components/VelocityComponent.js";
 import { EntityManager } from "../EntityManager.js";
@@ -6,24 +7,26 @@ import { Event, EventManager } from "../EventManager.js";
 import { System, SystemType } from "../System.js";
 
 export default class MovementSystem extends System {
-    private movementCooldown = 15;
+    private movementCooldown = 300;
 
     constructor(eventManager: EventManager, entityManager: EntityManager) {
         super(SystemType.Movement, eventManager, entityManager, [
-            ComponentType.Velocity,
-            ComponentType.Movement,
+            CType.Velocity,
+            CType.Movement,
         ]);
     }
 
     public logic(): void {
         for (let entityId of this.entities) {
-            const movement = this.entityManager.data[
-                ComponentType.Movement
-            ].get(entityId) as MovementComponent;
-            const velocity = this.entityManager.data[
-                ComponentType.Velocity
-            ].get(entityId) as VelocityComponent;
-            this.determineVelocity(movement, velocity);
+            const mov = this.entityManager.get<MovementComponent>(
+                entityId,
+                CType.Movement
+            );
+            const vel = this.entityManager.get<VelocityComponent>(
+                entityId,
+                CType.Velocity
+            );
+            this.determineVelocity(mov, vel);
         }
     }
 
@@ -34,7 +37,7 @@ export default class MovementSystem extends System {
         velocity: VelocityComponent
     ): void {
         if (movement.cooldown === 0) {
-            movement.cooldown = this.movementCooldown;
+            movement.cooldown = floor(this.movementCooldown / movement.speed);
             switch (movement.direction) {
                 case Direction.NONE:
                     movement.previousDirection = Direction.NONE;

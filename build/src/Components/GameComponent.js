@@ -1,7 +1,7 @@
-import { Component, ComponentType } from "../Component.js";
+import { Component, CType } from "../Component.js";
 export default class GameComponent extends Component {
     constructor(gameState) {
-        super(ComponentType.Game);
+        super(CType.Game);
         this.GameState = gameState || GameState.TITLE;
     }
 }

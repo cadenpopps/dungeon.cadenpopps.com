@@ -1,4 +1,4 @@
-import { ComponentType, Direction } from "../Component.js";
+import { CType, Direction } from "../Component.js";
 import ControllerComponent from "../Components/ControllerComponent.js";
 import MovementComponent from "../Components/MovementComponent.js";
 import PositionComponent from "../Components/PositionComponent.js";
@@ -9,38 +9,42 @@ import { System, SystemType } from "../System.js";
 export default class PlayerSystem extends System {
     constructor(eventManager: EventManager, entityManager: EntityManager) {
         super(SystemType.Player, eventManager, entityManager, [
-            ComponentType.Controller,
-            ComponentType.Movement,
+            CType.Controller,
+            CType.Movement,
         ]);
     }
 
     public logic(): void {
         for (let entityId of this.entities) {
-            const controller = this.entityManager.data[
-                ComponentType.Controller
-            ].get(entityId) as ControllerComponent;
-            const movement = this.entityManager.data[
-                ComponentType.Movement
-            ].get(entityId) as MovementComponent;
-            this.determineMovement(controller, movement);
+            const con = this.entityManager.get<ControllerComponent>(
+                entityId,
+                CType.Controller
+            );
+            const mov = this.entityManager.get<MovementComponent>(
+                entityId,
+                CType.Movement
+            );
+            this.determineMovement(con, mov);
         }
     }
 
     public handleEvent(event: Event): void {
         switch (event) {
             case Event.level_down:
-                for (let entitiyId of this.entities) {
-                    const pos = this.entityManager.data[
-                        ComponentType.Position
-                    ].get(entitiyId) as PositionComponent;
+                for (let entityId of this.entities) {
+                    const pos = this.entityManager.get<PositionComponent>(
+                        entityId,
+                        CType.Position
+                    );
                     pos.z++;
                 }
                 break;
             case Event.level_up:
-                for (let entitiyId of this.entities) {
-                    const pos = this.entityManager.data[
-                        ComponentType.Position
-                    ].get(entitiyId) as PositionComponent;
+                for (let entityId of this.entities) {
+                    const pos = this.entityManager.get<PositionComponent>(
+                        entityId,
+                        CType.Position
+                    );
                     pos.z--;
                 }
                 break;

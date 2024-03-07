@@ -1,14 +1,14 @@
 import PoppsCanvas from "../../lib/PoppsCanvas.js";
 import { distance, floor } from "../../lib/PoppsMath.js";
-import { ComponentType } from "../Component.js";
+import { CType } from "../Component.js";
 import CameraComponent from "../Components/CameraComponent.js";
 import { Event } from "../EventManager.js";
 import { System, SystemType } from "../System.js";
 export default class GraphicsSystem extends System {
     constructor(eventManager, entityManager) {
         super(SystemType.Graphics, eventManager, entityManager, [
-            ComponentType.Position,
-            ComponentType.Visible,
+            CType.Position,
+            CType.Visible,
         ]);
         this.canvas = new PoppsCanvas();
         this.masterCamera = new CameraComponent(0, 0, 0, 0, 0);
@@ -24,11 +24,7 @@ export default class GraphicsSystem extends System {
                 this.adjustCamera();
                 this.groupEntitiesByLayer();
                 break;
-            case Event.level_up:
-                this.adjustCamera();
-                this.groupEntitiesByLayer();
-                break;
-            case Event.level_down:
+            case Event.level_loaded:
                 this.adjustCamera();
                 this.groupEntitiesByLayer();
                 break;
@@ -46,11 +42,11 @@ export default class GraphicsSystem extends System {
         for (let layer of this.layers) {
             const visibleEntities = this.determineVisibleEntities(layer);
             for (let entityId of visibleEntities) {
-                const pos = this.entityManager.data[ComponentType.Position].get(entityId);
-                const vis = this.entityManager.data[ComponentType.Visible].get(entityId);
+                const pos = this.entityManager.get(entityId, CType.Position);
+                const vis = this.entityManager.get(entityId, CType.Visible);
                 this.canvas.fill(vis.r, vis.g, vis.b, vis.a);
                 this.canvas.rect(pos.x, pos.y, 1, 1);
-                if (vis.layer > 0) {
+                if (vis.layer === 5) {
                     this.canvas.fill(0, 0, 0);
                     this.canvas.rect(pos.x + 0.2, pos.y + 0.2, 0.1, 0.1);
                     this.canvas.rect(pos.x + 0.7, pos.y + 0.2, 0.1, 0.1);
@@ -65,7 +61,7 @@ export default class GraphicsSystem extends System {
     groupEntitiesByLayer() {
         this.layers = new Array();
         for (let entityId of this.entities) {
-            const vis = this.entityManager.data[ComponentType.Visible].get(entityId);
+            const vis = this.entityManager.get(entityId, CType.Visible);
             while (this.layers.length - 1 < vis.layer) {
                 this.layers.push([]);
             }
@@ -82,15 +78,15 @@ export default class GraphicsSystem extends System {
         return visibleEntities;
     }
     withinVisionRange(entityId) {
-        const pos = this.entityManager.data[ComponentType.Position].get(entityId);
+        const pos = this.entityManager.get(entityId, CType.Position);
         return (distance(pos.x, pos.y, this.masterCamera.x, this.masterCamera.y) <
             this.masterCamera.visibleDistance);
     }
     adjustCamera() {
         this.masterCamera.priority = -1;
         for (let entityId of this.entities) {
-            if (this.entityManager.data[ComponentType.Camera].has(entityId)) {
-                const cam = this.entityManager.data[ComponentType.Camera].get(entityId);
+            if (this.entityManager.getEntity(entityId).has(CType.Camera)) {
+                const cam = this.entityManager.get(entityId, CType.Camera);
                 if (cam.priority > this.masterCamera.priority) {
                     this.masterCamera.zoom = cam.zoom;
                     this.masterCamera.x = cam.x;

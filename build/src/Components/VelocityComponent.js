@@ -1,7 +1,7 @@
-import { Component, ComponentType } from "../Component.js";
+import { Component, CType } from "../Component.js";
 export default class VelocityComponent extends Component {
     constructor(x, y) {
-        super(ComponentType.Velocity);
+        super(CType.Velocity);
         this.x = x || 0;
         this.y = y || 0;
     }

@@ -1,5 +1,5 @@
 import * as PoppsInput from "../../lib/PoppsInput.js";
-import { ComponentType } from "../Component.js";
+import { CType } from "../Component.js";
 import ControllerComponent from "../Components/ControllerComponent.js";
 import { EntityManager } from "../EntityManager.js";
 import { Event, EventManager } from "../EventManager.js";
@@ -8,7 +8,7 @@ import { System, SystemType } from "../System.js";
 export default class InputSystem extends System {
     constructor(eventManager: EventManager, entityManager: EntityManager) {
         super(SystemType.Input, eventManager, entityManager, [
-            ComponentType.Controller,
+            CType.Controller,
         ]);
 
         PoppsInput.listenKeyDown(this.keyDownHandler.bind(this));
@@ -22,9 +22,10 @@ export default class InputSystem extends System {
 
     private keyDownHandler(key: string): void {
         for (let entityId of this.entities) {
-            const controller = this.entityManager.data[
-                ComponentType.Controller
-            ].get(entityId) as ControllerComponent;
+            const controller = this.entityManager.get<ControllerComponent>(
+                entityId,
+                CType.Controller
+            );
             switch (key) {
                 case "n":
                     this.eventManager.addEvent(Event.level_down);
@@ -58,9 +59,10 @@ export default class InputSystem extends System {
 
     private keyUpHandler(key: string): void {
         for (let entityId of this.entities) {
-            const controller = this.entityManager.data[
-                ComponentType.Controller
-            ].get(entityId) as ControllerComponent;
+            const controller = this.entityManager.get<ControllerComponent>(
+                entityId,
+                CType.Controller
+            );
             switch (key) {
                 case "w":
                 case "W":
@@ -88,13 +90,14 @@ export default class InputSystem extends System {
 
     private scrollHandler(event: WheelEvent): void {
         for (let entityId of this.entities) {
-            const controller = this.entityManager.data[
-                ComponentType.Controller
-            ].get(entityId) as ControllerComponent;
-            if (event.deltaY > 0) {
+            const controller = this.entityManager.get<ControllerComponent>(
+                entityId,
+                CType.Controller
+            );
+            if (event.deltaY < 0) {
                 controller.zoom_in = false;
                 controller.zoom_out = true;
-            } else if (event.deltaY < 0) {
+            } else if (event.deltaY > 0) {
                 controller.zoom_in = true;
                 controller.zoom_out = false;
             }

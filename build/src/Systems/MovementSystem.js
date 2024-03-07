@@ -1,24 +1,25 @@
-import { ComponentType, Direction } from "../Component.js";
+import { floor } from "../../lib/PoppsMath.js";
+import { CType, Direction } from "../Component.js";
 import { System, SystemType } from "../System.js";
 export default class MovementSystem extends System {
     constructor(eventManager, entityManager) {
         super(SystemType.Movement, eventManager, entityManager, [
-            ComponentType.Velocity,
-            ComponentType.Movement,
+            CType.Velocity,
+            CType.Movement,
         ]);
-        this.movementCooldown = 15;
+        this.movementCooldown = 300;
     }
     logic() {
         for (let entityId of this.entities) {
-            const movement = this.entityManager.data[ComponentType.Movement].get(entityId);
-            const velocity = this.entityManager.data[ComponentType.Velocity].get(entityId);
-            this.determineVelocity(movement, velocity);
+            const mov = this.entityManager.get(entityId, CType.Movement);
+            const vel = this.entityManager.get(entityId, CType.Velocity);
+            this.determineVelocity(mov, vel);
         }
     }
     handleEvent(event) { }
     determineVelocity(movement, velocity) {
         if (movement.cooldown === 0) {
-            movement.cooldown = this.movementCooldown;
+            movement.cooldown = floor(this.movementCooldown / movement.speed);
             switch (movement.direction) {
                 case Direction.NONE:
                     movement.previousDirection = Direction.NONE;
