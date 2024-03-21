@@ -4,25 +4,15 @@ import { Event } from "../EventManager.js";
 import { System, SystemType } from "../System.js";
 export default class InputSystem extends System {
     constructor(eventManager, entityManager) {
-        super(SystemType.Input, eventManager, entityManager, [
-            CType.Controller,
-        ]);
+        super(SystemType.Input, eventManager, entityManager, [CType.Controller]);
         PoppsInput.listenKeyDown(this.keyDownHandler.bind(this));
         PoppsInput.listenKeyUp(this.keyUpHandler.bind(this));
         PoppsInput.listenScroll(this.scrollHandler.bind(this));
     }
-    logic() { }
-    handleEvent(event) { }
     keyDownHandler(key) {
         for (let entityId of this.entities) {
             const controller = this.entityManager.get(entityId, CType.Controller);
             switch (key) {
-                case "n":
-                    this.eventManager.addEvent(Event.level_down);
-                    break;
-                case "u":
-                    this.eventManager.addEvent(Event.level_up);
-                    break;
                 case "w":
                 case "W":
                 case "ArrowUp":
@@ -42,6 +32,10 @@ export default class InputSystem extends System {
                 case "A":
                 case "ArrowLeft":
                     controller.left = true;
+                    break;
+                case "e":
+                case "E":
+                    controller.interact = true;
                     break;
             }
         }
@@ -69,6 +63,13 @@ export default class InputSystem extends System {
                 case "A":
                 case "ArrowLeft":
                     controller.left = false;
+                    break;
+                case "e":
+                case "E":
+                    controller.interact = false;
+                    break;
+                case "n":
+                    this.eventManager.addEvent(Event.level_change);
                     break;
             }
         }

@@ -4,10 +4,11 @@ import CameraComponent from "../Components/CameraComponent.js";
 import ControllerComponent from "../Components/ControllerComponent.js";
 import PositionComponent from "../Components/PositionComponent.js";
 import { EntityManager } from "../EntityManager.js";
-import { Event, EventManager } from "../EventManager.js";
+import { EventManager } from "../EventManager.js";
 import { System, SystemType } from "../System.js";
 
 export default class CameraSystem extends System {
+    private CAMERA_MIN_ZOOM = 10;
     private CAMERA_SPEED_DAMPER = 0.88;
     private CAMERA_ACCEL_DIVIDER = 250;
 
@@ -26,17 +27,9 @@ export default class CameraSystem extends System {
         }
     }
 
-    public handleEvent(event: Event): void {}
-
     private moveCamera(entityId: number): void {
-        const cam = this.entityManager.get<CameraComponent>(
-            entityId,
-            CType.Camera
-        );
-        const pos = this.entityManager.get<PositionComponent>(
-            entityId,
-            CType.Position
-        );
+        const cam = this.entityManager.get<CameraComponent>(entityId, CType.Camera);
+        const pos = this.entityManager.get<PositionComponent>(entityId, CType.Position);
 
         cam.z = pos.z;
         if (abs(cam.x - pos.x) > 0.01) {
@@ -63,17 +56,11 @@ export default class CameraSystem extends System {
     }
 
     private zoomCamera(entityId: number): void {
-        const cam = this.entityManager.get<CameraComponent>(
-            entityId,
-            CType.Camera
-        );
-        const con = this.entityManager.get<ControllerComponent>(
-            entityId,
-            CType.Controller
-        );
+        const cam = this.entityManager.get<CameraComponent>(entityId, CType.Camera);
+        const con = this.entityManager.get<ControllerComponent>(entityId, CType.Controller);
 
         if (con.zoom_in) {
-            if (cam.zoom >= 20) {
+            if (cam.zoom >= this.CAMERA_MIN_ZOOM) {
                 con.zoom_in = false;
                 cam.zoom -= 2;
                 cam.visibleDistance = floor(1500 / cam.zoom);

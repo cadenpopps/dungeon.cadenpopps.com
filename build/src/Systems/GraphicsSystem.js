@@ -6,16 +6,12 @@ import { Event } from "../EventManager.js";
 import { System, SystemType } from "../System.js";
 export default class GraphicsSystem extends System {
     constructor(eventManager, entityManager) {
-        super(SystemType.Graphics, eventManager, entityManager, [
-            CType.Position,
-            CType.Visible,
-        ]);
+        super(SystemType.Graphics, eventManager, entityManager, [CType.Position, CType.Visible]);
         this.canvas = new PoppsCanvas();
         this.masterCamera = new CameraComponent(0, 0, 0, 0, 0);
         this.layers = Array();
         this.canvas.loop(this.canvasCallback.bind(this));
     }
-    logic() { }
     handleEvent(event) {
         switch (event) {
             case Event.entity_created:
@@ -33,11 +29,7 @@ export default class GraphicsSystem extends System {
     canvasCallback() {
         this.canvas.background(0, 0, 0);
         this.adjustCamera();
-        this.canvas.canvas.translate(floor(this.canvas.width / 2 -
-            0.5 * this.masterCamera.zoom -
-            this.masterCamera.x * this.masterCamera.zoom), floor(this.canvas.height / 2 -
-            0.5 * this.masterCamera.zoom -
-            this.masterCamera.y * this.masterCamera.zoom));
+        this.canvas.canvas.translate(floor(this.canvas.width / 2 - 0.5 * this.masterCamera.zoom - this.masterCamera.x * this.masterCamera.zoom), floor(this.canvas.height / 2 - 0.5 * this.masterCamera.zoom - this.masterCamera.y * this.masterCamera.zoom));
         this.canvas.canvas.scale(this.masterCamera.zoom, this.masterCamera.zoom);
         for (let layer of this.layers) {
             const visibleEntities = this.determineVisibleEntities(layer);
@@ -79,8 +71,7 @@ export default class GraphicsSystem extends System {
     }
     withinVisionRange(entityId) {
         const pos = this.entityManager.get(entityId, CType.Position);
-        return (distance(pos.x, pos.y, this.masterCamera.x, this.masterCamera.y) <
-            this.masterCamera.visibleDistance);
+        return distance(pos.x, pos.y, this.masterCamera.x, this.masterCamera.y) < this.masterCamera.visibleDistance;
     }
     adjustCamera() {
         this.masterCamera.priority = -1;

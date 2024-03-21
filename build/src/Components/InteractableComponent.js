@@ -8,7 +8,7 @@ export default class InteractableComponent extends Component {
 export var Interactable;
 (function (Interactable) {
     Interactable[Interactable["Player"] = 0] = "Player";
-    Interactable[Interactable["LevelExit"] = 1] = "LevelExit";
+    Interactable[Interactable["LevelChange"] = 1] = "LevelChange";
     Interactable[Interactable["Chest"] = 2] = "Chest";
     Interactable[Interactable["Door"] = 3] = "Door";
 })(Interactable || (Interactable = {}));

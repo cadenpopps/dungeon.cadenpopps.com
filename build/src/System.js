@@ -16,6 +16,12 @@ export class System {
                 case Event.entity_destroyed:
                     this.refreshEntities();
                     break;
+                case Event.level_change:
+                    this.pause();
+                    break;
+                case Event.level_loaded:
+                    this.unpause();
+                    break;
             }
             this.handleEvent(event);
         }
@@ -23,8 +29,18 @@ export class System {
             this.logic();
         }
     }
+    handleEvent(_event) { }
+    logic() { }
     refreshEntities() {
         this.entities = this.entityManager.getSystemEntities(this.requiredComponents);
+        this.refreshEntitiesHelper();
+    }
+    refreshEntitiesHelper() { }
+    pause() {
+        this.paused = true;
+    }
+    unpause() {
+        this.paused = false;
     }
 }
 export var SystemType;

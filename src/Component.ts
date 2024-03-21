@@ -16,10 +16,10 @@ export enum CType {
     Movement,
     Camera,
     Level,
-    LevelEntry,
-    LevelExit,
+    LevelChange,
     Player,
     Interactable,
+    Tile,
 }
 
 export enum Direction {

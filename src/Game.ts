@@ -3,9 +3,7 @@ import { CType, Component } from "./Component.js";
 import CameraComponent from "./Components/CameraComponent.js";
 import CollisionComponent from "./Components/CollisionComponent.js";
 import ControllerComponent from "./Components/ControllerComponent.js";
-import InteractableComponent, {
-    Interactable,
-} from "./Components/InteractableComponent.js";
+import InteractableComponent, { Interactable } from "./Components/InteractableComponent.js";
 import MovementComponent from "./Components/MovementComponent.js";
 import PlayerComponent from "./Components/PlayerComponent.js";
 import PositionComponent from "./Components/PositionComponent.js";
@@ -46,8 +44,8 @@ entityManager.addEntity(
         [CType.Visible, new VisibleComponent([0, 255, 255], 5)],
         [CType.Collision, new CollisionComponent()],
         [CType.Controller, new ControllerComponent()],
-        [CType.Camera, new CameraComponent(0, 0, 0, 50, 1)],
-        [CType.Movement, new MovementComponent(90)],
+        [CType.Camera, new CameraComponent(0, 0, 0, 60, 1)],
+        [CType.Movement, new MovementComponent(45)],
         [CType.Interactable, new InteractableComponent(Interactable.Player)],
     ])
 );

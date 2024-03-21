@@ -11,7 +11,7 @@ export default class InteractableComponent extends Component {
 
 export enum Interactable {
     Player,
-    LevelExit,
+    LevelChange,
     Chest,
     Door,
 }

@@ -4,9 +4,9 @@ export default class VelocityComponent extends Component {
     public x: number;
     public y: number;
 
-    constructor(x: number, y: number) {
+    constructor(x: number = 0, y: number = 0) {
         super(CType.Velocity);
-        this.x = x || 0;
-        this.y = y || 0;
+        this.x = x;
+        this.y = y;
     }
 }

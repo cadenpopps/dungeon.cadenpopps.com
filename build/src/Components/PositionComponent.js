@@ -1,10 +1,10 @@
 import { Component, CType } from "../Component.js";
 export default class PositionComponent extends Component {
-    constructor(x, y, z) {
+    constructor(x = 0, y = 0, z = 0) {
         super(CType.Position);
-        this.x = x || 0;
-        this.y = y || 0;
-        this.z = z || 0;
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
 }
 //# sourceMappingURL=PositionComponent.js.map

@@ -1,36 +1,38 @@
 import { CType } from "../Component.js";
-import PositionComponent from "../Components/PositionComponent.js";
 import { Event } from "../EventManager.js";
 import { System, SystemType } from "../System.js";
 export default class GameSystem extends System {
     constructor(eventManager, entityManager) {
         super(SystemType.Game, eventManager, entityManager, []);
     }
-    logic() { }
     handleEvent(event) {
         switch (event) {
             case Event.level_loaded:
-                this.movePlayerToLevelEntry();
+                this.fixPlayerPos();
                 break;
         }
     }
-    movePlayerToLevelEntry() {
-        let entryPos = new PositionComponent(0, 0, 0);
-        let entryId = 0;
+    fixPlayerPos() {
         let playerId = -1;
+        let exitId = -1;
         for (let entityId of this.entities) {
-            if (this.entityManager.getEntity(entityId).has(CType.LevelEntry)) {
-                entryPos = this.entityManager.get(entityId, CType.Position);
-                entryId = this.entityManager.get(entityId, CType.LevelEntry).id;
-            }
             if (this.entityManager.getEntity(entityId).has(CType.Player)) {
                 playerId = entityId;
+                exitId = this.entityManager.get(playerId, CType.Player).levelChangeId;
             }
         }
-        if (playerId !== -1) {
-            const player = this.entityManager.getEntity(playerId);
-            player.set(CType.Position, new PositionComponent(entryPos.x, entryPos.y, entryPos.z));
-            this.entityManager.get(playerId, CType.Player).levelEntryId = entryId;
+        for (let entityId of this.entities) {
+            const entity = this.entityManager.getEntity(entityId);
+            if (entity.has(CType.LevelChange)) {
+                if (this.entityManager.get(entityId, CType.LevelChange).id === exitId) {
+                    const destinationPos = this.entityManager.get(entityId, CType.Position);
+                    const playerPos = this.entityManager.get(playerId, CType.Position);
+                    playerPos.x = destinationPos.x + (destinationPos.z > playerPos.z ? 1 : -1);
+                    playerPos.y = destinationPos.y;
+                    playerPos.z = destinationPos.z;
+                    return;
+                }
+            }
         }
     }
 }

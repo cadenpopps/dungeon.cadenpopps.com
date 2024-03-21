@@ -1,7 +1,8 @@
-const DungeonTown = importJson("content/levels/DungeonTown.json");
-export default { DungeonTown };
-
-function importJson(path: string) {
+const EntryRooms = importJson("content/rooms/EntryRooms.json");
+const ExitRooms = importJson("content/rooms/ExitRooms.json");
+const EmptyRooms = importJson("content/rooms/EmptyRooms.json");
+export default { EntryRooms, ExitRooms, EmptyRooms };
+function importJson(path) {
     var request = new XMLHttpRequest();
     request.open("GET", path, false);
     request.send(null);
@@ -15,3 +16,4 @@ function importJson(path: string) {
         return value;
     });
 }
+//# sourceMappingURL=Rooms.js.map

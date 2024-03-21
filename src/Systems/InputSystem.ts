@@ -7,32 +7,17 @@ import { System, SystemType } from "../System.js";
 
 export default class InputSystem extends System {
     constructor(eventManager: EventManager, entityManager: EntityManager) {
-        super(SystemType.Input, eventManager, entityManager, [
-            CType.Controller,
-        ]);
+        super(SystemType.Input, eventManager, entityManager, [CType.Controller]);
 
         PoppsInput.listenKeyDown(this.keyDownHandler.bind(this));
         PoppsInput.listenKeyUp(this.keyUpHandler.bind(this));
         PoppsInput.listenScroll(this.scrollHandler.bind(this));
     }
 
-    public logic(): void {}
-
-    public handleEvent(event: Event): void {}
-
     private keyDownHandler(key: string): void {
         for (let entityId of this.entities) {
-            const controller = this.entityManager.get<ControllerComponent>(
-                entityId,
-                CType.Controller
-            );
+            const controller = this.entityManager.get<ControllerComponent>(entityId, CType.Controller);
             switch (key) {
-                case "n":
-                    this.eventManager.addEvent(Event.level_down);
-                    break;
-                case "u":
-                    this.eventManager.addEvent(Event.level_up);
-                    break;
                 case "w":
                 case "W":
                 case "ArrowUp":
@@ -53,16 +38,17 @@ export default class InputSystem extends System {
                 case "ArrowLeft":
                     controller.left = true;
                     break;
+                case "e":
+                case "E":
+                    controller.interact = true;
+                    break;
             }
         }
     }
 
     private keyUpHandler(key: string): void {
         for (let entityId of this.entities) {
-            const controller = this.entityManager.get<ControllerComponent>(
-                entityId,
-                CType.Controller
-            );
+            const controller = this.entityManager.get<ControllerComponent>(entityId, CType.Controller);
             switch (key) {
                 case "w":
                 case "W":
@@ -84,16 +70,20 @@ export default class InputSystem extends System {
                 case "ArrowLeft":
                     controller.left = false;
                     break;
+                case "e":
+                case "E":
+                    controller.interact = false;
+                    break;
+                case "n":
+                    this.eventManager.addEvent(Event.level_change);
+                    break;
             }
         }
     }
 
     private scrollHandler(event: WheelEvent): void {
         for (let entityId of this.entities) {
-            const controller = this.entityManager.get<ControllerComponent>(
-                entityId,
-                CType.Controller
-            );
+            const controller = this.entityManager.get<ControllerComponent>(entityId, CType.Controller);
             if (event.deltaY < 0) {
                 controller.zoom_in = false;
                 controller.zoom_out = true;

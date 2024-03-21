@@ -11,18 +11,14 @@ export default class InteractableSystem extends System {
     logic() {
         this.checkInteractions();
     }
-    handleEvent(event) {
-        switch (event) {
-            case Event.new_game:
-                break;
-            case Event.entity_created:
-                break;
-        }
-    }
+    handleEvent() { }
     checkInteractions() {
         for (let entityId of this.entities) {
             if (this.entityManager.get(entityId, CType.Interactable).interactableType === Interactable.Player) {
-                this.checkOverlap(entityId);
+                if (this.entityManager.get(entityId, CType.Controller).interact) {
+                    this.checkOverlap(entityId);
+                }
+                return;
             }
         }
     }
@@ -34,6 +30,7 @@ export default class InteractableSystem extends System {
                 if (playerPos.x === interactablePos.x &&
                     playerPos.y === interactablePos.y) {
                     this.handleInteraction(playerId, entityId);
+                    return;
                 }
             }
         }
@@ -41,10 +38,8 @@ export default class InteractableSystem extends System {
     handleInteraction(playerId, entityId) {
         const interactableType = this.entityManager.get(entityId, CType.Interactable).interactableType;
         switch (interactableType) {
-            case Interactable.LevelExit:
-                const player = this.entityManager.get(playerId, CType.Player);
-                const exit = this.entityManager.get(entityId, CType.LevelExit);
-                player.levelExitId = exit.id;
+            case Interactable.LevelChange:
+                this.entityManager.get(playerId, CType.Player).levelChangeId = this.entityManager.get(entityId, CType.LevelChange).id;
                 this.eventManager.addEvent(Event.level_change);
                 break;
         }

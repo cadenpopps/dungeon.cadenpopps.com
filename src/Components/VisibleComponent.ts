@@ -5,6 +5,7 @@ export default class VisibleComponent extends Component {
     public g: number;
     public b: number;
     public a: number;
+    public lightLevel: number;
     public layer: number;
 
     constructor(color: Array<number>, layer?: number) {

@@ -1,14 +1,12 @@
 import { Component, CType } from "../Component.js";
 
-export default class CameraComponent extends Component {
+export default class PlayerComponent extends Component {
     public level: number;
-    public levelExitId: number;
-    public levelEntryId: number;
+    public levelChangeId: number;
 
     constructor() {
         super(CType.Player);
         this.level = 1;
-        this.levelEntryId = 0;
-        this.levelExitId = 0;
+        this.levelChangeId = -1;
     }
 }

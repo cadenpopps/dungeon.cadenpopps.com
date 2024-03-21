@@ -1,0 +1,1 @@
+{"version":3,"file":"LevelChangeComponent.js","sourceRoot":"","sources":["../../../src/Components/LevelChangeComponent.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,EAAE,KAAK,EAAE,MAAM,iBAAiB,CAAC;AAEnD,MAAM,CAAC,OAAO,OAAO,oBAAqB,SAAQ,SAAS;IAGvD,YAAY,KAAa,CAAC,CAAC;QACvB,KAAK,CAAC,KAAK,CAAC,WAAW,CAAC,CAAC;QACzB,IAAI,CAAC,EAAE,GAAG,EAAE,CAAC;IACjB,CAAC;CACJ"}

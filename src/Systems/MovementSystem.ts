@@ -3,39 +3,25 @@ import { CType, Direction } from "../Component.js";
 import MovementComponent from "../Components/MovementComponent.js";
 import VelocityComponent from "../Components/VelocityComponent.js";
 import { EntityManager } from "../EntityManager.js";
-import { Event, EventManager } from "../EventManager.js";
+import { EventManager } from "../EventManager.js";
 import { System, SystemType } from "../System.js";
 
 export default class MovementSystem extends System {
     private movementCooldown = 300;
 
     constructor(eventManager: EventManager, entityManager: EntityManager) {
-        super(SystemType.Movement, eventManager, entityManager, [
-            CType.Velocity,
-            CType.Movement,
-        ]);
+        super(SystemType.Movement, eventManager, entityManager, [CType.Velocity, CType.Movement]);
     }
 
     public logic(): void {
         for (let entityId of this.entities) {
-            const mov = this.entityManager.get<MovementComponent>(
-                entityId,
-                CType.Movement
-            );
-            const vel = this.entityManager.get<VelocityComponent>(
-                entityId,
-                CType.Velocity
-            );
+            const mov = this.entityManager.get<MovementComponent>(entityId, CType.Movement);
+            const vel = this.entityManager.get<VelocityComponent>(entityId, CType.Velocity);
             this.determineVelocity(mov, vel);
         }
     }
 
-    public handleEvent(event: Event): void {}
-
-    private determineVelocity(
-        movement: MovementComponent,
-        velocity: VelocityComponent
-    ): void {
+    private determineVelocity(movement: MovementComponent, velocity: VelocityComponent): void {
         if (movement.cooldown === 0) {
             movement.cooldown = floor(this.movementCooldown / movement.speed);
             switch (movement.direction) {

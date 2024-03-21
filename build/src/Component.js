@@ -14,10 +14,10 @@ export var CType;
     CType[CType["Movement"] = 6] = "Movement";
     CType[CType["Camera"] = 7] = "Camera";
     CType[CType["Level"] = 8] = "Level";
-    CType[CType["LevelEntry"] = 9] = "LevelEntry";
-    CType[CType["LevelExit"] = 10] = "LevelExit";
-    CType[CType["Player"] = 11] = "Player";
-    CType[CType["Interactable"] = 12] = "Interactable";
+    CType[CType["LevelChange"] = 9] = "LevelChange";
+    CType[CType["Player"] = 10] = "Player";
+    CType[CType["Interactable"] = 11] = "Interactable";
+    CType[CType["Tile"] = 12] = "Tile";
 })(CType || (CType = {}));
 export var Direction;
 (function (Direction) {

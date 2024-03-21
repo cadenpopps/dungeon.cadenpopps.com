@@ -13,7 +13,6 @@ import InputSystem from ".././Systems/InputSystem.js";
 import { CType } from "../Component.js";
 import CollisionComponent from "../Components/CollisionComponent.js";
 import PlayerComponent from "../Components/PlayerComponent.js";
-import GameSystem from "../Systems/GameSystem.js";
 import MovementSystem from "../Systems/MovementSystem.js";
 import PhysicsSystem from "../Systems/PhysicsSystem.js";
 import PlayerSystem from "../Systems/PlayerSystem.js";
@@ -22,7 +21,6 @@ let engine = new PoppsEngine();
 let eventManager = new EventManager();
 let entityManager = new EntityManager(eventManager);
 let systems = Array();
-systems.push(new GameSystem(eventManager, entityManager));
 systems.push(new GraphicsSystem(eventManager, entityManager));
 systems.push(new InputSystem(eventManager, entityManager));
 systems.push(new PhysicsSystem(eventManager, entityManager));
@@ -38,7 +36,7 @@ entityManager.addEntity(new Map([
     [CType.Collision, new CollisionComponent()],
     [CType.Controller, new ControllerComponent()],
     [CType.Camera, new CameraComponent(0, 0, 0, 20, 1)],
-    [CType.Movement, new MovementComponent(100)],
+    [CType.Movement, new MovementComponent()],
     [CType.Player, new PlayerComponent()],
 ]));
 engine.loop(gameLoop);

@@ -1,8 +1,9 @@
 import { CType } from "../Component.js";
+import ControllerComponent from "../Components/ControllerComponent.js";
 import InteractableComponent, {
     Interactable,
 } from "../Components/InteractableComponent.js";
-import LevelExitComponent from "../Components/LevelExitComponent.js";
+import LevelChangeComponent from "../Components/LevelChangeComponent.js";
 import PlayerComponent from "../Components/PlayerComponent.js";
 import PositionComponent from "../Components/PositionComponent.js";
 import { EntityManager } from "../EntityManager.js";
@@ -20,14 +21,7 @@ export default class InteractableSystem extends System {
         this.checkInteractions();
     }
 
-    public handleEvent(event: Event): void {
-        switch (event) {
-            case Event.new_game:
-                break;
-            case Event.entity_created:
-                break;
-        }
-    }
+    public handleEvent(): void {}
 
     private checkInteractions(): void {
         for (let entityId of this.entities) {
@@ -37,7 +31,15 @@ export default class InteractableSystem extends System {
                     CType.Interactable
                 ).interactableType === Interactable.Player
             ) {
-                this.checkOverlap(entityId);
+                if (
+                    this.entityManager.get<ControllerComponent>(
+                        entityId,
+                        CType.Controller
+                    ).interact
+                ) {
+                    this.checkOverlap(entityId);
+                }
+                return;
             }
         }
     }
@@ -59,6 +61,7 @@ export default class InteractableSystem extends System {
                     playerPos.y === interactablePos.y
                 ) {
                     this.handleInteraction(playerId, entityId);
+                    return;
                 }
             }
         }
@@ -70,16 +73,14 @@ export default class InteractableSystem extends System {
             CType.Interactable
         ).interactableType;
         switch (interactableType) {
-            case Interactable.LevelExit:
-                const player = this.entityManager.get<PlayerComponent>(
+            case Interactable.LevelChange:
+                this.entityManager.get<PlayerComponent>(
                     playerId,
                     CType.Player
-                );
-                const exit = this.entityManager.get<LevelExitComponent>(
+                ).levelChangeId = this.entityManager.get<LevelChangeComponent>(
                     entityId,
-                    CType.LevelExit
-                );
-                player.levelExitId = exit.id;
+                    CType.LevelChange
+                ).id;
                 this.eventManager.addEvent(Event.level_change);
                 break;
         }

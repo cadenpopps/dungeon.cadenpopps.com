@@ -3,10 +3,7 @@ import { CType, Direction } from "../Component.js";
 import { System, SystemType } from "../System.js";
 export default class MovementSystem extends System {
     constructor(eventManager, entityManager) {
-        super(SystemType.Movement, eventManager, entityManager, [
-            CType.Velocity,
-            CType.Movement,
-        ]);
+        super(SystemType.Movement, eventManager, entityManager, [CType.Velocity, CType.Movement]);
         this.movementCooldown = 300;
     }
     logic() {
@@ -16,7 +13,6 @@ export default class MovementSystem extends System {
             this.determineVelocity(mov, vel);
         }
     }
-    handleEvent(event) { }
     determineVelocity(movement, velocity) {
         if (movement.cooldown === 0) {
             movement.cooldown = floor(this.movementCooldown / movement.speed);

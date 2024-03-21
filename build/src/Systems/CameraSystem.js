@@ -4,6 +4,7 @@ import { System, SystemType } from "../System.js";
 export default class CameraSystem extends System {
     constructor(eventManager, entityManager) {
         super(SystemType.Camera, eventManager, entityManager, [CType.Camera]);
+        this.CAMERA_MIN_ZOOM = 10;
         this.CAMERA_SPEED_DAMPER = 0.88;
         this.CAMERA_ACCEL_DIVIDER = 250;
     }
@@ -17,7 +18,6 @@ export default class CameraSystem extends System {
             }
         }
     }
-    handleEvent(event) { }
     moveCamera(entityId) {
         const cam = this.entityManager.get(entityId, CType.Camera);
         const pos = this.entityManager.get(entityId, CType.Position);
@@ -49,7 +49,7 @@ export default class CameraSystem extends System {
         const cam = this.entityManager.get(entityId, CType.Camera);
         const con = this.entityManager.get(entityId, CType.Controller);
         if (con.zoom_in) {
-            if (cam.zoom >= 20) {
+            if (cam.zoom >= this.CAMERA_MIN_ZOOM) {
                 con.zoom_in = false;
                 cam.zoom -= 2;
                 cam.visibleDistance = floor(1500 / cam.zoom);

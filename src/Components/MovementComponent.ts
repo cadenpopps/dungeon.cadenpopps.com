@@ -6,9 +6,9 @@ export default class MovementComponent extends Component {
     public cooldown: number;
     public speed: number;
 
-    constructor(speed?: number, direction?: Direction) {
+    constructor(speed: number = 30, direction: Direction = Direction.NONE) {
         super(CType.Movement);
-        this.speed = speed || 30;
+        this.speed = speed;
         this.direction = direction || Direction.NONE;
         this.previousDirection = Direction.NONE;
         this.cooldown = 0;

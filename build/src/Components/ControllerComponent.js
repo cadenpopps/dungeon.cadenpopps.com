@@ -6,6 +6,7 @@ export default class ControllerComponent extends Component {
         this.right = false;
         this.down = false;
         this.left = false;
+        this.interact = false;
         this.zoom_in = false;
         this.zoom_out = false;
     }

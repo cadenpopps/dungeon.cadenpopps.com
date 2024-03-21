@@ -1,8 +1,8 @@
 import { Component, CType, Direction } from "../Component.js";
 export default class MovementComponent extends Component {
-    constructor(speed, direction) {
+    constructor(speed = 30, direction = Direction.NONE) {
         super(CType.Movement);
-        this.speed = speed || 30;
+        this.speed = speed;
         this.direction = direction || Direction.NONE;
         this.previousDirection = Direction.NONE;
         this.cooldown = 0;

@@ -32,6 +32,12 @@ export abstract class System {
                 case Event.entity_destroyed:
                     this.refreshEntities();
                     break;
+                case Event.level_change:
+                    this.pause();
+                    break;
+                case Event.level_loaded:
+                    this.unpause();
+                    break;
             }
             this.handleEvent(event);
         }
@@ -40,14 +46,23 @@ export abstract class System {
         }
     }
 
-    public abstract handleEvent(event: Event): void;
+    public handleEvent(_event: Event): void {}
 
-    public abstract logic(): void;
+    public logic(): void {}
 
     public refreshEntities(): void {
-        this.entities = this.entityManager.getSystemEntities(
-            this.requiredComponents
-        );
+        this.entities = this.entityManager.getSystemEntities(this.requiredComponents);
+        this.refreshEntitiesHelper();
+    }
+
+    public refreshEntitiesHelper(): void {}
+
+    public pause(): void {
+        this.paused = true;
+    }
+
+    public unpause(): void {
+        this.paused = false;
     }
 }
 
