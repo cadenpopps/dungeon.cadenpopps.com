@@ -1,8 +1,7 @@
 export class PoppsEngine {
-    constructor() {
-        this.looping = false;
-        this.ticks = 0;
-    }
+    looping = false;
+    ticks = 0;
+    tickCallback;
     loop(callback) {
         if (typeof callback == "function") {
             this.looping = true;

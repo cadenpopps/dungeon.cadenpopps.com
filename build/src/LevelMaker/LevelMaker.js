@@ -32,7 +32,7 @@ eventManager.addEvent(Event.new_game);
 entityManager.addEntity(new Map([
     [CType.Position, new PositionComponent(5, 5, 0)],
     [CType.Velocity, new VelocityComponent(0, 0)],
-    [CType.Visible, new VisibleComponent([0, 255, 255], 1)],
+    [CType.Visible, new VisibleComponent({ r: 0, g: 255, b: 255, a: 255 }, 1)],
     [CType.Collision, new CollisionComponent()],
     [CType.Controller, new ControllerComponent()],
     [CType.Camera, new CameraComponent(0, 0, 0, 20, 1)],

@@ -1,4 +1,6 @@
 export class EventManager {
+    eventQueue;
+    nextQueue;
     constructor() {
         this.eventQueue = new Array();
         this.nextQueue = new Array();

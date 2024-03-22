@@ -2,9 +2,9 @@ import { floor } from "../../lib/PoppsMath.js";
 import { CType, Direction } from "../Component.js";
 import { System, SystemType } from "../System.js";
 export default class MovementSystem extends System {
+    movementCooldown = 300;
     constructor(eventManager, entityManager) {
         super(SystemType.Movement, eventManager, entityManager, [CType.Velocity, CType.Movement]);
-        this.movementCooldown = 300;
     }
     logic() {
         for (let entityId of this.entities) {

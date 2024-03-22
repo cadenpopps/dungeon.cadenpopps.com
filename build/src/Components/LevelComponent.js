@@ -1,6 +1,10 @@
 import { randomInt } from "../../lib/PoppsMath.js";
 import { Component, CType } from "../Component.js";
 export default class LevelComponent extends Component {
+    depth;
+    seed;
+    entities;
+    entityIds;
     constructor(depth) {
         super(CType.Level);
         this.depth = depth;

@@ -2,6 +2,8 @@ import { CType } from "../Component.js";
 import { Event } from "../EventManager.js";
 import { System, SystemType } from "../System.js";
 export default class GameSystem extends System {
+    playerId;
+    levelChangeIds;
     constructor(eventManager, entityManager) {
         super(SystemType.Game, eventManager, entityManager, []);
     }
@@ -12,21 +14,19 @@ export default class GameSystem extends System {
                 break;
         }
     }
+    refreshEntitiesHelper() {
+        this.playerId = this.entityManager.getSystemEntities([CType.Player])[0];
+        this.levelChangeIds = this.entityManager.getSystemEntities([CType.LevelChange]);
+    }
     fixPlayerPos() {
-        let playerId = -1;
         let exitId = -1;
-        for (let entityId of this.entities) {
-            if (this.entityManager.getEntity(entityId).has(CType.Player)) {
-                playerId = entityId;
-                exitId = this.entityManager.get(playerId, CType.Player).levelChangeId;
-            }
-        }
-        for (let entityId of this.entities) {
+        exitId = this.entityManager.get(this.playerId, CType.Player).levelChangeId;
+        for (let entityId of this.levelChangeIds) {
             const entity = this.entityManager.getEntity(entityId);
             if (entity.has(CType.LevelChange)) {
                 if (this.entityManager.get(entityId, CType.LevelChange).id === exitId) {
                     const destinationPos = this.entityManager.get(entityId, CType.Position);
-                    const playerPos = this.entityManager.get(playerId, CType.Position);
+                    const playerPos = this.entityManager.get(this.playerId, CType.Position);
                     playerPos.x = destinationPos.x + (destinationPos.z > playerPos.z ? 1 : -1);
                     playerPos.y = destinationPos.y;
                     playerPos.z = destinationPos.z;

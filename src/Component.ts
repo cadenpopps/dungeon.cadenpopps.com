@@ -20,6 +20,7 @@ export enum CType {
     Player,
     Interactable,
     Tile,
+    LightSource,
 }
 
 export enum Direction {

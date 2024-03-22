@@ -1,5 +1,12 @@
 import { Component, CType } from "../Component.js";
 export default class ControllerComponent extends Component {
+    up;
+    right;
+    down;
+    left;
+    interact;
+    zoom_in;
+    zoom_out;
     constructor() {
         super(CType.Controller);
         this.up = false;

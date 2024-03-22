@@ -4,6 +4,10 @@ import { CollisionHandler } from "../Components/CollisionComponent.js";
 import PositionComponent from "../Components/PositionComponent.js";
 import { System, SystemType } from "../System.js";
 export default class PhysicsSystem extends System {
+    subGrid;
+    centerPoint;
+    visibleDistance;
+    cameraIds;
     constructor(eventManager, entityManager) {
         super(SystemType.Physics, eventManager, entityManager, [CType.Position, CType.Collision]);
         this.subGrid = new Array();
@@ -16,17 +20,18 @@ export default class PhysicsSystem extends System {
         this.preCollision(filteredEntities);
         this.physics();
     }
+    refreshEntitiesHelper() {
+        this.cameraIds = this.entityManager.getSystemEntities([CType.Camera]);
+    }
     setCenterPoint() {
         let priority = -1;
-        for (let entityId of this.entities) {
-            if (this.entityManager.getEntity(entityId).has(CType.Camera)) {
-                const cam = this.entityManager.get(entityId, CType.Camera);
-                if (cam.priority > priority) {
-                    this.centerPoint.x = round(cam.x);
-                    this.centerPoint.y = round(cam.y);
-                    this.centerPoint.z = cam.z;
-                    this.visibleDistance = cam.visibleDistance;
-                }
+        for (let entityId of this.cameraIds) {
+            const cam = this.entityManager.get(entityId, CType.Camera);
+            if (cam.priority > priority) {
+                this.centerPoint.x = round(cam.x);
+                this.centerPoint.y = round(cam.y);
+                this.centerPoint.z = cam.z;
+                this.visibleDistance = cam.visibleDistance;
             }
         }
     }

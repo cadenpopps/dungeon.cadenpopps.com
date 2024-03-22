@@ -1,48 +1,28 @@
-import Levels from "../../content/levels/Levels.js";
-import Rooms from "../../content/rooms/Rooms.js";
-import { abs, ceil, floor, randomInt } from "../../lib/PoppsMath.js";
+import Levels from "../../content/Levels.js";
+import Rooms from "../../content/Rooms.js";
+import { abs, ceil, floor } from "../../lib/PoppsMath.js";
 import { CType, Component } from "../Component.js";
-import CollisionComponent from "../Components/CollisionComponent.js";
-import InteractableComponent, { Interactable } from "../Components/InteractableComponent.js";
 import LevelChangeComponent from "../Components/LevelChangeComponent.js";
 import LevelComponent from "../Components/LevelComponent.js";
 import PlayerComponent from "../Components/PlayerComponent.js";
 import PositionComponent from "../Components/PositionComponent.js";
-import VisibleComponent from "../Components/VisibleComponent.js";
+import TileComponent from "../Components/TileComponent.js";
+import * as Constants from "../Constants.js";
+import { Tile } from "../Constants.js";
 import { EntityManager } from "../EntityManager.js";
 import { Event, EventManager } from "../EventManager.js";
 import { System, SystemType } from "../System.js";
-
-const enum Tile {
-    Floor,
-    Wall,
-    Door,
-    Path,
-    Grass,
-    LevelChange,
-    PossibleDoor,
-}
-
-class TileComponent extends Component {
-    public tileType: Tile;
-
-    constructor(tileType: Tile) {
-        super(CType.Tile);
-        this.tileType = tileType;
-    }
-}
 
 export default class LevelSystem extends System {
     private BASE_LEVEL_SIZE = 50;
     private LEVEL_GROWTH = 0.5;
     private ROOM_DENSITY = 50;
     private DENSITY_GROWTH = 0.8;
-    private currentLevel: LevelComponent;
+    private currentLevel!: LevelComponent;
     private levels: LevelComponent[];
 
     constructor(eventManager: EventManager, entityManager: EntityManager) {
         super(SystemType.Level, eventManager, entityManager, [CType.Player]);
-        this.currentLevel = new LevelComponent(-1);
         this.levels = [];
     }
 
@@ -78,7 +58,9 @@ export default class LevelSystem extends System {
     }
 
     private loadLevel(level: LevelComponent): void {
-        this.entityManager.removeEntities(this.currentLevel.entityIds);
+        if (this.currentLevel) {
+            this.entityManager.removeEntities(this.currentLevel.entityIds);
+        }
         if (!this.levels.includes(level)) {
             this.levels.push(level as LevelComponent);
         }
@@ -190,7 +172,7 @@ export default class LevelSystem extends System {
             if (e.has(CType.LevelChange)) {
                 e.set(CType.LevelChange, new LevelChangeComponent(exitId));
             }
-            e.set(CType.Tile, new TileComponent(Tile.Floor));
+            // e.set(CType.Tile, new TileComponent(Tile.Floor));
         }
         return newRoom;
     }
@@ -336,7 +318,7 @@ export default class LevelSystem extends System {
                             ) {
                                 dx = 2;
                                 dy = 2;
-                                levelMap[x][y] = LevelSystem.newWall(x, y);
+                                levelMap[x][y] = Constants.newWall(x, y);
                             }
                         }
                     }
@@ -363,8 +345,8 @@ export default class LevelSystem extends System {
                 console.log(
                     `No path found between ${doors[0].pos.x}, ${doors[0].pos.y} and ${doors[1].pos.x}, ${doors[1].pos.y}`
                 );
-                levelMap[doors[0].pos.x][doors[0].pos.y] = LevelSystem.newWall(doors[0].pos.x, doors[0].pos.y);
-                levelMap[doors[1].pos.x][doors[1].pos.y] = LevelSystem.newWall(doors[1].pos.x, doors[1].pos.y);
+                levelMap[doors[0].pos.x][doors[0].pos.y] = Constants.newWall(doors[0].pos.x, doors[0].pos.y);
+                levelMap[doors[1].pos.x][doors[1].pos.y] = Constants.newWall(doors[1].pos.x, doors[1].pos.y);
             }
             tries--;
         }
@@ -525,11 +507,11 @@ export default class LevelSystem extends System {
             if (currentPos.x === endPos.x && currentPos.y === endPos.y) {
                 let head: PositionComponent | undefined = endPos;
                 while (head !== undefined) {
-                    levelMap[head.x][head.y] = LevelSystem.newDungeonFloor(head.x, head.y);
+                    levelMap[head.x][head.y] = Constants.newDungeonFloor(head.x, head.y);
                     head = path[head.x][head.y];
                 }
-                levelMap[endPos.x][endPos.y] = LevelSystem.newDoor(endPos.x, endPos.y);
-                levelMap[startPos.x][startPos.y] = LevelSystem.newDoor(startPos.x, startPos.y);
+                levelMap[endPos.x][endPos.y] = Constants.newDoor(endPos.x, endPos.y);
+                levelMap[startPos.x][startPos.y] = Constants.newDoor(startPos.x, startPos.y);
                 return true;
             }
 
@@ -604,67 +586,5 @@ export default class LevelSystem extends System {
             currentNeighbors.push(new PositionComponent(currentPos.x, currentPos.y + 1));
         }
         return currentNeighbors;
-    }
-
-    static newWall(x: number, y: number): Map<CType, Component> {
-        return new Map<CType, Component>([
-            [CType.Tile, new TileComponent(Tile.Wall)],
-            [CType.Position, new PositionComponent(x, y, 0)],
-            [CType.Collision, new CollisionComponent()],
-            [CType.Visible, new VisibleComponent([33, 27, 20])],
-        ]);
-    }
-
-    static newGrass(x: number, y: number): Map<CType, Component> {
-        return new Map<CType, Component>([
-            [CType.Tile, new TileComponent(Tile.Grass)],
-            [CType.Position, new PositionComponent(x, y, 0)],
-            [CType.Visible, new VisibleComponent([30 + randomInt(10), 92 + randomInt(25), 0])],
-        ]);
-    }
-
-    static newPath(x: number, y: number): Map<CType, Component> {
-        return new Map<CType, Component>([
-            [CType.Tile, new TileComponent(Tile.Path)],
-            [CType.Position, new PositionComponent(x, y, 0)],
-            [CType.Visible, new VisibleComponent([140 + randomInt(20), 120 + randomInt(20), 50])],
-        ]);
-    }
-
-    static newDoor(x: number, y: number): Map<CType, Component> {
-        return new Map<CType, Component>([
-            [CType.Tile, new TileComponent(Tile.Door)],
-            [CType.Position, new PositionComponent(x, y, 0)],
-            [CType.Interactable, new InteractableComponent(Interactable.Door)],
-            [CType.Visible, new VisibleComponent([102, 60, 41])],
-        ]);
-    }
-
-    static newDungeonFloor(x: number, y: number): Map<CType, Component> {
-        return new Map<CType, Component>([
-            [CType.Tile, new TileComponent(Tile.Floor)],
-            [CType.Position, new PositionComponent(x, y, 0)],
-            [CType.Visible, new VisibleComponent([80, 100 + randomInt(10), 180 + randomInt(15)])],
-        ]);
-    }
-
-    static newEntry(x: number, y: number): Map<CType, Component> {
-        return new Map<CType, Component>([
-            [CType.Tile, new TileComponent(Tile.LevelChange)],
-            [CType.Position, new PositionComponent(x, y, 0)],
-            [CType.LevelChange, new LevelChangeComponent(0)],
-            [CType.Interactable, new InteractableComponent(Interactable.LevelChange)],
-            [CType.Visible, new VisibleComponent([100, 200, 50])],
-        ]);
-    }
-
-    static newExit(x: number, y: number): Map<CType, Component> {
-        return new Map<CType, Component>([
-            [CType.Tile, new TileComponent(Tile.LevelChange)],
-            [CType.Position, new PositionComponent(x, y, 0)],
-            [CType.LevelChange, new LevelChangeComponent(0)],
-            [CType.Interactable, new InteractableComponent(Interactable.LevelChange)],
-            [CType.Visible, new VisibleComponent([200, 100, 50])],
-        ]);
     }
 }

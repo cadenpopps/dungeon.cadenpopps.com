@@ -8,6 +8,9 @@ export class EntityManager {
     private eventManager: EventManager;
     private destroyQueue: Array<number>;
 
+    private counter = 0;
+    private counter2 = 0;
+
     constructor(eventManager: EventManager) {
         this.eventManager = eventManager;
         this.entities = new Map<number, Map<CType, Component>>();
@@ -19,6 +22,12 @@ export class EntityManager {
     }
 
     public tick(): void {
+        this.counter2++;
+        if (this.counter2 > 60) {
+            // console.log(`Entities fetched: ${floor(this.counter / 60)}`);
+            this.counter = 0;
+            this.counter2 = 0;
+        }
         for (let event of this.eventManager.eventQueue) {
             switch (event) {
                 case Event.entity_destroyed:
@@ -29,6 +38,7 @@ export class EntityManager {
     }
 
     public getEntity(entityId: number): Map<CType, Component> {
+        this.counter++;
         const entity = this.entities.get(entityId);
         if (entity !== undefined) {
             return entity;
@@ -37,15 +47,14 @@ export class EntityManager {
     }
 
     public get<T>(entityId: number, CType: CType): T {
+        this.counter++;
         const entity = this.entities.get(entityId);
         if (entity !== undefined) {
             const component = entity.get(CType);
             if (component !== undefined) {
                 return component as T;
             }
-            throw new Error(
-                `Entity ${entityId} does not have component ${CType}`
-            );
+            throw new Error(`Entity ${entityId} does not have component ${CType}`);
         }
         throw new Error(`Entity ${entityId} not found`);
     }
@@ -97,9 +106,7 @@ export class EntityManager {
         this.destroyQueue = new Array<number>();
     }
 
-    public getSystemEntities(
-        componentRequirements: Array<CType>
-    ): Array<number> {
+    public getSystemEntities(componentRequirements: Array<CType>): Array<number> {
         const entitiesWithComponents = new Array<number>();
         for (let entity of this.entities.entries()) {
             let missingComponent = false;

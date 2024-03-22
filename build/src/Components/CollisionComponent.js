@@ -1,5 +1,8 @@
 import { Component, CType } from "../Component.js";
 export default class CollisionComponent extends Component {
+    size;
+    collided;
+    collisionHandler;
     constructor(collisionHandler, size) {
         super(CType.Collision);
         this.collisionHandler = collisionHandler || CollisionHandler.Stop;

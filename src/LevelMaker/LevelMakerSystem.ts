@@ -4,10 +4,11 @@ import { CType, Component } from "../Component.js";
 import CameraComponent from "../Components/CameraComponent.js";
 import LevelComponent from "../Components/LevelComponent.js";
 import PositionComponent from "../Components/PositionComponent.js";
+import TileComponent from "../Components/TileComponent.js";
+import * as Constants from "../Constants.js";
 import { EntityManager } from "../EntityManager.js";
 import { Event, EventManager } from "../EventManager.js";
 import { System, SystemType } from "../System.js";
-import LevelSystem from "../Systems/LevelSystem.js";
 
 export default class LevelMakerSystem extends System {
     private level: LevelComponent;
@@ -165,35 +166,31 @@ export default class LevelMakerSystem extends System {
     }
 
     private paintTile(x: number, y: number): void {
-        for (let entityId of this.level.entityIds) {
-            if (entityId !== undefined) {
-                switch (this.activeTile) {
-                    case 0:
-                        this.removeTile(x, y);
-                        break;
-                    case 1:
-                        this.changeTile(x, y, LevelSystem.newWall(x, y));
-                        break;
-                    case 2:
-                        this.changeTile(x, y, LevelSystem.newDungeonFloor(x, y));
-                        break;
-                    case 3:
-                        this.changeTile(x, y, LevelSystem.newDoor(x, y));
-                        break;
-                    case 4:
-                        this.changeTile(x, y, LevelSystem.newExit(x, y));
-                        break;
-                    case 5:
-                        this.changeTile(x, y, LevelSystem.newEntry(x, y));
-                        break;
-                    case 6:
-                        this.changeTile(x, y, LevelSystem.newGrass(x, y));
-                        break;
-                    case 7:
-                        this.changeTile(x, y, LevelSystem.newPath(x, y));
-                        break;
-                }
-            }
+        switch (this.activeTile) {
+            case 0:
+                this.removeTile(x, y);
+                break;
+            case 1:
+                this.changeTile(x, y, Constants.newWall(x, y));
+                break;
+            case 2:
+                this.changeTile(x, y, Constants.newDungeonFloor(x, y));
+                break;
+            case 3:
+                this.changeTile(x, y, Constants.newDoor(x, y));
+                break;
+            case 4:
+                this.changeTile(x, y, Constants.newExit(x, y));
+                break;
+            case 5:
+                this.changeTile(x, y, Constants.newEntry(x, y));
+                break;
+            case 6:
+                this.changeTile(x, y, Constants.newGrass(x, y));
+                break;
+            case 7:
+                this.changeTile(x, y, Constants.newPath(x, y));
+                break;
         }
     }
 
@@ -211,6 +208,7 @@ export default class LevelMakerSystem extends System {
             if (x === pos.x && y === pos.y) {
                 this.entityManager.removeEntity(this.level.entityIds[i]);
                 this.level.entityIds.splice(i, 1);
+                i = 0;
             }
         }
 
@@ -240,40 +238,30 @@ export default class LevelMakerSystem extends System {
     }
     private printLevel(room?: boolean): void {
         if (room) {
-            console.log(
-                JSON.stringify(this.level.entities, function replacer(key, value) {
-                    key;
-                    if (value instanceof Map) {
-                        return {
-                            dataType: "Map",
-                            value: Array.from(value.entries()),
-                        };
-                    } else {
-                        return value;
-                    }
-                })
-            );
+            console.log(JSON.stringify(this.level.entities, this.replacer));
             return;
         }
-        const entryPos = this.entityManager.get<PositionComponent>(this.entities[0], CType.Position);
-        this.removeEntries();
-        this.addTile(LevelSystem.newEntry(entryPos.x, entryPos.y));
+        // const entryPos = this.entityManager.get<PositionComponent>(this.entities[0], CType.Position);
+        // this.removeEntries();
+        // this.addTile(Constants.newEntry(entryPos.x, entryPos.y));
         const entIds = this.level.entityIds;
         this.level.entityIds = [];
-        console.log(
-            JSON.stringify(this.level, function replacer(key, value) {
-                key;
-                if (value instanceof Map) {
-                    return {
-                        dataType: "Map",
-                        value: Array.from(value.entries()),
-                    };
-                } else {
-                    return value;
-                }
-            })
-        );
+        console.log(JSON.stringify(this.level, this.replacer));
         this.level.entityIds = entIds;
+    }
+
+    private replacer(_key: any, value: any): Object {
+        if (value instanceof Map && value.has(CType.Tile)) {
+            const t = value.get(CType.Tile) as TileComponent;
+            return {
+                type: CType.Tile,
+                tileType: t.tileType,
+                x: t.x,
+                y: t.y,
+            };
+        } else {
+            return value;
+        }
     }
 
     private loadLevel(newLevel: LevelComponent): void {
@@ -285,9 +273,10 @@ export default class LevelMakerSystem extends System {
 
     private genEmptyLevel(): void {
         const newLevel = new LevelComponent(0);
-        for (let x = 0; x < this.levelWidth; x++) {
-            for (let y = 0; y < this.levelHeight; y++) {
-                newLevel.entities.push(LevelSystem.newDungeonFloor(x, y));
+        for (let x = 1; x < this.levelWidth + 1; x++) {
+            for (let y = 1; y < this.levelHeight + 1; y++) {
+                // newLevel.entities.push(Constants.newDungeonFloor(x, y));
+                newLevel.entities.push(Constants.newGrass(x, y));
             }
         }
         this.entityManager.addEntity(new Map<CType, Component>([[CType.Level, newLevel]]));

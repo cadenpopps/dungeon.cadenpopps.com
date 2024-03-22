@@ -1,5 +1,6 @@
 import { Component, CType } from "../Component.js";
 export default class InteractableComponent extends Component {
+    interactableType;
     constructor(interactableType) {
         super(CType.Interactable);
         this.interactableType = interactableType;

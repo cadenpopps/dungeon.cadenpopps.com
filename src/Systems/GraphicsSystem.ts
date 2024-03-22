@@ -12,11 +12,13 @@ export default class GraphicsSystem extends System {
     private canvas: PoppsCanvas;
     private layers: Array<Array<number>>;
     private masterCamera: CameraComponent;
+    private cameraIds: Array<number>;
 
     constructor(eventManager: EventManager, entityManager: EntityManager) {
         super(SystemType.Graphics, eventManager, entityManager, [CType.Position, CType.Visible]);
         this.canvas = new PoppsCanvas();
         this.masterCamera = new CameraComponent(0, 0, 0, 0, 0);
+        this.cameraIds = new Array<number>();
         this.layers = Array<Array<number>>();
         this.canvas.loop(this.canvasCallback.bind(this));
     }
@@ -26,14 +28,16 @@ export default class GraphicsSystem extends System {
             case Event.entity_created:
             case Event.entity_modified:
             case Event.entity_destroyed:
-                this.adjustCamera();
                 this.groupEntitiesByLayer();
                 break;
             case Event.level_loaded:
-                this.adjustCamera();
                 this.groupEntitiesByLayer();
                 break;
         }
+    }
+
+    public refreshEntitiesHelper(): void {
+        this.cameraIds = this.entityManager.getSystemEntities([CType.Camera]);
     }
 
     private canvasCallback(): void {
@@ -49,7 +53,7 @@ export default class GraphicsSystem extends System {
             for (let entityId of visibleEntities) {
                 const pos = this.entityManager.get<PositionComponent>(entityId, CType.Position);
                 const vis = this.entityManager.get<VisibleComponent>(entityId, CType.Visible);
-                this.canvas.fill(vis.r, vis.g, vis.b, vis.a);
+                this.canvas.fill(vis.color.r, vis.color.g, vis.color.b, vis.color.a);
                 this.canvas.rect(pos.x, pos.y, 1, 1);
                 if (vis.layer === 5) {
                     this.canvas.fill(0, 0, 0);
@@ -59,6 +63,11 @@ export default class GraphicsSystem extends System {
                     this.canvas.rect(pos.x + 0.2, pos.y + 0.6, 0.1, 0.1);
                     this.canvas.rect(pos.x + 0.7, pos.y + 0.6, 0.1, 0.1);
                 }
+
+                // this.canvas.fill(light_level_to_light[2]);
+                // rect(bounds.x, bounds.y, bounds.w, bounds.h);
+                // canvas.fillStyle = light_level_to_shadow[2];
+                // rect(bounds.x, bounds.y, bounds.w, bounds.h);
             }
         }
         this.canvas.canvas.resetTransform();
@@ -92,16 +101,14 @@ export default class GraphicsSystem extends System {
 
     private adjustCamera(): void {
         this.masterCamera.priority = -1;
-        for (let entityId of this.entities) {
-            if (this.entityManager.getEntity(entityId).has(CType.Camera)) {
-                const cam = this.entityManager.get<CameraComponent>(entityId, CType.Camera);
-                if (cam.priority > this.masterCamera.priority) {
-                    this.masterCamera.zoom = cam.zoom;
-                    this.masterCamera.x = cam.x;
-                    this.masterCamera.y = cam.y;
-                    this.masterCamera.priority = cam.priority;
-                    this.masterCamera.visibleDistance = cam.visibleDistance;
-                }
+        for (let entityId of this.cameraIds) {
+            const cam = this.entityManager.get<CameraComponent>(entityId, CType.Camera);
+            if (cam.priority > this.masterCamera.priority) {
+                this.masterCamera.zoom = cam.zoom;
+                this.masterCamera.x = cam.x;
+                this.masterCamera.y = cam.y;
+                this.masterCamera.priority = cam.priority;
+                this.masterCamera.visibleDistance = cam.visibleDistance;
             }
         }
     }

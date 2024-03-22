@@ -7,6 +7,9 @@ import { Event, EventManager } from "../EventManager.js";
 import { System, SystemType } from "../System.js";
 
 export default class GameSystem extends System {
+    private playerId!: number;
+    private levelChangeIds!: Array<number>;
+
     constructor(eventManager: EventManager, entityManager: EntityManager) {
         super(SystemType.Game, eventManager, entityManager, []);
     }
@@ -19,21 +22,20 @@ export default class GameSystem extends System {
         }
     }
 
+    public refreshEntitiesHelper(): void {
+        this.playerId = this.entityManager.getSystemEntities([CType.Player])[0];
+        this.levelChangeIds = this.entityManager.getSystemEntities([CType.LevelChange]);
+    }
+
     private fixPlayerPos(): void {
-        let playerId = -1;
         let exitId = -1;
-        for (let entityId of this.entities) {
-            if (this.entityManager.getEntity(entityId).has(CType.Player)) {
-                playerId = entityId;
-                exitId = this.entityManager.get<PlayerComponent>(playerId, CType.Player).levelChangeId;
-            }
-        }
-        for (let entityId of this.entities) {
+        exitId = this.entityManager.get<PlayerComponent>(this.playerId, CType.Player).levelChangeId;
+        for (let entityId of this.levelChangeIds) {
             const entity = this.entityManager.getEntity(entityId);
             if (entity.has(CType.LevelChange)) {
                 if (this.entityManager.get<LevelChangeComponent>(entityId, CType.LevelChange).id === exitId) {
                     const destinationPos = this.entityManager.get<PositionComponent>(entityId, CType.Position);
-                    const playerPos = this.entityManager.get<PositionComponent>(playerId, CType.Position);
+                    const playerPos = this.entityManager.get<PositionComponent>(this.playerId, CType.Position);
                     playerPos.x = destinationPos.x + (destinationPos.z > playerPos.z ? 1 : -1);
                     playerPos.y = destinationPos.y;
                     playerPos.z = destinationPos.z;

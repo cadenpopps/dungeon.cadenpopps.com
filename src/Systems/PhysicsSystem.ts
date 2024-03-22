@@ -12,6 +12,7 @@ export default class PhysicsSystem extends System {
     private subGrid: Array<Array<Array<number>>>;
     private centerPoint: PositionComponent;
     private visibleDistance: number;
+    private cameraIds!: Array<number>;
 
     constructor(eventManager: EventManager, entityManager: EntityManager) {
         super(SystemType.Physics, eventManager, entityManager, [CType.Position, CType.Collision]);
@@ -27,17 +28,19 @@ export default class PhysicsSystem extends System {
         this.physics();
     }
 
+    public refreshEntitiesHelper(): void {
+        this.cameraIds = this.entityManager.getSystemEntities([CType.Camera]);
+    }
+
     private setCenterPoint(): void {
         let priority = -1;
-        for (let entityId of this.entities) {
-            if (this.entityManager.getEntity(entityId).has(CType.Camera)) {
-                const cam = this.entityManager.get<CameraComponent>(entityId, CType.Camera);
-                if (cam.priority > priority) {
-                    this.centerPoint.x = round(cam.x);
-                    this.centerPoint.y = round(cam.y);
-                    this.centerPoint.z = cam.z;
-                    this.visibleDistance = cam.visibleDistance;
-                }
+        for (let entityId of this.cameraIds) {
+            const cam = this.entityManager.get<CameraComponent>(entityId, CType.Camera);
+            if (cam.priority > priority) {
+                this.centerPoint.x = round(cam.x);
+                this.centerPoint.y = round(cam.y);
+                this.centerPoint.z = cam.z;
+                this.visibleDistance = cam.visibleDistance;
             }
         }
     }

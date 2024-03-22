@@ -2,15 +2,16 @@ import * as PoppsInput from "../../lib/PoppsInput.js";
 import { floor } from "../../lib/PoppsMath.js";
 import { CType } from "../Component.js";
 import LevelComponent from "../Components/LevelComponent.js";
+import * as Constants from "../Constants.js";
 import { Event } from "../EventManager.js";
 import { System, SystemType } from "../System.js";
-import LevelSystem from "../Systems/LevelSystem.js";
 export default class LevelMakerSystem extends System {
+    level;
+    levelWidth = 0;
+    levelHeight = 0;
+    activeTile = 0;
     constructor(eventManager, entityManager) {
         super(SystemType.Level, eventManager, entityManager, [CType.Camera]);
-        this.levelWidth = 0;
-        this.levelHeight = 0;
-        this.activeTile = 0;
         this.level = new LevelComponent(1);
         this.levelWidth = 11;
         this.levelHeight = 11;
@@ -143,35 +144,31 @@ export default class LevelMakerSystem extends System {
         });
     }
     paintTile(x, y) {
-        for (let entityId of this.level.entityIds) {
-            if (entityId !== undefined) {
-                switch (this.activeTile) {
-                    case 0:
-                        this.removeTile(x, y);
-                        break;
-                    case 1:
-                        this.changeTile(x, y, LevelSystem.newWall(x, y));
-                        break;
-                    case 2:
-                        this.changeTile(x, y, LevelSystem.newDungeonFloor(x, y));
-                        break;
-                    case 3:
-                        this.changeTile(x, y, LevelSystem.newDoor(x, y));
-                        break;
-                    case 4:
-                        this.changeTile(x, y, LevelSystem.newExit(x, y));
-                        break;
-                    case 5:
-                        this.changeTile(x, y, LevelSystem.newEntry(x, y));
-                        break;
-                    case 6:
-                        this.changeTile(x, y, LevelSystem.newGrass(x, y));
-                        break;
-                    case 7:
-                        this.changeTile(x, y, LevelSystem.newPath(x, y));
-                        break;
-                }
-            }
+        switch (this.activeTile) {
+            case 0:
+                this.removeTile(x, y);
+                break;
+            case 1:
+                this.changeTile(x, y, Constants.newWall(x, y));
+                break;
+            case 2:
+                this.changeTile(x, y, Constants.newDungeonFloor(x, y));
+                break;
+            case 3:
+                this.changeTile(x, y, Constants.newDoor(x, y));
+                break;
+            case 4:
+                this.changeTile(x, y, Constants.newExit(x, y));
+                break;
+            case 5:
+                this.changeTile(x, y, Constants.newEntry(x, y));
+                break;
+            case 6:
+                this.changeTile(x, y, Constants.newGrass(x, y));
+                break;
+            case 7:
+                this.changeTile(x, y, Constants.newPath(x, y));
+                break;
         }
     }
     addTile(newTile) {
@@ -187,6 +184,7 @@ export default class LevelMakerSystem extends System {
             if (x === pos.x && y === pos.y) {
                 this.entityManager.removeEntity(this.level.entityIds[i]);
                 this.level.entityIds.splice(i, 1);
+                i = 0;
             }
         }
         this.level.entities = this.level.entities.filter((ent) => {
@@ -203,38 +201,27 @@ export default class LevelMakerSystem extends System {
     }
     printLevel(room) {
         if (room) {
-            console.log(JSON.stringify(this.level.entities, function replacer(key, value) {
-                key;
-                if (value instanceof Map) {
-                    return {
-                        dataType: "Map",
-                        value: Array.from(value.entries()),
-                    };
-                }
-                else {
-                    return value;
-                }
-            }));
+            console.log(JSON.stringify(this.level.entities, this.replacer));
             return;
         }
-        const entryPos = this.entityManager.get(this.entities[0], CType.Position);
-        this.removeEntries();
-        this.addTile(LevelSystem.newEntry(entryPos.x, entryPos.y));
         const entIds = this.level.entityIds;
         this.level.entityIds = [];
-        console.log(JSON.stringify(this.level, function replacer(key, value) {
-            key;
-            if (value instanceof Map) {
-                return {
-                    dataType: "Map",
-                    value: Array.from(value.entries()),
-                };
-            }
-            else {
-                return value;
-            }
-        }));
+        console.log(JSON.stringify(this.level, this.replacer));
         this.level.entityIds = entIds;
+    }
+    replacer(_key, value) {
+        if (value instanceof Map && value.has(CType.Tile)) {
+            const t = value.get(CType.Tile);
+            return {
+                type: CType.Tile,
+                tileType: t.tileType,
+                x: t.x,
+                y: t.y,
+            };
+        }
+        else {
+            return value;
+        }
     }
     loadLevel(newLevel) {
         this.entityManager.removeEntities(this.level.entityIds);
@@ -244,9 +231,9 @@ export default class LevelMakerSystem extends System {
     }
     genEmptyLevel() {
         const newLevel = new LevelComponent(0);
-        for (let x = 0; x < this.levelWidth; x++) {
-            for (let y = 0; y < this.levelHeight; y++) {
-                newLevel.entities.push(LevelSystem.newDungeonFloor(x, y));
+        for (let x = 1; x < this.levelWidth + 1; x++) {
+            for (let y = 1; y < this.levelHeight + 1; y++) {
+                newLevel.entities.push(Constants.newGrass(x, y));
             }
         }
         this.entityManager.addEntity(new Map([[CType.Level, newLevel]]));

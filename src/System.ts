@@ -76,4 +76,5 @@ export enum SystemType {
     Camera,
     Level,
     Interactable,
+    Light,
 }

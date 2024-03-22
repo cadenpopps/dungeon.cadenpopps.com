@@ -1,0 +1,1 @@
+{"version":3,"file":"LightSourceComponent.js","sourceRoot":"","sources":["../../../src/Components/LightSourceComponent.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,EAAE,KAAK,EAAE,MAAM,iBAAiB,CAAC;AAEnD,MAAM,CAAC,OAAO,OAAO,oBAAqB,SAAQ,SAAS;IAChD,UAAU,CAAS;IAE1B,YAAY,UAAkB;QAC1B,KAAK,CAAC,KAAK,CAAC,WAAW,CAAC,CAAC;QACzB,IAAI,CAAC,UAAU,GAAG,UAAU,CAAC;IACjC,CAAC;CACJ"}

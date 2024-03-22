@@ -1,5 +1,11 @@
 import { Event } from "./EventManager.js";
 export class System {
+    type;
+    paused;
+    requiredComponents;
+    entities;
+    eventManager;
+    entityManager;
     constructor(type, eventManager, entityManager, requiredComponents) {
         this.type = type;
         this.paused = false;
@@ -54,5 +60,6 @@ export var SystemType;
     SystemType[SystemType["Camera"] = 6] = "Camera";
     SystemType[SystemType["Level"] = 7] = "Level";
     SystemType[SystemType["Interactable"] = 8] = "Interactable";
+    SystemType[SystemType["Light"] = 9] = "Light";
 })(SystemType || (SystemType = {}));
 //# sourceMappingURL=System.js.map

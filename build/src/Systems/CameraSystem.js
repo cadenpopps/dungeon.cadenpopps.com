@@ -2,11 +2,11 @@ import { abs, floor } from "../../lib/PoppsMath.js";
 import { CType } from "../Component.js";
 import { System, SystemType } from "../System.js";
 export default class CameraSystem extends System {
+    CAMERA_MIN_ZOOM = 10;
+    CAMERA_SPEED_DAMPER = 0.88;
+    CAMERA_ACCEL_DIVIDER = 250;
     constructor(eventManager, entityManager) {
         super(SystemType.Camera, eventManager, entityManager, [CType.Camera]);
-        this.CAMERA_MIN_ZOOM = 10;
-        this.CAMERA_SPEED_DAMPER = 0.88;
-        this.CAMERA_ACCEL_DIVIDER = 250;
     }
     logic() {
         for (let entityId of this.entities) {

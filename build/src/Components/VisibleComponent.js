@@ -1,12 +1,13 @@
 import { Component, CType } from "../Component.js";
 export default class VisibleComponent extends Component {
+    color;
+    layer;
+    lightLevel;
     constructor(color, layer) {
         super(CType.Visible);
-        this.r = color[0] || 0;
-        this.g = color[1] || 0;
-        this.b = color[2] || 0;
-        this.a = color[3] || 255;
+        this.color = color || { r: 0, g: 0, b: 0, a: 0 };
         this.layer = layer || 0;
+        this.lightLevel = 0;
     }
 }
 //# sourceMappingURL=VisibleComponent.js.map

@@ -1,4 +1,5 @@
 export class Component {
+    type;
     constructor(type) {
         this.type = type;
     }
@@ -18,6 +19,7 @@ export var CType;
     CType[CType["Player"] = 10] = "Player";
     CType[CType["Interactable"] = 11] = "Interactable";
     CType[CType["Tile"] = 12] = "Tile";
+    CType[CType["LightSource"] = 13] = "LightSource";
 })(CType || (CType = {}));
 export var Direction;
 (function (Direction) {

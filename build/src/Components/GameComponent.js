@@ -1,5 +1,6 @@
 import { Component, CType } from "../Component.js";
 export default class GameComponent extends Component {
+    GameState;
     constructor(gameState) {
         super(CType.Game);
         this.GameState = gameState || GameState.TITLE;

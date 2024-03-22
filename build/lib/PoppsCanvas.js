@@ -1,8 +1,14 @@
 export default class PoppsCanvas {
+    font = "sans-serif";
+    fontSize = "10px";
+    parentElement;
+    canvasElement;
+    canvas;
+    width;
+    height;
+    looping = false;
+    drawCallback;
     constructor(parent) {
-        this.font = "sans-serif";
-        this.fontSize = "10px";
-        this.looping = false;
         this.parentElement = parent || document.getElementsByTagName("body")[0];
         this.initCanvas();
         this.initResizeListener();

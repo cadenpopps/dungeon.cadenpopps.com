@@ -39,9 +39,9 @@ systems.push(new InteractableSystem(eventManager, entityManager));
 entityManager.addEntity(
     new Map<CType, Component>([
         [CType.Player, new PlayerComponent()],
-        [CType.Position, new PositionComponent(10, 10, 0)],
+        [CType.Position, new PositionComponent(55, 19, 0)],
         [CType.Velocity, new VelocityComponent(0, 0)],
-        [CType.Visible, new VisibleComponent([0, 255, 255], 5)],
+        [CType.Visible, new VisibleComponent({ r: 0, g: 255, b: 255, a: 255 }, 5)],
         [CType.Collision, new CollisionComponent()],
         [CType.Controller, new ControllerComponent()],
         [CType.Camera, new CameraComponent(0, 0, 0, 60, 1)],

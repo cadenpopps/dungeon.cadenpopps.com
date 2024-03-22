@@ -1,19 +1,21 @@
 import { Component, CType } from "../Component.js";
 
 export default class VisibleComponent extends Component {
-    public r: number;
-    public g: number;
-    public b: number;
-    public a: number;
-    public lightLevel: number;
+    public color: Color;
     public layer: number;
+    public lightLevel: number;
 
-    constructor(color: Array<number>, layer?: number) {
+    constructor(color?: Color, layer?: number) {
         super(CType.Visible);
-        this.r = color[0] || 0;
-        this.g = color[1] || 0;
-        this.b = color[2] || 0;
-        this.a = color[3] || 255;
+        this.color = color || { r: 0, g: 0, b: 0, a: 0 };
         this.layer = layer || 0;
+        this.lightLevel = 0;
     }
+}
+
+export interface Color {
+    r: number;
+    g: number;
+    b: number;
+    a: number;
 }
