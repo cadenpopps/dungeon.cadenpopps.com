@@ -12,7 +12,7 @@ export default class MovementComponent extends Component {
     constructor(speed = 30, rollLength = 12, rollCooldownLength = 70) {
         super(CType.Movement);
         this.speed = speed;
-        this.direction = Direction.SOUTH;
+        this.direction = Direction.NONE;
         this.moving = false;
         this.sneaking = false;
         this.rolling = false;

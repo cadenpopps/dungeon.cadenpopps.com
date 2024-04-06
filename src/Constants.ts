@@ -68,38 +68,11 @@ export function getEntitiesInRange(
     const entitiesInRange = new Array<number>();
     for (let entityId of entities) {
         const ePos = entityManager.get<PositionComponent>(entityId, CType.Position);
-        const eVis = entityManager.get<VisibleComponent>(entityId, CType.Visible);
-        eVis.visible = false;
         if (abs(centerPos.x - ePos.x) < maxDistance && abs(centerPos.y - ePos.y) < maxDistance) {
             entitiesInRange.push(entityId);
         }
     }
     return entitiesInRange;
-}
-
-export function get2dEntityMap(
-    entities: Array<number>,
-    entityManager: EntityManager
-): Map<number, Map<number, Array<number>>> {
-    const entityMap = new Map<number, Map<number, Array<number>>>();
-    for (let entityId of entities) {
-        const ePos = entityManager.get<PositionComponent>(entityId, CType.Position);
-        let size = 1;
-        if (entityManager.getEntity(entityId).has(CType.Size)) {
-            size = entityManager.get<SizeComponent>(entityId, CType.Size).size;
-        }
-        const halfSize = size / 2;
-        const x = floor(ePos.x + halfSize);
-        const y = floor(ePos.y + halfSize);
-        if (!entityMap.get(x)) {
-            entityMap.set(x, new Map<number, Array<number>>());
-        }
-        if (!entityMap.get(x)?.get(y)) {
-            entityMap.get(x)?.set(y, new Array<number>());
-        }
-        entityMap.get(x)?.get(y)?.push(entityId);
-    }
-    return entityMap;
 }
 
 export function newWall(x: number, y: number): Map<CType, Component> {

@@ -54,7 +54,17 @@ entityManager.addEntity(new Map([
     [CType.Camera, new CameraComponent(55, 19, 0, 70, 1)],
     [CType.Movement, new MovementComponent(30)],
     [CType.Interactable, new InteractableComponent(Interactable.Player)],
-    [CType.LightSource, new LightSourceComponent(LightSystem.LIGHT_MAX)],
+    [CType.LightSource, new LightSourceComponent(LightSystem.LIGHT_MAX - 5)],
+]));
+entityManager.addEntity(new Map([
+    [CType.Position, new PositionComponent(55, 17, 0)],
+    [CType.Velocity, new VelocityComponent(0, 0)],
+    [CType.Acceleration, new AccelerationComponent(0, 0)],
+    [CType.Visible, new VisibleComponent({ r: 255, g: 255, b: 0, a: 1 }, true, 4)],
+    [CType.Collision, new CollisionComponent(CollisionHandler.Stop)],
+    [CType.Size, new SizeComponent(1.7)],
+    [CType.Controller, new ControllerComponent()],
+    [CType.Movement, new MovementComponent(10)],
 ]));
 function gameLoop() {
     eventManager.tick();

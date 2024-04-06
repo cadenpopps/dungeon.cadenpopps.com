@@ -1,7 +1,6 @@
 import { constrain, distance, floor, max } from "../../lib/PoppsMath.js";
 import { CType } from "../Component.js";
 import PositionComponent from "../Components/PositionComponent.js";
-import { get2dEntityMap } from "../Constants.js";
 import { System, SystemType } from "../System.js";
 import CameraSystem from "./CameraSystem.js";
 import VisibleSystem from "./VisibleSystem.js";
@@ -11,7 +10,7 @@ export default class LightSystem extends System {
     static light_red = 220;
     static light_green = 180;
     static light_blue = 20;
-    static shadow_intensity = 0.15;
+    static shadow_intensity = 0.3;
     static shadow_stop = 9;
     static shadow_red = 22;
     static shadow_green = 8;
@@ -28,13 +27,12 @@ export default class LightSystem extends System {
         }
         const visibleEntities = VisibleSystem.filterVisibleEntities(this.entities, this.entityManager);
         const cam = CameraSystem.getHighestPriorityCamera(this.cameraIds, this.entityManager);
-        const entitiesInRange = get2dEntityMap(visibleEntities, this.entityManager);
         for (let lightSourceId of this.lightSourceIds) {
             if (this.entityManager.get(lightSourceId, CType.Visible).discovered) {
                 const lightSourcePos = this.entityManager.get(lightSourceId, CType.Position);
                 if (distance(lightSourcePos.x, lightSourcePos.y, cam.x, cam.y) < cam.visibleDistance) {
                     const lightLevel = this.entityManager.get(lightSourceId, CType.LightSource).lightLevel;
-                    const affectedEntityIds = VisibleSystem.occludeObjects(new PositionComponent(floor(lightSourcePos.x + 0.5), floor(lightSourcePos.y + 0.5)), lightLevel, entitiesInRange, this.entityManager);
+                    const affectedEntityIds = VisibleSystem.occludeObjects(new PositionComponent(floor(lightSourcePos.x + 0.5), floor(lightSourcePos.y + 0.5)), lightLevel, visibleEntities, this.entityManager);
                     for (let affectedEntityId of affectedEntityIds) {
                         const vis = this.entityManager.get(affectedEntityId, CType.Visible);
                         const pos = this.entityManager.get(affectedEntityId, CType.Position);

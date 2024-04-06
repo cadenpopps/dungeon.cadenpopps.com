@@ -73,18 +73,16 @@ export default class GraphicsSystem extends System {
                     }
                 }
 
-                let size = 1;
-                if (entity.has(CType.Size)) {
-                    size = (entity.get(CType.Size) as SizeComponent).size;
-                }
+                const size = (entity.get(CType.Size) as SizeComponent).size;
+                const halfSize = size / 2;
 
-                this.canvas.rect(pos.x - size / 2, pos.y - size / 2, size, size);
+                this.canvas.rect(pos.x - halfSize, pos.y - halfSize, size, size);
                 const light = LIGHT_LEVEL_FILL[vis.lightLevel];
                 this.canvas.fill(light.r, light.g, light.b, light.a);
-                this.canvas.rect(pos.x - size / 2, pos.y - size / 2, size, size);
+                this.canvas.rect(pos.x - halfSize, pos.y - halfSize, size, size);
                 const shadow = SHADOW_FILL[vis.lightLevel];
                 this.canvas.fill(shadow.r, shadow.g, shadow.b, shadow.a);
-                this.canvas.rect(pos.x - size / 2, pos.y - size / 2, size, size);
+                this.canvas.rect(pos.x - halfSize, pos.y - halfSize, size, size);
             }
         }
         this.canvas.canvas.resetTransform();

@@ -54,34 +54,11 @@ export function getEntitiesInRange(centerPos, maxDistance, entities, entityManag
     const entitiesInRange = new Array();
     for (let entityId of entities) {
         const ePos = entityManager.get(entityId, CType.Position);
-        const eVis = entityManager.get(entityId, CType.Visible);
-        eVis.visible = false;
         if (abs(centerPos.x - ePos.x) < maxDistance && abs(centerPos.y - ePos.y) < maxDistance) {
             entitiesInRange.push(entityId);
         }
     }
     return entitiesInRange;
-}
-export function get2dEntityMap(entities, entityManager) {
-    const entityMap = new Map();
-    for (let entityId of entities) {
-        const ePos = entityManager.get(entityId, CType.Position);
-        let size = 1;
-        if (entityManager.getEntity(entityId).has(CType.Size)) {
-            size = entityManager.get(entityId, CType.Size).size;
-        }
-        const halfSize = size / 2;
-        const x = floor(ePos.x + halfSize);
-        const y = floor(ePos.y + halfSize);
-        if (!entityMap.get(x)) {
-            entityMap.set(x, new Map());
-        }
-        if (!entityMap.get(x)?.get(y)) {
-            entityMap.get(x)?.set(y, new Array());
-        }
-        entityMap.get(x)?.get(y)?.push(entityId);
-    }
-    return entityMap;
 }
 export function newWall(x, y) {
     return new Map([

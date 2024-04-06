@@ -28,6 +28,7 @@ export default class GameSystem extends System {
         this.levelChangeIds = this.entityManager.getSystemEntities([CType.LevelChange]);
     }
 
+    // Could be moved to player system
     private fixPlayerPos(): void {
         let exitId = -1;
         exitId = this.entityManager.get<PlayerComponent>(this.playerId, CType.Player).levelChangeId;
