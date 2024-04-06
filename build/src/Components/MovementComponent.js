@@ -1,15 +1,25 @@
 import { Component, CType, Direction } from "../Component.js";
 export default class MovementComponent extends Component {
-    direction;
-    previousDirection;
-    cooldown;
     speed;
-    constructor(speed = 30, direction = Direction.NONE) {
+    direction;
+    moving;
+    sneaking;
+    rolling;
+    rollLength;
+    rollCounter;
+    rollCooldownLength;
+    rollCooldown;
+    constructor(speed = 30, rollLength = 12, rollCooldownLength = 70) {
         super(CType.Movement);
         this.speed = speed;
-        this.direction = direction || Direction.NONE;
-        this.previousDirection = Direction.NONE;
-        this.cooldown = 0;
+        this.direction = Direction.SOUTH;
+        this.moving = false;
+        this.sneaking = false;
+        this.rolling = false;
+        this.rollLength = rollLength;
+        this.rollCounter = 0;
+        this.rollCooldownLength = rollCooldownLength;
+        this.rollCooldown = 0;
     }
 }
 //# sourceMappingURL=MovementComponent.js.map

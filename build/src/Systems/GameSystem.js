@@ -27,9 +27,13 @@ export default class GameSystem extends System {
                 if (this.entityManager.get(entityId, CType.LevelChange).id === exitId) {
                     const destinationPos = this.entityManager.get(entityId, CType.Position);
                     const playerPos = this.entityManager.get(this.playerId, CType.Position);
+                    const playerCamera = this.entityManager.get(this.playerId, CType.Camera);
                     playerPos.x = destinationPos.x + (destinationPos.z > playerPos.z ? 1 : -1);
                     playerPos.y = destinationPos.y;
                     playerPos.z = destinationPos.z;
+                    playerCamera.x = playerPos.x;
+                    playerCamera.y = playerPos.y;
+                    playerCamera.z = playerPos.x;
                     return;
                 }
             }

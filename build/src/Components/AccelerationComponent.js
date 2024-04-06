@@ -1,9 +1,11 @@
-import { Component, ComponentType } from "./Component.js";
+import { Component, CType } from "../Component.js";
 export default class AccelerationComponent extends Component {
-    constructor(x, y) {
-        super(ComponentType.Acceleration);
-        this.x = x || 0;
-        this.y = y || 0;
+    x;
+    y;
+    constructor(x = 0, y = 0) {
+        super(CType.Acceleration);
+        this.x = x;
+        this.y = y;
     }
 }
 //# sourceMappingURL=AccelerationComponent.js.map

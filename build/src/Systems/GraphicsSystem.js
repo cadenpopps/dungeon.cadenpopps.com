@@ -1,18 +1,17 @@
 import PoppsCanvas from "../../lib/PoppsCanvas.js";
-import { distance, floor } from "../../lib/PoppsMath.js";
+import { floor } from "../../lib/PoppsMath.js";
 import { CType } from "../Component.js";
-import CameraComponent from "../Components/CameraComponent.js";
+import { LIGHT_LEVEL_FILL, SHADOW_FILL } from "../Constants.js";
 import { Event } from "../EventManager.js";
 import { System, SystemType } from "../System.js";
+import CameraSystem from "./CameraSystem.js";
 export default class GraphicsSystem extends System {
     canvas;
     layers;
-    masterCamera;
     cameraIds;
     constructor(eventManager, entityManager) {
         super(SystemType.Graphics, eventManager, entityManager, [CType.Position, CType.Visible]);
         this.canvas = new PoppsCanvas();
-        this.masterCamera = new CameraComponent(0, 0, 0, 0, 0);
         this.cameraIds = new Array();
         this.layers = Array();
         this.canvas.loop(this.canvasCallback.bind(this));
@@ -34,24 +33,44 @@ export default class GraphicsSystem extends System {
     }
     canvasCallback() {
         this.canvas.background(0, 0, 0);
-        this.adjustCamera();
-        this.canvas.canvas.translate(floor(this.canvas.width / 2 - 0.5 * this.masterCamera.zoom - this.masterCamera.x * this.masterCamera.zoom), floor(this.canvas.height / 2 - 0.5 * this.masterCamera.zoom - this.masterCamera.y * this.masterCamera.zoom));
-        this.canvas.canvas.scale(this.masterCamera.zoom, this.masterCamera.zoom);
+        if (this.cameraIds.length === 0) {
+            return;
+        }
+        const cam = CameraSystem.getHighestPriorityCamera(this.cameraIds, this.entityManager);
+        if (cam === undefined) {
+            return;
+        }
+        this.canvas.canvas.translate(floor(this.canvas.width / 2 - (cam.x + cam.visualOffsetX) * cam.zoom), floor(this.canvas.height / 2 - (cam.y + cam.visualOffsetY) * cam.zoom));
+        this.canvas.canvas.scale(cam.zoom, cam.zoom);
         for (let layer of this.layers) {
-            const visibleEntities = this.determineVisibleEntities(layer);
+            const visibleEntities = this.getVisibleEntities(layer);
             for (let entityId of visibleEntities) {
-                const pos = this.entityManager.get(entityId, CType.Position);
-                const vis = this.entityManager.get(entityId, CType.Visible);
-                this.canvas.fill(vis.color.r, vis.color.g, vis.color.b, vis.color.a);
-                this.canvas.rect(pos.x, pos.y, 1, 1);
-                if (vis.layer === 5) {
-                    this.canvas.fill(0, 0, 0);
-                    this.canvas.rect(pos.x + 0.2, pos.y + 0.2, 0.1, 0.1);
-                    this.canvas.rect(pos.x + 0.7, pos.y + 0.2, 0.1, 0.1);
-                    this.canvas.rect(pos.x + 0.3, pos.y + 0.7, 0.4, 0.1);
-                    this.canvas.rect(pos.x + 0.2, pos.y + 0.6, 0.1, 0.1);
-                    this.canvas.rect(pos.x + 0.7, pos.y + 0.6, 0.1, 0.1);
+                const entity = this.entityManager.getEntity(entityId);
+                const pos = entity.get(CType.Position);
+                const vis = entity.get(CType.Visible);
+                if (!vis.visible) {
+                    this.canvas.fill(vis.color.r, vis.color.g, vis.color.b, vis.color.a * 0.75);
                 }
+                else {
+                    this.canvas.fill(vis.color.r, vis.color.g, vis.color.b, vis.color.a);
+                }
+                if (entity.has(CType.Movement)) {
+                    const mov = entity.get(CType.Movement);
+                    if (mov.rolling) {
+                        this.canvas.fill(vis.color.r, vis.color.g, vis.color.b, vis.color.a / 2);
+                    }
+                }
+                let size = 1;
+                if (entity.has(CType.Size)) {
+                    size = entity.get(CType.Size).size;
+                }
+                this.canvas.rect(pos.x - size / 2, pos.y - size / 2, size, size);
+                const light = LIGHT_LEVEL_FILL[vis.lightLevel];
+                this.canvas.fill(light.r, light.g, light.b, light.a);
+                this.canvas.rect(pos.x - size / 2, pos.y - size / 2, size, size);
+                const shadow = SHADOW_FILL[vis.lightLevel];
+                this.canvas.fill(shadow.r, shadow.g, shadow.b, shadow.a);
+                this.canvas.rect(pos.x - size / 2, pos.y - size / 2, size, size);
             }
         }
         this.canvas.canvas.resetTransform();
@@ -66,31 +85,15 @@ export default class GraphicsSystem extends System {
             this.layers[vis.layer].push(entityId);
         }
     }
-    determineVisibleEntities(layer) {
+    getVisibleEntities(layer) {
         const visibleEntities = new Array();
         for (let entityId of layer) {
-            if (this.withinVisionRange(entityId)) {
+            const vis = this.entityManager.get(entityId, CType.Visible);
+            if (vis.inVisionRange && (vis.discovered || vis.visible)) {
                 visibleEntities.push(entityId);
             }
         }
         return visibleEntities;
-    }
-    withinVisionRange(entityId) {
-        const pos = this.entityManager.get(entityId, CType.Position);
-        return distance(pos.x, pos.y, this.masterCamera.x, this.masterCamera.y) < this.masterCamera.visibleDistance;
-    }
-    adjustCamera() {
-        this.masterCamera.priority = -1;
-        for (let entityId of this.cameraIds) {
-            const cam = this.entityManager.get(entityId, CType.Camera);
-            if (cam.priority > this.masterCamera.priority) {
-                this.masterCamera.zoom = cam.zoom;
-                this.masterCamera.x = cam.x;
-                this.masterCamera.y = cam.y;
-                this.masterCamera.priority = cam.priority;
-                this.masterCamera.visibleDistance = cam.visibleDistance;
-            }
-        }
     }
 }
 //# sourceMappingURL=GraphicsSystem.js.map

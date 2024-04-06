@@ -1,0 +1,1 @@
+{"version":3,"file":"SizeComponent.js","sourceRoot":"","sources":["../../../src/Components/SizeComponent.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,EAAE,KAAK,EAAE,MAAM,iBAAiB,CAAC;AAEnD,MAAM,CAAC,OAAO,OAAO,aAAc,SAAQ,SAAS;IACzC,IAAI,CAAS;IAEpB,YAAY,IAAI,GAAG,CAAC;QAChB,KAAK,CAAC,KAAK,CAAC,IAAI,CAAC,CAAC;QAClB,IAAI,CAAC,IAAI,GAAG,IAAI,CAAC;IACrB,CAAC;CACJ"}

@@ -1,6 +1,6 @@
 import Levels from "../../content/Levels.js";
 import Rooms from "../../content/Rooms.js";
-import { abs, ceil, floor } from "../../lib/PoppsMath.js";
+import { abs, ceil, floor, oneIn } from "../../lib/PoppsMath.js";
 import { CType } from "../Component.js";
 import LevelChangeComponent from "../Components/LevelChangeComponent.js";
 import LevelComponent from "../Components/LevelComponent.js";
@@ -12,7 +12,7 @@ import { Event } from "../EventManager.js";
 import { System, SystemType } from "../System.js";
 export default class LevelSystem extends System {
     BASE_LEVEL_SIZE = 50;
-    LEVEL_GROWTH = 0.5;
+    LEVEL_GROWTH = 0.75;
     ROOM_DENSITY = 50;
     DENSITY_GROWTH = 0.8;
     currentLevel;
@@ -78,11 +78,14 @@ export default class LevelSystem extends System {
         const levelMap = this.placeRoomsOnMap(rooms);
         console.log(`${this.getTimePassed(start)}ms - place rooms on map`);
         start = new Date();
-        this.connectRooms(rooms, levelMap);
+        this.connectRooms(newLevel.seed, rooms, levelMap);
         console.log(`${this.getTimePassed(start)}ms - connect rooms`);
         start = new Date();
         this.placeWalls(levelMap);
         console.log(`${this.getTimePassed(start)}ms - place walls on map`);
+        start = new Date();
+        this.placeTorches(newLevel, levelMap);
+        console.log(`${this.getTimePassed(start)}ms - place torches on map`);
         start = new Date();
         this.generateTileEntitiesFromMap(newLevel, levelMap, depth);
         console.log(`${this.getTimePassed(start)}ms - placing squares from map`);
@@ -279,24 +282,115 @@ export default class LevelSystem extends System {
             }
         }
     }
-    connectRooms(rooms, levelMap) {
-        let connected = rooms.splice(0, 1);
-        let unconnected = rooms.splice(0);
+    placeTorches(newLevel, levelMap) {
+        for (let x = 0; x < levelMap.length; x++) {
+            for (let y = 0; y < levelMap[x].length; y++) {
+                if (levelMap[x][y].has(CType.Tile) &&
+                    levelMap[x][y].get(CType.Tile).tileType === Tile.Floor) {
+                    let wallCounter = 0;
+                    let floorCounter = 0;
+                    for (let dx = -1; dx <= 1; dx++) {
+                        for (let dy = -1; dy <= 1; dy++) {
+                            if (x + dx > 0 &&
+                                y + dy > 0 &&
+                                x + dx < levelMap.length &&
+                                y + dy < levelMap[x + dx].length &&
+                                !(dx === 0 && dy === 0) &&
+                                levelMap[x + dx][y + dy].has(CType.Tile) &&
+                                levelMap[x + dx][y + dy].get(CType.Tile).tileType === Tile.Floor) {
+                                floorCounter++;
+                            }
+                            else if (x + dx > 0 &&
+                                y + dy > 0 &&
+                                x + dx < levelMap.length &&
+                                y + dy < levelMap[x + dx].length &&
+                                !(dx === 0 && dy === 0) &&
+                                levelMap[x + dx][y + dy].has(CType.Tile) &&
+                                levelMap[x + dx][y + dy].get(CType.Tile).tileType === Tile.Wall) {
+                                wallCounter++;
+                            }
+                        }
+                        if (wallCounter === 3 || (wallCounter === 6 && floorCounter > 2)) {
+                            if (oneIn(50)) {
+                                newLevel.entities.push(Constants.newTorch(x, y));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    connectRooms(seed, rooms, levelMap) {
+        let connected = rooms.slice(0, 1);
+        let unconnected = rooms.slice(1, rooms.length);
+        let connections = new Array();
         let tries = 200;
         while (tries > 0 && unconnected.length > 0) {
             const doors = this.findClosestDoors(connected, unconnected, levelMap);
+            if (doors[0] === undefined || doors[1] === undefined) {
+                break;
+            }
             levelMap[doors[0].pos.x][doors[0].pos.y] = new Map();
             levelMap[doors[1].pos.x][doors[1].pos.y] = new Map();
             if (this.createPath(levelMap, [doors[0].pos, doors[1].pos])) {
-                const unconnectedIndex = doors[1].roomNumber;
-                connected.push(unconnected.splice(unconnectedIndex, 1)[0]);
+                connections.push([
+                    rooms.indexOf(connected[doors[0].roomNumber]),
+                    rooms.indexOf(unconnected[doors[1].roomNumber]),
+                ]);
+                connected.push(unconnected.splice(doors[1].roomNumber, 1)[0]);
             }
             else {
                 console.log(`No path found between ${doors[0].pos.x}, ${doors[0].pos.y} and ${doors[1].pos.x}, ${doors[1].pos.y}`);
-                levelMap[doors[0].pos.x][doors[0].pos.y] = Constants.newWall(doors[0].pos.x, doors[0].pos.y);
-                levelMap[doors[1].pos.x][doors[1].pos.y] = Constants.newWall(doors[1].pos.x, doors[1].pos.y);
+                levelMap[doors[0].pos.x][doors[0].pos.y] = Constants.newPath(doors[0].pos.x, doors[0].pos.y);
+                levelMap[doors[1].pos.x][doors[1].pos.y] = Constants.newPath(doors[1].pos.x, doors[1].pos.y);
             }
             tries--;
+        }
+        if (unconnected.length > 0) {
+            console.log(`\n\n\nFAILED\n\n\n`);
+        }
+        tries = 5;
+        let localSeed = seed;
+        while (tries > 0) {
+            const roomIndex = Math.pow(localSeed, 2) % rooms.length;
+            localSeed = ceil((Math.pow(localSeed + 1, 2) / 7) % 65536);
+            const offLimit = [];
+            for (let c of connections) {
+                if (c[0] === roomIndex) {
+                    offLimit.push(c[1]);
+                }
+                else if (c[1] === roomIndex) {
+                    offLimit.push(c[0]);
+                }
+            }
+            let otherRoomIndex = Math.pow(localSeed, 2) % rooms.length;
+            for (let i = 0; i < 10; i++) {
+                if (otherRoomIndex === roomIndex || offLimit.includes(otherRoomIndex)) {
+                    localSeed = ceil((Math.pow(localSeed + 1, 2) / 7) % 65536);
+                    otherRoomIndex = Math.pow(localSeed, 2) % rooms.length;
+                }
+                else {
+                    i = 10;
+                    const secondaryDoors = this.findClosestDoors([rooms[roomIndex]], [rooms[otherRoomIndex]], levelMap);
+                    if (secondaryDoors[0] && secondaryDoors[1]) {
+                        levelMap[secondaryDoors[0].pos.x][secondaryDoors[0].pos.y] = new Map();
+                        levelMap[secondaryDoors[1].pos.x][secondaryDoors[1].pos.y] = new Map();
+                        if (this.createPath(levelMap, [secondaryDoors[0].pos, secondaryDoors[1].pos], 40)) {
+                            connections.push([roomIndex, otherRoomIndex]);
+                        }
+                    }
+                }
+            }
+            tries--;
+        }
+        for (let i = 0; i < levelMap.length; i++) {
+            for (let j = 0; j < levelMap[i].length; j++) {
+                if (levelMap[i][j].size !== 0 &&
+                    levelMap[i][j].get(CType.Tile).tileType === Tile.Path) {
+                    const pos = levelMap[i][j].get(CType.Position);
+                    levelMap[i][j] = Constants.newWall(pos.x, pos.y);
+                }
+            }
         }
         return levelMap;
     }
@@ -324,7 +418,7 @@ export default class LevelSystem extends System {
                 for (let j = 0; j < unconnectedDoors.length; j++) {
                     for (let u of unconnectedDoors[j]) {
                         const dist = this.distanceHeuristic(c, u);
-                        if (dist < closestDist) {
+                        if (dist < closestDist && oneIn(2)) {
                             closestDist = dist;
                             closestDoors = [
                                 { roomNumber: i, pos: c },
@@ -395,9 +489,9 @@ export default class LevelSystem extends System {
                 }
             }
         }
-        return (floorCounter === 3 || floorCounter === 6) && wallCounter == 2;
+        return (floorCounter === 3 || floorCounter === 6) && wallCounter === 2;
     }
-    createPath(levelMap, squares) {
+    findPath(levelMap, squares) {
         const len = levelMap.length;
         let searching = [];
         let searched = new Array(len);
@@ -432,6 +526,66 @@ export default class LevelSystem extends System {
                 }
             }
             if (currentPos.x === endPos.x && currentPos.y === endPos.y) {
+                return true;
+            }
+            searching = searching.filter((s) => {
+                return !(s.x === currentPos.x && s.y === currentPos.y);
+            });
+            searched[currentPos.x][currentPos.y] = true;
+            const currentNeighbors = this.getNeighbors(currentPos, searched, levelMap);
+            for (let n of currentNeighbors) {
+                const estimatedDistFromStart = distFromStart[currentPos.x][currentPos.y] + 1;
+                if (!this.includesPosition(n, searching)) {
+                    searching.push(n);
+                }
+                else if (estimatedDistFromStart >= distFromStart[n.x][n.y]) {
+                    continue;
+                }
+                path[n.x][n.y] = currentPos;
+                distFromStart[n.x][n.y] = estimatedDistFromStart;
+                finalCost[n.x][n.y] = distFromStart[n.x][n.y] + distStartEnd;
+            }
+        }
+        return false;
+    }
+    createPath(levelMap, squares, maxDist) {
+        const len = levelMap.length;
+        let searching = [];
+        let searched = new Array(len);
+        let distFromStart = new Array(len);
+        let finalCost = new Array(len);
+        let path = new Array(len);
+        for (let i = 0; i < levelMap.length; i++) {
+            const height = levelMap[i].length;
+            searched[i] = new Array(height);
+            distFromStart[i] = new Array(height);
+            finalCost[i] = new Array(height);
+            path[i] = new Array(height);
+            for (let j = 0; j < levelMap[i].length; j++) {
+                distFromStart[i][j] = 10000;
+                finalCost[i][j] = 10000;
+                searched[i][j] = false;
+                path[i][j] = undefined;
+            }
+        }
+        let startPos = squares[0];
+        let endPos = squares[1];
+        const distStartEnd = this.distanceHeuristic(startPos, endPos);
+        searching.push(startPos);
+        distFromStart[startPos.x][startPos.y] = 0;
+        finalCost[startPos.x][startPos.y] = this.distanceHeuristic(startPos, endPos);
+        path[startPos.x][startPos.y] = undefined;
+        while (searching.length > 0) {
+            let currentPos = searching[0];
+            for (const otherSquare of searching) {
+                if (finalCost[otherSquare.x][otherSquare.y] < finalCost[currentPos.x][currentPos.y]) {
+                    currentPos = otherSquare;
+                }
+            }
+            if (currentPos.x === endPos.x && currentPos.y === endPos.y) {
+                if (maxDist && finalCost[currentPos.x][currentPos.y] > maxDist) {
+                    return false;
+                }
                 let head = endPos;
                 while (head !== undefined) {
                     levelMap[head.x][head.y] = Constants.newDungeonFloor(head.x, head.y);

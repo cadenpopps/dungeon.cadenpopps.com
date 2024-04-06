@@ -5,6 +5,8 @@ export default class ControllerComponent extends Component {
     down;
     left;
     interact;
+    roll;
+    sneak;
     zoom_in;
     zoom_out;
     constructor() {
@@ -14,6 +16,8 @@ export default class ControllerComponent extends Component {
         this.down = false;
         this.left = false;
         this.interact = false;
+        this.roll = false;
+        this.sneak = false;
         this.zoom_in = false;
         this.zoom_out = false;
     }

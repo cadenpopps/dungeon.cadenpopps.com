@@ -1,4 +1,5 @@
 import { CType } from "../Component.js";
+import CameraComponent from "../Components/CameraComponent.js";
 import LevelChangeComponent from "../Components/LevelChangeComponent.js";
 import PlayerComponent from "../Components/PlayerComponent.js";
 import PositionComponent from "../Components/PositionComponent.js";
@@ -36,9 +37,13 @@ export default class GameSystem extends System {
                 if (this.entityManager.get<LevelChangeComponent>(entityId, CType.LevelChange).id === exitId) {
                     const destinationPos = this.entityManager.get<PositionComponent>(entityId, CType.Position);
                     const playerPos = this.entityManager.get<PositionComponent>(this.playerId, CType.Position);
+                    const playerCamera = this.entityManager.get<CameraComponent>(this.playerId, CType.Camera);
                     playerPos.x = destinationPos.x + (destinationPos.z > playerPos.z ? 1 : -1);
                     playerPos.y = destinationPos.y;
                     playerPos.z = destinationPos.z;
+                    playerCamera.x = playerPos.x;
+                    playerCamera.y = playerPos.y;
+                    playerCamera.z = playerPos.x;
                     return;
                 }
             }

@@ -60,10 +60,7 @@ export default class PoppsCanvas {
         g = Math.round(g);
         b = Math.round(b);
         if (a === undefined) {
-            a = 255;
-        }
-        else {
-            a = Math.round(a);
+            a = 1;
         }
         this.canvas.fillStyle = `rgba(${r},${g},${b},${a})`;
     }
@@ -72,10 +69,7 @@ export default class PoppsCanvas {
         g = Math.round(g);
         b = Math.round(b);
         if (a === undefined) {
-            a = 255;
-        }
-        else {
-            a = Math.round(a);
+            a = 1;
         }
         this.canvas.strokeStyle = `rgba(${r},${g},${b},${a})`;
     }

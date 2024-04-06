@@ -21,6 +21,8 @@ export enum CType {
     Interactable,
     Tile,
     LightSource,
+    Acceleration,
+    Size,
 }
 
 export enum Direction {

@@ -233,7 +233,7 @@ export default class LevelMakerSystem extends System {
         const newLevel = new LevelComponent(0);
         for (let x = 1; x < this.levelWidth + 1; x++) {
             for (let y = 1; y < this.levelHeight + 1; y++) {
-                newLevel.entities.push(Constants.newGrass(x, y));
+                newLevel.entities.push(Constants.newDungeonFloor(x, y));
             }
         }
         this.entityManager.addEntity(new Map([[CType.Level, newLevel]]));

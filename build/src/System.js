@@ -28,6 +28,12 @@ export class System {
                 case Event.level_loaded:
                     this.unpause();
                     break;
+                case Event.pause:
+                    this.pause();
+                    break;
+                case Event.unpause:
+                    this.unpause();
+                    break;
             }
             this.handleEvent(event);
         }
@@ -52,7 +58,7 @@ export class System {
 export var SystemType;
 (function (SystemType) {
     SystemType[SystemType["Game"] = 0] = "Game";
-    SystemType[SystemType["Input"] = 1] = "Input";
+    SystemType[SystemType["Controller"] = 1] = "Controller";
     SystemType[SystemType["Graphics"] = 2] = "Graphics";
     SystemType[SystemType["Player"] = 3] = "Player";
     SystemType[SystemType["Physics"] = 4] = "Physics";
@@ -61,5 +67,6 @@ export var SystemType;
     SystemType[SystemType["Level"] = 7] = "Level";
     SystemType[SystemType["Interactable"] = 8] = "Interactable";
     SystemType[SystemType["Light"] = 9] = "Light";
+    SystemType[SystemType["Visible"] = 10] = "Visible";
 })(SystemType || (SystemType = {}));
 //# sourceMappingURL=System.js.map

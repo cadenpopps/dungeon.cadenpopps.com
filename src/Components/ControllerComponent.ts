@@ -6,6 +6,8 @@ export default class ControllerComponent extends Component {
     public down: boolean;
     public left: boolean;
     public interact: boolean;
+    public roll: boolean;
+    public sneak: boolean;
     public zoom_in: boolean;
     public zoom_out: boolean;
 
@@ -16,6 +18,8 @@ export default class ControllerComponent extends Component {
         this.down = false;
         this.left = false;
         this.interact = false;
+        this.roll = false;
+        this.sneak = false;
         this.zoom_in = false;
         this.zoom_out = false;
     }

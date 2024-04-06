@@ -30,4 +30,6 @@ export enum Event {
     entity_modified,
     level_change,
     level_loaded,
+    pause,
+    unpause,
 }

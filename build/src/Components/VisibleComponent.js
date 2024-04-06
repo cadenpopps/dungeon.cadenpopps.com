@@ -3,11 +3,19 @@ export default class VisibleComponent extends Component {
     color;
     layer;
     lightLevel;
-    constructor(color, layer) {
+    visible;
+    discovered;
+    inVisionRange;
+    blocking;
+    constructor(color, blocking, layer) {
         super(CType.Visible);
-        this.color = color || { r: 0, g: 0, b: 0, a: 0 };
+        this.blocking = blocking;
+        this.color = color;
         this.layer = layer || 0;
         this.lightLevel = 0;
+        this.visible = false;
+        this.discovered = false;
+        this.inVisionRange = false;
     }
 }
 //# sourceMappingURL=VisibleComponent.js.map

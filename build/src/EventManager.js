@@ -26,5 +26,7 @@ export var Event;
     Event[Event["entity_modified"] = 3] = "entity_modified";
     Event[Event["level_change"] = 4] = "level_change";
     Event[Event["level_loaded"] = 5] = "level_loaded";
+    Event[Event["pause"] = 6] = "pause";
+    Event[Event["unpause"] = 7] = "unpause";
 })(Event || (Event = {}));
 //# sourceMappingURL=EventManager.js.map

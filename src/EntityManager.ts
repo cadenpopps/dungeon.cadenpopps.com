@@ -2,14 +2,11 @@ import { Component, CType } from "./Component.js";
 import { Event, EventManager } from "./EventManager.js";
 
 export class EntityManager {
-    private CTypes = Object.keys(CType).length / 2;
     public entities: Map<number, Map<CType, Component>>;
-    private idCounter: number;
+    private CTypes = Object.keys(CType).length / 2;
     private eventManager: EventManager;
+    private idCounter: number;
     private destroyQueue: Array<number>;
-
-    private counter = 0;
-    private counter2 = 0;
 
     constructor(eventManager: EventManager) {
         this.eventManager = eventManager;
@@ -22,12 +19,6 @@ export class EntityManager {
     }
 
     public tick(): void {
-        this.counter2++;
-        if (this.counter2 > 60) {
-            // console.log(`Entities fetched: ${floor(this.counter / 60)}`);
-            this.counter = 0;
-            this.counter2 = 0;
-        }
         for (let event of this.eventManager.eventQueue) {
             switch (event) {
                 case Event.entity_destroyed:
@@ -38,7 +29,6 @@ export class EntityManager {
     }
 
     public getEntity(entityId: number): Map<CType, Component> {
-        this.counter++;
         const entity = this.entities.get(entityId);
         if (entity !== undefined) {
             return entity;
@@ -47,7 +37,6 @@ export class EntityManager {
     }
 
     public get<T>(entityId: number, CType: CType): T {
-        this.counter++;
         const entity = this.entities.get(entityId);
         if (entity !== undefined) {
             const component = entity.get(CType);

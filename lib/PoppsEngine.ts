@@ -13,9 +13,9 @@ export class PoppsEngine {
 
     public tick(): void {
         if (this.looping) {
-            this.tickCallback();
             this.ticks++;
-            setTimeout(this.tick.bind(this), 0);
+            setTimeout(this.tick.bind(this), 20);
+            this.tickCallback();
         }
     }
 

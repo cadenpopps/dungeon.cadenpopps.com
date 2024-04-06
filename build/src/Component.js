@@ -20,6 +20,8 @@ export var CType;
     CType[CType["Interactable"] = 11] = "Interactable";
     CType[CType["Tile"] = 12] = "Tile";
     CType[CType["LightSource"] = 13] = "LightSource";
+    CType[CType["Acceleration"] = 14] = "Acceleration";
+    CType[CType["Size"] = 15] = "Size";
 })(CType || (CType = {}));
 export var Direction;
 (function (Direction) {

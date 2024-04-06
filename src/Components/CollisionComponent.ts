@@ -1,16 +1,20 @@
 import { Component, CType } from "../Component.js";
 
 export default class CollisionComponent extends Component {
-    public size: number;
     public collided: boolean;
     public collisionHandler: CollisionHandler;
+    public correctionForces: Array<Force>;
 
-    constructor(collisionHandler?: CollisionHandler, size?: number) {
+    constructor(collisionHandler?: CollisionHandler) {
         super(CType.Collision);
         this.collisionHandler = collisionHandler || CollisionHandler.Stop;
-        this.size = size || 1;
         this.collided = false;
+        this.correctionForces = new Array<Force>();
     }
+}
+export interface Force {
+    x: number;
+    y: number;
 }
 
 export enum CollisionHandler {

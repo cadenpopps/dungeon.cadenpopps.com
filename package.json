@@ -9,9 +9,9 @@
         "lib": "lib"
     },
     "scripts": {
-        "build": "tsc --base-href",
+        "build": "tsc",
         "serve": "node build/server.cjs",
-        "watch": "tsc -w --base-href",
+        "watch": "tsc -w",
         "test": "jest"
     },
     "author": "Caden Popps",

@@ -17,9 +17,7 @@ export default class PoppsCanvas {
 
     private initCanvas(): void {
         this.canvasElement = document.createElement("canvas");
-        this.canvas = this.canvasElement.getContext(
-            "2d"
-        ) as CanvasRenderingContext2D;
+        this.canvas = this.canvasElement.getContext("2d") as CanvasRenderingContext2D;
         this.parentElement.append(this.canvasElement);
         this.resizeCanvas();
     }
@@ -83,9 +81,7 @@ export default class PoppsCanvas {
         g = Math.round(g);
         b = Math.round(b);
         if (a === undefined) {
-            a = 255;
-        } else {
-            a = Math.round(a);
+            a = 1;
         }
         this.canvas.fillStyle = `rgba(${r},${g},${b},${a})`;
     }
@@ -101,9 +97,7 @@ export default class PoppsCanvas {
         g = Math.round(g);
         b = Math.round(b);
         if (a === undefined) {
-            a = 255;
-        } else {
-            a = Math.round(a);
+            a = 1;
         }
         this.canvas.strokeStyle = `rgba(${r},${g},${b},${a})`;
     }
@@ -170,13 +164,7 @@ export default class PoppsCanvas {
      * @param y2 y coordinate of first corner
      * @param width stroke width of the line
      */
-    public line(
-        x1: number,
-        y1: number,
-        x2: number,
-        y2: number,
-        width: number
-    ): void {
+    public line(x1: number, y1: number, x2: number, y2: number, width: number): void {
         this.canvas.beginPath();
         this.canvas.moveTo(x1, y1);
         this.canvas.lineTo(x2, y2);
@@ -228,14 +216,7 @@ export default class PoppsCanvas {
      * @param endAngle angle of end of arc
      * @param ant boolean to reverse direction
      */
-    public arc(
-        x: number,
-        y: number,
-        r: number,
-        startAngle: number,
-        endAngle: number,
-        ant: number
-    ): void {
+    public arc(x: number, y: number, r: number, startAngle: number, endAngle: number, ant: number): void {
         this.canvas.beginPath();
         if (ant) {
             this.canvas.arc(x, y, r, startAngle, endAngle, true);
@@ -253,14 +234,7 @@ export default class PoppsCanvas {
      * @param endAngle angle of end of arc
      * @param ant boolean to reverse direction
      */
-    public strokeArc(
-        x: number,
-        y: number,
-        r: number,
-        startAngle: number,
-        endAngle: number,
-        ant: number
-    ): void {
+    public strokeArc(x: number, y: number, r: number, startAngle: number, endAngle: number, ant: number): void {
         this.canvas.beginPath();
         if (ant) {
             this.canvas.arc(x, y, r, startAngle, endAngle, true);
@@ -325,13 +299,7 @@ export default class PoppsCanvas {
      * @param width width of image
      * @param height height of image
      */
-    public image(
-        img: CanvasImageSource,
-        x: number,
-        y: number,
-        width: number,
-        height: number
-    ) {
+    public image(img: CanvasImageSource, x: number, y: number, width: number, height: number) {
         this.canvas.drawImage(img, x, y, width, height);
     }
 
@@ -357,16 +325,6 @@ export default class PoppsCanvas {
         width: number,
         height: number
     ) {
-        this.canvas.drawImage(
-            img,
-            sx,
-            sy,
-            sWidth,
-            sHeight,
-            x,
-            y,
-            width,
-            height
-        );
+        this.canvas.drawImage(img, sx, sy, sWidth, sHeight, x, y, width, height);
     }
 }

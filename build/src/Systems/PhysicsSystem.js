@@ -1,135 +1,191 @@
-import { abs, ceil, floor, round } from "../../lib/PoppsMath.js";
+import { abs, ceil, floor } from "../../lib/PoppsMath.js";
 import { CType } from "../Component.js";
 import { CollisionHandler } from "../Components/CollisionComponent.js";
 import PositionComponent from "../Components/PositionComponent.js";
+import { getEntitiesInRange } from "../Constants.js";
 import { System, SystemType } from "../System.js";
+import CameraSystem from "./CameraSystem.js";
 export default class PhysicsSystem extends System {
-    subGrid;
-    centerPoint;
-    visibleDistance;
     cameraIds;
+    velocityIds;
     constructor(eventManager, entityManager) {
-        super(SystemType.Physics, eventManager, entityManager, [CType.Position, CType.Collision]);
-        this.subGrid = new Array();
-        this.centerPoint = new PositionComponent(0, 0, 0);
-        this.visibleDistance = 1;
+        super(SystemType.Physics, eventManager, entityManager, [CType.Collision]);
     }
     logic() {
-        this.setCenterPoint();
-        const filteredEntities = this.filterEntitiesByDistance();
-        this.preCollision(filteredEntities);
-        this.physics();
+        const cam = CameraSystem.getHighestPriorityCamera(this.cameraIds, this.entityManager);
+        const entitiesInRange = getEntitiesInRange(new PositionComponent(cam.x, cam.y), cam.visibleDistance + 2, this.entities, this.entityManager);
+        const subGridSize = this.setBiggestEntitySize(entitiesInRange);
+        const subGrid = this.createSubGrid(entitiesInRange, subGridSize);
+        const movingEntitiesInRange = getEntitiesInRange(new PositionComponent(cam.x, cam.y), cam.visibleDistance, this.velocityIds, this.entityManager);
+        this.physics(subGrid, movingEntitiesInRange, subGridSize);
     }
     refreshEntitiesHelper() {
         this.cameraIds = this.entityManager.getSystemEntities([CType.Camera]);
+        this.velocityIds = this.entityManager.getSystemEntities([CType.Velocity]);
     }
-    setCenterPoint() {
-        let priority = -1;
-        for (let entityId of this.cameraIds) {
-            const cam = this.entityManager.get(entityId, CType.Camera);
-            if (cam.priority > priority) {
-                this.centerPoint.x = round(cam.x);
-                this.centerPoint.y = round(cam.y);
-                this.centerPoint.z = cam.z;
-                this.visibleDistance = cam.visibleDistance;
-            }
-        }
-    }
-    filterEntitiesByDistance() {
-        const filteredEntities = new Array();
-        for (let entityId of this.entities) {
-            const pos = this.entityManager.get(entityId, CType.Position);
-            if (abs(pos.x - this.centerPoint.x) < this.visibleDistance &&
-                abs(pos.y - this.centerPoint.y) < this.visibleDistance) {
-                filteredEntities.push(entityId);
-            }
-        }
-        return filteredEntities;
-    }
-    preCollision(filteredEntities) {
-        const gridSize = this.getBiggestEntitySize(filteredEntities);
-        const gridLength = ceil((this.visibleDistance * 2) / gridSize) - 1;
-        this.subGrid = new Array(gridLength);
-        for (let i = 0; i < gridLength; i++) {
-            this.subGrid[i] = new Array(gridLength);
-            for (let j = 0; j < gridLength; j++) {
-                this.subGrid[i][j] = new Array();
-            }
-        }
+    createSubGrid(filteredEntities, subGridSize) {
+        const subGrid = new Map();
         for (let entityId of filteredEntities) {
             const pos = this.entityManager.get(entityId, CType.Position);
-            const newX = floor((pos.x - this.centerPoint.x + this.visibleDistance - 1) / gridSize);
-            const newY = floor((pos.y - this.centerPoint.y + this.visibleDistance - 1) / gridSize);
-            this.subGrid[newX][newY].push(entityId);
+            const newX = floor(pos.x / subGridSize);
+            const newY = floor(pos.y / subGridSize);
+            if (!subGrid.get(newX)) {
+                subGrid.set(newX, new Map());
+            }
+            if (!subGrid.get(newX)?.get(newY)) {
+                subGrid.get(newX)?.set(newY, new Array());
+            }
+            subGrid.get(newX)?.get(newY)?.push(entityId);
         }
+        return subGrid;
     }
-    getBiggestEntitySize(filteredEntities) {
+    setBiggestEntitySize(filteredEntities) {
         let biggestEntitySize = 1;
         for (let entityId of filteredEntities) {
-            const col = this.entityManager.get(entityId, CType.Collision);
-            if (col.size > biggestEntitySize) {
-                biggestEntitySize = col.size;
+            const size = this.entityManager.get(entityId, CType.Size);
+            if (size.size > biggestEntitySize) {
+                biggestEntitySize = size.size;
             }
         }
         return biggestEntitySize;
     }
-    physics() {
-        for (let i = 1; i < this.subGrid.length - 1; i++) {
-            for (let j = 1; j < this.subGrid[i].length - 1; j++) {
-                for (let entityId of this.subGrid[i][j]) {
-                    if (this.entityManager.getEntity(entityId).has(CType.Velocity)) {
-                        this.moveEntityWithVelocity(entityId);
-                        if (this.collision(entityId, i, j)) {
-                            this.collisionHandler(entityId);
+    physics(subGrid, movingEntitiesInRange, subGridSize) {
+        for (let entityId of movingEntitiesInRange) {
+            const pos = this.entityManager.get(entityId, CType.Position);
+            const vel = this.entityManager.get(entityId, CType.Velocity);
+            if (this.entityManager.getEntity(entityId).has(CType.Acceleration)) {
+                const acc = this.entityManager.get(entityId, CType.Acceleration);
+                vel.x += acc.x;
+                vel.y += acc.y;
+            }
+            if (abs(vel.x) > 0.0001) {
+                pos.x += vel.x;
+            }
+            else {
+                vel.x = 0;
+            }
+            if (abs(vel.y) > 0.0001) {
+                pos.y += vel.y;
+            }
+            else {
+                vel.y = 0;
+            }
+        }
+        for (let entityId of movingEntitiesInRange) {
+            const vel = this.entityManager.get(entityId, CType.Velocity);
+            if (abs(vel.x) > 0 || abs(vel.y) > 0) {
+                this.collision(entityId, subGrid, subGridSize);
+            }
+        }
+        for (let entityId of movingEntitiesInRange) {
+            const pos = this.entityManager.get(entityId, CType.Position);
+            const col = this.entityManager.get(entityId, CType.Collision);
+            let positiveX = 0;
+            let negativeX = 0;
+            let positiveY = 0;
+            let negativeY = 0;
+            for (let i = 0; i < col.correctionForces.length; i++) {
+                const force1 = col.correctionForces[i];
+                let ignoreX = force1.x === 0;
+                let ignoreY = force1.y === 0;
+                for (let j = 0; j < col.correctionForces.length; j++) {
+                    if (i !== j) {
+                        const force2 = col.correctionForces[j];
+                        if (force1.x === force2.x) {
+                            ignoreY = true;
+                        }
+                        if (force1.y === force2.y) {
+                            ignoreX = true;
                         }
                     }
                 }
+                if (!ignoreX && (abs(force1.x) < abs(force1.y) || force1.y === 0)) {
+                    if (force1.x > positiveX) {
+                        positiveX = force1.x;
+                    }
+                    else if (force1.x < negativeX) {
+                        negativeX = force1.x;
+                    }
+                }
+                else if (!ignoreY && (abs(force1.x) > abs(force1.y) || force1.x === 0)) {
+                    if (force1.y > positiveY) {
+                        positiveY = force1.y;
+                    }
+                    else if (force1.y < negativeY) {
+                        negativeY = force1.y;
+                    }
+                }
             }
+            pos.x += positiveX + negativeX;
+            pos.y += positiveY + negativeY;
+            col.correctionForces = new Array();
         }
     }
-    moveEntityWithVelocity(entityId) {
+    collision(entityId, subGrid, subGridSize) {
         const pos = this.entityManager.get(entityId, CType.Position);
-        const vel = this.entityManager.get(entityId, CType.Velocity);
-        pos.x += vel.x;
-        pos.y += vel.y;
-    }
-    collision(entityId, xCoord, yCoord) {
-        for (let i = xCoord - 1; i <= xCoord + 1; i++) {
-            for (let j = yCoord - 1; j <= yCoord + 1; j++) {
-                for (let otherId of this.subGrid[i][j]) {
-                    if (otherId !== entityId) {
-                        if (this.collided(entityId, otherId)) {
-                            return true;
+        const subGridX = floor(pos.x / subGridSize);
+        const subGridY = floor(pos.y / subGridSize);
+        for (let i = subGridX - 1; i <= subGridX + 1; i++) {
+            for (let j = subGridY - 1; j <= subGridY + 1; j++) {
+                if (subGrid.get(i) && subGrid.get(i)?.get(j) && (subGrid.get(i)?.get(j)).length > 0) {
+                    for (let otherId of subGrid.get(i)?.get(j)) {
+                        if (otherId !== entityId) {
+                            if (this.overlapping(entityId, otherId)) {
+                                this.collisionHandler(entityId, otherId);
+                            }
                         }
                     }
                 }
             }
         }
-        return false;
     }
-    collided(ent1, ent2) {
+    overlapping(ent1, ent2) {
         const pos1 = this.entityManager.get(ent1, CType.Position);
-        const col1 = this.entityManager.get(ent1, CType.Collision);
+        const halfSize1 = this.entityManager.get(ent1, CType.Size).size / 2;
         const pos2 = this.entityManager.get(ent2, CType.Position);
-        const col2 = this.entityManager.get(ent2, CType.Collision);
-        return (pos1.x < pos2.x + col2.size &&
-            pos1.x + col1.size > pos2.x &&
-            pos1.y < pos2.y + col2.size &&
-            pos1.y + col1.size > pos2.y);
+        const halfSize2 = this.entityManager.get(ent2, CType.Size).size / 2;
+        const left1 = pos1.x - halfSize1;
+        const top1 = pos1.y - halfSize1;
+        const right1 = pos1.x + halfSize1;
+        const bottom1 = pos1.y + halfSize1;
+        const left2 = pos2.x - halfSize2;
+        const top2 = pos2.y - halfSize2;
+        const right2 = pos2.x + halfSize2;
+        const bottom2 = pos2.y + halfSize2;
+        return left1 < right2 && right1 > left2 && top1 < bottom2 && bottom1 > top2;
     }
-    collisionHandler(entityId) {
-        const pos = this.entityManager.get(entityId, CType.Position);
+    collisionHandler(entityId, collisionId) {
+        const pos1 = this.entityManager.get(entityId, CType.Position);
+        const col1 = this.entityManager.get(entityId, CType.Collision);
         const vel = this.entityManager.get(entityId, CType.Velocity);
+        const pos2 = this.entityManager.get(collisionId, CType.Position);
+        const size1 = this.entityManager.get(entityId, CType.Size);
+        const size2 = this.entityManager.get(collisionId, CType.Size);
+        const scale = 1000;
+        const xOverlap = ceil(scale * ((size1.size + size2.size) / 2 - abs(pos1.x - pos2.x))) / scale;
+        const yOverlap = ceil(scale * ((size1.size + size2.size) / 2 - abs(pos1.y - pos2.y))) / scale;
+        const force = { x: 0, y: 0 };
+        if (pos1.x < pos2.x) {
+            force.x = -xOverlap;
+        }
+        else if (pos1.x > pos2.x) {
+            force.x = xOverlap;
+        }
+        if (pos1.y < pos2.y) {
+            force.y = -yOverlap;
+        }
+        else if (pos1.y > pos2.y) {
+            force.y = yOverlap;
+        }
+        col1.correctionForces.push(force);
         switch (this.entityManager.get(entityId, CType.Collision).collisionHandler) {
-            case CollisionHandler.Stop:
-                pos.x -= vel.x;
-                pos.y -= vel.y;
-                break;
             case CollisionHandler.Reflect:
-                pos.x -= vel.x;
-                pos.y -= vel.y;
-                vel.x *= -1;
-                vel.y *= -1;
+                if (xOverlap > yOverlap) {
+                    vel.y *= -1;
+                }
+                else if (yOverlap > xOverlap) {
+                    vel.x *= -1;
+                }
                 break;
         }
     }

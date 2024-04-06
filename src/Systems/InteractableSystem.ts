@@ -1,3 +1,4 @@
+import { abs } from "../../lib/PoppsMath.js";
 import { CType } from "../Component.js";
 import ControllerComponent from "../Components/ControllerComponent.js";
 import InteractableComponent, { Interactable } from "../Components/InteractableComponent.js";
@@ -34,7 +35,7 @@ export default class InteractableSystem extends System {
         for (let entityId of this.entities) {
             if (entityId !== playerId) {
                 const interactablePos = this.entityManager.get<PositionComponent>(entityId, CType.Position);
-                if (playerPos.x === interactablePos.x && playerPos.y === interactablePos.y) {
+                if (abs(playerPos.x - interactablePos.x) < 1 && abs(playerPos.y - interactablePos.y) < 1) {
                     this.handleInteraction(playerId, entityId);
                     return;
                 }

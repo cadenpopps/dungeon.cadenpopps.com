@@ -38,6 +38,12 @@ export abstract class System {
                 case Event.level_loaded:
                     this.unpause();
                     break;
+                case Event.pause:
+                    this.pause();
+                    break;
+                case Event.unpause:
+                    this.unpause();
+                    break;
             }
             this.handleEvent(event);
         }
@@ -68,7 +74,7 @@ export abstract class System {
 
 export enum SystemType {
     Game,
-    Input,
+    Controller,
     Graphics,
     Player,
     Physics,
@@ -77,4 +83,5 @@ export enum SystemType {
     Level,
     Interactable,
     Light,
+    Visible,
 }
