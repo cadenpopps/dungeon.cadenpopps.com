@@ -20,7 +20,7 @@ export class System {
                 case Event.entity_created:
                 case Event.entity_modified:
                 case Event.entity_destroyed:
-                    this.refreshEntities();
+                    this.getEntities();
                     break;
                 case Event.level_change:
                     this.pause();
@@ -43,11 +43,11 @@ export class System {
     }
     handleEvent(_event) { }
     logic() { }
-    refreshEntities() {
+    getEntities() {
         this.entities = this.entityManager.getSystemEntities(this.requiredComponents);
-        this.refreshEntitiesHelper();
+        this.getEntitiesHelper();
     }
-    refreshEntitiesHelper() { }
+    getEntitiesHelper() { }
     pause() {
         this.paused = true;
     }
@@ -68,5 +68,10 @@ export var SystemType;
     SystemType[SystemType["Interactable"] = 8] = "Interactable";
     SystemType[SystemType["Light"] = 9] = "Light";
     SystemType[SystemType["Visible"] = 10] = "Visible";
+    SystemType[SystemType["AI"] = 11] = "AI";
+    SystemType[SystemType["UI"] = 12] = "UI";
+    SystemType[SystemType["Ability"] = 13] = "Ability";
+    SystemType[SystemType["Hitbox"] = 14] = "Hitbox";
+    SystemType[SystemType["Health"] = 15] = "Health";
 })(SystemType || (SystemType = {}));
 //# sourceMappingURL=System.js.map

@@ -11,7 +11,6 @@ import CameraSystem from "./CameraSystem.js";
 
 export default class VisibleSystem extends System {
     public static entitiesInRangeMap: Map<number, Map<number, Array<number>>>;
-    private cameraIds!: Array<number>;
 
     constructor(eventManager: EventManager, entityManager: EntityManager) {
         super(SystemType.Visible, eventManager, entityManager, [CType.Visible]);
@@ -19,7 +18,10 @@ export default class VisibleSystem extends System {
     }
 
     public logic(): void {
-        const cam = CameraSystem.getHighestPriorityCamera(this.cameraIds, this.entityManager);
+        const cam = CameraSystem.getHighestPriorityCamera();
+        if (!cam) {
+            return;
+        }
         const centerPos = new PositionComponent(cam.x, cam.y);
         const maxDistance = cam.visibleDistance;
         for (let entityId of this.entities) {
@@ -39,15 +41,32 @@ export default class VisibleSystem extends System {
         }
     }
 
-    public refreshEntitiesHelper(): void {
-        this.cameraIds = this.entityManager.getSystemEntities([CType.Camera]);
-    }
-
-    public static filterVisibleEntities(entities: Array<number>, entityManager: EntityManager): Array<number> {
+    public static getVisibleEntities(entities: Array<number>, entityManager: EntityManager): Array<number> {
         const entityIds = new Array<number>();
         for (let entityId of entities) {
-            if (entityManager.get<VisibleComponent>(entityId, CType.Visible).visible) {
-                entityIds.push(entityId);
+            const entity = entityManager.getEntity(entityId);
+            if (entity.has(CType.Visible)) {
+                const vis = entity.get(CType.Visible) as VisibleComponent;
+                if (vis.inVisionRange && vis.visible) {
+                    entityIds.push(entityId);
+                }
+            }
+        }
+        return entityIds;
+    }
+
+    public static getVisibleAndDiscoveredEntities(
+        entities: Array<number>,
+        entityManager: EntityManager
+    ): Array<number> {
+        const entityIds = new Array<number>();
+        for (let entityId of entities) {
+            const entity = entityManager.getEntity(entityId);
+            if (entity.has(CType.Visible)) {
+                const vis = entity.get(CType.Visible) as VisibleComponent;
+                if (vis.inVisionRange && (vis.visible || vis.discovered)) {
+                    entityIds.push(entityId);
+                }
             }
         }
         return entityIds;
@@ -412,10 +431,6 @@ export default class VisibleSystem extends System {
         centerPos: PositionComponent,
         octant: number
     ): PositionComponent {
-        // const octantX = abs(centerPos.x - pos.x);
-        // const octantY = abs(centerPos.y - pos.y);
-        // const octantX = (pos.x - centerPos.x) * xxTransform[octant] + (pos.y - centerPos.y) * xyTransform[octant];
-        // const octantY = (pos.x - centerPos.x) * yxTransform[octant] + (pos.y - centerPos.y) * yyTransform[octant];
         if (octant === 2 || octant === 6) {
             octant = (octant + 4) % 8;
         }

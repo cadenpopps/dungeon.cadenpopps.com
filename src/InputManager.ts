@@ -40,9 +40,6 @@ export class InputManager {
                 this.inputs.push(input);
             }
         }
-        // else {
-        //     console.log(`Input map does not contain key ${key}`);
-        // }
     }
 
     private keyUpHandler(key: string): void {
@@ -88,18 +85,38 @@ export enum Input {
     Interact,
     Sneak,
     Roll,
+    Primary,
+    Secondary,
+    Ultimate,
     Zoom_In,
     Zoom_Out,
     Pause,
 }
 
-const DEFAULT_CONTROLLER_MAP = new Map<string, Input>([
+export const DEFAULT_CONTROLLER_MAP = new Map<string, Input>([
     ["w", Input.Up],
     ["d", Input.Right],
     ["s", Input.Down],
     ["a", Input.Left],
-    ["e", Input.Interact],
+    ["f", Input.Interact],
+    ["q", Input.Primary],
+    ["e", Input.Secondary],
+    ["r", Input.Ultimate],
     ["shift", Input.Sneak],
     [" ", Input.Roll],
     ["escape", Input.Pause],
+]);
+
+export const DEFAULT_REVERSE_CONTROLLER_MAP = new Map<Input, string>([
+    [Input.Up, "w"],
+    [Input.Right, "d"],
+    [Input.Down, "s"],
+    [Input.Left, "a"],
+    [Input.Interact, "f"],
+    [Input.Primary, "q"],
+    [Input.Secondary, "e"],
+    [Input.Ultimate, "r"],
+    [Input.Sneak, "shift"],
+    [Input.Roll, " "],
+    [Input.Pause, "escape"],
 ]);

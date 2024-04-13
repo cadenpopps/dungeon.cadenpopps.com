@@ -30,7 +30,7 @@ export abstract class System {
                 case Event.entity_created:
                 case Event.entity_modified:
                 case Event.entity_destroyed:
-                    this.refreshEntities();
+                    this.getEntities();
                     break;
                 case Event.level_change:
                     this.pause();
@@ -56,12 +56,12 @@ export abstract class System {
 
     public logic(): void {}
 
-    public refreshEntities(): void {
+    public getEntities(): void {
         this.entities = this.entityManager.getSystemEntities(this.requiredComponents);
-        this.refreshEntitiesHelper();
+        this.getEntitiesHelper();
     }
 
-    public refreshEntitiesHelper(): void {}
+    public getEntitiesHelper(): void {}
 
     public pause(): void {
         this.paused = true;
@@ -84,4 +84,9 @@ export enum SystemType {
     Interactable,
     Light,
     Visible,
+    AI,
+    UI,
+    Ability,
+    Hitbox,
+    Health,
 }

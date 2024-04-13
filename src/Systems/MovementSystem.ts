@@ -1,8 +1,8 @@
 import { max, min, round } from "../../lib/PoppsMath.js";
-import { CType, Direction } from "../Component.js";
+import { CType } from "../Component.js";
 import AccelerationComponent from "../Components/AccelerationComponent.js";
 import ControllerComponent from "../Components/ControllerComponent.js";
-import MovementComponent from "../Components/MovementComponent.js";
+import MovementComponent, { Direction } from "../Components/MovementComponent.js";
 import VelocityComponent from "../Components/VelocityComponent.js";
 import { EntityManager } from "../EntityManager.js";
 import { EventManager } from "../EventManager.js";
@@ -33,20 +33,18 @@ export default class MovementSystem extends System {
             const mov = entity.get(CType.Movement) as MovementComponent;
             const vel = entity.get(CType.Velocity) as VelocityComponent;
             const acc = entity.get(CType.Acceleration) as AccelerationComponent;
-            if (entity.has(CType.Controller)) {
-                const con = entity.get(CType.Controller) as ControllerComponent;
-                if (con.roll && mov.rollCooldown === 0) {
-                    mov.rolling = true;
-                    mov.rollCounter = mov.rollLength;
-                    mov.rollCooldown = mov.rollCooldownLength;
-                } else if (con.sneak) {
-                    mov.sneaking = true;
-                } else {
-                    mov.sneaking = false;
-                }
-                if (mov.rollCooldown > 0) {
-                    mov.rollCooldown--;
-                }
+            const con = entity.get(CType.Controller) as ControllerComponent;
+            if (con.roll && mov.rollCooldown === 0) {
+                mov.rolling = true;
+                mov.rollCounter = mov.rollLength;
+                mov.rollCooldown = mov.rollCooldownLength;
+            } else if (con.sneak) {
+                mov.sneaking = true;
+            } else {
+                mov.sneaking = false;
+            }
+            if (mov.rollCooldown > 0) {
+                mov.rollCooldown--;
             }
 
             if (mov.rolling) {

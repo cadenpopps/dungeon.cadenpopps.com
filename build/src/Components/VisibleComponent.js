@@ -7,11 +7,11 @@ export default class VisibleComponent extends Component {
     discovered;
     inVisionRange;
     blocking;
-    constructor(color, blocking, layer) {
+    constructor(color, blocking, layer = 0) {
         super(CType.Visible);
         this.blocking = blocking;
         this.color = color;
-        this.layer = layer || 0;
+        this.layer = layer;
         this.lightLevel = 0;
         this.visible = false;
         this.discovered = false;

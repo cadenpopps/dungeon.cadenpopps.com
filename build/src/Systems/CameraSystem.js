@@ -2,6 +2,7 @@ import { abs, floor } from "../../lib/PoppsMath.js";
 import { CType } from "../Component.js";
 import { System, SystemType } from "../System.js";
 export default class CameraSystem extends System {
+    static PRIORITY_CAMERA;
     static VISIBLE_DISTANCE_CONSTANT = 1280;
     CAMERA_MIN_ZOOM = 10;
     CAMERA_MAX_ZOOM = 200;
@@ -11,6 +12,7 @@ export default class CameraSystem extends System {
         super(SystemType.Camera, eventManager, entityManager, [CType.Camera]);
     }
     logic() {
+        CameraSystem.setHighestPriorityCamera(this.entities, this.entityManager);
         for (let entityId of this.entities) {
             if (this.entityManager.getEntity(entityId).has(CType.Position)) {
                 this.moveCamera(entityId);
@@ -20,7 +22,7 @@ export default class CameraSystem extends System {
             }
         }
     }
-    static getHighestPriorityCamera(cameraIds, entityManager) {
+    static setHighestPriorityCamera(cameraIds, entityManager) {
         let priority = 0;
         let prioCam = entityManager.get(cameraIds[0], CType.Camera);
         for (let entityId of cameraIds) {
@@ -30,7 +32,10 @@ export default class CameraSystem extends System {
                 prioCam = cam;
             }
         }
-        return prioCam;
+        CameraSystem.PRIORITY_CAMERA = prioCam;
+    }
+    static getHighestPriorityCamera() {
+        return CameraSystem.PRIORITY_CAMERA;
     }
     moveCamera(entityId) {
         const cam = this.entityManager.get(entityId, CType.Camera);

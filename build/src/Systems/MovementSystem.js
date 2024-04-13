@@ -1,5 +1,6 @@
 import { max, min, round } from "../../lib/PoppsMath.js";
-import { CType, Direction } from "../Component.js";
+import { CType } from "../Component.js";
+import { Direction } from "../Components/MovementComponent.js";
 import { System, SystemType } from "../System.js";
 export default class MovementSystem extends System {
     BASE_ACCELERATION = 0.03;
@@ -24,22 +25,20 @@ export default class MovementSystem extends System {
             const mov = entity.get(CType.Movement);
             const vel = entity.get(CType.Velocity);
             const acc = entity.get(CType.Acceleration);
-            if (entity.has(CType.Controller)) {
-                const con = entity.get(CType.Controller);
-                if (con.roll && mov.rollCooldown === 0) {
-                    mov.rolling = true;
-                    mov.rollCounter = mov.rollLength;
-                    mov.rollCooldown = mov.rollCooldownLength;
-                }
-                else if (con.sneak) {
-                    mov.sneaking = true;
-                }
-                else {
-                    mov.sneaking = false;
-                }
-                if (mov.rollCooldown > 0) {
-                    mov.rollCooldown--;
-                }
+            const con = entity.get(CType.Controller);
+            if (con.roll && mov.rollCooldown === 0) {
+                mov.rolling = true;
+                mov.rollCounter = mov.rollLength;
+                mov.rollCooldown = mov.rollCooldownLength;
+            }
+            else if (con.sneak) {
+                mov.sneaking = true;
+            }
+            else {
+                mov.sneaking = false;
+            }
+            if (mov.rollCooldown > 0) {
+                mov.rollCooldown--;
             }
             if (mov.rolling) {
                 this.applyRollingForce(mov, vel, acc);

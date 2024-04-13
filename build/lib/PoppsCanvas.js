@@ -8,15 +8,18 @@ export default class PoppsCanvas {
     height;
     looping = false;
     drawCallback;
-    constructor(parent) {
+    constructor(zIndex = 1, parent) {
         this.parentElement = parent || document.getElementsByTagName("body")[0];
-        this.initCanvas();
+        this.initCanvas(zIndex);
         this.initResizeListener();
     }
-    initCanvas() {
+    initCanvas(zIndex) {
         this.canvasElement = document.createElement("canvas");
         this.canvas = this.canvasElement.getContext("2d");
         this.parentElement.append(this.canvasElement);
+        this.canvasElement.style.position = "fixed";
+        this.canvasElement.style.background = "transparent";
+        this.canvasElement.style.zIndex = zIndex.toString();
         this.resizeCanvas();
     }
     initResizeListener() {
@@ -81,11 +84,11 @@ export default class PoppsCanvas {
     }
     setFont(f) {
         this.font = f;
-        this.canvas.font = `${this.fontSize}${this.font}`;
+        this.canvas.font = `${this.fontSize} ${this.font}`;
     }
-    setfontSize(size) {
+    setFontSize(size) {
         this.fontSize = `${size}px`;
-        this.canvas.font = `${this.fontSize}${this.font}`;
+        this.setFont(this.font);
     }
     clearCanvas() {
         this.canvas.clearRect(0, 0, this.width, this.height);

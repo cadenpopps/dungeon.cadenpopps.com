@@ -22,17 +22,10 @@ export var CType;
     CType[CType["LightSource"] = 13] = "LightSource";
     CType[CType["Acceleration"] = 14] = "Acceleration";
     CType[CType["Size"] = 15] = "Size";
+    CType[CType["AI"] = 16] = "AI";
+    CType[CType["UI"] = 17] = "UI";
+    CType[CType["Health"] = 18] = "Health";
+    CType[CType["Ability"] = 19] = "Ability";
+    CType[CType["Hitbox"] = 20] = "Hitbox";
 })(CType || (CType = {}));
-export var Direction;
-(function (Direction) {
-    Direction[Direction["NORTH"] = 0] = "NORTH";
-    Direction[Direction["NORTHEAST"] = 1] = "NORTHEAST";
-    Direction[Direction["EAST"] = 2] = "EAST";
-    Direction[Direction["SOUTHEAST"] = 3] = "SOUTHEAST";
-    Direction[Direction["SOUTH"] = 4] = "SOUTH";
-    Direction[Direction["SOUTHWEST"] = 5] = "SOUTHWEST";
-    Direction[Direction["WEST"] = 6] = "WEST";
-    Direction[Direction["NORTHWEST"] = 7] = "NORTHWEST";
-    Direction[Direction["NONE"] = 8] = "NONE";
-})(Direction || (Direction = {}));
 //# sourceMappingURL=Component.js.map

@@ -1,4 +1,4 @@
-import { Component, CType, Direction } from "../Component.js";
+import { Component, CType } from "../Component.js";
 
 export default class MovementComponent extends Component {
     public speed: number;
@@ -23,4 +23,16 @@ export default class MovementComponent extends Component {
         this.rollCooldownLength = rollCooldownLength;
         this.rollCooldown = 0;
     }
+}
+
+export enum Direction {
+    NORTH,
+    NORTHEAST,
+    EAST,
+    SOUTHEAST,
+    SOUTH,
+    SOUTHWEST,
+    WEST,
+    NORTHWEST,
+    NONE,
 }

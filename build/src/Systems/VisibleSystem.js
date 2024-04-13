@@ -6,13 +6,15 @@ import { System, SystemType } from "../System.js";
 import CameraSystem from "./CameraSystem.js";
 export default class VisibleSystem extends System {
     static entitiesInRangeMap;
-    cameraIds;
     constructor(eventManager, entityManager) {
         super(SystemType.Visible, eventManager, entityManager, [CType.Visible]);
         VisibleSystem.entitiesInRangeMap = new Map();
     }
     logic() {
-        const cam = CameraSystem.getHighestPriorityCamera(this.cameraIds, this.entityManager);
+        const cam = CameraSystem.getHighestPriorityCamera();
+        if (!cam) {
+            return;
+        }
         const centerPos = new PositionComponent(cam.x, cam.y);
         const maxDistance = cam.visibleDistance;
         for (let entityId of this.entities) {
@@ -31,14 +33,28 @@ export default class VisibleSystem extends System {
             vis.discovered = true;
         }
     }
-    refreshEntitiesHelper() {
-        this.cameraIds = this.entityManager.getSystemEntities([CType.Camera]);
-    }
-    static filterVisibleEntities(entities, entityManager) {
+    static getVisibleEntities(entities, entityManager) {
         const entityIds = new Array();
         for (let entityId of entities) {
-            if (entityManager.get(entityId, CType.Visible).visible) {
-                entityIds.push(entityId);
+            const entity = entityManager.getEntity(entityId);
+            if (entity.has(CType.Visible)) {
+                const vis = entity.get(CType.Visible);
+                if (vis.inVisionRange && vis.visible) {
+                    entityIds.push(entityId);
+                }
+            }
+        }
+        return entityIds;
+    }
+    static getVisibleAndDiscoveredEntities(entities, entityManager) {
+        const entityIds = new Array();
+        for (let entityId of entities) {
+            const entity = entityManager.getEntity(entityId);
+            if (entity.has(CType.Visible)) {
+                const vis = entity.get(CType.Visible);
+                if (vis.inVisionRange && (vis.visible || vis.discovered)) {
+                    entityIds.push(entityId);
+                }
             }
         }
         return entityIds;

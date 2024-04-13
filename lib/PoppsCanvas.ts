@@ -9,16 +9,19 @@ export default class PoppsCanvas {
     public looping = false;
     public drawCallback!: Function;
 
-    constructor(parent?: HTMLElement) {
+    constructor(zIndex: number = 1, parent?: HTMLElement) {
         this.parentElement = parent || document.getElementsByTagName("body")[0];
-        this.initCanvas();
+        this.initCanvas(zIndex);
         this.initResizeListener();
     }
 
-    private initCanvas(): void {
+    private initCanvas(zIndex: number): void {
         this.canvasElement = document.createElement("canvas");
         this.canvas = this.canvasElement.getContext("2d") as CanvasRenderingContext2D;
         this.parentElement.append(this.canvasElement);
+        this.canvasElement.style.position = "fixed";
+        this.canvasElement.style.background = "transparent";
+        this.canvasElement.style.zIndex = zIndex.toString();
         this.resizeCanvas();
     }
 
@@ -118,15 +121,15 @@ export default class PoppsCanvas {
      */
     public setFont(f: string): void {
         this.font = f;
-        this.canvas.font = `${this.fontSize}${this.font}`;
+        this.canvas.font = `${this.fontSize} ${this.font}`;
     }
 
     /**
      * @param size size of new font in pixels
      */
-    public setfontSize(size: number): void {
+    public setFontSize(size: number): void {
         this.fontSize = `${size}px`;
-        this.canvas.font = `${this.fontSize}${this.font}`;
+        this.setFont(this.font);
     }
 
     public clearCanvas(): void {

@@ -1,9 +1,13 @@
 import { Component, CType } from "../Component.js";
 export default class InteractableComponent extends Component {
     interactableType;
-    constructor(interactableType) {
+    range;
+    active;
+    constructor(interactableType, range = 1) {
         super(CType.Interactable);
         this.interactableType = interactableType;
+        this.range = range;
+        this.active = false;
     }
 }
 export var Interactable;

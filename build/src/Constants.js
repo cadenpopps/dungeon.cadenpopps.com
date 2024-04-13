@@ -1,4 +1,4 @@
-import { abs, floor, randomInt, round } from "../lib/PoppsMath.js";
+import { abs, floor, max, randomInt, round } from "../lib/PoppsMath.js";
 import { CType } from "./Component.js";
 import CollisionComponent from "./Components/CollisionComponent.js";
 import InteractableComponent, { Interactable } from "./Components/InteractableComponent.js";
@@ -7,6 +7,7 @@ import LightSourceComponent from "./Components/LightSourceComponent.js";
 import PositionComponent from "./Components/PositionComponent.js";
 import SizeComponent from "./Components/SizeComponent.js";
 import TileComponent from "./Components/TileComponent.js";
+import UIComponent, { UIInteractablePrompt } from "./Components/UIComponent.js";
 import VisibleComponent from "./Components/VisibleComponent.js";
 import LightSystem from "./Systems/LightSystem.js";
 export var Tile;
@@ -23,6 +24,10 @@ export const xxTransform = [1, 0, 0, -1, -1, 0, 0, 1];
 export const xyTransform = [0, 1, -1, 0, 0, -1, 1, 0];
 export const yxTransform = [0, 1, 1, 0, 0, -1, -1, 0];
 export const yyTransform = [1, 0, 0, 1, -1, 0, 0, -1];
+export const xxRotation = [0, 0.71, 0, -0.071, -1, -0.71, 0, 0.71];
+export const xyRotation = [0.71, 1, 0.71, 0, 0, -1, 1, 0];
+export const yxRotation = [1, 0.71, 0, -1, -1, 0, 0, 1];
+export const yyRotation = [1, 1, -1, 0, 0, -1, 1, 0];
 export const LIGHT_LEVEL_FILL = new Array();
 export const SHADOW_FILL = new Array();
 for (let i = 0; i <= LightSystem.LIGHT_MAX; i++) {
@@ -33,8 +38,8 @@ for (let i = 0; i <= LightSystem.LIGHT_MAX; i++) {
         g: floor(LightSystem.light_green - (LightSystem.light_green / (LightSystem.LIGHT_MAX - 1)) * light_level),
         b: floor(LightSystem.light_blue - (LightSystem.light_blue / (LightSystem.LIGHT_MAX - 1)) * light_level),
         a: round(100 *
-            (LightSystem.light_intensity -
-                (LightSystem.light_intensity / (LightSystem.LIGHT_MAX - 1)) * light_level)) / 100,
+            max(LightSystem.light_intensity -
+                (LightSystem.light_intensity / (LightSystem.LIGHT_MAX - 1)) * light_level, LightSystem.light_intensity_min)) / 100,
     });
     if (shadow_level > LightSystem.shadow_stop) {
         SHADOW_FILL.push({ r: 0, g: 0, b: 0, a: 0 });
@@ -66,7 +71,7 @@ export function newWall(x, y) {
         [CType.Size, new SizeComponent(1)],
         [CType.Position, new PositionComponent(x, y, 0)],
         [CType.Collision, new CollisionComponent()],
-        [CType.Visible, new VisibleComponent({ r: 35, g: 40, b: 45, a: 1 }, true)],
+        [CType.Visible, new VisibleComponent({ r: 15, g: 15, b: 25, a: 1 }, true)],
     ]);
 }
 export function newGrass(x, y) {
@@ -99,7 +104,10 @@ export function newDungeonFloor(x, y) {
         [CType.Tile, new TileComponent(Tile.Floor, x, y)],
         [CType.Size, new SizeComponent(1)],
         [CType.Position, new PositionComponent(x, y, 0)],
-        [CType.Visible, new VisibleComponent({ r: 100, g: 100 + randomInt(5), b: 130 + randomInt(8), a: 1 }, false)],
+        [
+            CType.Visible,
+            new VisibleComponent({ r: 146 + randomInt(5), g: 127 + randomInt(5), b: 102 + randomInt(5), a: 1 }, false),
+        ],
     ]);
 }
 export function newEntry(x, y, id) {
@@ -110,6 +118,7 @@ export function newEntry(x, y, id) {
         [CType.LevelChange, new LevelChangeComponent(id || 0)],
         [CType.Interactable, new InteractableComponent(Interactable.LevelChange)],
         [CType.Visible, new VisibleComponent({ r: 100, g: 200, b: 50, a: 1 }, false)],
+        [CType.UI, new UIComponent([new UIInteractablePrompt("to enter previous level")])],
     ]);
 }
 export function newExit(x, y, id) {
@@ -120,6 +129,7 @@ export function newExit(x, y, id) {
         [CType.LevelChange, new LevelChangeComponent(id || 0)],
         [CType.Interactable, new InteractableComponent(Interactable.LevelChange)],
         [CType.Visible, new VisibleComponent({ r: 200, g: 100, b: 50, a: 1 }, false)],
+        [CType.UI, new UIComponent([new UIInteractablePrompt("to enter next level")])],
     ]);
 }
 export function newTorch(x, y) {

@@ -5,14 +5,13 @@ import { LIGHT_LEVEL_FILL, SHADOW_FILL } from "../Constants.js";
 import { Event } from "../EventManager.js";
 import { System, SystemType } from "../System.js";
 import CameraSystem from "./CameraSystem.js";
+import VisibleSystem from "./VisibleSystem.js";
 export default class GraphicsSystem extends System {
     canvas;
     layers;
-    cameraIds;
     constructor(eventManager, entityManager) {
         super(SystemType.Graphics, eventManager, entityManager, [CType.Position, CType.Visible]);
         this.canvas = new PoppsCanvas();
-        this.cameraIds = new Array();
         this.layers = Array();
         this.canvas.loop(this.canvasCallback.bind(this));
     }
@@ -28,22 +27,17 @@ export default class GraphicsSystem extends System {
                 break;
         }
     }
-    refreshEntitiesHelper() {
-        this.cameraIds = this.entityManager.getSystemEntities([CType.Camera]);
-    }
+    getEntitiesHelper() { }
     canvasCallback() {
         this.canvas.background(0, 0, 0);
-        if (this.cameraIds.length === 0) {
-            return;
-        }
-        const cam = CameraSystem.getHighestPriorityCamera(this.cameraIds, this.entityManager);
-        if (cam === undefined) {
+        const cam = CameraSystem.getHighestPriorityCamera();
+        if (!cam) {
             return;
         }
         this.canvas.canvas.translate(floor(this.canvas.width / 2 - (cam.x + cam.visualOffsetX) * cam.zoom), floor(this.canvas.height / 2 - (cam.y + cam.visualOffsetY) * cam.zoom));
         this.canvas.canvas.scale(cam.zoom, cam.zoom);
         for (let layer of this.layers) {
-            const visibleEntities = this.getVisibleEntities(layer);
+            const visibleEntities = VisibleSystem.getVisibleAndDiscoveredEntities(layer, this.entityManager);
             for (let entityId of visibleEntities) {
                 const entity = this.entityManager.getEntity(entityId);
                 const pos = entity.get(CType.Position);
@@ -82,16 +76,6 @@ export default class GraphicsSystem extends System {
             }
             this.layers[vis.layer].push(entityId);
         }
-    }
-    getVisibleEntities(layer) {
-        const visibleEntities = new Array();
-        for (let entityId of layer) {
-            const vis = this.entityManager.get(entityId, CType.Visible);
-            if (vis.inVisionRange && (vis.discovered || vis.visible)) {
-                visibleEntities.push(entityId);
-            }
-        }
-        return visibleEntities;
     }
 }
 //# sourceMappingURL=GraphicsSystem.js.map

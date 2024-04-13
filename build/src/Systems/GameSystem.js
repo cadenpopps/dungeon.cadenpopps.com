@@ -14,7 +14,7 @@ export default class GameSystem extends System {
                 break;
         }
     }
-    refreshEntitiesHelper() {
+    getEntitiesHelper() {
         this.playerId = this.entityManager.getSystemEntities([CType.Player])[0];
         this.levelChangeIds = this.entityManager.getSystemEntities([CType.LevelChange]);
     }

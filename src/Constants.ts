@@ -1,4 +1,4 @@
-import { abs, floor, randomInt, round } from "../lib/PoppsMath.js";
+import { abs, floor, max, randomInt, round } from "../lib/PoppsMath.js";
 import { CType, Component } from "./Component.js";
 import CollisionComponent from "./Components/CollisionComponent.js";
 import InteractableComponent, { Interactable } from "./Components/InteractableComponent.js";
@@ -7,6 +7,7 @@ import LightSourceComponent from "./Components/LightSourceComponent.js";
 import PositionComponent from "./Components/PositionComponent.js";
 import SizeComponent from "./Components/SizeComponent.js";
 import TileComponent from "./Components/TileComponent.js";
+import UIComponent, { UIInteractablePrompt } from "./Components/UIComponent.js";
 import VisibleComponent, { Color } from "./Components/VisibleComponent.js";
 import { EntityManager } from "./EntityManager.js";
 import LightSystem from "./Systems/LightSystem.js";
@@ -26,6 +27,11 @@ export const xyTransform = [0, 1, -1, 0, 0, -1, 1, 0];
 export const yxTransform = [0, 1, 1, 0, 0, -1, -1, 0];
 export const yyTransform = [1, 0, 0, 1, -1, 0, 0, -1];
 
+export const xxRotation = [0, 0.71, 0, -0.071, -1, -0.71, 0, 0.71];
+export const xyRotation = [0.71, 1, 0.71, 0, 0, -1, 1, 0];
+export const yxRotation = [1, 0.71, 0, -1, -1, 0, 0, 1];
+export const yyRotation = [1, 1, -1, 0, 0, -1, 1, 0];
+
 export const LIGHT_LEVEL_FILL = new Array<Color>();
 export const SHADOW_FILL = new Array<Color>();
 for (let i = 0; i <= LightSystem.LIGHT_MAX; i++) {
@@ -38,8 +44,11 @@ for (let i = 0; i <= LightSystem.LIGHT_MAX; i++) {
         a:
             round(
                 100 *
-                    (LightSystem.light_intensity -
-                        (LightSystem.light_intensity / (LightSystem.LIGHT_MAX - 1)) * light_level)
+                    max(
+                        LightSystem.light_intensity -
+                            (LightSystem.light_intensity / (LightSystem.LIGHT_MAX - 1)) * light_level,
+                        LightSystem.light_intensity_min
+                    )
             ) / 100,
     });
     if (shadow_level > LightSystem.shadow_stop) {
@@ -81,7 +90,7 @@ export function newWall(x: number, y: number): Map<CType, Component> {
         [CType.Size, new SizeComponent(1)],
         [CType.Position, new PositionComponent(x, y, 0)],
         [CType.Collision, new CollisionComponent()],
-        [CType.Visible, new VisibleComponent({ r: 35, g: 40, b: 45, a: 1 }, true)],
+        [CType.Visible, new VisibleComponent({ r: 15, g: 15, b: 25, a: 1 }, true)],
     ]);
 }
 
@@ -118,7 +127,10 @@ export function newDungeonFloor(x: number, y: number): Map<CType, Component> {
         [CType.Tile, new TileComponent(Tile.Floor, x, y)],
         [CType.Size, new SizeComponent(1)],
         [CType.Position, new PositionComponent(x, y, 0)],
-        [CType.Visible, new VisibleComponent({ r: 100, g: 100 + randomInt(5), b: 130 + randomInt(8), a: 1 }, false)],
+        [
+            CType.Visible,
+            new VisibleComponent({ r: 146 + randomInt(5), g: 127 + randomInt(5), b: 102 + randomInt(5), a: 1 }, false),
+        ],
     ]);
 }
 
@@ -130,6 +142,7 @@ export function newEntry(x: number, y: number, id?: number): Map<CType, Componen
         [CType.LevelChange, new LevelChangeComponent(id || 0)],
         [CType.Interactable, new InteractableComponent(Interactable.LevelChange)],
         [CType.Visible, new VisibleComponent({ r: 100, g: 200, b: 50, a: 1 }, false)],
+        [CType.UI, new UIComponent([new UIInteractablePrompt("to enter previous level")])],
     ]);
 }
 
@@ -141,6 +154,7 @@ export function newExit(x: number, y: number, id?: number): Map<CType, Component
         [CType.LevelChange, new LevelChangeComponent(id || 0)],
         [CType.Interactable, new InteractableComponent(Interactable.LevelChange)],
         [CType.Visible, new VisibleComponent({ r: 200, g: 100, b: 50, a: 1 }, false)],
+        [CType.UI, new UIComponent([new UIInteractablePrompt("to enter next level")])],
     ]);
 }
 

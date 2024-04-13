@@ -9,34 +9,44 @@ export default class InteractableSystem extends System {
         super(SystemType.Interactable, eventManager, entityManager, [CType.Interactable]);
     }
     logic() {
-        this.checkInteractions();
+        const possibleInteractions = this.getInteractablesInRange();
+        this.checkInteractions(possibleInteractions);
     }
-    refreshEntitiesHelper() {
+    getEntitiesHelper() {
         this.playerId = this.entityManager.getSystemEntities([CType.Player])[0];
     }
-    checkInteractions() {
-        if (this.entityManager.get(this.playerId, CType.Controller).interact) {
-            this.checkOverlap(this.playerId);
-        }
-        return;
-    }
-    checkOverlap(playerId) {
-        const playerPos = this.entityManager.get(playerId, CType.Position);
+    getInteractablesInRange() {
+        const interactablesInRange = new Array();
+        const playerPos = this.entityManager.get(this.playerId, CType.Position);
         for (let entityId of this.entities) {
-            if (entityId !== playerId) {
-                const interactablePos = this.entityManager.get(entityId, CType.Position);
-                if (abs(playerPos.x - interactablePos.x) < 1 && abs(playerPos.y - interactablePos.y) < 1) {
-                    this.handleInteraction(playerId, entityId);
-                    return;
+            if (entityId !== this.playerId) {
+                const interactable = this.entityManager.getEntity(entityId);
+                const pos = interactable.get(CType.Position);
+                const int = interactable.get(CType.Interactable);
+                if (abs(playerPos.x - pos.x) < int.range && abs(playerPos.y - pos.y) < int.range) {
+                    interactablesInRange.push(entityId);
+                    int.active = true;
+                }
+                else {
+                    int.active = false;
                 }
             }
         }
+        return interactablesInRange;
     }
-    handleInteraction(playerId, entityId) {
+    checkInteractions(possibleInteractions) {
+        if (this.entityManager.get(this.playerId, CType.Controller).interact) {
+            for (let entityId of possibleInteractions) {
+                this.handleInteraction(entityId);
+            }
+        }
+        return;
+    }
+    handleInteraction(entityId) {
         const interactableType = this.entityManager.get(entityId, CType.Interactable).interactableType;
         switch (interactableType) {
             case Interactable.LevelChange:
-                this.entityManager.get(playerId, CType.Player).levelChangeId =
+                this.entityManager.get(this.playerId, CType.Player).levelChangeId =
                     this.entityManager.get(entityId, CType.LevelChange).id;
                 this.eventManager.addEvent(Event.level_change);
                 break;

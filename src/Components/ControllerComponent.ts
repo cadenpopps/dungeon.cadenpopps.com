@@ -8,6 +8,9 @@ export default class ControllerComponent extends Component {
     public interact: boolean;
     public roll: boolean;
     public sneak: boolean;
+    public primary: boolean;
+    public secondary: boolean;
+    public ultimate: boolean;
     public zoom_in: boolean;
     public zoom_out: boolean;
 
@@ -20,6 +23,9 @@ export default class ControllerComponent extends Component {
         this.interact = false;
         this.roll = false;
         this.sneak = false;
+        this.primary = false;
+        this.secondary = false;
+        this.ultimate = false;
         this.zoom_in = false;
         this.zoom_out = false;
     }

@@ -1,4 +1,4 @@
-import { abs, ceil, floor } from "../../lib/PoppsMath.js";
+import { abs, ceil, round } from "../../lib/PoppsMath.js";
 import { CType } from "../Component.js";
 import AccelerationComponent from "../Components/AccelerationComponent.js";
 import CollisionComponent, { CollisionHandler, Force } from "../Components/CollisionComponent.js";
@@ -7,52 +7,64 @@ import SizeComponent from "../Components/SizeComponent.js";
 import VelocityComponent from "../Components/VelocityComponent.js";
 import { getEntitiesInRange } from "../Constants.js";
 import { EntityManager } from "../EntityManager.js";
-import { EventManager } from "../EventManager.js";
+import { Event, EventManager } from "../EventManager.js";
 import { System, SystemType } from "../System.js";
 import CameraSystem from "./CameraSystem.js";
 
 export default class PhysicsSystem extends System {
-    private cameraIds!: Array<number>;
+    public static BIGGEST_ENTITY_SIZE = 0;
     private velocityIds!: Array<number>;
+    private sizeIds!: Array<number>;
 
     constructor(eventManager: EventManager, entityManager: EntityManager) {
         super(SystemType.Physics, eventManager, entityManager, [CType.Collision]);
     }
 
+    public handleEvent(event: Event): void {
+        switch (event) {
+            case Event.entity_created:
+            case Event.entity_modified:
+            case Event.entity_destroyed:
+                PhysicsSystem.BIGGEST_ENTITY_SIZE = ceil(this.getBiggestEntity(this.sizeIds));
+                break;
+        }
+    }
+
     public logic(): void {
-        const cam = CameraSystem.getHighestPriorityCamera(this.cameraIds, this.entityManager);
+        const cam = CameraSystem.getHighestPriorityCamera();
+        if (!cam) {
+            return;
+        }
         const entitiesInRange = getEntitiesInRange(
             new PositionComponent(cam.x, cam.y),
             cam.visibleDistance + 2,
             this.entities,
             this.entityManager
         );
-        const subGridSize = this.setBiggestEntitySize(entitiesInRange);
-        const subGrid = this.createSubGrid(entitiesInRange, subGridSize);
+        const subGrid = PhysicsSystem.createSubGrid(entitiesInRange, this.entityManager);
         const movingEntitiesInRange = getEntitiesInRange(
             new PositionComponent(cam.x, cam.y),
             cam.visibleDistance,
             this.velocityIds,
             this.entityManager
         );
-        this.physics(subGrid, movingEntitiesInRange, subGridSize);
+        this.physics(subGrid, movingEntitiesInRange);
     }
 
-    public refreshEntitiesHelper(): void {
-        this.cameraIds = this.entityManager.getSystemEntities([CType.Camera]);
+    public getEntitiesHelper(): void {
         this.velocityIds = this.entityManager.getSystemEntities([CType.Velocity]);
+        this.sizeIds = this.entityManager.getSystemEntities([CType.Size]);
     }
 
-    private createSubGrid(
+    public static createSubGrid(
         filteredEntities: Array<number>,
-        subGridSize: number
+        entityManager: EntityManager
     ): Map<number, Map<number, Array<number>>> {
         const subGrid = new Map<number, Map<number, Array<number>>>();
-
         for (let entityId of filteredEntities) {
-            const pos = this.entityManager.get<PositionComponent>(entityId, CType.Position);
-            const newX = floor(pos.x / subGridSize);
-            const newY = floor(pos.y / subGridSize);
+            const pos = entityManager.get<PositionComponent>(entityId, CType.Position);
+            const newX = round(pos.x / PhysicsSystem.BIGGEST_ENTITY_SIZE);
+            const newY = round(pos.y / PhysicsSystem.BIGGEST_ENTITY_SIZE);
             if (!subGrid.get(newX)) {
                 subGrid.set(newX, new Map<number, Array<number>>());
             }
@@ -64,9 +76,9 @@ export default class PhysicsSystem extends System {
         return subGrid;
     }
 
-    private setBiggestEntitySize(filteredEntities: Array<number>): number {
+    private getBiggestEntity(entityIds: Array<number>): number {
         let biggestEntitySize = 1;
-        for (let entityId of filteredEntities) {
+        for (let entityId of entityIds) {
             const size = this.entityManager.get<SizeComponent>(entityId, CType.Size);
             if (size.size > biggestEntitySize) {
                 biggestEntitySize = size.size;
@@ -75,11 +87,7 @@ export default class PhysicsSystem extends System {
         return biggestEntitySize;
     }
 
-    private physics(
-        subGrid: Map<number, Map<number, Array<number>>>,
-        movingEntitiesInRange: Array<number>,
-        subGridSize: number
-    ): void {
+    private physics(subGrid: Map<number, Map<number, Array<number>>>, movingEntitiesInRange: Array<number>): void {
         for (let entityId of movingEntitiesInRange) {
             const pos = this.entityManager.get<PositionComponent>(entityId, CType.Position);
             const vel = this.entityManager.get<VelocityComponent>(entityId, CType.Velocity);
@@ -104,7 +112,7 @@ export default class PhysicsSystem extends System {
         for (let entityId of movingEntitiesInRange) {
             const vel = this.entityManager.get<VelocityComponent>(entityId, CType.Velocity);
             if (abs(vel.x) > 0 || abs(vel.y) > 0) {
-                this.collision(entityId, subGrid, subGridSize);
+                this.collision(entityId, subGrid);
             }
         }
         for (let entityId of movingEntitiesInRange) {
@@ -150,10 +158,10 @@ export default class PhysicsSystem extends System {
         }
     }
 
-    private collision(entityId: number, subGrid: Map<number, Map<number, Array<number>>>, subGridSize: number): void {
+    private collision(entityId: number, subGrid: Map<number, Map<number, Array<number>>>): void {
         const pos = this.entityManager.get<PositionComponent>(entityId, CType.Position);
-        const subGridX = floor(pos.x / subGridSize);
-        const subGridY = floor(pos.y / subGridSize);
+        const subGridX = round(pos.x / PhysicsSystem.BIGGEST_ENTITY_SIZE);
+        const subGridY = round(pos.y / PhysicsSystem.BIGGEST_ENTITY_SIZE);
         for (let i = subGridX - 1; i <= subGridX + 1; i++) {
             for (let j = subGridY - 1; j <= subGridY + 1; j++) {
                 if (subGrid.get(i) && subGrid.get(i)?.get(j) && (subGrid.get(i)?.get(j) as Array<number>).length > 0) {

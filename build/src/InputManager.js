@@ -81,18 +81,37 @@ export var Input;
     Input[Input["Interact"] = 4] = "Interact";
     Input[Input["Sneak"] = 5] = "Sneak";
     Input[Input["Roll"] = 6] = "Roll";
-    Input[Input["Zoom_In"] = 7] = "Zoom_In";
-    Input[Input["Zoom_Out"] = 8] = "Zoom_Out";
-    Input[Input["Pause"] = 9] = "Pause";
+    Input[Input["Primary"] = 7] = "Primary";
+    Input[Input["Secondary"] = 8] = "Secondary";
+    Input[Input["Ultimate"] = 9] = "Ultimate";
+    Input[Input["Zoom_In"] = 10] = "Zoom_In";
+    Input[Input["Zoom_Out"] = 11] = "Zoom_Out";
+    Input[Input["Pause"] = 12] = "Pause";
 })(Input || (Input = {}));
-const DEFAULT_CONTROLLER_MAP = new Map([
+export const DEFAULT_CONTROLLER_MAP = new Map([
     ["w", Input.Up],
     ["d", Input.Right],
     ["s", Input.Down],
     ["a", Input.Left],
-    ["e", Input.Interact],
+    ["f", Input.Interact],
+    ["q", Input.Primary],
+    ["e", Input.Secondary],
+    ["r", Input.Ultimate],
     ["shift", Input.Sneak],
     [" ", Input.Roll],
     ["escape", Input.Pause],
+]);
+export const DEFAULT_REVERSE_CONTROLLER_MAP = new Map([
+    [Input.Up, "w"],
+    [Input.Right, "d"],
+    [Input.Down, "s"],
+    [Input.Left, "a"],
+    [Input.Interact, "f"],
+    [Input.Primary, "q"],
+    [Input.Secondary, "e"],
+    [Input.Ultimate, "r"],
+    [Input.Sneak, "shift"],
+    [Input.Roll, " "],
+    [Input.Pause, "escape"],
 ]);
 //# sourceMappingURL=InputManager.js.map

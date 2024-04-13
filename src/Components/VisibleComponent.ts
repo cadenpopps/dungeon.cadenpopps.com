@@ -9,11 +9,11 @@ export default class VisibleComponent extends Component {
     public inVisionRange: boolean;
     public blocking: boolean;
 
-    constructor(color: Color, blocking: boolean, layer?: number) {
+    constructor(color: Color, blocking: boolean, layer: number = 0) {
         super(CType.Visible);
         this.blocking = blocking;
         this.color = color;
-        this.layer = layer || 0;
+        this.layer = layer;
         this.lightLevel = 0;
         this.visible = false;
         this.discovered = false;

@@ -6,27 +6,30 @@ import CameraSystem from "./CameraSystem.js";
 import VisibleSystem from "./VisibleSystem.js";
 export default class LightSystem extends System {
     static LIGHT_MAX = 16;
-    static light_intensity = 0.25;
+    static light_intensity = 0.15;
+    static light_intensity_min = 0.1;
     static light_red = 220;
     static light_green = 180;
     static light_blue = 20;
-    static shadow_intensity = 0.3;
+    static shadow_intensity = 0.25;
     static shadow_stop = 9;
     static shadow_red = 22;
     static shadow_green = 8;
     static shadow_blue = 30;
-    cameraIds;
     lightSourceIds;
     constructor(eventManager, entityManager) {
         super(SystemType.Light, eventManager, entityManager, [CType.Visible]);
     }
     logic() {
+        const cam = CameraSystem.getHighestPriorityCamera();
+        if (!cam) {
+            return;
+        }
         for (let entityId of this.entities) {
             const vis = this.entityManager.get(entityId, CType.Visible);
             vis.lightLevel = 0;
         }
-        const visibleEntities = VisibleSystem.filterVisibleEntities(this.entities, this.entityManager);
-        const cam = CameraSystem.getHighestPriorityCamera(this.cameraIds, this.entityManager);
+        const visibleEntities = VisibleSystem.getVisibleEntities(this.entities, this.entityManager);
         for (let lightSourceId of this.lightSourceIds) {
             if (this.entityManager.get(lightSourceId, CType.Visible).discovered) {
                 const lightSourcePos = this.entityManager.get(lightSourceId, CType.Position);
@@ -42,9 +45,8 @@ export default class LightSystem extends System {
             }
         }
     }
-    refreshEntitiesHelper() {
+    getEntitiesHelper() {
         this.lightSourceIds = this.entityManager.getSystemEntities([CType.LightSource]);
-        this.cameraIds = this.entityManager.getSystemEntities([CType.Camera]);
     }
 }
 //# sourceMappingURL=LightSystem.js.map

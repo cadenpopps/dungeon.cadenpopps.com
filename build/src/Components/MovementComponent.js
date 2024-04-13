@@ -1,4 +1,4 @@
-import { Component, CType, Direction } from "../Component.js";
+import { Component, CType } from "../Component.js";
 export default class MovementComponent extends Component {
     speed;
     direction;
@@ -22,4 +22,16 @@ export default class MovementComponent extends Component {
         this.rollCooldown = 0;
     }
 }
+export var Direction;
+(function (Direction) {
+    Direction[Direction["NORTH"] = 0] = "NORTH";
+    Direction[Direction["NORTHEAST"] = 1] = "NORTHEAST";
+    Direction[Direction["EAST"] = 2] = "EAST";
+    Direction[Direction["SOUTHEAST"] = 3] = "SOUTHEAST";
+    Direction[Direction["SOUTH"] = 4] = "SOUTH";
+    Direction[Direction["SOUTHWEST"] = 5] = "SOUTHWEST";
+    Direction[Direction["WEST"] = 6] = "WEST";
+    Direction[Direction["NORTHWEST"] = 7] = "NORTHWEST";
+    Direction[Direction["NONE"] = 8] = "NONE";
+})(Direction || (Direction = {}));
 //# sourceMappingURL=MovementComponent.js.map

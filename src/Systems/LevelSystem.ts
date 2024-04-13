@@ -110,6 +110,10 @@ export default class LevelSystem extends System {
         console.log(`${this.getTimePassed(start)}ms - place torches on map`);
 
         start = new Date();
+        this.placeEnemies(newLevel, levelMap);
+        console.log(`${this.getTimePassed(start)}ms - place torches on map`);
+
+        start = new Date();
         this.generateTileEntitiesFromMap(newLevel, levelMap, depth);
         console.log(`${this.getTimePassed(start)}ms - placing squares from map`);
 
@@ -332,6 +336,50 @@ export default class LevelSystem extends System {
     }
 
     private placeTorches(newLevel: LevelComponent, levelMap: Array<Array<Map<CType, Component>>>): void {
+        for (let x = 0; x < levelMap.length; x++) {
+            for (let y = 0; y < levelMap[x].length; y++) {
+                if (
+                    levelMap[x][y].has(CType.Tile) &&
+                    (levelMap[x][y].get(CType.Tile) as TileComponent).tileType === Tile.Floor
+                ) {
+                    let wallCounter = 0;
+                    let floorCounter = 0;
+                    for (let dx = -1; dx <= 1; dx++) {
+                        for (let dy = -1; dy <= 1; dy++) {
+                            if (
+                                x + dx > 0 &&
+                                y + dy > 0 &&
+                                x + dx < levelMap.length &&
+                                y + dy < levelMap[x + dx].length &&
+                                !(dx === 0 && dy === 0) &&
+                                levelMap[x + dx][y + dy].has(CType.Tile) &&
+                                (levelMap[x + dx][y + dy].get(CType.Tile) as TileComponent).tileType === Tile.Floor
+                            ) {
+                                floorCounter++;
+                            } else if (
+                                x + dx > 0 &&
+                                y + dy > 0 &&
+                                x + dx < levelMap.length &&
+                                y + dy < levelMap[x + dx].length &&
+                                !(dx === 0 && dy === 0) &&
+                                levelMap[x + dx][y + dy].has(CType.Tile) &&
+                                (levelMap[x + dx][y + dy].get(CType.Tile) as TileComponent).tileType === Tile.Wall
+                            ) {
+                                wallCounter++;
+                            }
+                        }
+                        if (wallCounter === 3 || (wallCounter === 6 && floorCounter > 2)) {
+                            if (oneIn(50)) {
+                                newLevel.entities.push(Constants.newTorch(x, y));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private placeEnemies(newLevel: LevelComponent, levelMap: Array<Array<Map<CType, Component>>>): void {
         for (let x = 0; x < levelMap.length; x++) {
             for (let y = 0; y < levelMap[x].length; y++) {
                 if (

@@ -7,6 +7,9 @@ export default class ControllerComponent extends Component {
     interact;
     roll;
     sneak;
+    primary;
+    secondary;
+    ultimate;
     zoom_in;
     zoom_out;
     constructor() {
@@ -18,6 +21,9 @@ export default class ControllerComponent extends Component {
         this.interact = false;
         this.roll = false;
         this.sneak = false;
+        this.primary = false;
+        this.secondary = false;
+        this.ultimate = false;
         this.zoom_in = false;
         this.zoom_out = false;
     }

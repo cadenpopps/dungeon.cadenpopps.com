@@ -10,16 +10,15 @@ import { EntityManager } from "../EntityManager.js";
 import { Event, EventManager } from "../EventManager.js";
 import { System, SystemType } from "../System.js";
 import CameraSystem from "./CameraSystem.js";
+import VisibleSystem from "./VisibleSystem.js";
 
 export default class GraphicsSystem extends System {
     private canvas: PoppsCanvas;
     private layers: Array<Array<number>>;
-    private cameraIds: Array<number>;
 
     constructor(eventManager: EventManager, entityManager: EntityManager) {
         super(SystemType.Graphics, eventManager, entityManager, [CType.Position, CType.Visible]);
         this.canvas = new PoppsCanvas();
-        this.cameraIds = new Array<number>();
         this.layers = Array<Array<number>>();
         this.canvas.loop(this.canvasCallback.bind(this));
     }
@@ -37,17 +36,12 @@ export default class GraphicsSystem extends System {
         }
     }
 
-    public refreshEntitiesHelper(): void {
-        this.cameraIds = this.entityManager.getSystemEntities([CType.Camera]);
-    }
+    public getEntitiesHelper(): void {}
 
     private canvasCallback(): void {
         this.canvas.background(0, 0, 0);
-        if (this.cameraIds.length === 0) {
-            return;
-        }
-        const cam = CameraSystem.getHighestPriorityCamera(this.cameraIds, this.entityManager);
-        if (cam === undefined) {
+        const cam = CameraSystem.getHighestPriorityCamera();
+        if (!cam) {
             return;
         }
         this.canvas.canvas.translate(
@@ -56,7 +50,7 @@ export default class GraphicsSystem extends System {
         );
         this.canvas.canvas.scale(cam.zoom, cam.zoom);
         for (let layer of this.layers) {
-            const visibleEntities = this.getVisibleEntities(layer);
+            const visibleEntities = VisibleSystem.getVisibleAndDiscoveredEntities(layer, this.entityManager);
             for (let entityId of visibleEntities) {
                 const entity = this.entityManager.getEntity(entityId);
                 const pos = entity.get(CType.Position) as PositionComponent;
@@ -97,16 +91,5 @@ export default class GraphicsSystem extends System {
             }
             this.layers[vis.layer].push(entityId);
         }
-    }
-
-    private getVisibleEntities(layer: Array<number>): Array<number> {
-        const visibleEntities = new Array<number>();
-        for (let entityId of layer) {
-            const vis = this.entityManager.get<VisibleComponent>(entityId, CType.Visible);
-            if (vis.inVisionRange && (vis.discovered || vis.visible)) {
-                visibleEntities.push(entityId);
-            }
-        }
-        return visibleEntities;
     }
 }

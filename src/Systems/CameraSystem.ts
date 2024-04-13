@@ -8,6 +8,7 @@ import { EventManager } from "../EventManager.js";
 import { System, SystemType } from "../System.js";
 
 export default class CameraSystem extends System {
+    public static PRIORITY_CAMERA: CameraComponent;
     public static VISIBLE_DISTANCE_CONSTANT = 1280;
     private CAMERA_MIN_ZOOM = 10;
     private CAMERA_MAX_ZOOM = 200;
@@ -19,6 +20,7 @@ export default class CameraSystem extends System {
     }
 
     public logic(): void {
+        CameraSystem.setHighestPriorityCamera(this.entities, this.entityManager);
         for (let entityId of this.entities) {
             if (this.entityManager.getEntity(entityId).has(CType.Position)) {
                 this.moveCamera(entityId);
@@ -29,7 +31,7 @@ export default class CameraSystem extends System {
         }
     }
 
-    public static getHighestPriorityCamera(cameraIds: Array<number>, entityManager: EntityManager): CameraComponent {
+    private static setHighestPriorityCamera(cameraIds: Array<number>, entityManager: EntityManager): void {
         let priority = 0;
         let prioCam = entityManager.get<CameraComponent>(cameraIds[0], CType.Camera);
         for (let entityId of cameraIds) {
@@ -39,7 +41,10 @@ export default class CameraSystem extends System {
                 prioCam = cam;
             }
         }
-        return prioCam;
+        CameraSystem.PRIORITY_CAMERA = prioCam;
+    }
+    public static getHighestPriorityCamera(): CameraComponent {
+        return CameraSystem.PRIORITY_CAMERA;
     }
 
     private moveCamera(entityId: number): void {

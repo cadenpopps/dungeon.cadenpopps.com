@@ -23,7 +23,7 @@ export default class GameSystem extends System {
         }
     }
 
-    public refreshEntitiesHelper(): void {
+    public getEntitiesHelper(): void {
         this.playerId = this.entityManager.getSystemEntities([CType.Player])[0];
         this.levelChangeIds = this.entityManager.getSystemEntities([CType.LevelChange]);
     }
