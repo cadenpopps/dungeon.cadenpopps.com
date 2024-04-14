@@ -1,15 +1,28 @@
 import { CType, Component } from "../Component.js";
-import { Tile } from "../Constants.js";
 
 export default class TileComponent extends Component {
     public tileType: Tile;
     public x: number;
     public y: number;
 
-    constructor(tileType: Tile, x?: number, y?: number) {
+    constructor(tileType: Tile, x: number, y: number) {
         super(CType.Tile);
         this.tileType = tileType;
-        this.x = x || -1;
-        this.y = y || -1;
+        this.x = x;
+        this.y = y;
     }
+}
+
+export enum Tile {
+    Floor,
+    Wall,
+    Door,
+    Path,
+    Grass,
+    StairDown,
+    StairUp,
+    None,
+    EnemySpawn,
+    BossSpawn,
+    LootSpawn,
 }

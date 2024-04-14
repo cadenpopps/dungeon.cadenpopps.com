@@ -10,11 +10,21 @@ export default class ControllerSystem extends System {
     }
     logic() {
         for (let entityId of this.entities) {
-            if (this.entityManager.getEntity(entityId).has(CType.Player)) {
+            if (this.entityManager.hasComponent(entityId, CType.Camera)) {
+                this.mapScrollToCamera(entityId);
+            }
+            if (this.entityManager.hasComponent(entityId, CType.Player)) {
                 this.mapInputsToController(entityId);
             }
-            this.determineDirection(entityId);
+            if (this.entityManager.hasComponent(entityId, CType.Movement)) {
+                this.determineDirection(entityId);
+            }
         }
+    }
+    mapScrollToCamera(entityId) {
+        const con = this.entityManager.get(entityId, CType.Controller);
+        con.zoom_in = this.inputManager.pressed(Input.Zoom_In);
+        con.zoom_out = this.inputManager.pressed(Input.Zoom_Out);
     }
     mapInputsToController(entityId) {
         const con = this.entityManager.get(entityId, CType.Controller);

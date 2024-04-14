@@ -6,20 +6,10 @@ import LevelChangeComponent from "./Components/LevelChangeComponent.js";
 import LightSourceComponent from "./Components/LightSourceComponent.js";
 import PositionComponent from "./Components/PositionComponent.js";
 import SizeComponent from "./Components/SizeComponent.js";
-import TileComponent from "./Components/TileComponent.js";
+import TileComponent, { Tile } from "./Components/TileComponent.js";
 import UIComponent, { UIInteractablePrompt } from "./Components/UIComponent.js";
 import VisibleComponent from "./Components/VisibleComponent.js";
 import LightSystem from "./Systems/LightSystem.js";
-export var Tile;
-(function (Tile) {
-    Tile[Tile["Floor"] = 0] = "Floor";
-    Tile[Tile["Wall"] = 1] = "Wall";
-    Tile[Tile["Door"] = 2] = "Door";
-    Tile[Tile["Path"] = 3] = "Path";
-    Tile[Tile["Grass"] = 4] = "Grass";
-    Tile[Tile["StairDown"] = 5] = "StairDown";
-    Tile[Tile["StairUp"] = 6] = "StairUp";
-})(Tile || (Tile = {}));
 export const xxTransform = [1, 0, 0, -1, -1, 0, 0, 1];
 export const xyTransform = [0, 1, -1, 0, 0, -1, 1, 0];
 export const yxTransform = [0, 1, 1, 0, 0, -1, -1, 0];
@@ -55,6 +45,27 @@ for (let i = 0; i <= LightSystem.LIGHT_MAX; i++) {
         });
     }
 }
+export function convertTile(value) {
+    switch (value.tileType) {
+        case Tile.Floor:
+            return newDungeonFloor(value.x, value.y);
+        case Tile.Wall:
+            return newWall(value.x, value.y);
+        case Tile.Door:
+            return newDoor(value.x, value.y);
+        case Tile.Path:
+            return newPath(value.x, value.y);
+        case Tile.Grass:
+            return newGrass(value.x, value.y);
+        case Tile.StairUp:
+            return newEntry(value.x, value.y);
+        case Tile.StairDown:
+            return newExit(value.x, value.y);
+        case Tile.EnemySpawn:
+            return newEnemySpawn(value.x, value.y);
+    }
+    return new Map();
+}
 export function getEntitiesInRange(centerPos, maxDistance, entities, entityManager) {
     const entitiesInRange = new Array();
     for (let entityId of entities) {
@@ -65,13 +76,44 @@ export function getEntitiesInRange(centerPos, maxDistance, entities, entityManag
     }
     return entitiesInRange;
 }
+export function newEnemySpawn(x, y) {
+    return new Map([
+        [CType.Tile, new TileComponent(Tile.EnemySpawn, x, y)],
+        [CType.Size, new SizeComponent(1)],
+        [CType.Position, new PositionComponent(x, y, 0)],
+        [CType.Visible, new VisibleComponent({ r: 180 + randomInt(20), g: 150 + randomInt(20), b: 70, a: 1 }, false)],
+    ]);
+}
+export function newDungeonFloor(x, y) {
+    return new Map([
+        [CType.Tile, new TileComponent(Tile.Floor, x, y)],
+        [CType.Size, new SizeComponent(1)],
+        [CType.Position, new PositionComponent(x, y, 0)],
+        [
+            CType.Visible,
+            new VisibleComponent({ r: 146 + randomInt(50), g: 127 + randomInt(5), b: 102 + randomInt(5), a: 1 }, false),
+        ],
+    ]);
+}
 export function newWall(x, y) {
     return new Map([
         [CType.Tile, new TileComponent(Tile.Wall, x, y)],
         [CType.Size, new SizeComponent(1)],
         [CType.Position, new PositionComponent(x, y, 0)],
         [CType.Collision, new CollisionComponent()],
-        [CType.Visible, new VisibleComponent({ r: 15, g: 15, b: 25, a: 1 }, true)],
+        [
+            CType.Visible,
+            new VisibleComponent({ r: 0 + randomInt(4), g: 0 + randomInt(4), b: 25 + randomInt(4), a: 1 }, true),
+        ],
+    ]);
+}
+export function newDoor(x, y) {
+    return new Map([
+        [CType.Tile, new TileComponent(Tile.Door, x, y)],
+        [CType.Size, new SizeComponent(1)],
+        [CType.Position, new PositionComponent(x, y, 0)],
+        [CType.Interactable, new InteractableComponent(Interactable.Door)],
+        [CType.Visible, new VisibleComponent({ r: 102, g: 60, b: 41, a: 1 }, false)],
     ]);
 }
 export function newGrass(x, y) {
@@ -88,26 +130,6 @@ export function newPath(x, y) {
         [CType.Size, new SizeComponent(1)],
         [CType.Position, new PositionComponent(x, y, 0)],
         [CType.Visible, new VisibleComponent({ r: 140 + randomInt(20), g: 120 + randomInt(20), b: 50, a: 1 }, false)],
-    ]);
-}
-export function newDoor(x, y) {
-    return new Map([
-        [CType.Tile, new TileComponent(Tile.Door, x, y)],
-        [CType.Size, new SizeComponent(1)],
-        [CType.Position, new PositionComponent(x, y, 0)],
-        [CType.Interactable, new InteractableComponent(Interactable.Door)],
-        [CType.Visible, new VisibleComponent({ r: 102, g: 60, b: 41, a: 1 }, false)],
-    ]);
-}
-export function newDungeonFloor(x, y) {
-    return new Map([
-        [CType.Tile, new TileComponent(Tile.Floor, x, y)],
-        [CType.Size, new SizeComponent(1)],
-        [CType.Position, new PositionComponent(x, y, 0)],
-        [
-            CType.Visible,
-            new VisibleComponent({ r: 146 + randomInt(5), g: 127 + randomInt(5), b: 102 + randomInt(5), a: 1 }, false),
-        ],
     ]);
 }
 export function newEntry(x, y, id) {

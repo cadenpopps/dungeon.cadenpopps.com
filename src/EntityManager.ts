@@ -28,6 +28,11 @@ export class EntityManager {
         }
     }
 
+    public hasComponent(entityId: number, CType: CType): boolean {
+        const entity = this.getEntity(entityId);
+        return entity.has(CType);
+    }
+
     public getEntity(entityId: number): Map<CType, Component> {
         const entity = this.entities.get(entityId);
         if (entity !== undefined) {

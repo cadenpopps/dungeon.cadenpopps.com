@@ -1,23 +1,25 @@
 import * as PoppsInput from "../../lib/PoppsInput.js";
 import { floor } from "../../lib/PoppsMath.js";
 import { CType, Component } from "../Component.js";
-import CameraComponent from "../Components/CameraComponent.js";
 import LevelComponent from "../Components/LevelComponent.js";
 import PositionComponent from "../Components/PositionComponent.js";
-import TileComponent from "../Components/TileComponent.js";
+import TileComponent, { Tile } from "../Components/TileComponent.js";
+import VisibleComponent from "../Components/VisibleComponent.js";
 import * as Constants from "../Constants.js";
 import { EntityManager } from "../EntityManager.js";
 import { Event, EventManager } from "../EventManager.js";
 import { System, SystemType } from "../System.js";
+import CameraSystem from "../Systems/CameraSystem.js";
+import LightSystem from "../Systems/LightSystem.js";
 
 export default class LevelMakerSystem extends System {
     private level: LevelComponent;
     private levelWidth = 0;
     private levelHeight = 0;
-    private activeTile = 0;
+    private activeTile = 1;
 
     constructor(eventManager: EventManager, entityManager: EntityManager) {
-        super(SystemType.Level, eventManager, entityManager, [CType.Camera]);
+        super(SystemType.Level, eventManager, entityManager, []);
         this.level = new LevelComponent(1);
         this.levelWidth = 11;
         this.levelHeight = 11;
@@ -31,74 +33,72 @@ export default class LevelMakerSystem extends System {
         this.printControls();
     }
 
-    public logic(): void {}
+    public logic(): void {
+        for (let entityId of this.entities) {
+            if (this.entityManager.hasComponent(entityId, CType.Visible)) {
+                const vis = this.entityManager.get<VisibleComponent>(entityId, CType.Visible);
+                vis.visible = true;
+                vis.discovered = true;
+                vis.lightLevel = LightSystem.LIGHT_MAX;
+            }
+        }
+    }
 
     public handleEvent(): void {}
 
     private keyDownHandler(key: string): void {
         switch (key) {
             case "0":
-                this.activeTile = 0;
-                console.log("Active tile: None");
-                break;
             case "1":
-                this.activeTile = 1;
-                console.log("Active tile: Wall");
-                break;
             case "2":
-                this.activeTile = 2;
-                console.log("Active tile: DungeonFloor");
-                break;
             case "3":
-                this.activeTile = 3;
-                console.log("Active tile: Door");
-                break;
             case "4":
-                this.activeTile = 4;
-                console.log("Active tile: LevelExit");
-                break;
             case "5":
-                this.activeTile = 5;
-                console.log("Active tile: LevelEntry");
-                break;
             case "6":
-                this.activeTile = 6;
-                console.log("Active tile: Grass");
-                break;
             case "7":
-                this.activeTile = 7;
-                console.log("Active tile: Path");
+            case "8":
+            case "9":
+                this.activeTile = parseInt(key);
+                console.log(`Tile: ${TILE_STRING_MAP[this.activeTile]}`);
                 break;
             case "l":
                 this.levelWidth++;
+                console.log(`Size: ${this.levelWidth}, ${this.levelHeight}`);
                 this.genEmptyLevel();
                 break;
             case "L":
                 this.levelWidth += 5;
+                console.log(`Size: ${this.levelWidth}, ${this.levelHeight}`);
+                this.genEmptyLevel();
+                break;
+            case "h":
+                this.levelWidth--;
+                console.log(`Size: ${this.levelWidth}, ${this.levelHeight}`);
+                this.genEmptyLevel();
+                break;
+            case "H":
+                this.levelWidth -= 5;
+                console.log(`Size: ${this.levelWidth}, ${this.levelHeight}`);
+                this.genEmptyLevel();
+                break;
+            case "j":
+                this.levelHeight++;
+                console.log(`Size: ${this.levelWidth}, ${this.levelHeight}`);
+                this.genEmptyLevel();
+                break;
+            case "J":
+                this.levelHeight += 5;
+                console.log(`Size: ${this.levelWidth}, ${this.levelHeight}`);
                 this.genEmptyLevel();
                 break;
             case "k":
-                this.levelWidth--;
+                this.levelHeight--;
+                console.log(`Size: ${this.levelWidth}, ${this.levelHeight}`);
                 this.genEmptyLevel();
                 break;
             case "K":
-                this.levelWidth -= 5;
-                this.genEmptyLevel();
-                break;
-            case "o":
-                this.levelHeight++;
-                this.genEmptyLevel();
-                break;
-            case "O":
-                this.levelHeight += 5;
-                this.genEmptyLevel();
-                break;
-            case "i":
-                this.levelHeight--;
-                this.genEmptyLevel();
-                break;
-            case "I":
                 this.levelHeight -= 5;
+                console.log(`Size: ${this.levelWidth}, ${this.levelHeight}`);
                 this.genEmptyLevel();
                 break;
             case "/":
@@ -118,14 +118,14 @@ export default class LevelMakerSystem extends System {
     }
 
     private mouseDownHandler(event: MouseEvent): void {
-        const cam = this.entityManager.get<CameraComponent>(this.entities[0], CType.Camera);
+        const cam = CameraSystem.getHighestPriorityCamera();
         const squareX = floor(cam.x + (event.x - window.innerWidth / 2) / cam.zoom + 0.5);
         const squareY = floor(cam.y + (event.y - window.innerHeight / 2) / cam.zoom + 0.5);
         this.paintTile(squareX, squareY);
     }
 
     private mouseDraggedHandler(event: MouseEvent): void {
-        const cam = this.entityManager.get<CameraComponent>(this.entities[0], CType.Camera);
+        const cam = CameraSystem.getHighestPriorityCamera();
         const squareX = floor(cam.x + (event.x - window.innerWidth / 2) / cam.zoom + 0.5);
         const squareY = floor(cam.y + (event.y - window.innerHeight / 2) / cam.zoom + 0.5);
         this.paintTile(squareX, squareY);
@@ -166,29 +166,30 @@ export default class LevelMakerSystem extends System {
     }
 
     private paintTile(x: number, y: number): void {
-        switch (this.activeTile) {
-            case 0:
+        const tile = TILE_MAP[this.activeTile];
+        switch (tile) {
+            case Tile.None:
                 this.removeTile(x, y);
                 break;
-            case 1:
+            case Tile.Wall:
                 this.changeTile(x, y, Constants.newWall(x, y));
                 break;
-            case 2:
+            case Tile.Floor:
                 this.changeTile(x, y, Constants.newDungeonFloor(x, y));
                 break;
-            case 3:
+            case Tile.Door:
                 this.changeTile(x, y, Constants.newDoor(x, y));
                 break;
-            case 4:
+            case Tile.StairDown:
                 this.changeTile(x, y, Constants.newExit(x, y));
                 break;
-            case 5:
+            case Tile.StairUp:
                 this.changeTile(x, y, Constants.newEntry(x, y));
                 break;
-            case 6:
+            case Tile.Grass:
                 this.changeTile(x, y, Constants.newGrass(x, y));
                 break;
-            case 7:
+            case Tile.Path:
                 this.changeTile(x, y, Constants.newPath(x, y));
                 break;
         }
@@ -283,3 +284,29 @@ export default class LevelMakerSystem extends System {
         this.loadLevel(newLevel);
     }
 }
+
+export const TILE_MAP = new Array<Tile>(
+    Tile.None,
+    Tile.Floor,
+    Tile.Wall,
+    Tile.Grass,
+    Tile.Path,
+    Tile.Wall,
+    Tile.Wall,
+    Tile.Wall,
+    Tile.StairDown,
+    Tile.StairUp
+);
+
+export const TILE_STRING_MAP = new Array<String>(
+    "None",
+    "Floor",
+    "Wall",
+    "Grass",
+    "Path",
+    "Wall",
+    "Wall",
+    "Wall",
+    "StairDown",
+    "StairUp"
+);

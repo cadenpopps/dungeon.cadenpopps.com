@@ -1,16 +1,15 @@
-import Levels from "../../content/Levels.js";
-import Rooms from "../../content/Rooms.js";
 import { abs, ceil, floor, oneIn } from "../../lib/PoppsMath.js";
 import { CType, Component } from "../Component.js";
 import LevelChangeComponent from "../Components/LevelChangeComponent.js";
 import LevelComponent from "../Components/LevelComponent.js";
 import PlayerComponent from "../Components/PlayerComponent.js";
 import PositionComponent from "../Components/PositionComponent.js";
-import TileComponent from "../Components/TileComponent.js";
+import TileComponent, { Tile } from "../Components/TileComponent.js";
 import * as Constants from "../Constants.js";
-import { Tile } from "../Constants.js";
 import { EntityManager } from "../EntityManager.js";
 import { Event, EventManager } from "../EventManager.js";
+import Levels from "../Levels.js";
+import Rooms from "../Rooms.js";
 import { System, SystemType } from "../System.js";
 
 export default class LevelSystem extends System {
@@ -109,9 +108,9 @@ export default class LevelSystem extends System {
         this.placeTorches(newLevel, levelMap);
         console.log(`${this.getTimePassed(start)}ms - place torches on map`);
 
-        start = new Date();
-        this.placeEnemies(newLevel, levelMap);
-        console.log(`${this.getTimePassed(start)}ms - place torches on map`);
+        // start = new Date();
+        // this.placeEnemies(newLevel, levelMap);
+        // console.log(`${this.getTimePassed(start)}ms - place torches on map`);
 
         start = new Date();
         this.generateTileEntitiesFromMap(newLevel, levelMap, depth);
@@ -159,7 +158,6 @@ export default class LevelSystem extends System {
             if (e.has(CType.LevelChange)) {
                 e.set(CType.LevelChange, new LevelChangeComponent(entryId));
             }
-            e.set(CType.Tile, new TileComponent(Tile.Floor));
         }
         return newRoom;
     }
@@ -180,7 +178,6 @@ export default class LevelSystem extends System {
             if (e.has(CType.LevelChange)) {
                 e.set(CType.LevelChange, new LevelChangeComponent(exitId));
             }
-            // e.set(CType.Tile, new TileComponent(Tile.Floor));
         }
         return newRoom;
     }
@@ -199,13 +196,6 @@ export default class LevelSystem extends System {
             }
             state = ceil((Math.pow(state + 1, 2) / 7) % 65536);
         }
-
-        // console.log(``);
-        // console.log(`Max Rooms: ${maxRooms}`);
-        // console.log(`Rooms: ${successes}`);
-        // console.log(`Max Tries: ${tries}`);
-        // console.log(`Fails: ${fails}`);
-        // console.log(``);
     }
 
     private tryGenerateRoom(state: number, depth: number, rooms: Array<Array<Map<CType, Component>>>): boolean {
@@ -379,49 +369,49 @@ export default class LevelSystem extends System {
         }
     }
 
-    private placeEnemies(newLevel: LevelComponent, levelMap: Array<Array<Map<CType, Component>>>): void {
-        for (let x = 0; x < levelMap.length; x++) {
-            for (let y = 0; y < levelMap[x].length; y++) {
-                if (
-                    levelMap[x][y].has(CType.Tile) &&
-                    (levelMap[x][y].get(CType.Tile) as TileComponent).tileType === Tile.Floor
-                ) {
-                    let wallCounter = 0;
-                    let floorCounter = 0;
-                    for (let dx = -1; dx <= 1; dx++) {
-                        for (let dy = -1; dy <= 1; dy++) {
-                            if (
-                                x + dx > 0 &&
-                                y + dy > 0 &&
-                                x + dx < levelMap.length &&
-                                y + dy < levelMap[x + dx].length &&
-                                !(dx === 0 && dy === 0) &&
-                                levelMap[x + dx][y + dy].has(CType.Tile) &&
-                                (levelMap[x + dx][y + dy].get(CType.Tile) as TileComponent).tileType === Tile.Floor
-                            ) {
-                                floorCounter++;
-                            } else if (
-                                x + dx > 0 &&
-                                y + dy > 0 &&
-                                x + dx < levelMap.length &&
-                                y + dy < levelMap[x + dx].length &&
-                                !(dx === 0 && dy === 0) &&
-                                levelMap[x + dx][y + dy].has(CType.Tile) &&
-                                (levelMap[x + dx][y + dy].get(CType.Tile) as TileComponent).tileType === Tile.Wall
-                            ) {
-                                wallCounter++;
-                            }
-                        }
-                        if (wallCounter === 3 || (wallCounter === 6 && floorCounter > 2)) {
-                            if (oneIn(50)) {
-                                newLevel.entities.push(Constants.newTorch(x, y));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+    // private placeEnemies(newLevel: LevelComponent, levelMap: Array<Array<Map<CType, Component>>>): void {
+    //     for (let x = 0; x < levelMap.length; x++) {
+    //         for (let y = 0; y < levelMap[x].length; y++) {
+    //             if (
+    //                 levelMap[x][y].has(CType.Tile) &&
+    //                 (levelMap[x][y].get(CType.Tile) as TileComponent).tileType === Tile.Floor
+    //             ) {
+    //                 let wallCounter = 0;
+    //                 let floorCounter = 0;
+    //                 for (let dx = -1; dx <= 1; dx++) {
+    //                     for (let dy = -1; dy <= 1; dy++) {
+    //                         if (
+    //                             x + dx > 0 &&
+    //                             y + dy > 0 &&
+    //                             x + dx < levelMap.length &&
+    //                             y + dy < levelMap[x + dx].length &&
+    //                             !(dx === 0 && dy === 0) &&
+    //                             levelMap[x + dx][y + dy].has(CType.Tile) &&
+    //                             (levelMap[x + dx][y + dy].get(CType.Tile) as TileComponent).tileType === Tile.Floor
+    //                         ) {
+    //                             floorCounter++;
+    //                         } else if (
+    //                             x + dx > 0 &&
+    //                             y + dy > 0 &&
+    //                             x + dx < levelMap.length &&
+    //                             y + dy < levelMap[x + dx].length &&
+    //                             !(dx === 0 && dy === 0) &&
+    //                             levelMap[x + dx][y + dy].has(CType.Tile) &&
+    //                             (levelMap[x + dx][y + dy].get(CType.Tile) as TileComponent).tileType === Tile.Wall
+    //                         ) {
+    //                             wallCounter++;
+    //                         }
+    //                     }
+    //                     if (wallCounter === 3 || (wallCounter === 6 && floorCounter > 2)) {
+    //                         if (oneIn(50)) {
+    //                             newLevel.entities.push(Constants.newTorch(x, y));
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
 
     private connectRooms(
         seed: number,

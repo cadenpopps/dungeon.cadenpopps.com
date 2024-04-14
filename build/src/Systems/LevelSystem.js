@@ -1,14 +1,13 @@
-import Levels from "../../content/Levels.js";
-import Rooms from "../../content/Rooms.js";
 import { abs, ceil, floor, oneIn } from "../../lib/PoppsMath.js";
 import { CType } from "../Component.js";
 import LevelChangeComponent from "../Components/LevelChangeComponent.js";
 import LevelComponent from "../Components/LevelComponent.js";
 import PositionComponent from "../Components/PositionComponent.js";
-import TileComponent from "../Components/TileComponent.js";
+import { Tile } from "../Components/TileComponent.js";
 import * as Constants from "../Constants.js";
-import { Tile } from "../Constants.js";
 import { Event } from "../EventManager.js";
+import Levels from "../Levels.js";
+import Rooms from "../Rooms.js";
 import { System, SystemType } from "../System.js";
 export default class LevelSystem extends System {
     BASE_LEVEL_SIZE = 50;
@@ -87,9 +86,6 @@ export default class LevelSystem extends System {
         this.placeTorches(newLevel, levelMap);
         console.log(`${this.getTimePassed(start)}ms - place torches on map`);
         start = new Date();
-        this.placeEnemies(newLevel, levelMap);
-        console.log(`${this.getTimePassed(start)}ms - place torches on map`);
-        start = new Date();
         this.generateTileEntitiesFromMap(newLevel, levelMap, depth);
         console.log(`${this.getTimePassed(start)}ms - placing squares from map`);
         console.log(`${this.getTimePassed(startTotal)}ms - total level generation\n\n`);
@@ -128,7 +124,6 @@ export default class LevelSystem extends System {
             if (e.has(CType.LevelChange)) {
                 e.set(CType.LevelChange, new LevelChangeComponent(entryId));
             }
-            e.set(CType.Tile, new TileComponent(Tile.Floor));
         }
         return newRoom;
     }
@@ -286,44 +281,6 @@ export default class LevelSystem extends System {
         }
     }
     placeTorches(newLevel, levelMap) {
-        for (let x = 0; x < levelMap.length; x++) {
-            for (let y = 0; y < levelMap[x].length; y++) {
-                if (levelMap[x][y].has(CType.Tile) &&
-                    levelMap[x][y].get(CType.Tile).tileType === Tile.Floor) {
-                    let wallCounter = 0;
-                    let floorCounter = 0;
-                    for (let dx = -1; dx <= 1; dx++) {
-                        for (let dy = -1; dy <= 1; dy++) {
-                            if (x + dx > 0 &&
-                                y + dy > 0 &&
-                                x + dx < levelMap.length &&
-                                y + dy < levelMap[x + dx].length &&
-                                !(dx === 0 && dy === 0) &&
-                                levelMap[x + dx][y + dy].has(CType.Tile) &&
-                                levelMap[x + dx][y + dy].get(CType.Tile).tileType === Tile.Floor) {
-                                floorCounter++;
-                            }
-                            else if (x + dx > 0 &&
-                                y + dy > 0 &&
-                                x + dx < levelMap.length &&
-                                y + dy < levelMap[x + dx].length &&
-                                !(dx === 0 && dy === 0) &&
-                                levelMap[x + dx][y + dy].has(CType.Tile) &&
-                                levelMap[x + dx][y + dy].get(CType.Tile).tileType === Tile.Wall) {
-                                wallCounter++;
-                            }
-                        }
-                        if (wallCounter === 3 || (wallCounter === 6 && floorCounter > 2)) {
-                            if (oneIn(50)) {
-                                newLevel.entities.push(Constants.newTorch(x, y));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    placeEnemies(newLevel, levelMap) {
         for (let x = 0; x < levelMap.length; x++) {
             for (let y = 0; y < levelMap[x].length; y++) {
                 if (levelMap[x][y].has(CType.Tile) &&

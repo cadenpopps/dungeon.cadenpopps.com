@@ -24,6 +24,10 @@ export class EntityManager {
             }
         }
     }
+    hasComponent(entityId, CType) {
+        const entity = this.getEntity(entityId);
+        return entity.has(CType);
+    }
     getEntity(entityId) {
         const entity = this.entities.get(entityId);
         if (entity !== undefined) {
