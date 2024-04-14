@@ -1,0 +1,1 @@
+{"version":3,"file":"TextureComponent.js","sourceRoot":"","sources":["../../../src/Components/TextureComponent.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,EAAE,KAAK,EAAE,MAAM,iBAAiB,CAAC;AAEnD,MAAM,CAAC,OAAO,OAAO,gBAAiB,SAAQ,SAAS;IAC5C,UAAU,CAAmB;IAEpC,YAAY,UAA4B;QACpC,KAAK,CAAC,KAAK,CAAC,OAAO,CAAC,CAAC;QACrB,IAAI,CAAC,UAAU,GAAG,UAAU,CAAC;IACjC,CAAC;CACJ"}

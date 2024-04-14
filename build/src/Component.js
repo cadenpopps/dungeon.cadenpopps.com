@@ -27,5 +27,6 @@ export var CType;
     CType[CType["Health"] = 18] = "Health";
     CType[CType["Ability"] = 19] = "Ability";
     CType[CType["Hitbox"] = 20] = "Hitbox";
+    CType[CType["Texture"] = 21] = "Texture";
 })(CType || (CType = {}));
 //# sourceMappingURL=Component.js.map

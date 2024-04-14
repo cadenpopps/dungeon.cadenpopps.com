@@ -28,4 +28,5 @@ export enum CType {
     Health,
     Ability,
     Hitbox,
+    Texture,
 }

@@ -1,3 +1,9 @@
+export function loadImage(url: string): HTMLImageElement {
+    let img = new Image();
+    img.src = url;
+    return img;
+}
+
 // export function loadJSON(path: string): Object {
 //     var req = new XMLHttpRequest();
 //     req.overrideMimeType("application/json");
@@ -11,12 +17,6 @@
 //         console.log("Error loading JSON");
 //         return {};
 //     }
-// }
-
-// function loadImage(url) {
-//     let img = new Image();
-//     img.src = url;
-//     return img;
 // }
 
 // public createInvisibleCanvas() {

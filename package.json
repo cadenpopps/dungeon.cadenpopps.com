@@ -12,7 +12,7 @@
         "build": "tsc",
         "serve": "node ./build/server.cjs",
         "watch": "tsc -w",
-        "cleanBuild": "find ./build -name '*js' -type f -delete && find ./build -name '*.js.map' -type f -delete && npm run build",
+        "cleanBuild": "find ./build -name '*.js' -type f -delete && find ./build -name '*.js.map' -type f -delete && npm run build",
         "test": "jest"
     },
     "author": "Caden Popps",
