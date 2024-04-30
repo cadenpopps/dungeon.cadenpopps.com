@@ -71,14 +71,14 @@ entityManager.addEntity(new Map([
     [CType.Camera, new CameraComponent(55, 19, 0, 1, 100, 20, 160)],
     [CType.Movement, new MovementComponent(30)],
     [CType.Interactable, new InteractableComponent(Interactable.Player)],
-    [CType.LightSource, new LightSourceComponent(LightSystem.LIGHT_MAX - 5)],
+    [CType.LightSource, new LightSourceComponent(LightSystem.LIGHT_MAX - 8, 300)],
     [
         CType.UI,
         new UIComponent([
             new UIAbilityCooldowns({ r: 20, g: 200, b: 40, a: 1 }, { r: 200, g: 200, b: 40, a: 1 }, { r: 150, g: 20, b: 200, a: 1 }, { r: 100, g: 100, b: 100, a: 0.8 }),
         ]),
     ],
-    [CType.Texture, new TextureComponent([new Texture(loadImage("/assets/img/playerSpriteSheet.png"))])],
+    [CType.Texture, new TextureComponent([new Texture(loadImage("/assets/img/sprites/playerSpriteSheet.png"))])],
 ]));
 function gameLoop() {
     eventManager.tick();

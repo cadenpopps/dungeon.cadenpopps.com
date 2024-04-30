@@ -8,7 +8,6 @@ import { Event } from "../EventManager.js";
 import Levels from "../Levels.js";
 import { System, SystemType } from "../System.js";
 import CameraSystem from "../Systems/CameraSystem.js";
-import LightSystem from "../Systems/LightSystem.js";
 export default class LevelMakerSystem extends System {
     level;
     levelWidth = 0;
@@ -31,7 +30,6 @@ export default class LevelMakerSystem extends System {
                 const vis = this.entityManager.get(entityId, CType.Visible);
                 vis.visible = true;
                 vis.discovered = true;
-                vis.lightLevel = LightSystem.LIGHT_MAX;
             }
         }
     }

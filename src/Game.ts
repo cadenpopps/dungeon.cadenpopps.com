@@ -75,7 +75,7 @@ entityManager.addEntity(
         [CType.Camera, new CameraComponent(55, 19, 0, 1, 100, 20, 160)],
         [CType.Movement, new MovementComponent(30)],
         [CType.Interactable, new InteractableComponent(Interactable.Player)],
-        [CType.LightSource, new LightSourceComponent(LightSystem.LIGHT_MAX - 5)],
+        [CType.LightSource, new LightSourceComponent(LightSystem.LIGHT_MAX - 8, 300)],
         [
             CType.UI,
             new UIComponent([
@@ -87,7 +87,7 @@ entityManager.addEntity(
                 ),
             ]),
         ],
-        [CType.Texture, new TextureComponent([new Texture(loadImage("/assets/img/playerSpriteSheet.png"))])],
+        [CType.Texture, new TextureComponent([new Texture(loadImage("/assets/img/sprites/playerSpriteSheet.png"))])],
     ])
 );
 
@@ -99,14 +99,7 @@ entityManager.addEntity(
 //             [CType.Position, new PositionComponent(43 + random(15), 18 + random(10), 0)],
 //             [CType.Velocity, new VelocityComponent(0, 0)],
 //             [CType.Acceleration, new AccelerationComponent(0, 0)],
-//             [
-//                 CType.Visible,
-//                 new VisibleComponent(
-//                     { r: randomIntInRange(200, 255), g: randomIntInRange(30, 90), b: 0, a: 1 },
-//                     false,
-//                     4
-//                 ),
-//             ],
+//             [CType.Visible, new VisibleComponent(true, 4)],
 //             [
 //                 CType.UI,
 //                 new UIComponent([

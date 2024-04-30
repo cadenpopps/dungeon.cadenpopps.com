@@ -1,7 +1,9 @@
 import { Component, CType } from "../Component.js";
+import { LIGHT_LEVEL_FILL, SHADOW_FILL } from "../Constants.js";
 export default class VisibleComponent extends Component {
     layer;
-    lightLevel;
+    light;
+    shadow;
     visible;
     discovered;
     inVisionRange;
@@ -10,7 +12,8 @@ export default class VisibleComponent extends Component {
         super(CType.Visible);
         this.blocking = blocking;
         this.layer = layer;
-        this.lightLevel = 0;
+        this.light = LIGHT_LEVEL_FILL[0];
+        this.shadow = SHADOW_FILL[0];
         this.visible = false;
         this.discovered = false;
         this.inVisionRange = false;
