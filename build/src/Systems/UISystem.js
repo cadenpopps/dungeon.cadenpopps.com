@@ -30,7 +30,7 @@ export default class UISystem extends System {
     }
     getEntitiesHelper() { }
     canvasCallback() {
-        this.canvas.clearCanvas();
+        this.canvas.clear();
         const cam = CameraSystem.getHighestPriorityCamera();
         if (!cam) {
             return;

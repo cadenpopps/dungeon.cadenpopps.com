@@ -14,7 +14,9 @@ export default class CameraComponent extends Component {
     zoom;
     visibleDistance;
     priority;
-    constructor(x, y, z, zoom, priority) {
+    minZoom;
+    maxZoom;
+    constructor(x, y, z, priority, zoom, minZoom, maxZoom) {
         super(CType.Camera);
         this.x = x;
         this.y = y;
@@ -25,9 +27,11 @@ export default class CameraComponent extends Component {
         this.vely = 0;
         this.accx = 0;
         this.accy = 0;
-        this.zoom = zoom;
+        this.zoom = floor(zoom / CameraSystem.CAMERA_ZOOM_SPEED) * CameraSystem.CAMERA_ZOOM_SPEED;
         this.visibleDistance = floor(CameraSystem.VISIBLE_DISTANCE_CONSTANT / this.zoom);
         this.priority = priority;
+        this.minZoom = minZoom;
+        this.maxZoom = maxZoom;
     }
 }
 //# sourceMappingURL=CameraComponent.js.map

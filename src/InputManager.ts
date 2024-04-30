@@ -26,6 +26,9 @@ export class InputManager {
 
     private keyDownHandler(key: string): void {
         const lowerCaseKey = key.toLocaleLowerCase();
+        if (lowerCaseKey === "n") {
+            this.eventManager.addEvent(Event.level_change);
+        }
         if (this.controllerMap.has(lowerCaseKey)) {
             const input = this.controllerMap.get(lowerCaseKey) as Input;
             if (input === Input.Pause) {

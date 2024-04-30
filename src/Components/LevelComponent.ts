@@ -11,7 +11,7 @@ export default class LevelComponent extends Component {
         super(CType.Level);
         this.depth = depth;
         this.seed = randomInt(65536);
-        // this.seed = 35334;
+        // this.seed = 5686;
         this.entities = new Array<Map<CType, Component>>();
         this.entityIds = new Array<number>();
     }

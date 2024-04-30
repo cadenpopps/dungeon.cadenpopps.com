@@ -6,6 +6,7 @@ import CameraSystem from ".././Systems/CameraSystem.js";
 import GraphicsSystem from ".././Systems/GraphicsSystem.js";
 import { CType } from "../Component.js";
 import ControllerComponent from "../Components/ControllerComponent.js";
+import MovementComponent from "../Components/MovementComponent.js";
 import { InputManager } from "../InputManager.js";
 import ControllerSystem from "../Systems/ControllerSystem.js";
 import MovementSystem from "../Systems/MovementSystem.js";
@@ -28,8 +29,12 @@ systems.push(new CameraSystem(eventManager, entityManager));
 systems.push(new LevelMakerSystem(eventManager, entityManager));
 eventManager.addEvent(Event.new_game);
 entityManager.addEntity(new Map([
+    [CType.Position, new MovementComponent()],
+    [CType.Velocity, new MovementComponent()],
+    [CType.Acceleration, new MovementComponent()],
     [CType.Controller, new ControllerComponent()],
-    [CType.Camera, new CameraComponent(5, 5, 0, 40, 1)],
+    [CType.Movement, new MovementComponent()],
+    [CType.Camera, new CameraComponent(5, 5, 0, 1, 30, 10, 100)],
 ]));
 engine.loop(gameLoop);
 function gameLoop() {

@@ -8,28 +8,29 @@ import VisibleComponent from "../Components/VisibleComponent.js";
 import * as Constants from "../Constants.js";
 import { EntityManager } from "../EntityManager.js";
 import { Event, EventManager } from "../EventManager.js";
+import Levels from "../Levels.js";
 import { System, SystemType } from "../System.js";
 import CameraSystem from "../Systems/CameraSystem.js";
 import LightSystem from "../Systems/LightSystem.js";
 
 export default class LevelMakerSystem extends System {
-    private level: LevelComponent;
+    private level!: LevelComponent;
     private levelWidth = 0;
     private levelHeight = 0;
     private activeTile = 1;
 
     constructor(eventManager: EventManager, entityManager: EntityManager) {
         super(SystemType.Level, eventManager, entityManager, []);
-        this.level = new LevelComponent(1);
+        this.level = new LevelComponent(0);
+        // this.genEmptyLevel();
         this.levelWidth = 11;
         this.levelHeight = 11;
+        this.loadLevel(Levels.DungeonTown);
 
-        this.genEmptyLevel();
         PoppsInput.listenKeyDown(this.keyDownHandler.bind(this));
         PoppsInput.listenMouseDown(this.mouseDownHandler.bind(this));
         PoppsInput.listenMouseDragged(this.mouseDraggedHandler.bind(this));
 
-        this.loadLevel(this.level);
         this.printControls();
     }
 
@@ -266,7 +267,9 @@ export default class LevelMakerSystem extends System {
     }
 
     private loadLevel(newLevel: LevelComponent): void {
-        this.entityManager.removeEntities(this.level.entityIds);
+        if (this.level.entityIds) {
+            this.entityManager.removeEntities(this.level.entityIds);
+        }
         this.level = newLevel;
         this.level.entityIds = this.entityManager.addEntities(this.level.entities);
         this.eventManager.addEvent(Event.level_loaded);

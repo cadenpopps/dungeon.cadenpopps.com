@@ -24,7 +24,13 @@ export default class MovementSystem extends System {
     private EXTRA_FRICTION = 0.8;
 
     constructor(eventManager: EventManager, entityManager: EntityManager) {
-        super(SystemType.Movement, eventManager, entityManager, [CType.Movement]);
+        super(SystemType.Movement, eventManager, entityManager, [
+            CType.Movement,
+            CType.Position,
+            CType.Velocity,
+            CType.Acceleration,
+            CType.Controller,
+        ]);
     }
 
     public logic(): void {

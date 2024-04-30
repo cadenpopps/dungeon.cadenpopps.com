@@ -17,7 +17,13 @@ export default class MovementSystem extends System {
     ROLL_VELOCITY_DAMPER = 0.6;
     EXTRA_FRICTION = 0.8;
     constructor(eventManager, entityManager) {
-        super(SystemType.Movement, eventManager, entityManager, [CType.Movement]);
+        super(SystemType.Movement, eventManager, entityManager, [
+            CType.Movement,
+            CType.Position,
+            CType.Velocity,
+            CType.Acceleration,
+            CType.Controller,
+        ]);
     }
     logic() {
         for (let entityId of this.entities) {

@@ -10,8 +10,7 @@ import { System, SystemType } from "../System.js";
 export default class CameraSystem extends System {
     public static PRIORITY_CAMERA: CameraComponent;
     public static VISIBLE_DISTANCE_CONSTANT = 1280;
-    private CAMERA_MIN_ZOOM = 10;
-    private CAMERA_MAX_ZOOM = 200;
+    public static CAMERA_ZOOM_SPEED = 16;
     private CAMERA_SPEED_DAMPER = 0.7;
     private CAMERA_ACCEL_DIVIDER = 25;
 
@@ -90,15 +89,19 @@ export default class CameraSystem extends System {
         const con = this.entityManager.get<ControllerComponent>(entityId, CType.Controller);
 
         if (con.zoom_in) {
-            if (cam.zoom >= this.CAMERA_MIN_ZOOM) {
+            if (cam.zoom >= cam.minZoom) {
                 con.zoom_in = false;
-                cam.zoom -= 2;
+                cam.zoom =
+                    floor((cam.zoom - CameraSystem.CAMERA_ZOOM_SPEED) / CameraSystem.CAMERA_ZOOM_SPEED) *
+                    CameraSystem.CAMERA_ZOOM_SPEED;
                 cam.visibleDistance = floor(CameraSystem.VISIBLE_DISTANCE_CONSTANT / cam.zoom);
             }
         } else if (con.zoom_out) {
-            if (cam.zoom <= this.CAMERA_MAX_ZOOM) {
+            if (cam.zoom <= cam.maxZoom) {
                 con.zoom_out = false;
-                cam.zoom += 2;
+                cam.zoom =
+                    floor((cam.zoom + CameraSystem.CAMERA_ZOOM_SPEED) / CameraSystem.CAMERA_ZOOM_SPEED) *
+                    CameraSystem.CAMERA_ZOOM_SPEED;
                 cam.visibleDistance = floor(CameraSystem.VISIBLE_DISTANCE_CONSTANT / cam.zoom);
             }
         }

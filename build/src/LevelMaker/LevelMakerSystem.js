@@ -5,6 +5,7 @@ import LevelComponent from "../Components/LevelComponent.js";
 import { Tile } from "../Components/TileComponent.js";
 import * as Constants from "../Constants.js";
 import { Event } from "../EventManager.js";
+import Levels from "../Levels.js";
 import { System, SystemType } from "../System.js";
 import CameraSystem from "../Systems/CameraSystem.js";
 import LightSystem from "../Systems/LightSystem.js";
@@ -15,14 +16,13 @@ export default class LevelMakerSystem extends System {
     activeTile = 1;
     constructor(eventManager, entityManager) {
         super(SystemType.Level, eventManager, entityManager, []);
-        this.level = new LevelComponent(1);
+        this.level = new LevelComponent(0);
         this.levelWidth = 11;
         this.levelHeight = 11;
-        this.genEmptyLevel();
+        this.loadLevel(Levels.DungeonTown);
         PoppsInput.listenKeyDown(this.keyDownHandler.bind(this));
         PoppsInput.listenMouseDown(this.mouseDownHandler.bind(this));
         PoppsInput.listenMouseDragged(this.mouseDraggedHandler.bind(this));
-        this.loadLevel(this.level);
         this.printControls();
     }
     logic() {
@@ -226,7 +226,9 @@ export default class LevelMakerSystem extends System {
         }
     }
     loadLevel(newLevel) {
-        this.entityManager.removeEntities(this.level.entityIds);
+        if (this.level.entityIds) {
+            this.entityManager.removeEntities(this.level.entityIds);
+        }
         this.level = newLevel;
         this.level.entityIds = this.entityManager.addEntities(this.level.entities);
         this.eventManager.addEvent(Event.level_loaded);

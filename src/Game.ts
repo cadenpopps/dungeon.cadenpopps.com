@@ -1,4 +1,5 @@
 import { PoppsEngine } from "../lib/PoppsEngine.js";
+import { loadImage } from "../lib/PoppsLoad.js";
 import { CType, Component } from "./Component.js";
 import AbilityComponent, { SlashAttack, SpinAttack } from "./Components/AbilityComponent.js";
 import AccelerationComponent from "./Components/AccelerationComponent.js";
@@ -12,6 +13,7 @@ import MovementComponent from "./Components/MovementComponent.js";
 import PlayerComponent from "./Components/PlayerComponent.js";
 import PositionComponent from "./Components/PositionComponent.js";
 import SizeComponent from "./Components/SizeComponent.js";
+import TextureComponent, { Texture } from "./Components/TextureComponent.js";
 import UIComponent, { UIAbilityCooldowns } from "./Components/UIComponent.js";
 import VelocityComponent from "./Components/VelocityComponent.js";
 import VisibleComponent from "./Components/VisibleComponent.js";
@@ -66,14 +68,14 @@ entityManager.addEntity(
         [CType.Position, new PositionComponent(55, 19, 0)],
         [CType.Velocity, new VelocityComponent(0, 0)],
         [CType.Acceleration, new AccelerationComponent(0, 0)],
-        [CType.Visible, new VisibleComponent({ r: 20, g: 180, b: 240, a: 1 }, false, 5)],
+        [CType.Visible, new VisibleComponent(false, 5)],
         [CType.Collision, new CollisionComponent(CollisionHandler.Stop)],
-        [CType.Size, new SizeComponent(0.7)],
+        [CType.Size, new SizeComponent(0.9)],
         [CType.Controller, new ControllerComponent()],
-        [CType.Camera, new CameraComponent(55, 19, 0, 70, 1)],
+        [CType.Camera, new CameraComponent(55, 19, 0, 1, 100, 20, 160)],
         [CType.Movement, new MovementComponent(30)],
         [CType.Interactable, new InteractableComponent(Interactable.Player)],
-        [CType.LightSource, new LightSourceComponent(LightSystem.LIGHT_MAX - 2)],
+        [CType.LightSource, new LightSourceComponent(LightSystem.LIGHT_MAX - 5)],
         [
             CType.UI,
             new UIComponent([
@@ -85,6 +87,7 @@ entityManager.addEntity(
                 ),
             ]),
         ],
+        [CType.Texture, new TextureComponent([new Texture(loadImage("/assets/img/playerSpriteSheet.png"))])],
     ])
 );
 
@@ -128,7 +131,16 @@ entityManager.addEntity(
 // }
 
 // Overview Camera
-// entityManager.addEntity(new Map<CType, Component>([[CType.Camera, new CameraComponent(25, 25, 0, 10, 2)]]));
+// entityManager.addEntity(
+//     new Map<CType, Component>([
+//         [CType.Position, new PositionComponent(25, 25)],
+//         [CType.Velocity, new VelocityComponent()],
+//         [CType.Acceleration, new AccelerationComponent()],
+//         [CType.Controller, new ControllerComponent()],
+//         [CType.Movement, new MovementComponent(1)],
+//         [CType.Camera, new CameraComponent(25, 25, 0, 10, 2)],
+//     ])
+// );
 
 // let tickTime = Date.now();
 function gameLoop() {

@@ -91,6 +91,9 @@ export default class PhysicsSystem extends System {
             }
         }
         for (let entityId of movingEntitiesInRange) {
+            if (!this.entityManager.hasComponent(entityId, CType.Collision)) {
+                continue;
+            }
             const pos = this.entityManager.get(entityId, CType.Position);
             const col = this.entityManager.get(entityId, CType.Collision);
             let positiveX = 0;

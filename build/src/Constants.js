@@ -6,6 +6,7 @@ import LevelChangeComponent from "./Components/LevelChangeComponent.js";
 import LightSourceComponent from "./Components/LightSourceComponent.js";
 import PositionComponent from "./Components/PositionComponent.js";
 import SizeComponent from "./Components/SizeComponent.js";
+import TextureComponent, { Texture, TextureMap, TextureMaps, TexturePositionMap, } from "./Components/TextureComponent.js";
 import TileComponent, { Tile } from "./Components/TileComponent.js";
 import UIComponent, { UIInteractablePrompt } from "./Components/UIComponent.js";
 import VisibleComponent from "./Components/VisibleComponent.js";
@@ -81,7 +82,7 @@ export function newEnemySpawn(x, y) {
         [CType.Tile, new TileComponent(Tile.EnemySpawn, x, y)],
         [CType.Size, new SizeComponent(1)],
         [CType.Position, new PositionComponent(x, y, 0)],
-        [CType.Visible, new VisibleComponent({ r: 180 + randomInt(20), g: 150 + randomInt(20), b: 70, a: 1 }, false)],
+        [CType.Visible, new VisibleComponent(false)],
     ]);
 }
 export function newDungeonFloor(x, y) {
@@ -89,10 +90,18 @@ export function newDungeonFloor(x, y) {
         [CType.Tile, new TileComponent(Tile.Floor, x, y)],
         [CType.Size, new SizeComponent(1)],
         [CType.Position, new PositionComponent(x, y, 0)],
-        [
-            CType.Visible,
-            new VisibleComponent({ r: 146 + randomInt(50), g: 127 + randomInt(5), b: 102 + randomInt(5), a: 1 }, false),
-        ],
+        [CType.Visible, new VisibleComponent(false)],
+    ]);
+}
+export function dungeonFloorTexture() {
+    const pos = new PositionComponent(randomInt(4), 0);
+    return new TextureComponent([
+        new Texture(TextureMaps.get(TextureMap.DungeonFloor), 16, 16, 0, 0, 16 * pos.x, 16 * pos.y, {
+            r: 186 + randomInt(50),
+            g: 95 + randomInt(10),
+            b: 90 + randomInt(25),
+            a: 0.2,
+        }),
     ]);
 }
 export function newWall(x, y) {
@@ -101,11 +110,20 @@ export function newWall(x, y) {
         [CType.Size, new SizeComponent(1)],
         [CType.Position, new PositionComponent(x, y, 0)],
         [CType.Collision, new CollisionComponent()],
-        [
-            CType.Visible,
-            new VisibleComponent({ r: 0 + randomInt(4), g: 0 + randomInt(4), b: 25 + randomInt(4), a: 1 }, true),
-        ],
+        [CType.Visible, new VisibleComponent(true)],
     ]);
+}
+export function wallTexture(texturePos) {
+    const pos = TexturePositionMap.get(texturePos);
+    return new TextureComponent([new Texture(TextureMaps.get(TextureMap.Wall), 16, 16, 0, 0, 16 * pos.x, 16 * pos.y)]);
+}
+export function wallTextures(texturePos) {
+    const texArray = [];
+    for (const tPos of texturePos) {
+        const pos = TexturePositionMap.get(tPos);
+        texArray.push(new Texture(TextureMaps.get(TextureMap.Wall), 16, 16, 0, 0, 16 * pos.x, 16 * pos.y));
+    }
+    return new TextureComponent(texArray);
 }
 export function newDoor(x, y) {
     return new Map([
@@ -113,24 +131,36 @@ export function newDoor(x, y) {
         [CType.Size, new SizeComponent(1)],
         [CType.Position, new PositionComponent(x, y, 0)],
         [CType.Interactable, new InteractableComponent(Interactable.Door)],
-        [CType.Visible, new VisibleComponent({ r: 102, g: 60, b: 41, a: 1 }, false)],
+        [CType.Visible, new VisibleComponent(false)],
     ]);
+}
+export function doorTexture() {
+    const pos = new PositionComponent(0, 1);
+    return new TextureComponent([new Texture(TextureMaps.get(TextureMap.Door), 16, 16, 0, 0, 16 * pos.x, 16 * pos.y)]);
 }
 export function newGrass(x, y) {
     return new Map([
         [CType.Tile, new TileComponent(Tile.Grass, x, y)],
         [CType.Size, new SizeComponent(1)],
         [CType.Position, new PositionComponent(x, y, 0)],
-        [CType.Visible, new VisibleComponent({ r: 30 + randomInt(10), g: 92 + randomInt(25), b: 0, a: 1 }, false)],
+        [CType.Visible, new VisibleComponent(false)],
     ]);
+}
+export function grassTexture() {
+    const pos = new PositionComponent(randomInt(4), randomInt(4));
+    return new TextureComponent([new Texture(TextureMaps.get(TextureMap.Grass), 16, 16, 0, 0, 16 * pos.x, 16 * pos.y)]);
 }
 export function newPath(x, y) {
     return new Map([
         [CType.Tile, new TileComponent(Tile.Path, x, y)],
         [CType.Size, new SizeComponent(1)],
         [CType.Position, new PositionComponent(x, y, 0)],
-        [CType.Visible, new VisibleComponent({ r: 140 + randomInt(20), g: 120 + randomInt(20), b: 50, a: 1 }, false)],
+        [CType.Visible, new VisibleComponent(false)],
     ]);
+}
+export function pathTexture() {
+    const pos = new PositionComponent(randomInt(4), 0);
+    return new TextureComponent([new Texture(TextureMaps.get(TextureMap.Path), 16, 16, 0, 0, 16 * pos.x, 16 * pos.y)]);
 }
 export function newEntry(x, y, id) {
     return new Map([
@@ -139,7 +169,7 @@ export function newEntry(x, y, id) {
         [CType.Position, new PositionComponent(x, y, 0)],
         [CType.LevelChange, new LevelChangeComponent(id || 0)],
         [CType.Interactable, new InteractableComponent(Interactable.LevelChange)],
-        [CType.Visible, new VisibleComponent({ r: 100, g: 200, b: 50, a: 1 }, false)],
+        [CType.Visible, new VisibleComponent(false)],
         [CType.UI, new UIComponent([new UIInteractablePrompt("to enter previous level")])],
     ]);
 }
@@ -150,14 +180,14 @@ export function newExit(x, y, id) {
         [CType.Position, new PositionComponent(x, y, 0)],
         [CType.LevelChange, new LevelChangeComponent(id || 0)],
         [CType.Interactable, new InteractableComponent(Interactable.LevelChange)],
-        [CType.Visible, new VisibleComponent({ r: 200, g: 100, b: 50, a: 1 }, false)],
+        [CType.Visible, new VisibleComponent(false)],
         [CType.UI, new UIComponent([new UIInteractablePrompt("to enter next level")])],
     ]);
 }
 export function newTorch(x, y) {
     return new Map([
         [CType.Size, new SizeComponent(0.2)],
-        [CType.Visible, new VisibleComponent({ r: 200, g: 200, b: 0, a: 0.5 }, false, 2)],
+        [CType.Visible, new VisibleComponent(false, 2)],
         [CType.Position, new PositionComponent(x, y)],
         [CType.LightSource, new LightSourceComponent(LightSystem.LIGHT_MAX - 5)],
     ]);

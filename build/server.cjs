@@ -8,7 +8,7 @@ console.log("Starting server...");
 http.createServer(function (request, response) {
     var filePath = "./build" + request.url;
     if (filePath == "./build/") filePath = "./build/index.html";
-    if (request.url.includes("content/")) filePath = "." + request.url;
+    if (request.url.includes("content/") || request.url.includes("assets/")) filePath = "." + request.url;
 
     var extname = path.extname(filePath);
     var contentType = "text/html";
@@ -37,6 +37,7 @@ http.createServer(function (request, response) {
         if (error) {
             if (error.code == "ENOENT") {
                 fs.readFile("./build/404.html", function (error, content) {
+                    console.log(filePath);
                     console.log(error);
                     response.writeHead(200, {
                         "Content-Type": contentType,

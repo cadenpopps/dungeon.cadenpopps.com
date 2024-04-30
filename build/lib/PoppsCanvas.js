@@ -1,15 +1,19 @@
 export default class PoppsCanvas {
     font = "sans-serif";
     fontSize = "10px";
+    width = 0;
+    height = 0;
+    imageSmoothingEnabled = true;
     parentElement;
     canvasElement;
     canvas;
-    width;
-    height;
     looping = false;
     drawCallback;
-    constructor(zIndex = 1, parent) {
-        this.parentElement = parent || document.getElementsByTagName("body")[0];
+    constructor(zIndex = 1, parent = null) {
+        if (parent === null) {
+            parent = document.getElementsByTagName("body")[0];
+        }
+        this.parentElement = parent;
         this.initCanvas(zIndex);
         this.initResizeListener();
     }
@@ -23,9 +27,16 @@ export default class PoppsCanvas {
         this.resizeCanvas();
     }
     initResizeListener() {
-        window.addEventListener("resize", () => {
-            this.resizeCanvas();
-        });
+        if (this.parentElement.tagName === "BODY") {
+            window.addEventListener("resize", () => {
+                this.resizeCanvas();
+            });
+        }
+        else {
+            this.parentElement.addEventListener("resize", () => {
+                this.resizeCanvas();
+            });
+        }
     }
     resizeCanvas() {
         const parentWidth = this.parentElement.clientWidth;
@@ -34,6 +45,7 @@ export default class PoppsCanvas {
         this.canvas.canvas.height = parentHeight;
         this.width = parentWidth;
         this.height = parentHeight;
+        this.canvas.imageSmoothingEnabled = this.imageSmoothingEnabled;
     }
     loop(callback) {
         this.drawCallback = callback;
@@ -48,6 +60,16 @@ export default class PoppsCanvas {
             this.drawCallback();
             window.requestAnimationFrame(this.draw.bind(this));
         }
+    }
+    setSize(width = 0, height = 0) {
+        this.canvas.canvas.width = width;
+        this.canvas.canvas.height = height;
+        this.width = width;
+        this.height = height;
+        this.canvas.imageSmoothingEnabled = this.imageSmoothingEnabled;
+    }
+    clear() {
+        this.canvas.clearRect(0, 0, this.width, this.height);
     }
     background(r, g, b, a) {
         a = a || 255;
@@ -90,8 +112,15 @@ export default class PoppsCanvas {
         this.fontSize = `${size}px`;
         this.setFont(this.font);
     }
-    clearCanvas() {
-        this.canvas.clearRect(0, 0, this.width, this.height);
+    setImageSmoothingEnabled(imageSmoothingEnabled) {
+        this.imageSmoothingEnabled = imageSmoothingEnabled;
+        this.canvas.imageSmoothingEnabled = imageSmoothingEnabled;
+    }
+    setGlobalAlpha(globalAlpha) {
+        this.canvas.globalAlpha = globalAlpha;
+    }
+    resetGlobalAlpha() {
+        this.canvas.globalAlpha = 1;
     }
     rect(x1, y1, x2, y2) {
         this.canvas.beginPath();

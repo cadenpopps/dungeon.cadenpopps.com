@@ -1,16 +1,20 @@
 export default class PoppsCanvas {
     public font = "sans-serif";
     public fontSize = "10px";
+    public width: number = 0;
+    public height: number = 0;
+    public imageSmoothingEnabled: boolean = true;
     public parentElement: HTMLElement;
     public canvasElement!: HTMLCanvasElement;
     public canvas!: CanvasRenderingContext2D;
-    public width!: number;
-    public height!: number;
     public looping = false;
     public drawCallback!: Function;
 
-    constructor(zIndex: number = 1, parent?: HTMLElement) {
-        this.parentElement = parent || document.getElementsByTagName("body")[0];
+    constructor(zIndex: number = 1, parent: HTMLElement | null = null) {
+        if (parent === null) {
+            parent = document.getElementsByTagName("body")[0];
+        }
+        this.parentElement = parent;
         this.initCanvas(zIndex);
         this.initResizeListener();
     }
@@ -26,9 +30,15 @@ export default class PoppsCanvas {
     }
 
     private initResizeListener(): void {
-        window.addEventListener("resize", () => {
-            this.resizeCanvas();
-        });
+        if (this.parentElement.tagName === "BODY") {
+            window.addEventListener("resize", () => {
+                this.resizeCanvas();
+            });
+        } else {
+            this.parentElement.addEventListener("resize", () => {
+                this.resizeCanvas();
+            });
+        }
     }
 
     private resizeCanvas(): void {
@@ -38,6 +48,7 @@ export default class PoppsCanvas {
         this.canvas.canvas.height = parentHeight;
         this.width = parentWidth;
         this.height = parentHeight;
+        this.canvas.imageSmoothingEnabled = this.imageSmoothingEnabled;
     }
 
     public loop(callback: Function): void {
@@ -55,6 +66,24 @@ export default class PoppsCanvas {
             this.drawCallback();
             window.requestAnimationFrame(this.draw.bind(this));
         }
+    }
+
+    /**
+     * Manually sets the canvas size
+     */
+    public setSize(width: number = 0, height: number = 0): void {
+        this.canvas.canvas.width = width;
+        this.canvas.canvas.height = height;
+        this.width = width;
+        this.height = height;
+        this.canvas.imageSmoothingEnabled = this.imageSmoothingEnabled;
+    }
+
+    /**
+     * Clear the canvas of previous draws and images
+     */
+    public clear(): void {
+        this.canvas.clearRect(0, 0, this.width, this.height);
     }
 
     /**
@@ -132,8 +161,26 @@ export default class PoppsCanvas {
         this.setFont(this.font);
     }
 
-    public clearCanvas(): void {
-        this.canvas.clearRect(0, 0, this.width, this.height);
+    /**
+     * @param imageSmoothingEnabled whether the canvas anti aliases images drawn
+     */
+    public setImageSmoothingEnabled(imageSmoothingEnabled: boolean): void {
+        this.imageSmoothingEnabled = imageSmoothingEnabled;
+        this.canvas.imageSmoothingEnabled = imageSmoothingEnabled;
+    }
+
+    /**
+     * @param globalAlpha the alpha value to draw all images and shapes
+     */
+    public setGlobalAlpha(globalAlpha: number): void {
+        this.canvas.globalAlpha = globalAlpha;
+    }
+
+    /**
+     * Resets the global alpha value to 1
+     */
+    public resetGlobalAlpha(): void {
+        this.canvas.globalAlpha = 1;
     }
 
     /**

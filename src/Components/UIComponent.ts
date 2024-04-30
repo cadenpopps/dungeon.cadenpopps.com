@@ -1,5 +1,5 @@
 import { Component, CType } from "../Component.js";
-import { Color } from "./VisibleComponent.js";
+import { Color } from "../Constants.js";
 
 export default class UIComponent extends Component {
     public elements: Array<UIElement>;

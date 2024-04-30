@@ -19,7 +19,11 @@ export default class ControllerSystem extends System {
             if (this.entityManager.hasComponent(entityId, CType.Camera)) {
                 this.mapScrollToCamera(entityId);
             }
-            if (this.entityManager.hasComponent(entityId, CType.Player)) {
+            // Could add a InputComponent with its own input map. That way a camera can be controlled with inputs
+            if (
+                this.entityManager.hasComponent(entityId, CType.Player) ||
+                this.entityManager.hasComponent(entityId, CType.Camera)
+            ) {
                 this.mapInputsToController(entityId);
             }
             if (this.entityManager.hasComponent(entityId, CType.Movement)) {
