@@ -109,15 +109,8 @@ export default class VisibleSystem extends System {
         for (let octant = 0; octant < 8; octant++) {
             squareIds = squareIds.concat(VisibleSystem.occludeObjectsOctant(centerPos, maxDistance, octant, VisibleSystem.entitiesInRangeMap, entityManager));
         }
-        for (let octant = 0; octant < 8; octant++) {
-            if (octant % 2 === 1) {
-                squareIds = squareIds.concat(VisibleSystem.occludeObjectsSraight(centerPos, maxDistance, octant, VisibleSystem.entitiesInRangeMap, entityManager));
-            }
-            else {
-                squareIds = squareIds.concat(VisibleSystem.occludeObjectsDiagonal(centerPos, maxDistance, octant, VisibleSystem.entitiesInRangeMap, entityManager));
-            }
-        }
-        return squareIds;
+        const s = [...new Set(squareIds)];
+        return s;
     }
     static occludeObjectsOctant(centerPos, maxDistance, octant, entitiesInRange, entityManager) {
         const squareIds = new Array();
@@ -135,15 +128,13 @@ export default class VisibleSystem extends System {
             fullyBlocked = true;
             let y = 0;
             let slope = VisibleSystem.slope(x, y, SquarePosition.Center);
-            while (slope < 1) {
+            while (slope <= 1) {
                 if (!this.inShadow(x, y, shadows)) {
                     fullyBlocked = false;
                     const currentSquareIds = this.getSquareIdsFromOctantCoords(entitiesInRange, centerPos, x, y, octant);
                     for (let currentSquareId of currentSquareIds) {
                         const currentVis = entityManager.get(currentSquareId, CType.Visible);
-                        if (x !== y && y !== 0) {
-                            squareIds.push(currentSquareId);
-                        }
+                        squareIds.push(currentSquareId);
                         if (currentVis.blocking) {
                             shadows.push(VisibleSystem.getShadow(currentSquareId, centerPos, x, y, octant, entityManager));
                             for (let i = shadows.length - 1; i >= 0; i--) {
@@ -194,89 +185,11 @@ export default class VisibleSystem extends System {
             };
         }
     }
-    static occludeObjectsSraight(centerPos, maxDistance, octant, entitiesInRange, entityManager) {
-        const squareIds = new Array();
-        let x = 1;
-        let y = 0;
-        let fullyBlocked = false;
-        while (x <= maxDistance && !fullyBlocked) {
-            const currentSquareIds = this.getSquareIdsFromOctantCoords(entitiesInRange, centerPos, x, y, octant);
-            for (let currentSquareId of currentSquareIds) {
-                const currentVis = entityManager.get(currentSquareId, CType.Visible);
-                squareIds.push(currentSquareId);
-                if (currentVis.blocking) {
-                    const currentSize = entityManager.get(currentSquareId, CType.Size).size;
-                    let lowerBound = 0;
-                    let upperBound = 1;
-                    if (currentSize !== 1) {
-                        const currentPos = entityManager.get(currentSquareId, CType.Position);
-                        const newPos = this.getOctantCoordsFromPosition(currentPos, centerPos, octant);
-                        lowerBound = VisibleSystem.slope(newPos.x - currentSize / 2, newPos.y - currentSize / 2, SquarePosition.Center);
-                        upperBound = VisibleSystem.slope(newPos.x - currentSize / 2, newPos.y + currentSize / 2, SquarePosition.Center);
-                    }
-                    else {
-                        lowerBound = VisibleSystem.slope(x, y, SquarePosition.BottomLeft);
-                        upperBound = VisibleSystem.slope(x, y, SquarePosition.TopLeft);
-                    }
-                    if (this.inShadowStraight(x + 1, y, [{ lowerBound: lowerBound, upperBound: upperBound }])) {
-                        fullyBlocked = true;
-                    }
-                }
-            }
-            x++;
-        }
-        return squareIds;
-    }
-    static occludeObjectsDiagonal(centerPos, maxDistance, octant, entitiesInRange, entityManager) {
-        const squareIds = new Array();
-        let x = 1;
-        let y = 1;
-        let fullyBlocked = false;
-        while (x <= maxDistance && !fullyBlocked) {
-            fullyBlocked = false;
-            const currentSquareIds = this.getSquareIdsFromOctantCoords(entitiesInRange, centerPos, x, y, octant);
-            for (let currentSquareId of currentSquareIds) {
-                const currentVis = entityManager.get(currentSquareId, CType.Visible);
-                squareIds.push(currentSquareId);
-                if (currentVis.blocking) {
-                    const currentSize = entityManager.get(currentSquareId, CType.Size).size;
-                    let lowerBound = 0;
-                    let upperBound = 1;
-                    if (currentSize !== 1) {
-                        const currentPos = entityManager.get(currentSquareId, CType.Position);
-                        const newPos = this.getOctantCoordsFromPosition(currentPos, centerPos, octant);
-                        lowerBound = VisibleSystem.slope(newPos.x + currentSize / 2, newPos.y - currentSize / 2, SquarePosition.Center);
-                        upperBound = VisibleSystem.slope(newPos.x - currentSize / 2, newPos.y + currentSize / 2, SquarePosition.Center);
-                    }
-                    else {
-                        lowerBound = VisibleSystem.slope(x, y, SquarePosition.BottomRight);
-                        upperBound = VisibleSystem.slope(x, y, SquarePosition.TopLeft);
-                    }
-                    if (this.inShadow(x + 1, y + 1, [{ lowerBound: lowerBound, upperBound: upperBound }])) {
-                        fullyBlocked = true;
-                    }
-                }
-            }
-            x++;
-            y++;
-        }
-        return squareIds;
-    }
     static inShadow(x, y, shadows) {
         let bottomRight = VisibleSystem.slope(x, y, SquarePosition.BottomRight);
         let topLeft = VisibleSystem.slope(x, y, SquarePosition.TopLeft);
         for (let s of shadows) {
             if (topLeft <= s.upperBound && bottomRight >= s.lowerBound) {
-                return true;
-            }
-        }
-        return false;
-    }
-    static inShadowStraight(x, y, shadows) {
-        let bottomLeft = VisibleSystem.slope(x, y, SquarePosition.BottomLeft);
-        let topLeft = VisibleSystem.slope(x, y, SquarePosition.TopLeft);
-        for (let s of shadows) {
-            if (topLeft <= s.upperBound && bottomLeft >= s.lowerBound) {
                 return true;
             }
         }

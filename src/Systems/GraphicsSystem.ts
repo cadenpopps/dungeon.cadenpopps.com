@@ -6,7 +6,6 @@ import PositionComponent from "../Components/PositionComponent.js";
 import SizeComponent from "../Components/SizeComponent.js";
 import TextureComponent from "../Components/TextureComponent.js";
 import VisibleComponent from "../Components/VisibleComponent.js";
-import { LIGHT_LEVEL_FILL, SHADOW_FILL } from "../Constants.js";
 import { EntityManager } from "../EntityManager.js";
 import { Event, EventManager } from "../EventManager.js";
 import { System, SystemType } from "../System.js";
@@ -100,10 +99,10 @@ export default class GraphicsSystem extends System {
                             }
                         }
                         this.canvas.canvas.globalCompositeOperation = "source-atop";
-                        const light = LIGHT_LEVEL_FILL[vis.lightLevel];
+                        const light = vis.light;
                         this.canvas.fill(light.r, light.g, light.b, light.a);
                         this.canvas.rect(pos.x - halfSize, pos.y - halfSize, size, size);
-                        const shadow = SHADOW_FILL[vis.lightLevel];
+                        const shadow = vis.shadow;
                         this.canvas.fill(shadow.r, shadow.g, shadow.b, shadow.a);
                         this.canvas.rect(pos.x - halfSize, pos.y - halfSize, size, size);
                         this.canvas.canvas.globalCompositeOperation = "source-over";
@@ -127,10 +126,10 @@ export default class GraphicsSystem extends System {
                                 this.canvas.fill(texture.tint.r, texture.tint.g, texture.tint.b, texture.tint.a);
                                 this.canvas.rect(0, 0, texture.pixelWidth, texture.pixelHeight);
                             }
-                            const light = LIGHT_LEVEL_FILL[vis.lightLevel];
+                            const light = vis.light;
                             this.invisibleCanvas.fill(light.r, light.g, light.b, light.a);
                             this.invisibleCanvas.rect(0, 0, texture.pixelWidth, texture.pixelHeight);
-                            const shadow = SHADOW_FILL[vis.lightLevel];
+                            const shadow = vis.shadow;
                             this.invisibleCanvas.fill(shadow.r, shadow.g, shadow.b, shadow.a);
                             this.invisibleCanvas.rect(0, 0, texture.pixelWidth, texture.pixelHeight);
                             this.invisibleCanvas.canvas.globalCompositeOperation = "source-over";
@@ -156,10 +155,10 @@ export default class GraphicsSystem extends System {
                         this.canvas.fill(255, 255, 255, 1);
                     }
                     this.canvas.rect(pos.x - halfSize, pos.y - halfSize, size, size);
-                    const light = LIGHT_LEVEL_FILL[vis.lightLevel];
+                    const light = vis.light;
                     this.canvas.fill(light.r, light.g, light.b, light.a);
                     this.canvas.rect(pos.x - halfSize, pos.y - halfSize, size, size);
-                    const shadow = SHADOW_FILL[vis.lightLevel];
+                    const shadow = vis.shadow;
                     this.canvas.fill(shadow.r, shadow.g, shadow.b, shadow.a);
                     this.canvas.rect(pos.x - halfSize, pos.y - halfSize, size, size);
                 }
