@@ -68,19 +68,11 @@ export default class LightSystem extends System {
                         );
                         const l = LIGHT_LEVEL_FILL[level];
                         const s = SHADOW_FILL[level];
-                        if (light.tint) {
-                            const tint = light.tint;
-                            l.r += tint.r;
-                            l.g += tint.g;
-                            l.b += tint.b;
-                            s.r += tint.r;
-                            s.g += tint.g;
-                            s.b += tint.b;
-                        }
+                        const tint = light.tint || { r: 0, g: 0, b: 0, a: 0 };
                         vis.light = {
-                            r: max(vis.light.r, l.r),
-                            g: max(vis.light.g, l.g),
-                            b: max(vis.light.b, l.b),
+                            r: max(vis.light.r, l.r + tint.r),
+                            g: max(vis.light.g, l.g + tint.g),
+                            b: max(vis.light.b, l.b + tint.b),
                             a: max(vis.light.a, l.a * light.flicker),
                         };
                         vis.shadow = {
