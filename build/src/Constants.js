@@ -1,4 +1,4 @@
-import { abs, floor, max, randomInt, round } from "../lib/PoppsMath.js";
+import { abs, floor, max, randomInt, randomIntInRange, round } from "../lib/PoppsMath.js";
 import { CType } from "./Component.js";
 import CollisionComponent from "./Components/CollisionComponent.js";
 import InteractableComponent, { Interactable } from "./Components/InteractableComponent.js";
@@ -15,7 +15,7 @@ export const xxTransform = [1, 0, 0, -1, -1, 0, 0, 1];
 export const xyTransform = [0, 1, -1, 0, 0, -1, 1, 0];
 export const yxTransform = [0, 1, 1, 0, 0, -1, -1, 0];
 export const yyTransform = [1, 0, 0, 1, -1, 0, 0, -1];
-export const xxRotation = [0, 0.71, 0, -0.071, -1, -0.71, 0, 0.71];
+export const xxRotation = [0, 0.71, 0, -0.71, -1, -0.71, 0, 0.71];
 export const xyRotation = [0.71, 1, 0.71, 0, 0, -1, 1, 0];
 export const yxRotation = [1, 0.71, 0, -1, -1, 0, 0, 1];
 export const yyRotation = [1, 1, -1, 0, 0, -1, 1, 0];
@@ -189,7 +189,15 @@ export function newTorch(x, y) {
         [CType.Size, new SizeComponent(0.2)],
         [CType.Visible, new VisibleComponent(false, 2)],
         [CType.Position, new PositionComponent(x, y)],
-        [CType.LightSource, new LightSourceComponent(LightSystem.LIGHT_MAX - 5)],
+        [
+            CType.LightSource,
+            new LightSourceComponent(LightSystem.LIGHT_MAX - randomIntInRange(5, 7), randomIntInRange(180, 300), {
+                r: randomInt(30),
+                g: randomInt(30),
+                b: randomInt(30),
+                a: 0,
+            }),
+        ],
     ]);
 }
 //# sourceMappingURL=Constants.js.map
