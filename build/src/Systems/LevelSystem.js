@@ -1,9 +1,8 @@
-import { abs, ceil, floor, oneIn, round } from "../../lib/PoppsMath.js";
+import { abs, ceil, floor, oneIn } from "../../lib/PoppsMath.js";
 import { CType } from "../Component.js";
 import LevelChangeComponent from "../Components/LevelChangeComponent.js";
 import LevelComponent from "../Components/LevelComponent.js";
 import PositionComponent from "../Components/PositionComponent.js";
-import { TexturePosition } from "../Components/TextureComponent.js";
 import { Tile } from "../Components/TileComponent.js";
 import * as Constants from "../Constants.js";
 import { Event } from "../EventManager.js";
@@ -34,6 +33,16 @@ export default class LevelSystem extends System {
     changeLevel() {
         const exitId = this.entityManager.get(this.entities[0], CType.Player).levelChangeId;
         const depth = this.currentLevel.depth;
+        for (let l of this.levels) {
+            if (depth !== l.depth) {
+                for (let e of l.entities) {
+                    if ((e.has(CType.LevelChange) && e.get(CType.LevelChange).id) === exitId) {
+                        this.loadLevel(l);
+                        return;
+                    }
+                }
+            }
+        }
         this.loadLevel(this.generateLevel(exitId, depth + 1));
     }
     loadLevel(level) {
@@ -42,7 +51,6 @@ export default class LevelSystem extends System {
         }
         if (!this.levels.includes(level)) {
             this.levels.push(level);
-            this.addTextures(level);
         }
         this.currentLevel = level;
         this.currentLevel.entityIds = this.entityManager.addEntities(this.currentLevel.entities);
@@ -80,282 +88,8 @@ export default class LevelSystem extends System {
         start = new Date();
         this.generateTileEntitiesFromMap(newLevel, levelMap, depth);
         console.log(`${this.getTimePassed(start)}ms - placing squares from map`);
-        start = new Date();
-        this.addTextures(newLevel);
-        console.log(`${this.getTimePassed(start)}ms - add textures`);
         console.log(`${this.getTimePassed(startTotal)}ms - total level generation\n\n`);
         return newLevel;
-    }
-    addTextures(level) {
-        const map = new Map();
-        for (let entity of level.entities) {
-            if (entity.has(CType.Tile)) {
-                const pos = entity.get(CType.Position);
-                const newX = round(pos.x);
-                const newY = round(pos.y);
-                if (!map.get(newX)) {
-                    map.set(newX, new Map());
-                }
-                if (!map.get(newX)?.get(newY)) {
-                    map.get(newX)?.set(newY, new Map());
-                }
-                map.get(newX)?.set(newY, entity);
-            }
-        }
-        for (let entity of level.entities) {
-            if (entity.size !== 0 && entity.has(CType.Tile)) {
-                const tile = entity.get(CType.Tile);
-                switch (tile.tileType) {
-                    case Tile.Grass:
-                        entity.set(CType.Texture, Constants.grassTexture());
-                        break;
-                    case Tile.Wall:
-                        const texturePos = this.getWallTexturePos(entity, map);
-                        entity.set(CType.Texture, Constants.wallTextures(texturePos));
-                        break;
-                    case Tile.Path:
-                        entity.set(CType.Texture, Constants.pathTexture());
-                        break;
-                    case Tile.Door:
-                        entity.set(CType.Texture, Constants.doorTexture());
-                        break;
-                    case Tile.Floor:
-                        entity.set(CType.Texture, Constants.dungeonFloorTexture());
-                        break;
-                }
-            }
-        }
-    }
-    getWallTexturePos(entity, map) {
-        const textures = [];
-        const pos = entity.get(CType.Position);
-        const top = this.getTileType(map.get(pos.x)?.get(pos.y - 1));
-        const right = this.getTileType(map.get(pos.x + 1)?.get(pos.y));
-        const bottom = this.getTileType(map.get(pos.x)?.get(pos.y + 1));
-        const left = this.getTileType(map.get(pos.x - 1)?.get(pos.y));
-        const topRight = this.getTileType(map.get(pos.x + 1)?.get(pos.y - 1));
-        const topLeft = this.getTileType(map.get(pos.x - 1)?.get(pos.y - 1));
-        const bottomRight = this.getTileType(map.get(pos.x + 1)?.get(pos.y + 1));
-        const bottomLeft = this.getTileType(map.get(pos.x - 1)?.get(pos.y + 1));
-        if (top === Tile.Wall && right == Tile.Wall && bottom === Tile.Wall && left === Tile.Wall) {
-            textures.push(TexturePosition.All);
-            if (topRight !== Tile.Wall &&
-                bottomRight !== Tile.Wall &&
-                topLeft !== Tile.Wall &&
-                bottomLeft !== Tile.Wall) {
-                textures.push(TexturePosition.LeftT);
-                textures.push(TexturePosition.RightT);
-            }
-            else if (topRight !== Tile.Wall && bottomRight !== Tile.Wall && topLeft !== Tile.Wall) {
-                textures.push(TexturePosition.BottomRightInner);
-                textures.push(TexturePosition.RightT);
-            }
-            else if (topRight !== Tile.Wall && bottomRight !== Tile.Wall && bottomLeft !== Tile.Wall) {
-                textures.push(TexturePosition.TopRightInner);
-                textures.push(TexturePosition.RightT);
-            }
-            else if (topRight !== Tile.Wall && topLeft !== Tile.Wall && bottomLeft !== Tile.Wall) {
-                textures.push(TexturePosition.BottomLeftInner);
-                textures.push(TexturePosition.LeftT);
-            }
-            else if (bottomRight !== Tile.Wall && topLeft !== Tile.Wall && bottomLeft !== Tile.Wall) {
-                textures.push(TexturePosition.TopLeftInner);
-                textures.push(TexturePosition.LeftT);
-            }
-            else if (topLeft !== Tile.Wall && topRight !== Tile.Wall) {
-                textures.push(TexturePosition.BottomRightInner);
-                textures.push(TexturePosition.BottomLeftInner);
-            }
-            else if (bottomRight !== Tile.Wall && topRight !== Tile.Wall) {
-                textures.push(TexturePosition.RightT);
-            }
-            else if (bottomLeft !== Tile.Wall && bottomRight !== Tile.Wall) {
-                textures.push(TexturePosition.TopRightInner);
-                textures.push(TexturePosition.TopLeftInner);
-            }
-            else if (topLeft !== Tile.Wall && bottomLeft !== Tile.Wall) {
-                textures.push(TexturePosition.LeftT);
-            }
-            else if (topLeft !== Tile.Wall && bottomRight !== Tile.Wall) {
-                textures.push(TexturePosition.BottomRightInner);
-                textures.push(TexturePosition.TopLeftInner);
-            }
-            else if (topRight !== Tile.Wall && bottomLeft !== Tile.Wall) {
-                textures.push(TexturePosition.BottomLeftInner);
-                textures.push(TexturePosition.TopRightInner);
-            }
-            else if (topLeft !== Tile.Wall) {
-                textures.push(TexturePosition.BottomRightInner);
-            }
-            else if (bottomLeft !== Tile.Wall) {
-                textures.push(TexturePosition.TopRightInner);
-            }
-            else if (topRight !== Tile.Wall) {
-                textures.push(TexturePosition.BottomLeftInner);
-            }
-            else if (bottomRight !== Tile.Wall) {
-                textures.push(TexturePosition.TopLeftInner);
-            }
-        }
-        else if (top === Tile.Wall && bottom === Tile.Wall && right === Tile.Wall) {
-            if (left !== Tile.Wall) {
-                textures.push(TexturePosition.Left);
-            }
-            if (topRight !== Tile.Wall && bottomRight !== Tile.Wall) {
-                textures.push(TexturePosition.RightT);
-            }
-            else if (topRight !== Tile.Wall) {
-                textures.push(TexturePosition.BottomLeftInner);
-            }
-            else if (bottomRight !== Tile.Wall) {
-                textures.push(TexturePosition.TopLeftInner);
-            }
-        }
-        else if (top === Tile.Wall && bottom === Tile.Wall && left === Tile.Wall) {
-            if (right !== Tile.Wall) {
-                textures.push(TexturePosition.Right);
-            }
-            if (topLeft !== Tile.Wall && bottomLeft !== Tile.Wall) {
-                textures.push(TexturePosition.LeftT);
-            }
-            else if (topLeft !== Tile.Wall) {
-                textures.push(TexturePosition.BottomRightInner);
-            }
-            else if (bottomLeft !== Tile.Wall) {
-                textures.push(TexturePosition.TopRightInner);
-            }
-        }
-        else if (right === Tile.Wall && left === Tile.Wall && bottom === Tile.Wall) {
-            if (top !== Tile.Wall) {
-                if (bottomRight !== Tile.Wall && bottomLeft !== Tile.Wall) {
-                    textures.push(TexturePosition.TopUBoth);
-                }
-                else if (bottomRight !== Tile.Wall) {
-                    textures.push(TexturePosition.TopULeft);
-                }
-                else if (bottomLeft !== Tile.Wall) {
-                    textures.push(TexturePosition.TopURight);
-                }
-                else {
-                    textures.push(TexturePosition.Top);
-                }
-            }
-            else {
-                if (bottomRight !== Tile.Wall && bottomLeft !== Tile.Wall) {
-                    textures.push(TexturePosition.TopUBoth);
-                }
-                else if (bottomRight !== Tile.Wall) {
-                    textures.push(TexturePosition.TopLeftInner);
-                }
-                else if (bottomLeft !== Tile.Wall) {
-                    textures.push(TexturePosition.TopRightInner);
-                }
-            }
-        }
-        else if (right === Tile.Wall && left === Tile.Wall && top === Tile.Wall) {
-            if (bottom !== Tile.Wall) {
-                if (topRight !== Tile.Wall && topLeft !== Tile.Wall) {
-                    textures.push(TexturePosition.BottomUBoth);
-                }
-                else if (topRight !== Tile.Wall) {
-                    textures.push(TexturePosition.BottomULeft);
-                }
-                else if (topLeft !== Tile.Wall) {
-                    textures.push(TexturePosition.BottomURight);
-                }
-                else {
-                    textures.push(TexturePosition.Bottom);
-                }
-            }
-            else {
-                if (topRight !== Tile.Wall && topLeft !== Tile.Wall) {
-                    textures.push(TexturePosition.BottomUBoth);
-                }
-                else if (topRight !== Tile.Wall) {
-                    textures.push(TexturePosition.BottomLeftInner);
-                }
-                else if (topLeft !== Tile.Wall) {
-                    textures.push(TexturePosition.BottomRightInner);
-                }
-            }
-        }
-        else if (top === Tile.Wall && bottom === Tile.Wall) {
-            textures.push(TexturePosition.Right);
-            textures.push(TexturePosition.Left);
-        }
-        else if (right === Tile.Wall && left === Tile.Wall) {
-            textures.push(TexturePosition.Top);
-            textures.push(TexturePosition.Bottom);
-        }
-        else if (top === Tile.Wall && left === Tile.Wall) {
-            if (topLeft === Tile.Wall) {
-                textures.push(TexturePosition.BottomRightOuter);
-            }
-            else if (bottomRight === Tile.Wall) {
-                textures.push(TexturePosition.BottomRightInner);
-            }
-            else {
-                textures.push(TexturePosition.BottomRightBoth);
-            }
-        }
-        else if (left === Tile.Wall && bottom === Tile.Wall) {
-            if (bottomLeft === Tile.Wall) {
-                textures.push(TexturePosition.TopRightOuter);
-            }
-            else if (topRight === Tile.Wall) {
-                textures.push(TexturePosition.TopRightInner);
-            }
-            else {
-                textures.push(TexturePosition.TopRightBoth);
-            }
-        }
-        else if (bottom === Tile.Wall && right === Tile.Wall) {
-            if (bottomRight === Tile.Wall) {
-                textures.push(TexturePosition.TopLeftOuter);
-            }
-            else if (topLeft === Tile.Wall) {
-                textures.push(TexturePosition.TopLeftInner);
-            }
-            else {
-                textures.push(TexturePosition.TopLeftBoth);
-            }
-        }
-        else if (right === Tile.Wall && top === Tile.Wall) {
-            if (topRight === Tile.Wall) {
-                textures.push(TexturePosition.BottomLeftOuter);
-            }
-            else if (bottomLeft === Tile.Wall) {
-                textures.push(TexturePosition.BottomLeftInner);
-            }
-            else {
-                textures.push(TexturePosition.BottomLeftBoth);
-            }
-        }
-        else if (top === Tile.Wall) {
-            textures.push(TexturePosition.BottomUNone);
-        }
-        else if (right === Tile.Wall) {
-            textures.push(TexturePosition.Top);
-        }
-        else if (bottom === Tile.Wall) {
-            textures.push(TexturePosition.TopUNone);
-        }
-        else if (left === Tile.Wall) {
-            textures.push(TexturePosition.Top);
-        }
-        return textures;
-    }
-    getTileType(tile) {
-        if (tile !== undefined) {
-            const type = tile.get(CType.Tile).tileType;
-            if (type === Tile.Door) {
-                return Tile.Wall;
-            }
-            return type;
-        }
-        else {
-            return Tile.Wall;
-        }
     }
     generateTileEntitiesFromMap(level, levelMap, depth) {
         for (let row of levelMap) {

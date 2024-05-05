@@ -6,7 +6,6 @@ import LevelChangeComponent from "./Components/LevelChangeComponent.js";
 import LightSourceComponent from "./Components/LightSourceComponent.js";
 import PositionComponent from "./Components/PositionComponent.js";
 import SizeComponent from "./Components/SizeComponent.js";
-import TextureComponent, { Texture, TextureMap, TextureMaps, TexturePositionMap, } from "./Components/TextureComponent.js";
 import TileComponent, { Tile } from "./Components/TileComponent.js";
 import UIComponent, { UIInteractablePrompt } from "./Components/UIComponent.js";
 import VisibleComponent from "./Components/VisibleComponent.js";
@@ -93,17 +92,6 @@ export function newDungeonFloor(x, y) {
         [CType.Visible, new VisibleComponent(false)],
     ]);
 }
-export function dungeonFloorTexture() {
-    const pos = new PositionComponent(randomInt(4), 0);
-    return new TextureComponent([
-        new Texture(TextureMaps.get(TextureMap.DungeonFloor), 16, 16, 0, 0, 16 * pos.x, 16 * pos.y, {
-            r: 186 + randomInt(50),
-            g: 95 + randomInt(10),
-            b: 90 + randomInt(25),
-            a: 0.2,
-        }),
-    ]);
-}
 export function newWall(x, y) {
     return new Map([
         [CType.Tile, new TileComponent(Tile.Wall, x, y)],
@@ -112,18 +100,6 @@ export function newWall(x, y) {
         [CType.Collision, new CollisionComponent()],
         [CType.Visible, new VisibleComponent(true)],
     ]);
-}
-export function wallTexture(texturePos) {
-    const pos = TexturePositionMap.get(texturePos);
-    return new TextureComponent([new Texture(TextureMaps.get(TextureMap.Wall), 16, 16, 0, 0, 16 * pos.x, 16 * pos.y)]);
-}
-export function wallTextures(texturePos) {
-    const texArray = [];
-    for (const tPos of texturePos) {
-        const pos = TexturePositionMap.get(tPos);
-        texArray.push(new Texture(TextureMaps.get(TextureMap.Wall), 16, 16, 0, 0, 16 * pos.x, 16 * pos.y));
-    }
-    return new TextureComponent(texArray);
 }
 export function newDoor(x, y) {
     return new Map([
@@ -134,10 +110,6 @@ export function newDoor(x, y) {
         [CType.Visible, new VisibleComponent(false)],
     ]);
 }
-export function doorTexture() {
-    const pos = new PositionComponent(0, 1);
-    return new TextureComponent([new Texture(TextureMaps.get(TextureMap.Door), 16, 16, 0, 0, 16 * pos.x, 16 * pos.y)]);
-}
 export function newGrass(x, y) {
     return new Map([
         [CType.Tile, new TileComponent(Tile.Grass, x, y)],
@@ -146,10 +118,6 @@ export function newGrass(x, y) {
         [CType.Visible, new VisibleComponent(false)],
     ]);
 }
-export function grassTexture() {
-    const pos = new PositionComponent(randomInt(4), randomInt(4));
-    return new TextureComponent([new Texture(TextureMaps.get(TextureMap.Grass), 16, 16, 0, 0, 16 * pos.x, 16 * pos.y)]);
-}
 export function newPath(x, y) {
     return new Map([
         [CType.Tile, new TileComponent(Tile.Path, x, y)],
@@ -157,10 +125,6 @@ export function newPath(x, y) {
         [CType.Position, new PositionComponent(x, y, 0)],
         [CType.Visible, new VisibleComponent(false)],
     ]);
-}
-export function pathTexture() {
-    const pos = new PositionComponent(randomInt(4), 0);
-    return new TextureComponent([new Texture(TextureMaps.get(TextureMap.Path), 16, 16, 0, 0, 16 * pos.x, 16 * pos.y)]);
 }
 export function newEntry(x, y, id) {
     return new Map([

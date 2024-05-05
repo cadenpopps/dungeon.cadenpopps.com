@@ -89,4 +89,5 @@ export enum SystemType {
     Ability,
     Hitbox,
     Health,
+    Texture,
 }

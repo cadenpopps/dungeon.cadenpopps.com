@@ -48,7 +48,7 @@ export default class LightSystem extends System {
                     if (light.flickerTick === 0) {
                         light.flickerTick = light.flickerLength;
                     }
-                    light.flicker = max(0.4, Math.sin((light.flickerTick / light.flickerLength) * 2 * Math.PI));
+                    light.flicker = max(0.25, Math.sin((light.flickerTick / light.flickerLength) * 2 * Math.PI));
                     light.flickerTick--;
 
                     const lightLevel = light.lightLevel;
