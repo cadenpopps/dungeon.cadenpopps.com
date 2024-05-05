@@ -17,15 +17,15 @@ export class UIEnemyHealthBar {
     percentage;
     colorFull;
     colorEmpty;
-    constructor(x, y, width, height, percentage, colorEmpty, colorFull) {
+    constructor(entitySize, percentage) {
         this.type = UIType.EnemyHeatlhBar;
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
+        this.x = 0;
+        this.y = -entitySize * 0.6 - 0.1;
+        this.width = entitySize;
+        this.height = entitySize / 10;
         this.percentage = percentage;
-        this.colorEmpty = colorEmpty;
-        this.colorFull = colorFull;
+        this.colorEmpty = { r: 255, g: 0, b: 0, a: 1 };
+        this.colorFull = { r: 0, g: 255, b: 0, a: 1 };
     }
 }
 export class UIAbilityCooldowns {
@@ -56,12 +56,21 @@ export class UIInteractablePrompt {
         this.text = text;
     }
 }
+export class UIToolTip {
+    type;
+    text;
+    constructor(text) {
+        this.type = UIType.Tooltip;
+        this.text = text;
+    }
+}
 export var UIType;
 (function (UIType) {
     UIType[UIType["EnemyHeatlhBar"] = 0] = "EnemyHeatlhBar";
     UIType[UIType["PlayerHealthBar"] = 1] = "PlayerHealthBar";
     UIType[UIType["AbilityCooldowns"] = 2] = "AbilityCooldowns";
     UIType[UIType["InteractablePrompt"] = 3] = "InteractablePrompt";
+    UIType[UIType["Tooltip"] = 4] = "Tooltip";
 })(UIType || (UIType = {}));
 export var Shape;
 (function (Shape) {

@@ -4,13 +4,22 @@ import { CType, Component } from "../Component.js";
 import LevelComponent from "../Components/LevelComponent.js";
 import PositionComponent from "../Components/PositionComponent.js";
 import TileComponent, { Tile } from "../Components/TileComponent.js";
+import UIComponent, { UIToolTip } from "../Components/UIComponent.js";
 import VisibleComponent from "../Components/VisibleComponent.js";
-import * as Constants from "../Constants.js";
 import { EntityManager } from "../EntityManager.js";
 import { Event, EventManager } from "../EventManager.js";
-import Levels from "../Levels.js";
 import { System, SystemType } from "../System.js";
 import CameraSystem from "../Systems/CameraSystem.js";
+import {
+    newDoor,
+    newDungeonFloor,
+    newEnemySpawner,
+    newEntry,
+    newExit,
+    newGrass,
+    newPath,
+    newWall,
+} from "../Systems/LevelSystem.js";
 
 export default class LevelMakerSystem extends System {
     private level!: LevelComponent;
@@ -21,10 +30,18 @@ export default class LevelMakerSystem extends System {
     constructor(eventManager: EventManager, entityManager: EntityManager) {
         super(SystemType.Level, eventManager, entityManager, []);
         this.level = new LevelComponent(0);
-        // this.genEmptyLevel();
         this.levelWidth = 11;
         this.levelHeight = 11;
-        this.loadLevel(Levels.DungeonTown);
+        this.genEmptyLevel();
+
+        // const reviver = function reviver(_key: any, value: any) {
+        //     if (value !== null && value.type === CType.Tile) {
+        //         return convertTile(value);
+        //     }
+        //     return value;
+        // };
+
+        // this.loadLevel(loadJSON("/content/levels/DungeonTown.json", reviver));
 
         PoppsInput.listenKeyDown(this.keyDownHandler.bind(this));
         PoppsInput.listenMouseDown(this.mouseDownHandler.bind(this));
@@ -42,8 +59,6 @@ export default class LevelMakerSystem extends System {
             }
         }
     }
-
-    public handleEvent(): void {}
 
     private keyDownHandler(key: string): void {
         switch (key) {
@@ -98,6 +113,10 @@ export default class LevelMakerSystem extends System {
             case "K":
                 this.levelHeight -= 5;
                 console.log(`Size: ${this.levelWidth}, ${this.levelHeight}`);
+                this.genEmptyLevel();
+                break;
+            case "n":
+            case "N":
                 this.genEmptyLevel();
                 break;
             case "/":
@@ -171,25 +190,55 @@ export default class LevelMakerSystem extends System {
                 this.removeTile(x, y);
                 break;
             case Tile.Wall:
-                this.changeTile(x, y, Constants.newWall(x, y));
+                this.changeTile(x, y, newWall(x, y));
                 break;
             case Tile.Floor:
-                this.changeTile(x, y, Constants.newDungeonFloor(x, y));
+                this.changeTile(x, y, newDungeonFloor(x, y));
                 break;
             case Tile.Door:
-                this.changeTile(x, y, Constants.newDoor(x, y));
+                this.changeTile(x, y, newDoor(x, y));
                 break;
             case Tile.StairDown:
-                this.changeTile(x, y, Constants.newExit(x, y));
+                this.changeTile(x, y, newExit(x, y));
                 break;
             case Tile.StairUp:
-                this.changeTile(x, y, Constants.newEntry(x, y));
+                this.changeTile(x, y, newEntry(x, y));
                 break;
             case Tile.Grass:
-                this.changeTile(x, y, Constants.newGrass(x, y));
+                this.changeTile(x, y, newGrass(x, y));
                 break;
             case Tile.Path:
-                this.changeTile(x, y, Constants.newPath(x, y));
+                this.changeTile(x, y, newPath(x, y));
+                break;
+            case Tile.EnemySpawner:
+                this.changeTile(x, y, newEnemySpawner(x, y, false, false));
+                for (const entity of this.level.entities) {
+                    const pos = entity.get(CType.Position) as PositionComponent;
+                    if (x === pos.x && y === pos.y) {
+                        entity.set(CType.Tile, new TileComponent(Tile.EnemySpawner, x, y));
+                        entity.set(CType.UI, new UIComponent([new UIToolTip("Enemy")]));
+                    }
+                }
+                break;
+            case Tile.PackSpawner:
+                this.changeTile(x, y, newEnemySpawner(x, y, true, false));
+                for (const entity of this.level.entities) {
+                    const pos = entity.get(CType.Position) as PositionComponent;
+                    if (x === pos.x && y === pos.y) {
+                        entity.set(CType.Tile, new TileComponent(Tile.PackSpawner, x, y));
+                        entity.set(CType.UI, new UIComponent([new UIToolTip("Pack")]));
+                    }
+                }
+                break;
+            case Tile.BossSpawner:
+                this.changeTile(x, y, newEnemySpawner(x, y, false, true));
+                for (const entity of this.level.entities) {
+                    const pos = entity.get(CType.Position) as PositionComponent;
+                    if (x === pos.x && y === pos.y) {
+                        entity.set(CType.Tile, new TileComponent(Tile.BossSpawner, x, y));
+                        entity.set(CType.UI, new UIComponent([new UIToolTip("Boss")]));
+                    }
+                }
                 break;
         }
     }
@@ -221,6 +270,7 @@ export default class LevelMakerSystem extends System {
     private changeTile(x: number, y: number, newTile: Map<CType, Component>) {
         this.removeTile(x, y);
         this.addTile(newTile);
+        this.eventManager.addEvent(Event.level_loaded);
     }
 
     private printControls(): void {
@@ -238,28 +288,33 @@ export default class LevelMakerSystem extends System {
     }
     private printLevel(room?: boolean): void {
         if (room) {
-            console.log(JSON.stringify(this.level.entities, this.replacer));
+            const string = JSON.stringify(this.level.entities, this.replacer);
+            console.log(string);
+            console.log(`Copied level to clipboard`);
+            navigator.clipboard.writeText(string);
             return;
         }
-        // const entryPos = this.entityManager.get<PositionComponent>(this.entities[0], CType.Position);
-        // this.removeEntries();
-        // this.addTile(Constants.newEntry(entryPos.x, entryPos.y));
+
         const entIds = this.level.entityIds;
         this.level.entityIds = [];
-        console.log(JSON.stringify(this.level, this.replacer));
+        const string = JSON.stringify(this.level, this.replacer);
+        console.log(string);
+        console.log(`Copied level to clipboard`);
+        navigator.clipboard.writeText(string);
         this.level.entityIds = entIds;
     }
 
     private replacer(_key: any, value: any): Object {
         if (value instanceof Map && value.has(CType.Tile)) {
-            const t = value.get(CType.Tile) as TileComponent;
-            return {
-                type: CType.Tile,
-                tileType: t.tileType,
-                x: t.x,
-                y: t.y,
+            const tile = value.get(CType.Tile) as TileComponent;
+            const json: any = {
+                type: tile.tileType,
+                x: tile.x,
+                y: tile.y,
             };
+            return json;
         } else {
+            delete value.type;
             return value;
         }
     }
@@ -277,7 +332,7 @@ export default class LevelMakerSystem extends System {
         const newLevel = new LevelComponent(0);
         for (let x = 1; x < this.levelWidth + 1; x++) {
             for (let y = 1; y < this.levelHeight + 1; y++) {
-                newLevel.entities.push(Constants.newDungeonFloor(x, y));
+                newLevel.entities.push(newDungeonFloor(x, y));
                 // newLevel.entities.push(Constants.newGrass(x, y));
             }
         }
@@ -292,9 +347,9 @@ export const TILE_MAP = new Array<Tile>(
     Tile.Wall,
     Tile.Grass,
     Tile.Path,
-    Tile.Wall,
-    Tile.Wall,
-    Tile.Wall,
+    Tile.EnemySpawner,
+    Tile.PackSpawner,
+    Tile.BossSpawner,
     Tile.StairDown,
     Tile.StairUp
 );
@@ -305,9 +360,9 @@ export const TILE_STRING_MAP = new Array<String>(
     "Wall",
     "Grass",
     "Path",
-    "Wall",
-    "Wall",
-    "Wall",
+    "EnemySpawner",
+    "PackSpawner",
+    "BossSpawner",
     "StairDown",
     "StairUp"
 );

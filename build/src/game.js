@@ -6,6 +6,7 @@ import AccelerationComponent from "./Components/AccelerationComponent.js";
 import CameraComponent from "./Components/CameraComponent.js";
 import CollisionComponent, { CollisionHandler } from "./Components/CollisionComponent.js";
 import ControllerComponent from "./Components/ControllerComponent.js";
+import ExperienceComponent from "./Components/ExperienceComponent.js";
 import HealthComponent from "./Components/HealthComponent.js";
 import InteractableComponent, { Interactable } from "./Components/InteractableComponent.js";
 import LightSourceComponent from "./Components/LightSourceComponent.js";
@@ -24,6 +25,7 @@ import AISystem from "./Systems/AISystem.js";
 import AbilitySystem from "./Systems/AbilitySystem.js";
 import CameraSystem from "./Systems/CameraSystem.js";
 import ControllerSystem from "./Systems/ControllerSystem.js";
+import EnemySystem from "./Systems/EnemySystem.js";
 import GameSystem from "./Systems/GameSystem.js";
 import GraphicsSystem from "./Systems/GraphicsSystem.js";
 import HealthSystem from "./Systems/HealthSystem.js";
@@ -59,6 +61,7 @@ systems.push(new AbilitySystem(eventManager, entityManager));
 systems.push(new HitboxSystem(eventManager, entityManager));
 systems.push(new HealthSystem(eventManager, entityManager));
 systems.push(new TextureSystem(eventManager, entityManager));
+systems.push(new EnemySystem(eventManager, entityManager));
 entityManager.addEntity(new Map([
     [CType.Player, new PlayerComponent()],
     [CType.Health, new HealthComponent(30)],
@@ -70,7 +73,7 @@ entityManager.addEntity(new Map([
     [CType.Collision, new CollisionComponent(CollisionHandler.Stop)],
     [CType.Size, new SizeComponent(0.9)],
     [CType.Controller, new ControllerComponent()],
-    [CType.Camera, new CameraComponent(55, 19, 0, 1, 100, 20, 160)],
+    [CType.Camera, new CameraComponent(55, 19, 0, 1, 80, 16, 96)],
     [CType.Movement, new MovementComponent(30)],
     [CType.Interactable, new InteractableComponent(Interactable.Player)],
     [CType.LightSource, new LightSourceComponent(LightSystem.LIGHT_MAX - 8, 300)],
@@ -81,6 +84,7 @@ entityManager.addEntity(new Map([
         ]),
     ],
     [CType.Texture, new TextureComponent([new Texture(loadImage("/assets/img/sprites/playerSpriteSheet.png"))])],
+    [CType.Experience, new ExperienceComponent()],
 ]));
 function gameLoop() {
     eventManager.tick();

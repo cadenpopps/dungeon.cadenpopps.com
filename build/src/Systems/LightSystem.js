@@ -7,8 +7,8 @@ import CameraSystem from "./CameraSystem.js";
 import VisibleSystem from "./VisibleSystem.js";
 export default class LightSystem extends System {
     static LIGHT_MAX = 16;
-    static light_intensity = 0.2;
-    static light_intensity_min = 0.0;
+    static light_intensity = 0.25;
+    static light_intensity_min = 0.05;
     static light_red = 220;
     static light_green = 180;
     static light_blue = 20;

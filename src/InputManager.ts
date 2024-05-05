@@ -61,20 +61,20 @@ export class InputManager {
             this.inputs = this.inputs.filter((i: Input) => i !== Input.Zoom_In && i !== Input.Zoom_Out);
         }).bind(this);
         if (event.deltaY > 0) {
-            if (!this.inputs.includes(Input.Zoom_In)) {
-                this.inputs.push(Input.Zoom_In);
-                clearTimeout(this.scrollTimer);
-                this.scrollTimer = setTimeout(() => {
-                    clearScrollInputs();
-                }, 10);
-            }
-        } else if (event.deltaY < 0) {
             if (!this.inputs.includes(Input.Zoom_Out)) {
                 this.inputs.push(Input.Zoom_Out);
                 clearTimeout(this.scrollTimer);
                 this.scrollTimer = setTimeout(() => {
                     clearScrollInputs();
-                }, 10);
+                }, 30);
+            }
+        } else if (event.deltaY < 0) {
+            if (!this.inputs.includes(Input.Zoom_In)) {
+                this.inputs.push(Input.Zoom_In);
+                clearTimeout(this.scrollTimer);
+                this.scrollTimer = setTimeout(() => {
+                    clearScrollInputs();
+                }, 30);
             }
         }
     }

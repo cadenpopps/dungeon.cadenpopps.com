@@ -16,7 +16,7 @@ export default class CameraComponent extends Component {
     priority;
     minZoom;
     maxZoom;
-    constructor(x, y, z, priority, zoom, minZoom, maxZoom) {
+    constructor(x = 0, y = 0, z = 0, priority, zoom, minZoom, maxZoom) {
         super(CType.Camera);
         this.x = x;
         this.y = y;

@@ -50,6 +50,9 @@ export default class UISystem extends System {
                         case UIType.InteractablePrompt:
                             this.interactablePrompt(entityId, element, cam);
                             break;
+                        case UIType.Tooltip:
+                            this.tooltip(entityId, element, cam);
+                            break;
                     }
                     this.canvas.canvas.resetTransform();
                 }
@@ -112,6 +115,18 @@ export default class UISystem extends System {
         this.canvas.strokeWidth(2.5);
         this.canvas.strokeText(text, floor(-textWidth / 2), floor(-0.75 * cam.zoom));
         this.canvas.text(text, floor(-textWidth / 2), floor(-0.75 * cam.zoom));
+    }
+    tooltip(entityId, ui, cam) {
+        const pos = this.entityManager.get(entityId, CType.Position);
+        const text = `${ui.text}`;
+        this.canvas.canvas.translate(floor(this.canvas.width / 2 - (cam.x + cam.visualOffsetX) * cam.zoom + pos.x * cam.zoom), floor(this.canvas.height / 2 - (cam.y + cam.visualOffsetY) * cam.zoom + pos.y * cam.zoom));
+        this.canvas.setFontSize(15);
+        const textWidth = this.canvas.canvas.measureText(text).width;
+        this.canvas.fill(255, 255, 255, 1);
+        this.canvas.stroke(0, 0, 0, 0.2);
+        this.canvas.strokeWidth(2.5);
+        this.canvas.strokeText(text, floor(-textWidth / 2), 0);
+        this.canvas.text(text, floor(-textWidth / 2), 0);
     }
 }
 //# sourceMappingURL=UISystem.js.map

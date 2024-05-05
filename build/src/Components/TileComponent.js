@@ -20,8 +20,9 @@ export var Tile;
     Tile[Tile["StairDown"] = 5] = "StairDown";
     Tile[Tile["StairUp"] = 6] = "StairUp";
     Tile[Tile["None"] = 7] = "None";
-    Tile[Tile["EnemySpawn"] = 8] = "EnemySpawn";
-    Tile[Tile["BossSpawn"] = 9] = "BossSpawn";
-    Tile[Tile["LootSpawn"] = 10] = "LootSpawn";
+    Tile[Tile["EnemySpawner"] = 8] = "EnemySpawner";
+    Tile[Tile["PackSpawner"] = 9] = "PackSpawner";
+    Tile[Tile["BossSpawner"] = 10] = "BossSpawner";
+    Tile[Tile["LootSpawn"] = 11] = "LootSpawn";
 })(Tile || (Tile = {}));
 //# sourceMappingURL=TileComponent.js.map

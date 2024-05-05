@@ -29,4 +29,6 @@ export enum CType {
     Ability,
     Hitbox,
     Texture,
+    EnemySpawner,
+    Experience,
 }

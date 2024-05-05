@@ -4,6 +4,16 @@ export function loadImage(url: string): HTMLImageElement {
     return img;
 }
 
+export function loadJSON(path: string, reviver?: any) {
+    var request = new XMLHttpRequest();
+    request.open("GET", path, false);
+    request.send(null);
+    if (reviver) {
+        return JSON.parse(request.responseText, reviver);
+    }
+    return JSON.parse(request.responseText);
+}
+
 // export function loadJSON(path: string): Object {
 //     var req = new XMLHttpRequest();
 //     req.overrideMimeType("application/json");

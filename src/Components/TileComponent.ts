@@ -22,7 +22,8 @@ export enum Tile {
     StairDown,
     StairUp,
     None,
-    EnemySpawn,
-    BossSpawn,
+    EnemySpawner,
+    PackSpawner,
+    BossSpawner,
     LootSpawn,
 }

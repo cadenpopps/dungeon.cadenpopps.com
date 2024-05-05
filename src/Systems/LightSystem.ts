@@ -12,8 +12,8 @@ import VisibleSystem from "./VisibleSystem.js";
 
 export default class LightSystem extends System {
     public static LIGHT_MAX = 16;
-    public static light_intensity = 0.2;
-    public static light_intensity_min = 0.0;
+    public static light_intensity = 0.25;
+    public static light_intensity_min = 0.05;
     public static light_red = 220;
     public static light_green = 180;
     public static light_blue = 20;

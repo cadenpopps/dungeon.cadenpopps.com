@@ -1,4 +1,4 @@
-import { abs, floor } from "../../lib/PoppsMath.js";
+import { abs, floor, max, min } from "../../lib/PoppsMath.js";
 import { CType } from "../Component.js";
 import CameraComponent from "../Components/CameraComponent.js";
 import ControllerComponent from "../Components/ControllerComponent.js";
@@ -42,6 +42,7 @@ export default class CameraSystem extends System {
         }
         CameraSystem.PRIORITY_CAMERA = prioCam;
     }
+
     public static getHighestPriorityCamera(): CameraComponent {
         return CameraSystem.PRIORITY_CAMERA;
     }
@@ -88,20 +89,24 @@ export default class CameraSystem extends System {
         const cam = this.entityManager.get<CameraComponent>(entityId, CType.Camera);
         const con = this.entityManager.get<ControllerComponent>(entityId, CType.Controller);
 
-        if (con.zoom_in) {
+        if (con.zoom_out) {
             if (cam.zoom >= cam.minZoom) {
-                con.zoom_in = false;
-                cam.zoom =
+                con.zoom_out = false;
+                cam.zoom = max(
                     floor((cam.zoom - CameraSystem.CAMERA_ZOOM_SPEED) / CameraSystem.CAMERA_ZOOM_SPEED) *
-                    CameraSystem.CAMERA_ZOOM_SPEED;
+                        CameraSystem.CAMERA_ZOOM_SPEED,
+                    cam.minZoom
+                );
                 cam.visibleDistance = floor(CameraSystem.VISIBLE_DISTANCE_CONSTANT / cam.zoom);
             }
-        } else if (con.zoom_out) {
+        } else if (con.zoom_in) {
             if (cam.zoom <= cam.maxZoom) {
-                con.zoom_out = false;
-                cam.zoom =
+                con.zoom_in = false;
+                cam.zoom = min(
                     floor((cam.zoom + CameraSystem.CAMERA_ZOOM_SPEED) / CameraSystem.CAMERA_ZOOM_SPEED) *
-                    CameraSystem.CAMERA_ZOOM_SPEED;
+                        CameraSystem.CAMERA_ZOOM_SPEED,
+                    cam.maxZoom
+                );
                 cam.visibleDistance = floor(CameraSystem.VISIBLE_DISTANCE_CONSTANT / cam.zoom);
             }
         }

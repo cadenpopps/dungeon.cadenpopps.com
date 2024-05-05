@@ -6,6 +6,7 @@ import AccelerationComponent from "./Components/AccelerationComponent.js";
 import CameraComponent from "./Components/CameraComponent.js";
 import CollisionComponent, { CollisionHandler } from "./Components/CollisionComponent.js";
 import ControllerComponent from "./Components/ControllerComponent.js";
+import ExperienceComponent from "./Components/ExperienceComponent.js";
 import HealthComponent from "./Components/HealthComponent.js";
 import InteractableComponent, { Interactable } from "./Components/InteractableComponent.js";
 import LightSourceComponent from "./Components/LightSourceComponent.js";
@@ -25,6 +26,7 @@ import AISystem from "./Systems/AISystem.js";
 import AbilitySystem from "./Systems/AbilitySystem.js";
 import CameraSystem from "./Systems/CameraSystem.js";
 import ControllerSystem from "./Systems/ControllerSystem.js";
+import EnemySystem from "./Systems/EnemySystem.js";
 import GameSystem from "./Systems/GameSystem.js";
 import GraphicsSystem from "./Systems/GraphicsSystem.js";
 import HealthSystem from "./Systems/HealthSystem.js";
@@ -61,6 +63,7 @@ systems.push(new AbilitySystem(eventManager, entityManager));
 systems.push(new HitboxSystem(eventManager, entityManager));
 systems.push(new HealthSystem(eventManager, entityManager));
 systems.push(new TextureSystem(eventManager, entityManager));
+systems.push(new EnemySystem(eventManager, entityManager));
 
 entityManager.addEntity(
     new Map<CType, Component>([
@@ -74,7 +77,7 @@ entityManager.addEntity(
         [CType.Collision, new CollisionComponent(CollisionHandler.Stop)],
         [CType.Size, new SizeComponent(0.9)],
         [CType.Controller, new ControllerComponent()],
-        [CType.Camera, new CameraComponent(55, 19, 0, 1, 100, 20, 160)],
+        [CType.Camera, new CameraComponent(55, 19, 0, 1, 80, 16, 96)],
         [CType.Movement, new MovementComponent(30)],
         [CType.Interactable, new InteractableComponent(Interactable.Player)],
         [CType.LightSource, new LightSourceComponent(LightSystem.LIGHT_MAX - 8, 300)],
@@ -90,39 +93,12 @@ entityManager.addEntity(
             ]),
         ],
         [CType.Texture, new TextureComponent([new Texture(loadImage("/assets/img/sprites/playerSpriteSheet.png"))])],
+
+        [CType.Experience, new ExperienceComponent()],
     ])
 );
 
 // for (let i = 0; i < 10; i++) {
-//     const size = randomInRange(0.4, 2);
-//     entityManager.addEntity(
-//         new Map<CType, Component>([
-//             [CType.AI, new AIComponent()],
-//             [CType.Position, new PositionComponent(43 + random(15), 18 + random(10), 0)],
-//             [CType.Velocity, new VelocityComponent(0, 0)],
-//             [CType.Acceleration, new AccelerationComponent(0, 0)],
-//             [CType.Visible, new VisibleComponent(true, 4)],
-//             [
-//                 CType.UI,
-//                 new UIComponent([
-//                     new UIEnemyHealthBar(
-//                         0,
-//                         -size * 0.6 - 0.1,
-//                         size,
-//                         size / 10,
-//                         1,
-//                         { r: 255, g: 0, b: 0, a: 1 },
-//                         { r: 0, g: 255, b: 0, a: 1 }
-//                     ),
-//                 ]),
-//             ],
-//             [CType.Health, new HealthComponent(30)],
-//             [CType.Collision, new CollisionComponent(CollisionHandler.Stop)],
-//             [CType.Size, new SizeComponent(size)],
-//             [CType.Controller, new ControllerComponent()],
-//             [CType.Movement, new MovementComponent(randomIntInRange(8, 60))],
-//         ])
-//     );
 // }
 
 // Overview Camera

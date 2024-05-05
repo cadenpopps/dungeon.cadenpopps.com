@@ -1,14 +1,5 @@
-import { abs, floor, max, randomInt, randomIntInRange, round } from "../lib/PoppsMath.js";
+import { abs, floor, max, round } from "../lib/PoppsMath.js";
 import { CType } from "./Component.js";
-import CollisionComponent from "./Components/CollisionComponent.js";
-import InteractableComponent, { Interactable } from "./Components/InteractableComponent.js";
-import LevelChangeComponent from "./Components/LevelChangeComponent.js";
-import LightSourceComponent from "./Components/LightSourceComponent.js";
-import PositionComponent from "./Components/PositionComponent.js";
-import SizeComponent from "./Components/SizeComponent.js";
-import TileComponent, { Tile } from "./Components/TileComponent.js";
-import UIComponent, { UIInteractablePrompt } from "./Components/UIComponent.js";
-import VisibleComponent from "./Components/VisibleComponent.js";
 import LightSystem from "./Systems/LightSystem.js";
 export const xxTransform = [1, 0, 0, -1, -1, 0, 0, 1];
 export const xyTransform = [0, 1, -1, 0, 0, -1, 1, 0];
@@ -45,27 +36,6 @@ for (let i = 0; i <= LightSystem.LIGHT_MAX; i++) {
         });
     }
 }
-export function convertTile(value) {
-    switch (value.tileType) {
-        case Tile.Floor:
-            return newDungeonFloor(value.x, value.y);
-        case Tile.Wall:
-            return newWall(value.x, value.y);
-        case Tile.Door:
-            return newDoor(value.x, value.y);
-        case Tile.Path:
-            return newPath(value.x, value.y);
-        case Tile.Grass:
-            return newGrass(value.x, value.y);
-        case Tile.StairUp:
-            return newEntry(value.x, value.y);
-        case Tile.StairDown:
-            return newExit(value.x, value.y);
-        case Tile.EnemySpawn:
-            return newEnemySpawn(value.x, value.y);
-    }
-    return new Map();
-}
 export function getEntitiesInRange(centerPos, maxDistance, entities, entityManager) {
     const entitiesInRange = new Array();
     for (let entityId of entities) {
@@ -75,93 +45,5 @@ export function getEntitiesInRange(centerPos, maxDistance, entities, entityManag
         }
     }
     return entitiesInRange;
-}
-export function newEnemySpawn(x, y) {
-    return new Map([
-        [CType.Tile, new TileComponent(Tile.EnemySpawn, x, y)],
-        [CType.Size, new SizeComponent(1)],
-        [CType.Position, new PositionComponent(x, y, 0)],
-        [CType.Visible, new VisibleComponent(false)],
-    ]);
-}
-export function newDungeonFloor(x, y) {
-    return new Map([
-        [CType.Tile, new TileComponent(Tile.Floor, x, y)],
-        [CType.Size, new SizeComponent(1)],
-        [CType.Position, new PositionComponent(x, y, 0)],
-        [CType.Visible, new VisibleComponent(false)],
-    ]);
-}
-export function newWall(x, y) {
-    return new Map([
-        [CType.Tile, new TileComponent(Tile.Wall, x, y)],
-        [CType.Size, new SizeComponent(1)],
-        [CType.Position, new PositionComponent(x, y, 0)],
-        [CType.Collision, new CollisionComponent()],
-        [CType.Visible, new VisibleComponent(true)],
-    ]);
-}
-export function newDoor(x, y) {
-    return new Map([
-        [CType.Tile, new TileComponent(Tile.Door, x, y)],
-        [CType.Size, new SizeComponent(1)],
-        [CType.Position, new PositionComponent(x, y, 0)],
-        [CType.Interactable, new InteractableComponent(Interactable.Door)],
-        [CType.Visible, new VisibleComponent(false)],
-    ]);
-}
-export function newGrass(x, y) {
-    return new Map([
-        [CType.Tile, new TileComponent(Tile.Grass, x, y)],
-        [CType.Size, new SizeComponent(1)],
-        [CType.Position, new PositionComponent(x, y, 0)],
-        [CType.Visible, new VisibleComponent(false)],
-    ]);
-}
-export function newPath(x, y) {
-    return new Map([
-        [CType.Tile, new TileComponent(Tile.Path, x, y)],
-        [CType.Size, new SizeComponent(1)],
-        [CType.Position, new PositionComponent(x, y, 0)],
-        [CType.Visible, new VisibleComponent(false)],
-    ]);
-}
-export function newEntry(x, y, id) {
-    return new Map([
-        [CType.Tile, new TileComponent(Tile.StairUp, x, y)],
-        [CType.Size, new SizeComponent(1)],
-        [CType.Position, new PositionComponent(x, y, 0)],
-        [CType.LevelChange, new LevelChangeComponent(id || 0)],
-        [CType.Interactable, new InteractableComponent(Interactable.LevelChange)],
-        [CType.Visible, new VisibleComponent(false)],
-        [CType.UI, new UIComponent([new UIInteractablePrompt("to enter previous level")])],
-    ]);
-}
-export function newExit(x, y, id) {
-    return new Map([
-        [CType.Tile, new TileComponent(Tile.StairDown, x, y)],
-        [CType.Size, new SizeComponent(1)],
-        [CType.Position, new PositionComponent(x, y, 0)],
-        [CType.LevelChange, new LevelChangeComponent(id || 0)],
-        [CType.Interactable, new InteractableComponent(Interactable.LevelChange)],
-        [CType.Visible, new VisibleComponent(false)],
-        [CType.UI, new UIComponent([new UIInteractablePrompt("to enter next level")])],
-    ]);
-}
-export function newTorch(x, y) {
-    return new Map([
-        [CType.Size, new SizeComponent(0.2)],
-        [CType.Visible, new VisibleComponent(false, 2)],
-        [CType.Position, new PositionComponent(x, y)],
-        [
-            CType.LightSource,
-            new LightSourceComponent(LightSystem.LIGHT_MAX - randomIntInRange(5, 7), randomIntInRange(180, 300), {
-                r: randomInt(30),
-                g: randomInt(30),
-                b: randomInt(30),
-                a: 0,
-            }),
-        ],
-    ]);
 }
 //# sourceMappingURL=Constants.js.map

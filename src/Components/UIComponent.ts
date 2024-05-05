@@ -26,23 +26,15 @@ export class UIEnemyHealthBar implements UIElement {
     public colorFull: Color;
     public colorEmpty: Color;
 
-    constructor(
-        x: number,
-        y: number,
-        width: number,
-        height: number,
-        percentage: number,
-        colorEmpty: Color,
-        colorFull: Color
-    ) {
+    constructor(entitySize: number, percentage: number) {
         this.type = UIType.EnemyHeatlhBar;
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
+        this.x = 0;
+        this.y = -entitySize * 0.6 - 0.1;
+        this.width = entitySize;
+        this.height = entitySize / 10;
         this.percentage = percentage;
-        this.colorEmpty = colorEmpty;
-        this.colorFull = colorFull;
+        this.colorEmpty = { r: 255, g: 0, b: 0, a: 1 };
+        this.colorFull = { r: 0, g: 255, b: 0, a: 1 };
     }
 }
 
@@ -78,11 +70,22 @@ export class UIInteractablePrompt implements UIElement {
     }
 }
 
+export class UIToolTip implements UIElement {
+    public type: number;
+    public text: string;
+
+    constructor(text: string) {
+        this.type = UIType.Tooltip;
+        this.text = text;
+    }
+}
+
 export enum UIType {
     EnemyHeatlhBar,
     PlayerHealthBar,
     AbilityCooldowns,
     InteractablePrompt,
+    Tooltip,
 }
 
 export enum Shape {
