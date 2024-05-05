@@ -73,5 +73,6 @@ export var SystemType;
     SystemType[SystemType["Ability"] = 13] = "Ability";
     SystemType[SystemType["Hitbox"] = 14] = "Hitbox";
     SystemType[SystemType["Health"] = 15] = "Health";
+    SystemType[SystemType["Texture"] = 16] = "Texture";
 })(SystemType || (SystemType = {}));
 //# sourceMappingURL=System.js.map

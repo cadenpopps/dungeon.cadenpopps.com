@@ -1,8 +1,6 @@
 import { PoppsEngine } from "../lib/PoppsEngine.js";
 import { loadImage } from "../lib/PoppsLoad.js";
-import { random, randomInRange, randomIntInRange } from "../lib/PoppsMath.js";
 import { CType } from "./Component.js";
-import AIComponent from "./Components/AIComponent.js";
 import AbilityComponent, { SlashAttack, SpinAttack } from "./Components/AbilityComponent.js";
 import AccelerationComponent from "./Components/AccelerationComponent.js";
 import CameraComponent from "./Components/CameraComponent.js";
@@ -16,7 +14,7 @@ import PlayerComponent from "./Components/PlayerComponent.js";
 import PositionComponent from "./Components/PositionComponent.js";
 import SizeComponent from "./Components/SizeComponent.js";
 import TextureComponent, { Texture } from "./Components/TextureComponent.js";
-import UIComponent, { UIAbilityCooldowns, UIEnemyHealthBar } from "./Components/UIComponent.js";
+import UIComponent, { UIAbilityCooldowns } from "./Components/UIComponent.js";
 import VelocityComponent from "./Components/VelocityComponent.js";
 import VisibleComponent from "./Components/VisibleComponent.js";
 import { EntityManager } from "./EntityManager.js";
@@ -36,6 +34,7 @@ import LightSystem from "./Systems/LightSystem.js";
 import MovementSystem from "./Systems/MovementSystem.js";
 import PhysicsSystem from "./Systems/PhysicsSystem.js";
 import PlayerSystem from "./Systems/PlayerSystem.js";
+import TextureSystem from "./Systems/TextureSystem.js";
 import UISystem from "./Systems/UISystem.js";
 import VisibleSystem from "./Systems/VisibleSystem.js";
 let engine = new PoppsEngine();
@@ -59,6 +58,7 @@ systems.push(new UISystem(eventManager, entityManager));
 systems.push(new AbilitySystem(eventManager, entityManager));
 systems.push(new HitboxSystem(eventManager, entityManager));
 systems.push(new HealthSystem(eventManager, entityManager));
+systems.push(new TextureSystem(eventManager, entityManager));
 entityManager.addEntity(new Map([
     [CType.Player, new PlayerComponent()],
     [CType.Health, new HealthComponent(30)],
@@ -82,27 +82,6 @@ entityManager.addEntity(new Map([
     ],
     [CType.Texture, new TextureComponent([new Texture(loadImage("/assets/img/sprites/playerSpriteSheet.png"))])],
 ]));
-for (let i = 0; i < 10; i++) {
-    const size = randomInRange(0.4, 2);
-    entityManager.addEntity(new Map([
-        [CType.AI, new AIComponent()],
-        [CType.Position, new PositionComponent(43 + random(15), 18 + random(10), 0)],
-        [CType.Velocity, new VelocityComponent(0, 0)],
-        [CType.Acceleration, new AccelerationComponent(0, 0)],
-        [CType.Visible, new VisibleComponent(true, 4)],
-        [
-            CType.UI,
-            new UIComponent([
-                new UIEnemyHealthBar(0, -size * 0.6 - 0.1, size, size / 10, 1, { r: 255, g: 0, b: 0, a: 1 }, { r: 0, g: 255, b: 0, a: 1 }),
-            ]),
-        ],
-        [CType.Health, new HealthComponent(30)],
-        [CType.Collision, new CollisionComponent(CollisionHandler.Stop)],
-        [CType.Size, new SizeComponent(size)],
-        [CType.Controller, new ControllerComponent()],
-        [CType.Movement, new MovementComponent(randomIntInRange(8, 60))],
-    ]));
-}
 function gameLoop() {
     eventManager.tick();
     entityManager.tick();
