@@ -1,8 +1,10 @@
 import { randomInt, round } from "../../lib/PoppsMath.js";
 import { CType, Component } from "../Component.js";
+import DirectionComponent from "../Components/DirectionComponent.js";
 import PositionComponent from "../Components/PositionComponent.js";
 import TextureComponent, {
     Texture,
+    TextureDirectionMap,
     TextureMap,
     TextureMaps,
     TexturePosition,
@@ -15,6 +17,7 @@ import { System, SystemType } from "../System.js";
 
 export default class TextureSystem extends System {
     private tileEntityIds!: Array<number>;
+    private directionalTextureIds!: Array<number>;
 
     constructor(eventManager: EventManager, entityManager: EntityManager) {
         super(SystemType.Texture, eventManager, entityManager, [CType.Texture]);
@@ -28,8 +31,25 @@ export default class TextureSystem extends System {
         }
     }
 
+    public logic(): void {
+        for (const entityId of this.directionalTextureIds) {
+            const dir = this.entityManager.get<DirectionComponent>(entityId, CType.Direction);
+            const textures = this.entityManager.get<TextureComponent>(entityId, CType.Texture);
+            for (const texture of textures.textures) {
+                if (dir.direction !== texture.direction) {
+                    texture.direction = dir.direction;
+                    const texturePos = TextureDirectionMap.get(texture.direction) as TexturePosition;
+                    const textureMap = TexturePositionMap.get(texturePos) as PositionComponent;
+                    texture.mapX = textureMap.x * texture.pixelWidth;
+                    texture.mapY = textureMap.y * texture.pixelHeight;
+                }
+            }
+        }
+    }
+
     public getEntitiesHelper(): void {
         this.tileEntityIds = this.entityManager.getSystemEntities([CType.Tile]);
+        this.directionalTextureIds = this.entityManager.getSystemEntities([CType.Direction, CType.Texture]);
     }
 
     private setTextures(): void {
@@ -78,7 +98,23 @@ export default class TextureSystem extends System {
                 case Tile.Floor:
                     entity.set(CType.Texture, this.dungeonFloorTexture());
                     break;
+                case Tile.StairDown:
+                case Tile.StairUp:
+                    entity.set(CType.Texture, this.stairTexture());
+                    break;
             }
+        }
+    }
+
+    private getTileType(tile: Map<CType, Component> | undefined): Tile {
+        if (tile !== undefined) {
+            const type = (tile.get(CType.Tile) as TileComponent).tileType;
+            if (type === Tile.Door) {
+                return Tile.Wall;
+            }
+            return type;
+        } else {
+            return Tile.Wall;
         }
     }
 
@@ -257,16 +293,13 @@ export default class TextureSystem extends System {
         return textures;
     }
 
-    private getTileType(tile: Map<CType, Component> | undefined): Tile {
-        if (tile !== undefined) {
-            const type = (tile.get(CType.Tile) as TileComponent).tileType;
-            if (type === Tile.Door) {
-                return Tile.Wall;
-            }
-            return type;
-        } else {
-            return Tile.Wall;
+    private wallTexture(texturePos: TexturePosition[]): TextureComponent {
+        const texArray = [];
+        for (const tPos of texturePos) {
+            const pos = TexturePositionMap.get(tPos) as PositionComponent;
+            texArray.push(new Texture(TextureMaps.get(TextureMap.Wall), 16, 16, 0, 0, 16 * pos.x, 16 * pos.y));
         }
+        return new TextureComponent(texArray);
     }
 
     private dungeonFloorTexture(): TextureComponent {
@@ -279,15 +312,6 @@ export default class TextureSystem extends System {
                 a: 0.2,
             }),
         ]);
-    }
-
-    private wallTexture(texturePos: TexturePosition[]): TextureComponent {
-        const texArray = [];
-        for (const tPos of texturePos) {
-            const pos = TexturePositionMap.get(tPos) as PositionComponent;
-            texArray.push(new Texture(TextureMaps.get(TextureMap.Wall), 16, 16, 0, 0, 16 * pos.x, 16 * pos.y));
-        }
-        return new TextureComponent(texArray);
     }
 
     private doorTexture(): TextureComponent {
@@ -309,5 +333,9 @@ export default class TextureSystem extends System {
         return new TextureComponent([
             new Texture(TextureMaps.get(TextureMap.Path), 16, 16, 0, 0, 16 * pos.x, 16 * pos.y),
         ]);
+    }
+
+    private stairTexture(): TextureComponent {
+        return new TextureComponent([new Texture(TextureMaps.get(TextureMap.StairDown), 16, 16, 0, 0, 0, 0)]);
     }
 }

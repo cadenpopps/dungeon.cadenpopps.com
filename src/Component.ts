@@ -31,4 +31,5 @@ export enum CType {
     Texture,
     EnemySpawner,
     Experience,
+    Direction,
 }

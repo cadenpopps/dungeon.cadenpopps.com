@@ -8,6 +8,26 @@ export default class UIComponent extends Component {
         this.layer = layer;
     }
 }
+export class UIPlayerHealthBar {
+    type;
+    x;
+    y;
+    width;
+    height;
+    percentage;
+    colorFull;
+    colorEmpty;
+    constructor(health) {
+        this.type = UIType.PlayerHealthBar;
+        this.x = 128;
+        this.y = 32;
+        this.width = health * 10;
+        this.height = 12;
+        this.percentage = 0.6;
+        this.colorFull = { r: 180, g: 20, b: 10, a: 1 };
+        this.colorEmpty = { r: 68, g: 67, b: 71, a: 1 };
+    }
+}
 export class UIEnemyHealthBar {
     type;
     x;
@@ -66,8 +86,8 @@ export class UIToolTip {
 }
 export var UIType;
 (function (UIType) {
-    UIType[UIType["EnemyHeatlhBar"] = 0] = "EnemyHeatlhBar";
-    UIType[UIType["PlayerHealthBar"] = 1] = "PlayerHealthBar";
+    UIType[UIType["PlayerHealthBar"] = 0] = "PlayerHealthBar";
+    UIType[UIType["EnemyHeatlhBar"] = 1] = "EnemyHeatlhBar";
     UIType[UIType["AbilityCooldowns"] = 2] = "AbilityCooldowns";
     UIType[UIType["InteractablePrompt"] = 3] = "InteractablePrompt";
     UIType[UIType["Tooltip"] = 4] = "Tooltip";

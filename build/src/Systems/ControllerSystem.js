@@ -1,5 +1,5 @@
 import { CType } from "../Component.js";
-import { Direction } from "../Components/MovementComponent.js";
+import { Direction } from "../Components/DirectionComponent.js";
 import { Input } from "../InputManager.js";
 import { System, SystemType } from "../System.js";
 export default class ControllerSystem extends System {
@@ -18,6 +18,9 @@ export default class ControllerSystem extends System {
                 this.mapInputsToController(entityId);
             }
             if (this.entityManager.hasComponent(entityId, CType.Movement)) {
+                this.determineWalking(entityId);
+            }
+            if (this.entityManager.hasComponent(entityId, CType.Direction)) {
                 this.determineDirection(entityId);
             }
         }
@@ -42,47 +45,59 @@ export default class ControllerSystem extends System {
         con.zoom_in = this.inputManager.pressed(Input.Zoom_In);
         con.zoom_out = this.inputManager.pressed(Input.Zoom_Out);
     }
-    determineDirection(entityId) {
+    determineWalking(entityId) {
         const con = this.entityManager.get(entityId, CType.Controller);
         const mov = this.entityManager.get(entityId, CType.Movement);
+        if (con.up || con.right || con.down || con.left) {
+            mov.walking = true;
+        }
+    }
+    determineDirection(entityId) {
+        const con = this.entityManager.get(entityId, CType.Controller);
+        const dir = this.entityManager.get(entityId, CType.Direction);
+        if (dir.cooldown > 0) {
+            dir.cooldown--;
+            return;
+        }
+        dir.cooldown = 1;
         if (!con.up && con.right && con.down && con.left) {
-            mov.direction = Direction.SOUTH;
+            dir.direction = Direction.South;
         }
         else if (con.up && !con.right && con.down && con.left) {
-            mov.direction = Direction.WEST;
+            dir.direction = Direction.West;
         }
         else if (con.up && con.right && !con.down && con.left) {
-            mov.direction = Direction.NORTH;
+            dir.direction = Direction.North;
         }
         else if (con.up && con.right && con.down && !con.left) {
-            mov.direction = Direction.EAST;
+            dir.direction = Direction.East;
         }
         else if (!con.up && !con.right && con.down && con.left) {
-            mov.direction = Direction.SOUTHWEST;
+            dir.direction = Direction.SouthWest;
         }
         else if (con.up && !con.right && !con.down && con.left) {
-            mov.direction = Direction.NORTHWEST;
+            dir.direction = Direction.NorthWest;
         }
         else if (con.up && con.right && !con.down && !con.left) {
-            mov.direction = Direction.NORTHEAST;
+            dir.direction = Direction.NorthEast;
         }
         else if (!con.up && con.right && con.down && !con.left) {
-            mov.direction = Direction.SOUTHEAST;
+            dir.direction = Direction.SouthEast;
         }
         else if (!con.up && !con.right && !con.down && con.left) {
-            mov.direction = Direction.WEST;
+            dir.direction = Direction.West;
         }
         else if (!con.up && !con.right && con.down && !con.left) {
-            mov.direction = Direction.SOUTH;
+            dir.direction = Direction.South;
         }
         else if (!con.up && con.right && !con.down && !con.left) {
-            mov.direction = Direction.EAST;
+            dir.direction = Direction.East;
         }
         else if (con.up && !con.right && !con.down && !con.left) {
-            mov.direction = Direction.NORTH;
+            dir.direction = Direction.North;
         }
         else {
-            mov.direction = Direction.NONE;
+            dir.cooldown = 0;
         }
     }
 }

@@ -6,6 +6,7 @@ import AccelerationComponent from "./Components/AccelerationComponent.js";
 import CameraComponent from "./Components/CameraComponent.js";
 import CollisionComponent, { CollisionHandler } from "./Components/CollisionComponent.js";
 import ControllerComponent from "./Components/ControllerComponent.js";
+import DirectionComponent from "./Components/DirectionComponent.js";
 import ExperienceComponent from "./Components/ExperienceComponent.js";
 import HealthComponent from "./Components/HealthComponent.js";
 import InteractableComponent, { Interactable } from "./Components/InteractableComponent.js";
@@ -15,7 +16,7 @@ import PlayerComponent from "./Components/PlayerComponent.js";
 import PositionComponent from "./Components/PositionComponent.js";
 import SizeComponent from "./Components/SizeComponent.js";
 import TextureComponent, { Texture } from "./Components/TextureComponent.js";
-import UIComponent, { UIAbilityCooldowns } from "./Components/UIComponent.js";
+import UIComponent, { UIAbilityCooldowns, UIPlayerHealthBar } from "./Components/UIComponent.js";
 import VelocityComponent from "./Components/VelocityComponent.js";
 import VisibleComponent from "./Components/VisibleComponent.js";
 import { EntityManager } from "./EntityManager.js";
@@ -64,8 +65,9 @@ systems.push(new TextureSystem(eventManager, entityManager));
 systems.push(new EnemySystem(eventManager, entityManager));
 entityManager.addEntity(new Map([
     [CType.Player, new PlayerComponent()],
-    [CType.Health, new HealthComponent(30)],
-    [CType.Ability, new AbilityComponent(new SpinAttack(100), new SlashAttack(10))],
+    [CType.Direction, new DirectionComponent()],
+    [CType.Health, new HealthComponent(20)],
+    [CType.Ability, new AbilityComponent(new SpinAttack(50), new SlashAttack(15))],
     [CType.Position, new PositionComponent(55, 19, 0)],
     [CType.Velocity, new VelocityComponent(0, 0)],
     [CType.Acceleration, new AccelerationComponent(0, 0)],
@@ -81,6 +83,7 @@ entityManager.addEntity(new Map([
         CType.UI,
         new UIComponent([
             new UIAbilityCooldowns({ r: 20, g: 200, b: 40, a: 1 }, { r: 200, g: 200, b: 40, a: 1 }, { r: 150, g: 20, b: 200, a: 1 }, { r: 100, g: 100, b: 100, a: 0.8 }),
+            new UIPlayerHealthBar(20),
         ]),
     ],
     [CType.Texture, new TextureComponent([new Texture(loadImage("/assets/img/sprites/playerSpriteSheet.png"))])],

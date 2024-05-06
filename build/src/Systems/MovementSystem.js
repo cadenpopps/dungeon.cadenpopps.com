@@ -1,6 +1,6 @@
 import { max, min, round } from "../../lib/PoppsMath.js";
 import { CType } from "../Component.js";
-import { Direction } from "../Components/MovementComponent.js";
+import { Direction } from "../Components/DirectionComponent.js";
 import { System, SystemType } from "../System.js";
 export default class MovementSystem extends System {
     BASE_ACCELERATION = 0.03;
@@ -19,6 +19,7 @@ export default class MovementSystem extends System {
     constructor(eventManager, entityManager) {
         super(SystemType.Movement, eventManager, entityManager, [
             CType.Movement,
+            CType.Direction,
             CType.Position,
             CType.Velocity,
             CType.Acceleration,
@@ -29,6 +30,7 @@ export default class MovementSystem extends System {
         for (let entityId of this.entities) {
             const entity = this.entityManager.getEntity(entityId);
             const mov = entity.get(CType.Movement);
+            const dir = entity.get(CType.Direction);
             const vel = entity.get(CType.Velocity);
             const acc = entity.get(CType.Acceleration);
             const con = entity.get(CType.Controller);
@@ -47,74 +49,79 @@ export default class MovementSystem extends System {
                 mov.rollCooldown--;
             }
             if (mov.rolling) {
-                this.applyRollingForce(mov, vel, acc);
+                this.applyRollingForce(mov, vel, acc, dir);
+            }
+            else if (mov.walking) {
+                this.applyWalkingForce(mov, vel, acc, dir);
+                if (mov.sneaking) {
+                    this.applySneakingForce(mov, vel, acc, dir);
+                }
             }
             else {
-                this.applyWalkingForce(mov, vel, acc);
-                if (mov.sneaking) {
-                    this.applySneakingForce(mov, vel, acc);
-                }
+                this.applyStoppingForce(vel, acc);
             }
         }
     }
-    applyWalkingForce(mov, vel, acc) {
-        switch (mov.direction) {
-            case Direction.NONE:
-                acc.x = 0;
-                acc.y = 0;
-                mov.moving = false;
-                break;
-            case Direction.NORTH:
+    applyStoppingForce(vel, acc) {
+        if (vel.x !== 0) {
+            vel.x *= this.EXTRA_FRICTION;
+        }
+        if (vel.y !== 0) {
+            vel.y *= this.EXTRA_FRICTION;
+        }
+        if (acc.x !== 0) {
+            acc.x = 0;
+        }
+        if (acc.y !== 0) {
+            acc.y = 0;
+        }
+    }
+    applyWalkingForce(mov, vel, acc, dir) {
+        mov.walking = false;
+        switch (dir.direction) {
+            case Direction.North:
                 acc.x = 0;
                 acc.y = -this.BASE_ACCELERATION;
                 vel.y = max(vel.y, -mov.speed * this.MAX_SPEED);
-                mov.moving = true;
                 break;
-            case Direction.EAST:
+            case Direction.East:
                 acc.x = this.BASE_ACCELERATION;
                 vel.x = min(vel.x, mov.speed * this.MAX_SPEED);
                 acc.y = 0;
-                mov.moving = true;
                 break;
-            case Direction.SOUTH:
+            case Direction.South:
                 acc.x = 0;
                 acc.y = this.BASE_ACCELERATION;
                 vel.y = min(vel.y, mov.speed * this.MAX_SPEED);
-                mov.moving = true;
                 break;
-            case Direction.WEST:
+            case Direction.West:
                 acc.x = -this.BASE_ACCELERATION;
                 vel.x = max(vel.x, -mov.speed * this.MAX_SPEED);
                 acc.y = 0;
-                mov.moving = true;
                 break;
-            case Direction.NORTHEAST:
+            case Direction.NorthEast:
                 acc.x = this.BASE_DIAGONAL_ACCELERATION;
                 vel.x = min(vel.x, mov.speed * this.MAX_DIAGONAL_SPEED);
                 acc.y = -this.BASE_DIAGONAL_ACCELERATION;
                 vel.y = max(vel.y, -mov.speed * this.MAX_DIAGONAL_SPEED);
-                mov.moving = true;
                 break;
-            case Direction.SOUTHEAST:
+            case Direction.SouthEast:
                 acc.x = this.BASE_DIAGONAL_ACCELERATION;
                 vel.x = min(vel.x, mov.speed * this.MAX_DIAGONAL_SPEED);
                 acc.y = this.BASE_DIAGONAL_ACCELERATION;
                 vel.y = min(vel.y, mov.speed * this.MAX_DIAGONAL_SPEED);
-                mov.moving = true;
                 break;
-            case Direction.SOUTHWEST:
+            case Direction.SouthWest:
                 acc.x = -this.BASE_DIAGONAL_ACCELERATION;
                 vel.x = max(vel.x, -mov.speed * this.MAX_DIAGONAL_SPEED);
                 acc.y = this.BASE_DIAGONAL_ACCELERATION;
                 vel.y = min(vel.y, mov.speed * this.MAX_DIAGONAL_SPEED);
-                mov.moving = true;
                 break;
-            case Direction.NORTHWEST:
+            case Direction.NorthWest:
                 acc.x = -this.BASE_DIAGONAL_ACCELERATION;
                 vel.x = max(vel.x, -mov.speed * this.MAX_DIAGONAL_SPEED);
                 acc.y = -this.BASE_DIAGONAL_ACCELERATION;
                 vel.y = max(vel.y, -mov.speed * this.MAX_DIAGONAL_SPEED);
-                mov.moving = true;
                 break;
         }
         if (acc.x === 0) {
@@ -144,82 +151,82 @@ export default class MovementSystem extends System {
             }
         }
     }
-    applySneakingForce(mov, vel, acc) {
+    applySneakingForce(mov, vel, acc, dir) {
         acc.x *= this.SNEAK_ACCELERATION_FACTOR;
         acc.y *= this.SNEAK_ACCELERATION_FACTOR;
-        switch (mov.direction) {
-            case Direction.NORTH:
+        switch (dir.direction) {
+            case Direction.North:
                 vel.y = max(vel.y, -mov.speed * this.MAX_SNEAK_SPEED);
                 break;
-            case Direction.EAST:
+            case Direction.East:
                 vel.x = min(vel.x, mov.speed * this.MAX_SNEAK_SPEED);
                 break;
-            case Direction.SOUTH:
+            case Direction.South:
                 vel.y = min(vel.y, mov.speed * this.MAX_SNEAK_SPEED);
                 break;
-            case Direction.WEST:
+            case Direction.West:
                 vel.x = max(vel.x, -mov.speed * this.MAX_SNEAK_SPEED);
                 break;
-            case Direction.NORTHEAST:
+            case Direction.NorthEast:
                 vel.x = min(vel.x, mov.speed * this.MAX_SNEAK_DIAGONAL_SPEED);
                 vel.y = max(vel.y, -mov.speed * this.MAX_SNEAK_DIAGONAL_SPEED);
                 break;
-            case Direction.SOUTHEAST:
+            case Direction.SouthEast:
                 vel.x = min(vel.x, mov.speed * this.MAX_SNEAK_DIAGONAL_SPEED);
                 vel.y = min(vel.y, mov.speed * this.MAX_SNEAK_DIAGONAL_SPEED);
                 break;
-            case Direction.SOUTHWEST:
+            case Direction.SouthWest:
                 vel.x = max(vel.x, -mov.speed * this.MAX_SNEAK_DIAGONAL_SPEED);
                 vel.y = min(vel.y, mov.speed * this.MAX_SNEAK_DIAGONAL_SPEED);
                 break;
-            case Direction.NORTHWEST:
+            case Direction.NorthWest:
                 vel.x = max(vel.x, -mov.speed * this.MAX_SNEAK_DIAGONAL_SPEED);
                 vel.y = max(vel.y, -mov.speed * this.MAX_SNEAK_DIAGONAL_SPEED);
                 break;
         }
     }
-    applyRollingForce(mov, vel, acc) {
+    applyRollingForce(mov, vel, acc, dir) {
         if (mov.rollCounter > mov.rollLength / 2) {
-            switch (mov.direction) {
-                case Direction.NORTH:
+            switch (dir.direction) {
+                case Direction.North:
                     acc.x = 0;
                     acc.y = -this.ROLL_ACCELERATION;
                     vel.y = max(vel.y, -mov.speed * this.MAX_ROLL_SPEED);
                     break;
-                case Direction.EAST:
+                case Direction.East:
                     acc.x = this.ROLL_ACCELERATION;
                     vel.x = min(vel.x, mov.speed * this.MAX_ROLL_SPEED);
                     acc.y = 0;
                     break;
-                case Direction.SOUTH:
+                case Direction.South:
                     acc.x = 0;
                     acc.y = this.ROLL_ACCELERATION;
                     vel.y = min(vel.y, mov.speed * this.MAX_ROLL_SPEED);
                     break;
-                case Direction.WEST:
+                case Direction.West:
                     acc.x = -this.ROLL_ACCELERATION;
                     vel.x = max(vel.x, -mov.speed * this.MAX_ROLL_SPEED);
                     acc.y = 0;
                     break;
-                case Direction.NORTHEAST:
+                case Direction.NorthEast:
                     acc.x = this.ROLL_DIAGONAL_ACCELERATION;
                     vel.x = min(vel.x, mov.speed * this.MAX_ROLL_DIAGONAL_SPEED);
                     acc.y = -this.ROLL_DIAGONAL_ACCELERATION;
                     vel.y = max(vel.y, -mov.speed * this.MAX_ROLL_DIAGONAL_SPEED);
                     break;
-                case Direction.SOUTHEAST:
+                case Direction.SouthEast:
                     acc.x = this.ROLL_DIAGONAL_ACCELERATION;
                     vel.x = min(vel.x, mov.speed * this.MAX_ROLL_DIAGONAL_SPEED);
                     acc.y = this.ROLL_DIAGONAL_ACCELERATION;
                     vel.y = min(vel.y, mov.speed * this.MAX_ROLL_DIAGONAL_SPEED);
                     break;
-                case Direction.SOUTHWEST:
+                case Direction.SouthWest:
                     acc.x = -this.ROLL_DIAGONAL_ACCELERATION;
                     vel.x = max(vel.x, -mov.speed * this.MAX_ROLL_DIAGONAL_SPEED);
                     acc.y = this.ROLL_DIAGONAL_ACCELERATION;
                     vel.y = min(vel.y, mov.speed * this.MAX_ROLL_DIAGONAL_SPEED);
                     break;
-                case Direction.NORTHWEST:
+                case Direction.NorthWest:
                     acc.x = -this.ROLL_DIAGONAL_ACCELERATION;
                     vel.x = max(vel.x, -mov.speed * this.MAX_ROLL_DIAGONAL_SPEED);
                     acc.y = -this.ROLL_DIAGONAL_ACCELERATION;

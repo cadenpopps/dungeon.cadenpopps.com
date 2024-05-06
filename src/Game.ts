@@ -6,6 +6,7 @@ import AccelerationComponent from "./Components/AccelerationComponent.js";
 import CameraComponent from "./Components/CameraComponent.js";
 import CollisionComponent, { CollisionHandler } from "./Components/CollisionComponent.js";
 import ControllerComponent from "./Components/ControllerComponent.js";
+import DirectionComponent from "./Components/DirectionComponent.js";
 import ExperienceComponent from "./Components/ExperienceComponent.js";
 import HealthComponent from "./Components/HealthComponent.js";
 import InteractableComponent, { Interactable } from "./Components/InteractableComponent.js";
@@ -15,7 +16,7 @@ import PlayerComponent from "./Components/PlayerComponent.js";
 import PositionComponent from "./Components/PositionComponent.js";
 import SizeComponent from "./Components/SizeComponent.js";
 import TextureComponent, { Texture } from "./Components/TextureComponent.js";
-import UIComponent, { UIAbilityCooldowns } from "./Components/UIComponent.js";
+import UIComponent, { UIAbilityCooldowns, UIPlayerHealthBar } from "./Components/UIComponent.js";
 import VelocityComponent from "./Components/VelocityComponent.js";
 import VisibleComponent from "./Components/VisibleComponent.js";
 import { EntityManager } from "./EntityManager.js";
@@ -68,8 +69,9 @@ systems.push(new EnemySystem(eventManager, entityManager));
 entityManager.addEntity(
     new Map<CType, Component>([
         [CType.Player, new PlayerComponent()],
-        [CType.Health, new HealthComponent(30)],
-        [CType.Ability, new AbilityComponent(new SpinAttack(100), new SlashAttack(10))],
+        [CType.Direction, new DirectionComponent()],
+        [CType.Health, new HealthComponent(20)],
+        [CType.Ability, new AbilityComponent(new SpinAttack(50), new SlashAttack(15))],
         [CType.Position, new PositionComponent(55, 19, 0)],
         [CType.Velocity, new VelocityComponent(0, 0)],
         [CType.Acceleration, new AccelerationComponent(0, 0)],
@@ -90,6 +92,7 @@ entityManager.addEntity(
                     { r: 150, g: 20, b: 200, a: 1 },
                     { r: 100, g: 100, b: 100, a: 0.8 }
                 ),
+                new UIPlayerHealthBar(20),
             ]),
         ],
         [CType.Texture, new TextureComponent([new Texture(loadImage("/assets/img/sprites/playerSpriteSheet.png"))])],
@@ -98,26 +101,7 @@ entityManager.addEntity(
     ])
 );
 
-// for (let i = 0; i < 10; i++) {
-// }
-
-// Overview Camera
-// entityManager.addEntity(
-//     new Map<CType, Component>([
-//         [CType.Position, new PositionComponent(25, 25)],
-//         [CType.Velocity, new VelocityComponent()],
-//         [CType.Acceleration, new AccelerationComponent()],
-//         [CType.Controller, new ControllerComponent()],
-//         [CType.Movement, new MovementComponent(1)],
-//         [CType.Camera, new CameraComponent(25, 25, 0, 10, 2)],
-//     ])
-// );
-
-// let tickTime = Date.now();
 function gameLoop() {
-    // const newTime = Date.now();
-    // console.log(`${newTime - tickTime}`);
-    // tickTime = newTime;
     eventManager.tick();
     entityManager.tick();
     for (let s of systems) {

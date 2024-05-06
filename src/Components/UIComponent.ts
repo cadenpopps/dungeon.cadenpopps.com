@@ -16,6 +16,28 @@ export interface UIElement {
     type: UIType;
 }
 
+export class UIPlayerHealthBar implements UIElement {
+    public type: number;
+    public x: number;
+    public y: number;
+    public width: number;
+    public height: number;
+    public percentage: number;
+    public colorFull: Color;
+    public colorEmpty: Color;
+
+    constructor(health: number) {
+        this.type = UIType.PlayerHealthBar;
+        this.x = 128;
+        this.y = 32;
+        this.width = health * 10;
+        this.height = 12;
+        this.percentage = 0.6;
+        this.colorFull = { r: 180, g: 20, b: 10, a: 1 };
+        this.colorEmpty = { r: 68, g: 67, b: 71, a: 1 };
+    }
+}
+
 export class UIEnemyHealthBar implements UIElement {
     public type: number;
     public x: number;
@@ -81,8 +103,8 @@ export class UIToolTip implements UIElement {
 }
 
 export enum UIType {
-    EnemyHeatlhBar,
     PlayerHealthBar,
+    EnemyHeatlhBar,
     AbilityCooldowns,
     InteractablePrompt,
     Tooltip,

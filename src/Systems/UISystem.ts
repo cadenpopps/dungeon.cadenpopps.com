@@ -10,6 +10,7 @@ import UIComponent, {
     UIAbilityCooldowns,
     UIEnemyHealthBar,
     UIInteractablePrompt,
+    UIPlayerHealthBar,
     UIToolTip,
     UIType,
 } from "../Components/UIComponent.js";
@@ -59,6 +60,9 @@ export default class UISystem extends System {
                 const ui = this.entityManager.get<UIComponent>(entityId, CType.UI);
                 for (let element of ui.elements) {
                     switch (element.type) {
+                        case UIType.PlayerHealthBar:
+                            this.playerHealthBar(entityId, element as UIPlayerHealthBar);
+                            break;
                         case UIType.EnemyHeatlhBar:
                             this.enemyHeatlhBar(entityId, element as UIEnemyHealthBar, cam);
                             break;
@@ -87,6 +91,15 @@ export default class UISystem extends System {
             }
             this.layers[ui.layer].push(entityId);
         }
+    }
+
+    private playerHealthBar(entityId: number, ui: UIPlayerHealthBar): void {
+        const health = this.entityManager.get<HealthComponent>(entityId, CType.Health);
+        ui.percentage = health.currentHealth / health.maxHealth;
+        this.canvas.fill(ui.colorEmpty.r, ui.colorEmpty.g, ui.colorEmpty.b, ui.colorEmpty.a);
+        this.canvas.rect(ui.x, ui.y, ui.width, ui.height);
+        this.canvas.fill(ui.colorFull.r, ui.colorFull.g, ui.colorFull.b, ui.colorFull.a);
+        this.canvas.rect(ui.x, ui.y, ui.width * ui.percentage, ui.height);
     }
 
     private enemyHeatlhBar(entityId: number, ui: UIEnemyHealthBar, cam: CameraComponent): void {
@@ -184,7 +197,7 @@ export default class UISystem extends System {
         this.canvas.text(text, floor(-textWidth / 2), floor(-0.75 * cam.zoom));
     }
 
-    private tooltip(entityId: number, ui: UIInteractablePrompt, cam: CameraComponent): void {
+    private tooltip(entityId: number, ui: UIToolTip, cam: CameraComponent): void {
         const pos = this.entityManager.get<PositionComponent>(entityId, CType.Position);
         const text = `${ui.text}`;
         this.canvas.canvas.translate(

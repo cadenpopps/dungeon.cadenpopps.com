@@ -4,6 +4,7 @@ import AIComponent from "../Components/AIComponent.js";
 import AccelerationComponent from "../Components/AccelerationComponent.js";
 import CollisionComponent, { CollisionHandler } from "../Components/CollisionComponent.js";
 import ControllerComponent from "../Components/ControllerComponent.js";
+import DirectionComponent from "../Components/DirectionComponent.js";
 import ExperienceComponent from "../Components/ExperienceComponent.js";
 import HealthComponent from "../Components/HealthComponent.js";
 import MovementComponent from "../Components/MovementComponent.js";
@@ -45,10 +46,12 @@ export default class EnemySystem extends System {
     }
     spawnEnemy(entity, playerId) {
         const spawnerPos = entity.get(CType.Position);
-        const level = spawnerPos.z;
+        const pLevel = this.entityManager.get(playerId, CType.Experience).level;
+        const level = spawnerPos.z + pLevel;
         const size = randomInRange(0.5, 2);
         const enemy = new Map([
             [CType.AI, new AIComponent()],
+            [CType.Direction, new DirectionComponent()],
             [CType.Experience, new ExperienceComponent(level)],
             [CType.Position, new PositionComponent(spawnerPos.x, spawnerPos.y)],
             [CType.Velocity, new VelocityComponent(0, 0)],
@@ -67,12 +70,14 @@ export default class EnemySystem extends System {
     spawnPack(entity, playerId) {
         const amount = randomIntInRange(3, 5);
         const spawnerPos = entity.get(CType.Position);
-        const level = spawnerPos.z;
+        const pLevel = this.entityManager.get(playerId, CType.Experience).level;
+        const level = spawnerPos.z + pLevel;
         const enemies = new Array();
         for (let i = 0; i < amount; i++) {
             const size = randomInRange(0.5, 1.25);
             enemies.push(new Map([
                 [CType.AI, new AIComponent()],
+                [CType.Direction, new DirectionComponent()],
                 [CType.Experience, new ExperienceComponent(level)],
                 [
                     CType.Position,
@@ -93,12 +98,13 @@ export default class EnemySystem extends System {
         entity.delete(CType.EnemySpawner);
     }
     spawnBoss(entity, playerId) {
-        const spawner = entity.get(CType.EnemySpawner);
         const spawnerPos = entity.get(CType.Position);
-        const level = spawnerPos.z;
+        const pLevel = this.entityManager.get(playerId, CType.Experience).level;
+        const level = spawnerPos.z + pLevel;
         const size = randomInRange(0.5, 2);
         const enemy = new Map([
             [CType.AI, new AIComponent()],
+            [CType.Direction, new DirectionComponent()],
             [CType.Experience, new ExperienceComponent(level)],
             [CType.Position, new PositionComponent(spawnerPos.x, spawnerPos.y)],
             [CType.Velocity, new VelocityComponent(0, 0)],

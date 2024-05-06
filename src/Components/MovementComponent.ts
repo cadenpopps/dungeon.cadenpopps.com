@@ -2,8 +2,7 @@ import { Component, CType } from "../Component.js";
 
 export default class MovementComponent extends Component {
     public speed: number;
-    public direction: Direction;
-    public moving: boolean;
+    public walking: boolean;
     public sneaking: boolean;
     public rolling: boolean;
     public rollLength: number;
@@ -14,8 +13,7 @@ export default class MovementComponent extends Component {
     constructor(speed: number = 30, rollLength: number = 12, rollCooldownLength: number = 70) {
         super(CType.Movement);
         this.speed = speed;
-        this.direction = Direction.NONE;
-        this.moving = false;
+        this.walking = false;
         this.sneaking = false;
         this.rolling = false;
         this.rollLength = rollLength;
@@ -23,16 +21,4 @@ export default class MovementComponent extends Component {
         this.rollCooldownLength = rollCooldownLength;
         this.rollCooldown = 0;
     }
-}
-
-export enum Direction {
-    NORTH,
-    NORTHEAST,
-    EAST,
-    SOUTHEAST,
-    SOUTH,
-    SOUTHWEST,
-    WEST,
-    NORTHWEST,
-    NONE,
 }

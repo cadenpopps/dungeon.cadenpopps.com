@@ -41,6 +41,9 @@ export default class UISystem extends System {
                 const ui = this.entityManager.get(entityId, CType.UI);
                 for (let element of ui.elements) {
                     switch (element.type) {
+                        case UIType.PlayerHealthBar:
+                            this.playerHealthBar(entityId, element);
+                            break;
                         case UIType.EnemyHeatlhBar:
                             this.enemyHeatlhBar(entityId, element, cam);
                             break;
@@ -68,6 +71,14 @@ export default class UISystem extends System {
             }
             this.layers[ui.layer].push(entityId);
         }
+    }
+    playerHealthBar(entityId, ui) {
+        const health = this.entityManager.get(entityId, CType.Health);
+        ui.percentage = health.currentHealth / health.maxHealth;
+        this.canvas.fill(ui.colorEmpty.r, ui.colorEmpty.g, ui.colorEmpty.b, ui.colorEmpty.a);
+        this.canvas.rect(ui.x, ui.y, ui.width, ui.height);
+        this.canvas.fill(ui.colorFull.r, ui.colorFull.g, ui.colorFull.b, ui.colorFull.a);
+        this.canvas.rect(ui.x, ui.y, ui.width * ui.percentage, ui.height);
     }
     enemyHeatlhBar(entityId, ui, cam) {
         const health = this.entityManager.get(entityId, CType.Health);

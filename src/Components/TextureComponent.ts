@@ -1,6 +1,7 @@
 import { loadImage } from "../../lib/PoppsLoad.js";
 import { Component, CType } from "../Component.js";
 import { Color } from "../Constants.js";
+import { Direction } from "./DirectionComponent.js";
 import PositionComponent from "./PositionComponent.js";
 
 export default class TextureComponent extends Component {
@@ -20,6 +21,7 @@ export class Texture {
     public y: number;
     public mapX: number;
     public mapY: number;
+    public direction: Direction;
     public tint!: Color;
 
     constructor(
@@ -43,6 +45,7 @@ export class Texture {
         this.y = y;
         this.mapX = mapX;
         this.mapY = mapY;
+        this.direction = Direction.South;
         if (tint) {
             this.tint = tint;
         }
@@ -55,6 +58,7 @@ export enum TextureMap {
     Wall,
     DungeonFloor,
     Door,
+    StairDown,
 }
 
 export const TextureMaps: Map<TextureMap, HTMLImageElement> = new Map<TextureMap, HTMLImageElement>([
@@ -63,9 +67,18 @@ export const TextureMaps: Map<TextureMap, HTMLImageElement> = new Map<TextureMap
     [TextureMap.Wall, loadImage(`/assets/img/textureMaps/Wall.png`)],
     [TextureMap.Door, loadImage(`/assets/img/textureMaps/Door.png`)],
     [TextureMap.DungeonFloor, loadImage(`/assets/img/textureMaps/DungeonFloor.png`)],
+    [TextureMap.StairDown, loadImage(`/assets/img/textureMaps/Stair.png`)],
 ]);
 
 export enum TexturePosition {
+    North,
+    NorthEast,
+    East,
+    SouthEast,
+    South,
+    SouthWest,
+    West,
+    NorthWest,
     Top,
     TopRightInner,
     TopRightOuter,
@@ -99,7 +112,26 @@ export enum TexturePosition {
     All,
 }
 
+export const TextureDirectionMap: Map<Direction, TexturePosition> = new Map<Direction, TexturePosition>([
+    [Direction.North, TexturePosition.North],
+    [Direction.NorthEast, TexturePosition.NorthEast],
+    [Direction.East, TexturePosition.East],
+    [Direction.SouthEast, TexturePosition.SouthEast],
+    [Direction.South, TexturePosition.South],
+    [Direction.SouthWest, TexturePosition.SouthWest],
+    [Direction.West, TexturePosition.West],
+    [Direction.NorthWest, TexturePosition.NorthWest],
+]);
+
 export const TexturePositionMap: Map<TexturePosition, PositionComponent> = new Map<TexturePosition, PositionComponent>([
+    [TexturePosition.North, new PositionComponent(3, 0)],
+    [TexturePosition.NorthEast, new PositionComponent(2, 1)],
+    [TexturePosition.East, new PositionComponent(2, 0)],
+    [TexturePosition.SouthEast, new PositionComponent(2, 0)],
+    [TexturePosition.South, new PositionComponent(0, 0)],
+    [TexturePosition.SouthWest, new PositionComponent(1, 0)],
+    [TexturePosition.West, new PositionComponent(1, 0)],
+    [TexturePosition.NorthWest, new PositionComponent(1, 1)],
     [TexturePosition.Top, new PositionComponent(1, 0)],
     [TexturePosition.TopRightInner, new PositionComponent(2, 3)],
     [TexturePosition.TopRightOuter, new PositionComponent(2, 0)],

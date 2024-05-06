@@ -521,27 +521,27 @@ export default class LevelSystem extends System {
             for (let s of rooms[i]) {
                 const pos = s.get(CType.Position) as PositionComponent;
                 if (levelMap[pos.x - 1][pos.y].has(CType.Collision)) {
-                    const west = new PositionComponent(pos.x - 1, pos.y);
-                    if (this.canBeDoor(west, levelMap)) {
-                        doorList[i].push(west);
+                    const West = new PositionComponent(pos.x - 1, pos.y);
+                    if (this.canBeDoor(West, levelMap)) {
+                        doorList[i].push(West);
                     }
                 }
                 if (levelMap[pos.x][pos.y - 1].has(CType.Collision)) {
-                    const north = new PositionComponent(pos.x, pos.y - 1);
-                    if (this.canBeDoor(north, levelMap)) {
-                        doorList[i].push(north);
+                    const North = new PositionComponent(pos.x, pos.y - 1);
+                    if (this.canBeDoor(North, levelMap)) {
+                        doorList[i].push(North);
                     }
                 }
                 if (levelMap[pos.x + 1][pos.y].has(CType.Collision)) {
-                    const east = new PositionComponent(pos.x + 1, pos.y);
-                    if (this.canBeDoor(east, levelMap)) {
-                        doorList[i].push(east);
+                    const East = new PositionComponent(pos.x + 1, pos.y);
+                    if (this.canBeDoor(East, levelMap)) {
+                        doorList[i].push(East);
                     }
                 }
                 if (levelMap[pos.x][pos.y + 1].has(CType.Collision)) {
-                    const south = new PositionComponent(pos.x, pos.y + 1);
-                    if (this.canBeDoor(south, levelMap)) {
-                        doorList[i].push(south);
+                    const South = new PositionComponent(pos.x, pos.y + 1);
+                    if (this.canBeDoor(South, levelMap)) {
+                        doorList[i].push(South);
                     }
                 }
             }
