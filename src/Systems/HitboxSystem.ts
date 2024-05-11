@@ -1,8 +1,10 @@
 import { round } from "../../lib/PoppsMath.js";
 import { CType } from "../Component.js";
+import DirectionComponent from "../Components/DirectionComponent.js";
 import HealthComponent from "../Components/HealthComponent.js";
 import HitboxComponent from "../Components/HitboxComponent.js";
 import PositionComponent from "../Components/PositionComponent.js";
+import RotationComponent, { RotationDirectionMap } from "../Components/RotationComponent.js";
 import VelocityComponent from "../Components/VelocityComponent.js";
 import { getEntitiesInRange } from "../Constants.js";
 import { EntityManager } from "../EntityManager.js";
@@ -38,10 +40,11 @@ export default class HitboxSystem extends System {
         );
         for (let entityId of hitboxesInRange) {
             const hitbox = this.entityManager.get<HitboxComponent>(entityId, CType.Hitbox);
-            if (hitbox.framesActive === 0) {
+            if (hitbox.frames === 0) {
                 this.entityManager.removeEntity(entityId);
             } else {
-                hitbox.framesActive--;
+                hitbox.frames--;
+                this.adjustHitboxPosition(entityId, hitbox);
                 this.hitboxCollision(entityId, hitbox, subGrid);
             }
         }
@@ -51,14 +54,24 @@ export default class HitboxSystem extends System {
         this.healthEntityIds = this.entityManager.getSystemEntities([CType.Health]);
     }
 
+    private adjustHitboxPosition(entityId: number, hitbox: HitboxComponent): void {
+        const sourcePos = this.entityManager.get<PositionComponent>(hitbox.sourceId, CType.Position);
+        const pos = this.entityManager.get<PositionComponent>(entityId, CType.Position);
+        const sourceDir = this.entityManager.get<DirectionComponent>(hitbox.sourceId, CType.Direction).direction;
+        const rotation = this.entityManager.get<RotationComponent>(entityId, CType.Rotation);
+        pos.x = sourcePos.x + hitbox.xOffset;
+        pos.y = sourcePos.y + hitbox.yOffset;
+        rotation.degrees = RotationDirectionMap.get(sourceDir) || 0;
+    }
+
     private hitboxCollision(
         entityId: number,
         hitbox: HitboxComponent,
         subGrid: Map<number, Map<number, Array<number>>>
     ): void {
         const pos = this.entityManager.get<PositionComponent>(entityId, CType.Position);
-        const x = round((pos.x + hitbox.x) / PhysicsSystem.BIGGEST_ENTITY_SIZE);
-        const y = round((pos.y + hitbox.y) / PhysicsSystem.BIGGEST_ENTITY_SIZE);
+        const x = round(pos.x / PhysicsSystem.BIGGEST_ENTITY_SIZE);
+        const y = round(pos.y / PhysicsSystem.BIGGEST_ENTITY_SIZE);
         const collisionIds = subGrid.get(x)?.get(y) as Array<number>;
         if (collisionIds !== undefined) {
             for (let collisionId of collisionIds) {

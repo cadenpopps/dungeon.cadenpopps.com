@@ -1,8 +1,12 @@
 import { CType, Component } from "../Component.js";
-import AbilityComponent, { Ability, AbilityType, SlashAttack, SpinAttack } from "../Components/AbilityComponent.js";
+import AbilityComponent, { Ability, AbilityType, SpinAttack } from "../Components/AbilityComponent.js";
 import ControllerComponent from "../Components/ControllerComponent.js";
+import DirectionComponent from "../Components/DirectionComponent.js";
 import HitboxComponent from "../Components/HitboxComponent.js";
 import PositionComponent from "../Components/PositionComponent.js";
+import RotationComponent, { RotationDirectionMap } from "../Components/RotationComponent.js";
+import SizeComponent from "../Components/SizeComponent.js";
+import VisibleComponent from "../Components/VisibleComponent.js";
 import { EntityManager } from "../EntityManager.js";
 import { EventManager } from "../EventManager.js";
 import { System, SystemType } from "../System.js";
@@ -25,13 +29,13 @@ export default class AbilitySystem extends System {
             const ability = entity.get(CType.Ability) as AbilityComponent;
             const con = entity.get(CType.Controller) as ControllerComponent;
             this.determineActiveAbility(con, ability);
-            if (ability.primary.currentTick > 0) {
+            if (ability.primary.currentTick >= 0) {
                 this.ability(entityId, ability.primary);
             }
-            if (ability.secondary.currentTick > 0) {
+            if (ability.secondary.currentTick >= 0) {
                 this.ability(entityId, ability.secondary);
             }
-            if (ability.ultimate.currentTick > 0) {
+            if (ability.ultimate.currentTick >= 0) {
                 this.ability(entityId, ability.ultimate);
             }
             this.decrementCooldownAndCurrentTick(ability);
@@ -41,33 +45,33 @@ export default class AbilitySystem extends System {
     public getEntitiesHelper(): void {}
 
     private determineActiveAbility(con: ControllerComponent, ability: AbilityComponent): void {
-        if (con.primary && ability.primary.cooldown === 0) {
+        if (con.primary && ability.primary.cooldown < 0) {
             ability.primary.currentTick = ability.primary.duration;
             ability.primary.cooldown = ability.primary.cooldownLength;
-            ability.secondary.currentTick = 0;
-            ability.ultimate.currentTick = 0;
+            ability.secondary.currentTick = -1;
+            ability.ultimate.currentTick = -1;
         }
-        if (con.secondary && ability.secondary.cooldown === 0) {
+        if (con.secondary && ability.secondary.cooldown < 0) {
             ability.secondary.currentTick = ability.secondary.duration;
             ability.secondary.cooldown = ability.secondary.cooldownLength;
-            ability.primary.currentTick = 0;
-            ability.ultimate.currentTick = 0;
+            ability.primary.currentTick = -1;
+            ability.ultimate.currentTick = -1;
         }
-        if (con.ultimate && ability.ultimate.cooldown === 0) {
+        if (con.ultimate && ability.ultimate.cooldown < 0) {
             ability.ultimate.currentTick = ability.ultimate.duration;
             ability.ultimate.cooldown = ability.ultimate.cooldownLength;
-            ability.primary.currentTick = 0;
-            ability.secondary.currentTick = 0;
+            ability.primary.currentTick = -1;
+            ability.secondary.currentTick = -1;
         }
     }
 
     private ability(entityId: number, ability: Ability): void {
         switch (ability.type) {
             case AbilityType.SpinAttack:
-                this.spinAttack(entityId, ability);
+                this.spawnHitbox(entityId, ability);
                 break;
             case AbilityType.SlashAttack:
-                this.slashAttack(entityId, ability);
+                this.spawnHitbox(entityId, ability);
                 break;
             default:
                 console.log(`Ability ${ability.type} not found`);
@@ -76,63 +80,49 @@ export default class AbilitySystem extends System {
     }
 
     private decrementCooldownAndCurrentTick(ability: AbilityComponent): void {
-        if (ability.primary.cooldown > 0) {
+        if (ability.primary.cooldown >= 0) {
             ability.primary.cooldown--;
         }
-        if (ability.primary.currentTick > 0) {
+        if (ability.primary.currentTick >= 0) {
             ability.primary.currentTick--;
         }
-        if (ability.secondary.cooldown > 0) {
+        if (ability.secondary.cooldown >= 0) {
             ability.secondary.cooldown--;
         }
-        if (ability.secondary.currentTick > 0) {
+        if (ability.secondary.currentTick >= 0) {
             ability.secondary.currentTick--;
         }
-        if (ability.ultimate.cooldown > 0) {
+        if (ability.ultimate.cooldown >= 0) {
             ability.ultimate.cooldown--;
         }
-        if (ability.ultimate.currentTick > 0) {
+        if (ability.ultimate.currentTick >= 0) {
             ability.ultimate.currentTick--;
         }
     }
 
-    private spinAttack(entityId: number, ability: SpinAttack): void {
-        const pos = this.entityManager.get<PositionComponent>(entityId, CType.Position);
-        const hitbox = ability.frames[ability.currentTick];
-        if (hitbox.active) {
-            const newHitbox = new HitboxComponent(
-                hitbox.x,
-                hitbox.y,
-                hitbox.width,
-                hitbox.height,
-                hitbox.framesActive,
+    private spawnHitbox(entityId: number, ability: SpinAttack): void {
+        const hitboxData = ability.frames[ability.duration - ability.currentTick];
+        if (hitboxData !== null) {
+            const sourcePos = this.entityManager.get<PositionComponent>(entityId, CType.Position);
+            const sourceDir = this.entityManager.get<DirectionComponent>(entityId, CType.Direction).direction;
+            const pos = new PositionComponent(sourcePos.x + hitboxData.x, sourcePos.y + hitboxData.y);
+            const size = new SizeComponent(hitboxData.width, hitboxData.height);
+            const rotation = new RotationComponent(sourcePos, RotationDirectionMap.get(sourceDir));
+            const hitbox = new HitboxComponent(
+                hitboxData.x,
+                hitboxData.y,
+                hitboxData.width,
+                hitboxData.height,
+                hitboxData.frames,
                 entityId
             );
             this.entityManager.addEntity(
                 new Map<CType, Component>([
                     [CType.Position, pos],
-                    [CType.Hitbox, newHitbox],
-                ])
-            );
-        }
-    }
-
-    private slashAttack(entityId: number, ability: SlashAttack): void {
-        const pos = this.entityManager.get<PositionComponent>(entityId, CType.Position);
-        const hitbox = ability.frames[ability.currentTick];
-        if (hitbox.active) {
-            const newHitbox = new HitboxComponent(
-                hitbox.x,
-                hitbox.y,
-                hitbox.width,
-                hitbox.height,
-                hitbox.framesActive,
-                entityId
-            );
-            this.entityManager.addEntity(
-                new Map<CType, Component>([
-                    [CType.Position, pos],
-                    [CType.Hitbox, newHitbox],
+                    [CType.Size, size],
+                    [CType.Hitbox, hitbox],
+                    [CType.Rotation, rotation],
+                    [CType.Visible, new VisibleComponent(false)],
                 ])
             );
         }

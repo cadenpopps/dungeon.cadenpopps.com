@@ -1,6 +1,7 @@
 import { round } from "../../lib/PoppsMath.js";
 import { CType } from "../Component.js";
 import PositionComponent from "../Components/PositionComponent.js";
+import { RotationDirectionMap } from "../Components/RotationComponent.js";
 import { getEntitiesInRange } from "../Constants.js";
 import { System, SystemType } from "../System.js";
 import CameraSystem from "./CameraSystem.js";
@@ -20,11 +21,12 @@ export default class HitboxSystem extends System {
         const hitboxesInRange = getEntitiesInRange(new PositionComponent(cam.x, cam.y), cam.visibleDistance, this.entities, this.entityManager);
         for (let entityId of hitboxesInRange) {
             const hitbox = this.entityManager.get(entityId, CType.Hitbox);
-            if (hitbox.framesActive === 0) {
+            if (hitbox.frames === 0) {
                 this.entityManager.removeEntity(entityId);
             }
             else {
-                hitbox.framesActive--;
+                hitbox.frames--;
+                this.adjustHitboxPosition(entityId, hitbox);
                 this.hitboxCollision(entityId, hitbox, subGrid);
             }
         }
@@ -32,10 +34,19 @@ export default class HitboxSystem extends System {
     getEntitiesHelper() {
         this.healthEntityIds = this.entityManager.getSystemEntities([CType.Health]);
     }
+    adjustHitboxPosition(entityId, hitbox) {
+        const sourcePos = this.entityManager.get(hitbox.sourceId, CType.Position);
+        const pos = this.entityManager.get(entityId, CType.Position);
+        const sourceDir = this.entityManager.get(hitbox.sourceId, CType.Direction).direction;
+        const rotation = this.entityManager.get(entityId, CType.Rotation);
+        pos.x = sourcePos.x + hitbox.xOffset;
+        pos.y = sourcePos.y + hitbox.yOffset;
+        rotation.degrees = RotationDirectionMap.get(sourceDir) || 0;
+    }
     hitboxCollision(entityId, hitbox, subGrid) {
         const pos = this.entityManager.get(entityId, CType.Position);
-        const x = round((pos.x + hitbox.x) / PhysicsSystem.BIGGEST_ENTITY_SIZE);
-        const y = round((pos.y + hitbox.y) / PhysicsSystem.BIGGEST_ENTITY_SIZE);
+        const x = round(pos.x / PhysicsSystem.BIGGEST_ENTITY_SIZE);
+        const y = round(pos.y / PhysicsSystem.BIGGEST_ENTITY_SIZE);
         const collisionIds = subGrid.get(x)?.get(y);
         if (collisionIds !== undefined) {
             for (let collisionId of collisionIds) {

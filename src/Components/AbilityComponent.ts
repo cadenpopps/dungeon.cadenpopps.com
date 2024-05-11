@@ -1,5 +1,6 @@
+import { loadJSON } from "../../lib/PoppsLoad.js";
 import { Component, CType } from "../Component.js";
-import HitboxComponent from "./HitboxComponent.js";
+import { HitboxData } from "./HitboxComponent.js";
 
 export default class AbilityComponent extends Component {
     public primary: Ability;
@@ -13,25 +14,29 @@ export default class AbilityComponent extends Component {
         this.ultimate = ultimate;
     }
 }
-
-export enum AbilityType {
-    None,
-    SpinAttack,
-    SlashAttack,
-}
-
 export interface Ability {
     type: AbilityType;
-    frames: Array<HitboxComponent>;
+    frames: Array<HitboxData | null>;
     cooldownLength: number;
     cooldown: number;
     duration: number;
     currentTick: number;
 }
 
+export enum AbilityType {
+    None,
+    LungeAttack,
+    SpinAttack,
+    SlashAttack,
+}
+export interface AbilityData {
+    type: AbilityType;
+    frames: Array<HitboxData | null>;
+}
+
 export class None implements Ability {
     public type: number;
-    public frames: Array<HitboxComponent>;
+    public frames: Array<HitboxData | null>;
     public duration: number;
     public currentTick: number;
     public cooldownLength: number;
@@ -39,17 +44,17 @@ export class None implements Ability {
 
     constructor() {
         this.type = AbilityType.SpinAttack;
-        this.frames = new Array<HitboxComponent>();
-        this.duration = 0;
-        this.currentTick = 0;
-        this.cooldownLength = 0;
-        this.cooldown = 0;
+        this.frames = [];
+        this.duration = -1;
+        this.currentTick = -1;
+        this.cooldownLength = -1;
+        this.cooldown = -1;
     }
 }
 
-export class SpinAttack implements Ability {
-    public type: number;
-    public frames: Array<HitboxComponent>;
+export class LungeAttack implements Ability {
+    public type: AbilityType;
+    public frames: Array<HitboxData | null>;
     public duration: number;
     public currentTick: number;
     public cooldownLength: number;
@@ -57,29 +62,35 @@ export class SpinAttack implements Ability {
 
     constructor(cooldownLength: number) {
         this.type = AbilityType.SpinAttack;
-        this.frames = [
-            new HitboxComponent(0, 0, 0, 0, 3, 0, false),
-            new HitboxComponent(0, -1, 1, 1, 3, 0, true),
-            new HitboxComponent(1, -1, 1, 1, 3, 0, true),
-            new HitboxComponent(1, 0, 1, 1, 3, 0, true),
-            new HitboxComponent(1, 1, 1, 1, 3, 0, true),
-            new HitboxComponent(0, 1, 1, 1, 3, 0, true),
-            new HitboxComponent(-1, 1, 1, 1, 3, 0, true),
-            new HitboxComponent(-1, 0, 1, 1, 3, 0, true),
-            new HitboxComponent(-1, -1, 1, 1, 3, 0, true),
-            new HitboxComponent(0, -1, 1, 1, 3, 0, true),
-            new HitboxComponent(0, 0, 0, 0, 3, 0, false),
-        ];
+        this.frames = (PlayerAbilityData.get(AbilityType.LungeAttack) as AbilityData).frames;
         this.duration = this.frames.length - 1;
-        this.currentTick = 0;
+        this.currentTick = -1;
         this.cooldownLength = cooldownLength;
-        this.cooldown = 0;
+        this.cooldown = -1;
+    }
+}
+
+export class SpinAttack implements Ability {
+    public type: AbilityType;
+    public frames: Array<HitboxData | null>;
+    public duration: number;
+    public currentTick: number;
+    public cooldownLength: number;
+    public cooldown: number;
+
+    constructor(cooldownLength: number) {
+        this.type = AbilityType.SpinAttack;
+        this.frames = (PlayerAbilityData.get(AbilityType.SpinAttack) as AbilityData).frames;
+        this.duration = this.frames.length - 1;
+        this.currentTick = -1;
+        this.cooldownLength = cooldownLength;
+        this.cooldown = -1;
     }
 }
 
 export class SlashAttack implements Ability {
-    public type: number;
-    public frames: Array<HitboxComponent>;
+    public type: AbilityType;
+    public frames: Array<HitboxData | null>;
     public duration: number;
     public currentTick: number;
     public cooldownLength: number;
@@ -87,18 +98,30 @@ export class SlashAttack implements Ability {
 
     constructor(cooldownLength: number) {
         this.type = AbilityType.SlashAttack;
-        this.frames = [
-            new HitboxComponent(0, 0, 0, 0, 3, 0, false),
-            new HitboxComponent(0, -1, 1, 1, 3, 0, true),
-            new HitboxComponent(0, -1, 1, 1, 3, 0, true),
-            new HitboxComponent(0, -1, 1, 1, 3, 0, true),
-            new HitboxComponent(0, -1, 1, 1, 3, 0, true),
-            new HitboxComponent(0, -1, 1, 1, 3, 0, true),
-            new HitboxComponent(0, 0, 0, 0, 3, 0, false),
-        ];
+        this.frames = (PlayerAbilityData.get(AbilityType.SlashAttack) as AbilityData).frames;
         this.duration = this.frames.length - 1;
-        this.currentTick = 0;
+        this.currentTick = -1;
         this.cooldownLength = cooldownLength;
-        this.cooldown = 0;
+        this.cooldown = -1;
     }
 }
+
+function convertAbilityData(AbilityData: any): Map<AbilityType, AbilityData> {
+    const AbilityDataMap: Map<AbilityType, AbilityData> = new Map();
+    for (const abilityName in AbilityData) {
+        switch (abilityName) {
+            case "LungeAttack":
+                AbilityDataMap.set(AbilityType.LungeAttack, AbilityData[abilityName]);
+                break;
+            case "SpinAttack":
+                AbilityDataMap.set(AbilityType.SpinAttack, AbilityData[abilityName]);
+                break;
+            case "SlashAttack":
+                AbilityDataMap.set(AbilityType.SlashAttack, AbilityData[abilityName]);
+                break;
+        }
+    }
+    return AbilityDataMap;
+}
+
+const PlayerAbilityData = convertAbilityData(loadJSON("/content/abilities/PlayerAbilities.json"));

@@ -1,21 +1,28 @@
 import { Component, CType } from "../Component.js";
 export default class HitboxComponent extends Component {
-    x;
-    y;
+    shape;
+    xOffset;
+    yOffset;
     width;
     height;
-    framesActive;
+    frames;
     sourceId;
-    active;
-    constructor(x, y, width, height, framesActive, sourceId, active = true) {
+    constructor(xOffset, yOffset, width, height, frames, sourceId) {
         super(CType.Hitbox);
-        this.x = x;
-        this.y = y;
+        this.shape = HitboxShape.Rectangle;
+        this.xOffset = xOffset;
+        this.yOffset = yOffset;
         this.width = width;
         this.height = height;
-        this.framesActive = framesActive;
+        this.frames = frames;
         this.sourceId = sourceId;
-        this.active = active;
     }
 }
+export class CircleHitboxComponent extends HitboxComponent {
+}
+export var HitboxShape;
+(function (HitboxShape) {
+    HitboxShape[HitboxShape["Rectangle"] = 0] = "Rectangle";
+    HitboxShape[HitboxShape["Circle"] = 1] = "Circle";
+})(HitboxShape || (HitboxShape = {}));
 //# sourceMappingURL=HitboxComponent.js.map

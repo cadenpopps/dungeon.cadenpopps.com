@@ -1,5 +1,5 @@
+import { loadJSON } from "../../lib/PoppsLoad.js";
 import { Component, CType } from "../Component.js";
-import HitboxComponent from "./HitboxComponent.js";
 export default class AbilityComponent extends Component {
     primary;
     secondary;
@@ -14,8 +14,9 @@ export default class AbilityComponent extends Component {
 export var AbilityType;
 (function (AbilityType) {
     AbilityType[AbilityType["None"] = 0] = "None";
-    AbilityType[AbilityType["SpinAttack"] = 1] = "SpinAttack";
-    AbilityType[AbilityType["SlashAttack"] = 2] = "SlashAttack";
+    AbilityType[AbilityType["LungeAttack"] = 1] = "LungeAttack";
+    AbilityType[AbilityType["SpinAttack"] = 2] = "SpinAttack";
+    AbilityType[AbilityType["SlashAttack"] = 3] = "SlashAttack";
 })(AbilityType || (AbilityType = {}));
 export class None {
     type;
@@ -26,11 +27,27 @@ export class None {
     cooldown;
     constructor() {
         this.type = AbilityType.SpinAttack;
-        this.frames = new Array();
-        this.duration = 0;
-        this.currentTick = 0;
-        this.cooldownLength = 0;
-        this.cooldown = 0;
+        this.frames = [];
+        this.duration = -1;
+        this.currentTick = -1;
+        this.cooldownLength = -1;
+        this.cooldown = -1;
+    }
+}
+export class LungeAttack {
+    type;
+    frames;
+    duration;
+    currentTick;
+    cooldownLength;
+    cooldown;
+    constructor(cooldownLength) {
+        this.type = AbilityType.SpinAttack;
+        this.frames = PlayerAbilityData.get(AbilityType.LungeAttack).frames;
+        this.duration = this.frames.length - 1;
+        this.currentTick = -1;
+        this.cooldownLength = cooldownLength;
+        this.cooldown = -1;
     }
 }
 export class SpinAttack {
@@ -42,23 +59,11 @@ export class SpinAttack {
     cooldown;
     constructor(cooldownLength) {
         this.type = AbilityType.SpinAttack;
-        this.frames = [
-            new HitboxComponent(0, 0, 0, 0, 3, 0, false),
-            new HitboxComponent(0, -1, 1, 1, 3, 0, true),
-            new HitboxComponent(1, -1, 1, 1, 3, 0, true),
-            new HitboxComponent(1, 0, 1, 1, 3, 0, true),
-            new HitboxComponent(1, 1, 1, 1, 3, 0, true),
-            new HitboxComponent(0, 1, 1, 1, 3, 0, true),
-            new HitboxComponent(-1, 1, 1, 1, 3, 0, true),
-            new HitboxComponent(-1, 0, 1, 1, 3, 0, true),
-            new HitboxComponent(-1, -1, 1, 1, 3, 0, true),
-            new HitboxComponent(0, -1, 1, 1, 3, 0, true),
-            new HitboxComponent(0, 0, 0, 0, 3, 0, false),
-        ];
+        this.frames = PlayerAbilityData.get(AbilityType.SpinAttack).frames;
         this.duration = this.frames.length - 1;
-        this.currentTick = 0;
+        this.currentTick = -1;
         this.cooldownLength = cooldownLength;
-        this.cooldown = 0;
+        this.cooldown = -1;
     }
 }
 export class SlashAttack {
@@ -70,19 +75,29 @@ export class SlashAttack {
     cooldown;
     constructor(cooldownLength) {
         this.type = AbilityType.SlashAttack;
-        this.frames = [
-            new HitboxComponent(0, 0, 0, 0, 3, 0, false),
-            new HitboxComponent(0, -1, 1, 1, 3, 0, true),
-            new HitboxComponent(0, -1, 1, 1, 3, 0, true),
-            new HitboxComponent(0, -1, 1, 1, 3, 0, true),
-            new HitboxComponent(0, -1, 1, 1, 3, 0, true),
-            new HitboxComponent(0, -1, 1, 1, 3, 0, true),
-            new HitboxComponent(0, 0, 0, 0, 3, 0, false),
-        ];
+        this.frames = PlayerAbilityData.get(AbilityType.SlashAttack).frames;
         this.duration = this.frames.length - 1;
-        this.currentTick = 0;
+        this.currentTick = -1;
         this.cooldownLength = cooldownLength;
-        this.cooldown = 0;
+        this.cooldown = -1;
     }
 }
+function convertAbilityData(AbilityData) {
+    const AbilityDataMap = new Map();
+    for (const abilityName in AbilityData) {
+        switch (abilityName) {
+            case "LungeAttack":
+                AbilityDataMap.set(AbilityType.LungeAttack, AbilityData[abilityName]);
+                break;
+            case "SpinAttack":
+                AbilityDataMap.set(AbilityType.SpinAttack, AbilityData[abilityName]);
+                break;
+            case "SlashAttack":
+                AbilityDataMap.set(AbilityType.SlashAttack, AbilityData[abilityName]);
+                break;
+        }
+    }
+    return AbilityDataMap;
+}
+const PlayerAbilityData = convertAbilityData(loadJSON("/content/abilities/PlayerAbilities.json"));
 //# sourceMappingURL=AbilityComponent.js.map

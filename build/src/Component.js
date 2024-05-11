@@ -31,5 +31,6 @@ export var CType;
     CType[CType["EnemySpawner"] = 22] = "EnemySpawner";
     CType[CType["Experience"] = 23] = "Experience";
     CType[CType["Direction"] = 24] = "Direction";
+    CType[CType["Rotation"] = 25] = "Rotation";
 })(CType || (CType = {}));
 //# sourceMappingURL=Component.js.map

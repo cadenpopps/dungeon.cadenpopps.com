@@ -1,6 +1,10 @@
 import { CType } from "../Component.js";
 import { AbilityType } from "../Components/AbilityComponent.js";
 import HitboxComponent from "../Components/HitboxComponent.js";
+import PositionComponent from "../Components/PositionComponent.js";
+import RotationComponent, { RotationDirectionMap } from "../Components/RotationComponent.js";
+import SizeComponent from "../Components/SizeComponent.js";
+import VisibleComponent from "../Components/VisibleComponent.js";
 import { System, SystemType } from "../System.js";
 import CameraSystem from "./CameraSystem.js";
 import VisibleSystem from "./VisibleSystem.js";
@@ -19,13 +23,13 @@ export default class AbilitySystem extends System {
             const ability = entity.get(CType.Ability);
             const con = entity.get(CType.Controller);
             this.determineActiveAbility(con, ability);
-            if (ability.primary.currentTick > 0) {
+            if (ability.primary.currentTick >= 0) {
                 this.ability(entityId, ability.primary);
             }
-            if (ability.secondary.currentTick > 0) {
+            if (ability.secondary.currentTick >= 0) {
                 this.ability(entityId, ability.secondary);
             }
-            if (ability.ultimate.currentTick > 0) {
+            if (ability.ultimate.currentTick >= 0) {
                 this.ability(entityId, ability.ultimate);
             }
             this.decrementCooldownAndCurrentTick(ability);
@@ -33,32 +37,32 @@ export default class AbilitySystem extends System {
     }
     getEntitiesHelper() { }
     determineActiveAbility(con, ability) {
-        if (con.primary && ability.primary.cooldown === 0) {
+        if (con.primary && ability.primary.cooldown < 0) {
             ability.primary.currentTick = ability.primary.duration;
             ability.primary.cooldown = ability.primary.cooldownLength;
-            ability.secondary.currentTick = 0;
-            ability.ultimate.currentTick = 0;
+            ability.secondary.currentTick = -1;
+            ability.ultimate.currentTick = -1;
         }
-        if (con.secondary && ability.secondary.cooldown === 0) {
+        if (con.secondary && ability.secondary.cooldown < 0) {
             ability.secondary.currentTick = ability.secondary.duration;
             ability.secondary.cooldown = ability.secondary.cooldownLength;
-            ability.primary.currentTick = 0;
-            ability.ultimate.currentTick = 0;
+            ability.primary.currentTick = -1;
+            ability.ultimate.currentTick = -1;
         }
-        if (con.ultimate && ability.ultimate.cooldown === 0) {
+        if (con.ultimate && ability.ultimate.cooldown < 0) {
             ability.ultimate.currentTick = ability.ultimate.duration;
             ability.ultimate.cooldown = ability.ultimate.cooldownLength;
-            ability.primary.currentTick = 0;
-            ability.secondary.currentTick = 0;
+            ability.primary.currentTick = -1;
+            ability.secondary.currentTick = -1;
         }
     }
     ability(entityId, ability) {
         switch (ability.type) {
             case AbilityType.SpinAttack:
-                this.spinAttack(entityId, ability);
+                this.spawnHitbox(entityId, ability);
                 break;
             case AbilityType.SlashAttack:
-                this.slashAttack(entityId, ability);
+                this.spawnHitbox(entityId, ability);
                 break;
             default:
                 console.log(`Ability ${ability.type} not found`);
@@ -66,44 +70,40 @@ export default class AbilitySystem extends System {
         }
     }
     decrementCooldownAndCurrentTick(ability) {
-        if (ability.primary.cooldown > 0) {
+        if (ability.primary.cooldown >= 0) {
             ability.primary.cooldown--;
         }
-        if (ability.primary.currentTick > 0) {
+        if (ability.primary.currentTick >= 0) {
             ability.primary.currentTick--;
         }
-        if (ability.secondary.cooldown > 0) {
+        if (ability.secondary.cooldown >= 0) {
             ability.secondary.cooldown--;
         }
-        if (ability.secondary.currentTick > 0) {
+        if (ability.secondary.currentTick >= 0) {
             ability.secondary.currentTick--;
         }
-        if (ability.ultimate.cooldown > 0) {
+        if (ability.ultimate.cooldown >= 0) {
             ability.ultimate.cooldown--;
         }
-        if (ability.ultimate.currentTick > 0) {
+        if (ability.ultimate.currentTick >= 0) {
             ability.ultimate.currentTick--;
         }
     }
-    spinAttack(entityId, ability) {
-        const pos = this.entityManager.get(entityId, CType.Position);
-        const hitbox = ability.frames[ability.currentTick];
-        if (hitbox.active) {
-            const newHitbox = new HitboxComponent(hitbox.x, hitbox.y, hitbox.width, hitbox.height, hitbox.framesActive, entityId);
+    spawnHitbox(entityId, ability) {
+        const hitboxData = ability.frames[ability.duration - ability.currentTick];
+        if (hitboxData !== null) {
+            const sourcePos = this.entityManager.get(entityId, CType.Position);
+            const sourceDir = this.entityManager.get(entityId, CType.Direction).direction;
+            const pos = new PositionComponent(sourcePos.x + hitboxData.x, sourcePos.y + hitboxData.y);
+            const size = new SizeComponent(hitboxData.width, hitboxData.height);
+            const rotation = new RotationComponent(sourcePos, RotationDirectionMap.get(sourceDir));
+            const hitbox = new HitboxComponent(hitboxData.x, hitboxData.y, hitboxData.width, hitboxData.height, hitboxData.frames, entityId);
             this.entityManager.addEntity(new Map([
                 [CType.Position, pos],
-                [CType.Hitbox, newHitbox],
-            ]));
-        }
-    }
-    slashAttack(entityId, ability) {
-        const pos = this.entityManager.get(entityId, CType.Position);
-        const hitbox = ability.frames[ability.currentTick];
-        if (hitbox.active) {
-            const newHitbox = new HitboxComponent(hitbox.x, hitbox.y, hitbox.width, hitbox.height, hitbox.framesActive, entityId);
-            this.entityManager.addEntity(new Map([
-                [CType.Position, pos],
-                [CType.Hitbox, newHitbox],
+                [CType.Size, size],
+                [CType.Hitbox, hitbox],
+                [CType.Rotation, rotation],
+                [CType.Visible, new VisibleComponent(false)],
             ]));
         }
     }

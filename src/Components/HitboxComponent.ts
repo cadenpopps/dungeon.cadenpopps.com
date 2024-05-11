@@ -1,30 +1,37 @@
 import { Component, CType } from "../Component.js";
 
 export default class HitboxComponent extends Component {
-    public x: number;
-    public y: number;
+    public shape: HitboxShape;
+    public xOffset: number;
+    public yOffset: number;
     public width: number;
     public height: number;
-    public framesActive: number;
+    public frames: number;
     public sourceId: number;
-    public active: boolean;
 
-    constructor(
-        x: number,
-        y: number,
-        width: number,
-        height: number,
-        framesActive: number,
-        sourceId: number,
-        active: boolean = true
-    ) {
+    constructor(xOffset: number, yOffset: number, width: number, height: number, frames: number, sourceId: number) {
         super(CType.Hitbox);
-        this.x = x;
-        this.y = y;
+        this.shape = HitboxShape.Rectangle;
+        this.xOffset = xOffset;
+        this.yOffset = yOffset;
         this.width = width;
         this.height = height;
-        this.framesActive = framesActive;
+        this.frames = frames;
         this.sourceId = sourceId;
-        this.active = active;
     }
+}
+
+export class CircleHitboxComponent extends HitboxComponent {}
+
+export enum HitboxShape {
+    Rectangle,
+    Circle,
+}
+
+export interface HitboxData {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    frames: number;
 }

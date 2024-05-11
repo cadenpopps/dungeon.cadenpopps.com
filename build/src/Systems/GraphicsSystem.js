@@ -10,7 +10,7 @@ export default class GraphicsSystem extends System {
     invisibleCanvas;
     layers;
     constructor(eventManager, entityManager) {
-        super(SystemType.Graphics, eventManager, entityManager, [CType.Position, CType.Visible]);
+        super(SystemType.Graphics, eventManager, entityManager, [CType.Position, CType.Visible, CType.Size]);
         this.canvas = new PoppsCanvas();
         this.invisibleCanvas = new PoppsCanvas(0, document.querySelector(`#spriteCanvas`));
         this.layers = Array();
@@ -45,8 +45,15 @@ export default class GraphicsSystem extends System {
                 const entity = this.entityManager.getEntity(entityId);
                 const pos = entity.get(CType.Position);
                 const vis = entity.get(CType.Visible);
-                const size = entity.get(CType.Size).size;
-                const halfSize = size / 2;
+                const width = entity.get(CType.Size).width;
+                const height = entity.get(CType.Size).height;
+                if (entity.has(CType.Rotation)) {
+                    this.canvas.canvas.save();
+                    const rotation = entity.get(CType.Rotation);
+                    this.canvas.canvas.translate(rotation.centerPoint.x, rotation.centerPoint.y);
+                    this.canvas.canvas.rotate((rotation.degrees * Math.PI) / 180);
+                    this.canvas.canvas.translate(-rotation.centerPoint.x, -rotation.centerPoint.y);
+                }
                 if (entity.has(CType.Texture)) {
                     const tex = entity.get(CType.Texture);
                     if (!vis.visible) {
@@ -58,21 +65,21 @@ export default class GraphicsSystem extends System {
                             this.canvas.setGlobalAlpha(0.5);
                         }
                     }
-                    if (size === 1) {
+                    if (entity.has(CType.Tile)) {
                         for (let texture of tex.textures) {
-                            this.canvas.sprite(texture.textureMap, texture.mapX, texture.mapY, texture.pixelWidth, texture.pixelHeight, texture.x + pos.x - halfSize, texture.y + pos.y - halfSize, size, size);
+                            this.canvas.sprite(texture.textureMap, texture.mapX, texture.mapY, texture.pixelWidth, texture.pixelHeight, texture.x + pos.x - 0.5, texture.y + pos.y - 0.5, 1, 1);
                             if (texture.tint) {
                                 this.canvas.fill(texture.tint.r, texture.tint.g, texture.tint.b, texture.tint.a);
-                                this.canvas.rect(texture.x + pos.x - halfSize, texture.y + pos.y - halfSize, size, size);
+                                this.canvas.rect(texture.x + pos.x - 0.5, texture.y + pos.y - 0.5, 1, 1);
                             }
                         }
                         this.canvas.canvas.globalCompositeOperation = "source-atop";
                         const light = vis.light;
                         this.canvas.fill(light.r, light.g, light.b, light.a);
-                        this.canvas.rect(pos.x - halfSize, pos.y - halfSize, size, size);
+                        this.canvas.rect(pos.x - 0.5, pos.y - 0.5, 1, 1);
                         const shadow = vis.shadow;
                         this.canvas.fill(shadow.r, shadow.g, shadow.b, shadow.a);
-                        this.canvas.rect(pos.x - halfSize, pos.y - halfSize, size, size);
+                        this.canvas.rect(pos.x - 0.5, pos.y - 0.5, 1, 1);
                         this.canvas.canvas.globalCompositeOperation = "source-over";
                     }
                     else {
@@ -91,7 +98,7 @@ export default class GraphicsSystem extends System {
                             this.invisibleCanvas.fill(shadow.r, shadow.g, shadow.b, shadow.a);
                             this.invisibleCanvas.rect(0, 0, texture.pixelWidth, texture.pixelHeight);
                             this.invisibleCanvas.canvas.globalCompositeOperation = "source-over";
-                            this.canvas.sprite(this.invisibleCanvas.canvasElement, 0, 0, texture.pixelWidth, texture.pixelHeight, texture.x + pos.x - halfSize, texture.y + pos.y - halfSize, size, size);
+                            this.canvas.sprite(this.invisibleCanvas.canvasElement, 0, 0, texture.pixelWidth, texture.pixelHeight, texture.x + pos.x - width / 2, texture.y + pos.y - height / 2, width, height);
                         }
                     }
                     this.canvas.resetGlobalAlpha();
@@ -103,13 +110,16 @@ export default class GraphicsSystem extends System {
                     else {
                         this.canvas.fill(255, 255, 255, 1);
                     }
-                    this.canvas.rect(pos.x - halfSize, pos.y - halfSize, size, size);
+                    this.canvas.rect(pos.x - width / 2, pos.y - height / 2, width, height);
                     const light = vis.light;
                     this.canvas.fill(light.r, light.g, light.b, light.a);
-                    this.canvas.rect(pos.x - halfSize, pos.y - halfSize, size, size);
+                    this.canvas.rect(pos.x - width / 2, pos.y - height / 2, width, height);
                     const shadow = vis.shadow;
                     this.canvas.fill(shadow.r, shadow.g, shadow.b, shadow.a);
-                    this.canvas.rect(pos.x - halfSize, pos.y - halfSize, size, size);
+                    this.canvas.rect(pos.x - width / 2, pos.y - height / 2, width, height);
+                }
+                if (entity.has(CType.Rotation)) {
+                    this.canvas.canvas.restore();
                 }
             }
         }

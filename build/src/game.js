@@ -1,7 +1,7 @@
 import { PoppsEngine } from "../lib/PoppsEngine.js";
 import { loadImage } from "../lib/PoppsLoad.js";
 import { CType } from "./Component.js";
-import AbilityComponent, { SlashAttack, SpinAttack } from "./Components/AbilityComponent.js";
+import AbilityComponent, { LungeAttack, SpinAttack } from "./Components/AbilityComponent.js";
 import AccelerationComponent from "./Components/AccelerationComponent.js";
 import CameraComponent from "./Components/CameraComponent.js";
 import CollisionComponent, { CollisionHandler } from "./Components/CollisionComponent.js";
@@ -67,7 +67,7 @@ entityManager.addEntity(new Map([
     [CType.Player, new PlayerComponent()],
     [CType.Direction, new DirectionComponent()],
     [CType.Health, new HealthComponent(20)],
-    [CType.Ability, new AbilityComponent(new SpinAttack(50), new SlashAttack(15))],
+    [CType.Ability, new AbilityComponent(new LungeAttack(20), new SpinAttack(60))],
     [CType.Position, new PositionComponent(55, 19, 0)],
     [CType.Velocity, new VelocityComponent(0, 0)],
     [CType.Acceleration, new AccelerationComponent(0, 0)],

@@ -64,13 +64,25 @@ export default class VisibleSystem extends System {
         for (let entityId of entities) {
             const entity = entityManager.getEntity(entityId);
             const ePos = entity.get(CType.Position);
-            const size = entity.get(CType.Size).size;
-            const halfSize = size / 2;
-            if (size !== 1) {
-                const x1 = round(ePos.x - halfSize);
-                const y1 = round(ePos.y - halfSize);
-                const x2 = round(ePos.x + halfSize);
-                const y2 = round(ePos.y + halfSize);
+            if (entity.has(CType.Tile)) {
+                const x = round(ePos.x - 0.5);
+                const y = round(ePos.y - 0.5);
+                if (!entityMap.get(x)) {
+                    entityMap.set(x, new Map());
+                }
+                if (!entityMap.get(x)?.get(y)) {
+                    entityMap.get(x)?.set(y, new Array());
+                }
+                if (!entityMap.get(x)?.get(y)?.includes(entityId)) {
+                    entityMap.get(x)?.get(y)?.push(entityId);
+                }
+            }
+            else {
+                const size = entity.get(CType.Size);
+                const x1 = round(ePos.x - size.width / 2);
+                const y1 = round(ePos.y - size.height / 2);
+                const x2 = round(ePos.x + size.width / 2);
+                const y2 = round(ePos.y + size.height / 2);
                 for (let x = x1; x <= x2; x++) {
                     for (let y = y1; y <= y2; y++) {
                         if (!entityMap.get(x)) {
@@ -83,19 +95,6 @@ export default class VisibleSystem extends System {
                             entityMap.get(x)?.get(y)?.push(entityId);
                         }
                     }
-                }
-            }
-            else {
-                const x = round(ePos.x - halfSize);
-                const y = round(ePos.y - halfSize);
-                if (!entityMap.get(x)) {
-                    entityMap.set(x, new Map());
-                }
-                if (!entityMap.get(x)?.get(y)) {
-                    entityMap.get(x)?.set(y, new Array());
-                }
-                if (!entityMap.get(x)?.get(y)?.includes(entityId)) {
-                    entityMap.get(x)?.get(y)?.push(entityId);
                 }
             }
         }
@@ -169,19 +168,19 @@ export default class VisibleSystem extends System {
         return squareIds;
     }
     static getShadow(currentSquareId, centerPos, x, y, octant, entityManager) {
-        const currentSize = entityManager.get(currentSquareId, CType.Size).size;
-        if (currentSize !== 1) {
-            const currentPos = entityManager.get(currentSquareId, CType.Position);
-            const newPos = this.getOctantCoordsFromPosition(currentPos, centerPos, octant);
-            return {
-                lowerBound: VisibleSystem.slope(newPos.x + currentSize / 2, newPos.y - currentSize / 2, SquarePosition.Center),
-                upperBound: VisibleSystem.slope(newPos.x - currentSize / 2, newPos.y + currentSize / 2, SquarePosition.Center),
-            };
-        }
-        else {
+        const size = entityManager.get(currentSquareId, CType.Size);
+        if (size.width === 1 && size.height === 1) {
             return {
                 lowerBound: VisibleSystem.slope(x, y, SquarePosition.BottomRight),
                 upperBound: VisibleSystem.slope(x, y, SquarePosition.TopLeft),
+            };
+        }
+        else {
+            const currentPos = entityManager.get(currentSquareId, CType.Position);
+            const newPos = this.getOctantCoordsFromPosition(currentPos, centerPos, octant);
+            return {
+                lowerBound: VisibleSystem.slope(newPos.x + size.width / 2, newPos.y - size.height / 2, SquarePosition.Center),
+                upperBound: VisibleSystem.slope(newPos.x - size.width / 2, newPos.y + size.height / 2, SquarePosition.Center),
             };
         }
     }

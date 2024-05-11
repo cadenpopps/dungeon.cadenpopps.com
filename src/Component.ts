@@ -32,4 +32,5 @@ export enum CType {
     EnemySpawner,
     Experience,
     Direction,
+    Rotation,
 }

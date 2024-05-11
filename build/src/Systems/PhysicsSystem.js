@@ -56,8 +56,11 @@ export default class PhysicsSystem extends System {
         let biggestEntitySize = 1;
         for (let entityId of entityIds) {
             const size = this.entityManager.get(entityId, CType.Size);
-            if (size.size > biggestEntitySize) {
-                biggestEntitySize = size.size;
+            if (size.width > biggestEntitySize) {
+                biggestEntitySize = size.width;
+            }
+            if (size.height > biggestEntitySize) {
+                biggestEntitySize = size.height;
             }
         }
         return biggestEntitySize;
@@ -157,17 +160,19 @@ export default class PhysicsSystem extends System {
     }
     overlapping(ent1, ent2) {
         const pos1 = this.entityManager.get(ent1, CType.Position);
-        const halfSize1 = this.entityManager.get(ent1, CType.Size).size / 2;
+        const width1 = this.entityManager.get(ent1, CType.Size).width;
+        const height1 = this.entityManager.get(ent1, CType.Size).height;
         const pos2 = this.entityManager.get(ent2, CType.Position);
-        const halfSize2 = this.entityManager.get(ent2, CType.Size).size / 2;
-        const left1 = pos1.x - halfSize1;
-        const top1 = pos1.y - halfSize1;
-        const right1 = pos1.x + halfSize1;
-        const bottom1 = pos1.y + halfSize1;
-        const left2 = pos2.x - halfSize2;
-        const top2 = pos2.y - halfSize2;
-        const right2 = pos2.x + halfSize2;
-        const bottom2 = pos2.y + halfSize2;
+        const width2 = this.entityManager.get(ent2, CType.Size).width;
+        const height2 = this.entityManager.get(ent2, CType.Size).height;
+        const left1 = pos1.x - width1 / 2;
+        const top1 = pos1.y - height1 / 2;
+        const right1 = pos1.x + width1 / 2;
+        const bottom1 = pos1.y + height1 / 2;
+        const left2 = pos2.x - width2 / 2;
+        const top2 = pos2.y - height2 / 2;
+        const right2 = pos2.x + width2 / 2;
+        const bottom2 = pos2.y + height2 / 2;
         return left1 < right2 && right1 > left2 && top1 < bottom2 && bottom1 > top2;
     }
     collisionHandler(entityId, collisionId) {
@@ -178,8 +183,8 @@ export default class PhysicsSystem extends System {
         const size1 = this.entityManager.get(entityId, CType.Size);
         const size2 = this.entityManager.get(collisionId, CType.Size);
         const scale = 1000;
-        const xOverlap = ceil(scale * ((size1.size + size2.size) / 2 - abs(pos1.x - pos2.x))) / scale;
-        const yOverlap = ceil(scale * ((size1.size + size2.size) / 2 - abs(pos1.y - pos2.y))) / scale;
+        const xOverlap = ceil(scale * ((size1.width + size2.width) / 2 - abs(pos1.x - pos2.x))) / scale;
+        const yOverlap = ceil(scale * ((size1.height + size2.height) / 2 - abs(pos1.y - pos2.y))) / scale;
         const force = { x: 0, y: 0 };
         if (pos1.x < pos2.x) {
             force.x = -xOverlap;
