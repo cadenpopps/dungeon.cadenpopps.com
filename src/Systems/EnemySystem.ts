@@ -1,4 +1,4 @@
-import { abs, randomInRange, randomIntInRange } from "../../lib/PoppsMath.js";
+import { abs, floor, randomInRange, randomIntInRange } from "../../lib/PoppsMath.js";
 import { CType, Component } from "../Component.js";
 import AIComponent from "../Components/AIComponent.js";
 import AccelerationComponent from "../Components/AccelerationComponent.js";
@@ -40,11 +40,11 @@ export default class EnemySystem extends System {
             if (abs(playerPos.x - ePos.x) < cam.visibleDistance && abs(playerPos.y - ePos.y) < cam.visibleDistance) {
                 const spawner = entity.get(CType.EnemySpawner) as EnemySpawnerComponent;
                 if (spawner.boss) {
-                    this.spawnEnemy(entity, this.playerId);
+                    this.spawnBoss(entity, this.playerId);
                 } else if (spawner.pack) {
                     this.spawnPack(entity, this.playerId);
                 } else {
-                    this.spawnBoss(entity, this.playerId);
+                    this.spawnEnemy(entity, this.playerId);
                 }
             }
         }
@@ -55,6 +55,7 @@ export default class EnemySystem extends System {
         const pLevel = (this.entityManager.get(playerId, CType.Experience) as ExperienceComponent).level;
         const level = spawnerPos.z + pLevel;
         const size = randomInRange(0.5, 2);
+        const health = floor(10 * size * level);
 
         const enemy = new Map<CType, Component>([
             [CType.AI, new AIComponent()],
@@ -65,7 +66,7 @@ export default class EnemySystem extends System {
             [CType.Acceleration, new AccelerationComponent(0, 0)],
             [CType.Visible, new VisibleComponent(false, 4)],
             [CType.UI, new UIComponent([new UIEnemyHealthBar(size, 1)])],
-            [CType.Health, new HealthComponent(30)],
+            [CType.Health, new HealthComponent(health)],
             [CType.Collision, new CollisionComponent(CollisionHandler.Stop)],
             [CType.Size, new SizeComponent(size)],
             [CType.Controller, new ControllerComponent()],
@@ -85,6 +86,7 @@ export default class EnemySystem extends System {
         const enemies = new Array<Map<CType, Component>>();
         for (let i = 0; i < amount; i++) {
             const size = randomInRange(0.5, 1.25);
+            const health = floor(10 * size * level);
             enemies.push(
                 new Map<CType, Component>([
                     [CType.AI, new AIComponent()],
@@ -101,7 +103,7 @@ export default class EnemySystem extends System {
                     [CType.Acceleration, new AccelerationComponent(0, 0)],
                     [CType.Visible, new VisibleComponent(false, 4)],
                     [CType.UI, new UIComponent([new UIEnemyHealthBar(size, 1)])],
-                    [CType.Health, new HealthComponent(30)],
+                    [CType.Health, new HealthComponent(health)],
                     [CType.Collision, new CollisionComponent(CollisionHandler.Stop)],
                     [CType.Size, new SizeComponent(size)],
                     [CType.Controller, new ControllerComponent()],
@@ -118,6 +120,7 @@ export default class EnemySystem extends System {
         const pLevel = (this.entityManager.get(playerId, CType.Experience) as ExperienceComponent).level;
         const level = spawnerPos.z + pLevel;
         const size = randomInRange(0.5, 2);
+        const health = floor(10 * size * level);
 
         const enemy = new Map<CType, Component>([
             [CType.AI, new AIComponent()],
@@ -128,7 +131,7 @@ export default class EnemySystem extends System {
             [CType.Acceleration, new AccelerationComponent(0, 0)],
             [CType.Visible, new VisibleComponent(false, 4)],
             [CType.UI, new UIComponent([new UIEnemyHealthBar(size, 1)])],
-            [CType.Health, new HealthComponent(30)],
+            [CType.Health, new HealthComponent(health)],
             [CType.Collision, new CollisionComponent(CollisionHandler.Stop)],
             [CType.Size, new SizeComponent(size)],
             [CType.Controller, new ControllerComponent()],

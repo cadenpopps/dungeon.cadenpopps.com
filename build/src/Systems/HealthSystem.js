@@ -10,6 +10,9 @@ export default class HealthSystem extends System {
             if (health.currentHealth <= 0) {
                 this.entityManager.removeEntity(entityId);
             }
+            if (health.invincibleCounter > 0) {
+                health.invincibleCounter--;
+            }
         }
     }
 }

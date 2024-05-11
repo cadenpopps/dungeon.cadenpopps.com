@@ -19,11 +19,11 @@ export class UIPlayerHealthBar {
     colorEmpty;
     constructor(health) {
         this.type = UIType.PlayerHealthBar;
-        this.x = 128;
+        this.x = 48;
         this.y = 32;
-        this.width = health * 10;
-        this.height = 12;
-        this.percentage = 0.6;
+        this.width = health * 12;
+        this.height = 16;
+        this.percentage = 1;
         this.colorFull = { r: 180, g: 20, b: 10, a: 1 };
         this.colorEmpty = { r: 68, g: 67, b: 71, a: 1 };
     }

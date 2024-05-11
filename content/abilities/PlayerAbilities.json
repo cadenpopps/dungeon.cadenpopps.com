@@ -1,24 +1,18 @@
 {
     "LungeAttack": {
         "frames": [
-            { "x": 0, "y": 1, "width": 1, "height": 1, "frames": 3 },
-            { "x": 0, "y": 1.5, "width": 0.5, "height": 1.5, "frames": 3 },
-            null
+            { "damage": 1, "x": 0, "y": 0, "width": 0.75, "height": 0.75, "frames": 3, "degrees": 45 },
+            { "damage": 2, "x": 0, "y": 1.5, "width": 0.5, "height": 1.5, "frames": 3 },
+            { "damage": 1, "x": 0, "y": 1, "width": 1, "height": 1, "frames": 3 }
         ]
     },
     "SpinAttack": {
         "frames": [
             null,
-            { "x": 0, "y": -1, "width": 1, "height": 1, "frames": 20 },
-            { "x": 1, "y": -1, "width": 1, "height": 1, "frames": 20 },
-            { "x": 1, "y": 0, "width": 1, "height": 1, "frames": 20 },
-            { "x": 1, "y": 1, "width": 1, "height": 1, "frames": 20 },
-            { "x": 0, "y": 1, "width": 1, "height": 1, "frames": 20 },
-            { "x": -1, "y": 1, "width": 1, "height": 1, "frames": 20 },
-            { "x": -1, "y": 0, "width": 1, "height": 1, "frames": 20 },
-            { "x": -1, "y": -1, "width": 1, "height": 1, "frames": 20 },
-            { "x": 0, "y": -1, "width": 1, "height": 1, "frames": 20 },
-            null
+            null,
+            null,
+            null,
+            { "damage": 3, "x": 0, "y": 0, "width": 2, "height": 2, "frames": 3, "circle": true }
         ]
     },
     "SlashAttack": {

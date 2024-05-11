@@ -1,6 +1,8 @@
 import PoppsCanvas from "../../lib/PoppsCanvas.js";
 import { floor } from "../../lib/PoppsMath.js";
 import { CType } from "../Component.js";
+import { HitboxShape } from "../Components/HitboxComponent.js";
+import { SHOW_HITBOXES } from "../Constants.js";
 import { Event } from "../EventManager.js";
 import { System, SystemType } from "../System.js";
 import CameraSystem from "./CameraSystem.js";
@@ -9,11 +11,13 @@ export default class GraphicsSystem extends System {
     canvas;
     invisibleCanvas;
     layers;
+    hitboxIds;
     constructor(eventManager, entityManager) {
         super(SystemType.Graphics, eventManager, entityManager, [CType.Position, CType.Visible, CType.Size]);
         this.canvas = new PoppsCanvas();
         this.invisibleCanvas = new PoppsCanvas(0, document.querySelector(`#spriteCanvas`));
         this.layers = Array();
+        this.hitboxIds = Array();
         this.canvas.loop(this.canvasCallback.bind(this));
         this.canvas.setImageSmoothingEnabled(false);
         this.invisibleCanvas.setImageSmoothingEnabled(false);
@@ -30,7 +34,11 @@ export default class GraphicsSystem extends System {
                 break;
         }
     }
-    getEntitiesHelper() { }
+    getEntitiesHelper() {
+        if (SHOW_HITBOXES) {
+            this.hitboxIds = this.entityManager.getSystemEntities([CType.Hitbox]);
+        }
+    }
     canvasCallback() {
         this.canvas.clear();
         const cam = CameraSystem.getHighestPriorityCamera();
@@ -45,8 +53,9 @@ export default class GraphicsSystem extends System {
                 const entity = this.entityManager.getEntity(entityId);
                 const pos = entity.get(CType.Position);
                 const vis = entity.get(CType.Visible);
-                const width = entity.get(CType.Size).width;
-                const height = entity.get(CType.Size).height;
+                const size = entity.get(CType.Size);
+                const width = size.width;
+                const height = size.height;
                 if (entity.has(CType.Rotation)) {
                     this.canvas.canvas.save();
                     const rotation = entity.get(CType.Rotation);
@@ -54,16 +63,16 @@ export default class GraphicsSystem extends System {
                     this.canvas.canvas.rotate((rotation.degrees * Math.PI) / 180);
                     this.canvas.canvas.translate(-rotation.centerPoint.x, -rotation.centerPoint.y);
                 }
+                if (entity.has(CType.Health)) {
+                    const health = entity.get(CType.Health);
+                    if (health.invincibleCounter > 0) {
+                        this.canvas.setGlobalAlpha(0.5);
+                    }
+                }
                 if (entity.has(CType.Texture)) {
                     const tex = entity.get(CType.Texture);
                     if (!vis.visible) {
                         this.canvas.setGlobalAlpha(0.8);
-                    }
-                    if (entity.has(CType.Movement)) {
-                        const mov = entity.get(CType.Movement);
-                        if (mov.rolling) {
-                            this.canvas.setGlobalAlpha(0.5);
-                        }
                     }
                     if (entity.has(CType.Tile)) {
                         for (let texture of tex.textures) {
@@ -101,7 +110,6 @@ export default class GraphicsSystem extends System {
                             this.canvas.sprite(this.invisibleCanvas.canvasElement, 0, 0, texture.pixelWidth, texture.pixelHeight, texture.x + pos.x - width / 2, texture.y + pos.y - height / 2, width, height);
                         }
                     }
-                    this.canvas.resetGlobalAlpha();
                 }
                 else {
                     if (!vis.visible) {
@@ -118,9 +126,33 @@ export default class GraphicsSystem extends System {
                     this.canvas.fill(shadow.r, shadow.g, shadow.b, shadow.a);
                     this.canvas.rect(pos.x - width / 2, pos.y - height / 2, width, height);
                 }
+                this.canvas.resetGlobalAlpha();
                 if (entity.has(CType.Rotation)) {
                     this.canvas.canvas.restore();
                 }
+            }
+        }
+        if (SHOW_HITBOXES) {
+            for (const entityId of this.hitboxIds) {
+                const rotation = this.entityManager.get(entityId, CType.Rotation);
+                const hitbox = this.entityManager.get(entityId, CType.Hitbox);
+                const pos = this.entityManager.get(entityId, CType.Position);
+                const size = this.entityManager.get(entityId, CType.Size);
+                const width = size.width;
+                const height = size.height;
+                this.canvas.canvas.save();
+                this.canvas.canvas.translate(rotation.centerPoint.x, rotation.centerPoint.y);
+                this.canvas.canvas.rotate((rotation.degrees * Math.PI) / 180);
+                this.canvas.canvas.translate(-rotation.centerPoint.x, -rotation.centerPoint.y);
+                this.canvas.stroke(255, 0, 40, 0.75);
+                this.canvas.strokeWidth(0.1);
+                if (hitbox.shape === HitboxShape.Rectangle) {
+                    this.canvas.strokeRect(pos.x - width / 2, pos.y - height / 2, width, height);
+                }
+                else if (hitbox.shape === HitboxShape.Circle) {
+                    this.canvas.strokeEllipse(pos.x, pos.y, hitbox.width);
+                }
+                this.canvas.canvas.restore();
             }
         }
         this.canvas.canvas.resetTransform();

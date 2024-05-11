@@ -96,10 +96,26 @@ entityManager.addEntity(
             ]),
         ],
         [CType.Texture, new TextureComponent([new Texture(loadImage("/assets/img/sprites/playerSpriteSheet.png"))])],
-
         [CType.Experience, new ExperienceComponent()],
     ])
 );
+
+// const size = randomInRange(0.8, 3);
+// const enemy = new Map<CType, Component>([
+//     [CType.AI, new AIComponent()],
+//     [CType.Direction, new DirectionComponent()],
+//     [CType.Position, new PositionComponent(55, 16)],
+//     [CType.Velocity, new VelocityComponent(0, 0)],
+//     [CType.Acceleration, new AccelerationComponent(0, 0)],
+//     [CType.Visible, new VisibleComponent(false, 4)],
+//     [CType.UI, new UIComponent([new UIEnemyHealthBar(size, 1)])],
+//     [CType.Health, new HealthComponent(30)],
+//     [CType.Collision, new CollisionComponent(CollisionHandler.Stop)],
+//     [CType.Size, new SizeComponent(size)],
+//     [CType.Controller, new ControllerComponent()],
+//     [CType.Movement, new MovementComponent(randomIntInRange(10, 30))],
+// ]);
+// entityManager.addEntity(enemy);
 
 function gameLoop() {
     eventManager.tick();

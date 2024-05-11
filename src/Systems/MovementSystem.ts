@@ -3,6 +3,7 @@ import { CType } from "../Component.js";
 import AccelerationComponent from "../Components/AccelerationComponent.js";
 import ControllerComponent from "../Components/ControllerComponent.js";
 import DirectionComponent, { Direction } from "../Components/DirectionComponent.js";
+import HealthComponent from "../Components/HealthComponent.js";
 import MovementComponent from "../Components/MovementComponent.js";
 import VelocityComponent from "../Components/VelocityComponent.js";
 import { EntityManager } from "../EntityManager.js";
@@ -44,6 +45,9 @@ export default class MovementSystem extends System {
             const acc = entity.get(CType.Acceleration) as AccelerationComponent;
             const con = entity.get(CType.Controller) as ControllerComponent;
             if (con.roll && mov.rollCooldown === 0) {
+                if (entity.has(CType.Health)) {
+                    (entity.get(CType.Health) as HealthComponent).invincibleCounter = mov.rollLength;
+                }
                 mov.rolling = true;
                 mov.rollCounter = mov.rollLength;
                 mov.rollCooldown = mov.rollCooldownLength;

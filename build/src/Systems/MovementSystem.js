@@ -35,6 +35,9 @@ export default class MovementSystem extends System {
             const acc = entity.get(CType.Acceleration);
             const con = entity.get(CType.Controller);
             if (con.roll && mov.rollCooldown === 0) {
+                if (entity.has(CType.Health)) {
+                    entity.get(CType.Health).invincibleCounter = mov.rollLength;
+                }
                 mov.rolling = true;
                 mov.rollCounter = mov.rollLength;
                 mov.rollCooldown = mov.rollCooldownLength;

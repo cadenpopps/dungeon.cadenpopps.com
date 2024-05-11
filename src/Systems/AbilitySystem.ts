@@ -2,11 +2,10 @@ import { CType, Component } from "../Component.js";
 import AbilityComponent, { Ability, AbilityType, SpinAttack } from "../Components/AbilityComponent.js";
 import ControllerComponent from "../Components/ControllerComponent.js";
 import DirectionComponent from "../Components/DirectionComponent.js";
-import HitboxComponent from "../Components/HitboxComponent.js";
+import HitboxComponent, { CircleHitboxComponent } from "../Components/HitboxComponent.js";
 import PositionComponent from "../Components/PositionComponent.js";
 import RotationComponent, { RotationDirectionMap } from "../Components/RotationComponent.js";
 import SizeComponent from "../Components/SizeComponent.js";
-import VisibleComponent from "../Components/VisibleComponent.js";
 import { EntityManager } from "../EntityManager.js";
 import { EventManager } from "../EventManager.js";
 import { System, SystemType } from "../System.js";
@@ -103,26 +102,44 @@ export default class AbilitySystem extends System {
     private spawnHitbox(entityId: number, ability: SpinAttack): void {
         const hitboxData = ability.frames[ability.duration - ability.currentTick];
         if (hitboxData !== null) {
+            const damage = hitboxData.damage;
             const sourcePos = this.entityManager.get<PositionComponent>(entityId, CType.Position);
             const sourceDir = this.entityManager.get<DirectionComponent>(entityId, CType.Direction).direction;
             const pos = new PositionComponent(sourcePos.x + hitboxData.x, sourcePos.y + hitboxData.y);
             const size = new SizeComponent(hitboxData.width, hitboxData.height);
-            const rotation = new RotationComponent(sourcePos, RotationDirectionMap.get(sourceDir));
-            const hitbox = new HitboxComponent(
-                hitboxData.x,
-                hitboxData.y,
-                hitboxData.width,
-                hitboxData.height,
-                hitboxData.frames,
-                entityId
+            const rotationOffset = hitboxData.degrees || 0;
+            const rotation = new RotationComponent(
+                sourcePos,
+                (RotationDirectionMap.get(sourceDir) as number) + rotationOffset
             );
+            let hitbox: HitboxComponent;
+            if (hitboxData.circle) {
+                hitbox = new CircleHitboxComponent(
+                    hitboxData.x,
+                    hitboxData.y,
+                    hitboxData.width,
+                    hitboxData.frames,
+                    entityId,
+                    damage
+                );
+            } else {
+                hitbox = new HitboxComponent(
+                    hitboxData.x,
+                    hitboxData.y,
+                    hitboxData.width,
+                    hitboxData.height,
+                    rotationOffset,
+                    hitboxData.frames,
+                    entityId,
+                    damage
+                );
+            }
             this.entityManager.addEntity(
                 new Map<CType, Component>([
                     [CType.Position, pos],
                     [CType.Size, size],
                     [CType.Hitbox, hitbox],
                     [CType.Rotation, rotation],
-                    [CType.Visible, new VisibleComponent(false)],
                 ])
             );
         }

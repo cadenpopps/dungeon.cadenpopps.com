@@ -76,9 +76,9 @@ export default class UISystem extends System {
         const health = this.entityManager.get(entityId, CType.Health);
         ui.percentage = health.currentHealth / health.maxHealth;
         this.canvas.fill(ui.colorEmpty.r, ui.colorEmpty.g, ui.colorEmpty.b, ui.colorEmpty.a);
-        this.canvas.rect(ui.x, ui.y, ui.width, ui.height);
+        this.canvas.rect(ui.x, this.canvas.height - ui.y, ui.width, ui.height);
         this.canvas.fill(ui.colorFull.r, ui.colorFull.g, ui.colorFull.b, ui.colorFull.a);
-        this.canvas.rect(ui.x, ui.y, ui.width * ui.percentage, ui.height);
+        this.canvas.rect(ui.x, this.canvas.height - ui.y, ui.width * ui.percentage, ui.height);
     }
     enemyHeatlhBar(entityId, ui, cam) {
         const health = this.entityManager.get(entityId, CType.Health);
