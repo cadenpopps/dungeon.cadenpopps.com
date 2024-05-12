@@ -30,8 +30,8 @@ export class None {
         this.frames = [];
         this.duration = -1;
         this.currentTick = -1;
-        this.cooldownLength = -1;
-        this.cooldown = -1;
+        this.cooldownLength = 0;
+        this.cooldown = 0;
     }
 }
 export class LungeAttack {
@@ -47,7 +47,7 @@ export class LungeAttack {
         this.duration = this.frames.length - 1;
         this.currentTick = -1;
         this.cooldownLength = cooldownLength;
-        this.cooldown = -1;
+        this.cooldown = 0;
     }
 }
 export class SpinAttack {
@@ -63,7 +63,7 @@ export class SpinAttack {
         this.duration = this.frames.length - 1;
         this.currentTick = -1;
         this.cooldownLength = cooldownLength;
-        this.cooldown = -1;
+        this.cooldown = 0;
     }
 }
 export class SlashAttack {
@@ -79,7 +79,7 @@ export class SlashAttack {
         this.duration = this.frames.length - 1;
         this.currentTick = -1;
         this.cooldownLength = cooldownLength;
-        this.cooldown = -1;
+        this.cooldown = 0;
     }
 }
 function convertAbilityData(AbilityData) {

@@ -36,19 +36,19 @@ export default class AbilitySystem extends System {
     }
     getEntitiesHelper() { }
     determineActiveAbility(con, ability) {
-        if (con.primary && ability.primary.cooldown < 0) {
+        if (con.primary && ability.primary.cooldown === 0) {
             ability.primary.currentTick = ability.primary.duration;
             ability.primary.cooldown = ability.primary.cooldownLength;
             ability.secondary.currentTick = -1;
             ability.ultimate.currentTick = -1;
         }
-        if (con.secondary && ability.secondary.cooldown < 0) {
+        if (con.secondary && ability.secondary.cooldown === 0) {
             ability.secondary.currentTick = ability.secondary.duration;
             ability.secondary.cooldown = ability.secondary.cooldownLength;
             ability.primary.currentTick = -1;
             ability.ultimate.currentTick = -1;
         }
-        if (con.ultimate && ability.ultimate.cooldown < 0) {
+        if (con.ultimate && ability.ultimate.cooldown === 0) {
             ability.ultimate.currentTick = ability.ultimate.duration;
             ability.ultimate.cooldown = ability.ultimate.cooldownLength;
             ability.primary.currentTick = -1;
@@ -69,19 +69,19 @@ export default class AbilitySystem extends System {
         }
     }
     decrementCooldownAndCurrentTick(ability) {
-        if (ability.primary.cooldown >= 0) {
+        if (ability.primary.cooldown > 0) {
             ability.primary.cooldown--;
         }
         if (ability.primary.currentTick >= 0) {
             ability.primary.currentTick--;
         }
-        if (ability.secondary.cooldown >= 0) {
+        if (ability.secondary.cooldown > 0) {
             ability.secondary.cooldown--;
         }
         if (ability.secondary.currentTick >= 0) {
             ability.secondary.currentTick--;
         }
-        if (ability.ultimate.cooldown >= 0) {
+        if (ability.ultimate.cooldown > 0) {
             ability.ultimate.cooldown--;
         }
         if (ability.ultimate.currentTick >= 0) {

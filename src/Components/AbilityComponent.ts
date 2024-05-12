@@ -47,8 +47,8 @@ export class None implements Ability {
         this.frames = [];
         this.duration = -1;
         this.currentTick = -1;
-        this.cooldownLength = -1;
-        this.cooldown = -1;
+        this.cooldownLength = 0;
+        this.cooldown = 0;
     }
 }
 
@@ -66,7 +66,7 @@ export class LungeAttack implements Ability {
         this.duration = this.frames.length - 1;
         this.currentTick = -1;
         this.cooldownLength = cooldownLength;
-        this.cooldown = -1;
+        this.cooldown = 0;
     }
 }
 
@@ -84,7 +84,7 @@ export class SpinAttack implements Ability {
         this.duration = this.frames.length - 1;
         this.currentTick = -1;
         this.cooldownLength = cooldownLength;
-        this.cooldown = -1;
+        this.cooldown = 0;
     }
 }
 
@@ -102,7 +102,7 @@ export class SlashAttack implements Ability {
         this.duration = this.frames.length - 1;
         this.currentTick = -1;
         this.cooldownLength = cooldownLength;
-        this.cooldown = -1;
+        this.cooldown = 0;
     }
 }
 
