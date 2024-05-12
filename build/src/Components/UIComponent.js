@@ -8,6 +8,15 @@ export default class UIComponent extends Component {
         this.layer = layer;
     }
 }
+export var UIType;
+(function (UIType) {
+    UIType[UIType["PlayerHealthBar"] = 0] = "PlayerHealthBar";
+    UIType[UIType["EnemyHeatlhBar"] = 1] = "EnemyHeatlhBar";
+    UIType[UIType["AbilityCooldowns"] = 2] = "AbilityCooldowns";
+    UIType[UIType["InteractablePrompt"] = 3] = "InteractablePrompt";
+    UIType[UIType["Tooltip"] = 4] = "Tooltip";
+    UIType[UIType["EnemyAI"] = 5] = "EnemyAI";
+})(UIType || (UIType = {}));
 export class UIPlayerHealthBar {
     type;
     x;
@@ -48,6 +57,20 @@ export class UIEnemyHealthBar {
         this.colorFull = { r: 0, g: 255, b: 0, a: 1 };
     }
 }
+export class UIEnemyAI {
+    type;
+    x;
+    y;
+    width;
+    height;
+    constructor(entitySize) {
+        this.type = UIType.EnemyAI;
+        this.x = 0;
+        this.y = -(entitySize * 0.6) - 0.3;
+        this.width = entitySize;
+        this.height = entitySize / 5;
+    }
+}
 export class UIAbilityCooldowns {
     type;
     colorPrimary;
@@ -84,19 +107,4 @@ export class UIToolTip {
         this.text = text;
     }
 }
-export var UIType;
-(function (UIType) {
-    UIType[UIType["PlayerHealthBar"] = 0] = "PlayerHealthBar";
-    UIType[UIType["EnemyHeatlhBar"] = 1] = "EnemyHeatlhBar";
-    UIType[UIType["AbilityCooldowns"] = 2] = "AbilityCooldowns";
-    UIType[UIType["InteractablePrompt"] = 3] = "InteractablePrompt";
-    UIType[UIType["Tooltip"] = 4] = "Tooltip";
-})(UIType || (UIType = {}));
-export var Shape;
-(function (Shape) {
-    Shape[Shape["Square"] = 0] = "Square";
-    Shape[Shape["Circle"] = 1] = "Circle";
-    Shape[Shape["Line"] = 2] = "Line";
-    Shape[Shape["Image"] = 3] = "Image";
-})(Shape || (Shape = {}));
 //# sourceMappingURL=UIComponent.js.map

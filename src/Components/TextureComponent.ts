@@ -58,7 +58,8 @@ export enum TextureMap {
     Wall,
     DungeonFloor,
     Door,
-    StairDown,
+    Stair,
+    Skeleton,
 }
 
 export const TextureMaps: Map<TextureMap, HTMLImageElement> = new Map<TextureMap, HTMLImageElement>([
@@ -67,7 +68,8 @@ export const TextureMaps: Map<TextureMap, HTMLImageElement> = new Map<TextureMap
     [TextureMap.Wall, loadImage(`/assets/img/textureMaps/Wall.png`)],
     [TextureMap.Door, loadImage(`/assets/img/textureMaps/Door.png`)],
     [TextureMap.DungeonFloor, loadImage(`/assets/img/textureMaps/DungeonFloor.png`)],
-    [TextureMap.StairDown, loadImage(`/assets/img/textureMaps/Stair.png`)],
+    [TextureMap.Stair, loadImage(`/assets/img/textureMaps/Stair.png`)],
+    [TextureMap.Skeleton, loadImage(`/assets/img/sprites/Skeleton.png`)],
 ]);
 
 export enum TexturePosition {

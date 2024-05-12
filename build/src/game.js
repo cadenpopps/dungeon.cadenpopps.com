@@ -86,7 +86,7 @@ entityManager.addEntity(new Map([
             new UIPlayerHealthBar(20),
         ]),
     ],
-    [CType.Texture, new TextureComponent([new Texture(loadImage("/assets/img/sprites/playerSpriteSheet.png"))])],
+    [CType.Texture, new TextureComponent([new Texture(loadImage("/assets/img/sprites/Player.png"))])],
     [CType.Experience, new ExperienceComponent()],
 ]));
 function gameLoop() {

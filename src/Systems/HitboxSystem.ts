@@ -39,6 +39,10 @@ export default class HitboxSystem extends System {
         );
         for (let entityId of hitboxesInRange) {
             const hitbox = this.entityManager.get<HitboxComponent>(entityId, CType.Hitbox);
+            if (!this.entityManager.entities.has(hitbox.sourceId)) {
+                this.entityManager.removeEntity(entityId);
+                continue;
+            }
             if (hitbox.frames === 0) {
                 this.entityManager.removeEntity(entityId);
             } else {

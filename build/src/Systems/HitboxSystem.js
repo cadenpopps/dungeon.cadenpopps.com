@@ -20,6 +20,10 @@ export default class HitboxSystem extends System {
         const hitboxesInRange = getEntitiesInRange(new PositionComponent(cam.x, cam.y), cam.visibleDistance, this.entities, this.entityManager);
         for (let entityId of hitboxesInRange) {
             const hitbox = this.entityManager.get(entityId, CType.Hitbox);
+            if (!this.entityManager.entities.has(hitbox.sourceId)) {
+                this.entityManager.removeEntity(entityId);
+                continue;
+            }
             if (hitbox.frames === 0) {
                 this.entityManager.removeEntity(entityId);
             }

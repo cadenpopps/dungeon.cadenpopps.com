@@ -96,14 +96,15 @@ export default class AbilitySystem extends System {
             const sourceDir = this.entityManager.get(entityId, CType.Direction).direction;
             const pos = new PositionComponent(sourcePos.x + hitboxData.x, sourcePos.y + hitboxData.y);
             const size = new SizeComponent(hitboxData.width, hitboxData.height);
+            const sourceSize = this.entityManager.get(entityId, CType.Size);
             const rotationOffset = hitboxData.degrees || 0;
             const rotation = new RotationComponent(sourcePos, RotationDirectionMap.get(sourceDir) + rotationOffset);
             let hitbox;
             if (hitboxData.circle) {
-                hitbox = new CircleHitboxComponent(hitboxData.x, hitboxData.y, hitboxData.width, hitboxData.frames, entityId, damage);
+                hitbox = new CircleHitboxComponent(hitboxData.x * sourceSize.width, hitboxData.y * sourceSize.height, hitboxData.width * sourceSize.width, hitboxData.frames, entityId, damage);
             }
             else {
-                hitbox = new HitboxComponent(hitboxData.x, hitboxData.y, hitboxData.width, hitboxData.height, rotationOffset, hitboxData.frames, entityId, damage);
+                hitbox = new HitboxComponent(hitboxData.x * sourceSize.width, hitboxData.y * sourceSize.height, hitboxData.width * sourceSize.width, hitboxData.height * sourceSize.height, rotationOffset, hitboxData.frames, entityId, damage);
             }
             this.entityManager.addEntity(new Map([
                 [CType.Position, pos],

@@ -95,26 +95,30 @@ entityManager.addEntity(
                 new UIPlayerHealthBar(20),
             ]),
         ],
-        [CType.Texture, new TextureComponent([new Texture(loadImage("/assets/img/sprites/playerSpriteSheet.png"))])],
+        [CType.Texture, new TextureComponent([new Texture(loadImage("/assets/img/sprites/Player.png"))])],
         [CType.Experience, new ExperienceComponent()],
     ])
 );
 
-// const size = randomInRange(0.8, 3);
+// const size = 1.5;
 // const enemy = new Map<CType, Component>([
 //     [CType.AI, new AIComponent()],
+//     [CType.Ability, new AbilityComponent(new SpinAttack(20))],
 //     [CType.Direction, new DirectionComponent()],
-//     [CType.Position, new PositionComponent(55, 16)],
+//     [CType.Experience, new ExperienceComponent(1)],
+//     [CType.Position, new PositionComponent(55, 17, 0)],
 //     [CType.Velocity, new VelocityComponent(0, 0)],
 //     [CType.Acceleration, new AccelerationComponent(0, 0)],
 //     [CType.Visible, new VisibleComponent(false, 4)],
 //     [CType.UI, new UIComponent([new UIEnemyHealthBar(size, 1)])],
-//     [CType.Health, new HealthComponent(30)],
+//     [CType.Health, new HealthComponent(10)],
 //     [CType.Collision, new CollisionComponent(CollisionHandler.Stop)],
 //     [CType.Size, new SizeComponent(size)],
 //     [CType.Controller, new ControllerComponent()],
-//     [CType.Movement, new MovementComponent(randomIntInRange(10, 30))],
+//     [CType.Movement, new MovementComponent(10)],
+//     [CType.Texture, new TextureComponent([new Texture(TextureMaps.get(TextureMap.Skeleton))])],
 // ]);
+// (enemy.get(CType.UI) as UIComponent).elements.push(new UIEnemyAI(size));
 // entityManager.addEntity(enemy);
 
 function gameLoop() {

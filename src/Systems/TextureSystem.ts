@@ -99,8 +99,10 @@ export default class TextureSystem extends System {
                     entity.set(CType.Texture, this.dungeonFloorTexture());
                     break;
                 case Tile.StairDown:
+                    entity.set(CType.Texture, this.stairTexture(false));
+                    break;
                 case Tile.StairUp:
-                    entity.set(CType.Texture, this.stairTexture());
+                    entity.set(CType.Texture, this.stairTexture(true));
                     break;
             }
         }
@@ -335,7 +337,19 @@ export default class TextureSystem extends System {
         ]);
     }
 
-    private stairTexture(): TextureComponent {
-        return new TextureComponent([new Texture(TextureMaps.get(TextureMap.StairDown), 16, 16, 0, 0, 0, 0)]);
+    private stairTexture(up: boolean): TextureComponent {
+        if (up) {
+            return new TextureComponent([
+                new Texture(TextureMaps.get(TextureMap.DungeonFloor), 16, 16, 0, 0, 0, 0, {
+                    r: 186 + randomInt(50),
+                    g: 95 + randomInt(10),
+                    b: 90 + randomInt(25),
+                    a: 0.2,
+                }),
+                new Texture(TextureMaps.get(TextureMap.Stair), 16, 16, 0, 0, 16, 0),
+            ]);
+        } else {
+            return new TextureComponent([new Texture(TextureMaps.get(TextureMap.Stair), 16, 16, 0, 0, 0, 0)]);
+        }
     }
 }

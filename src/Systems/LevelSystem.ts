@@ -13,6 +13,7 @@ import SizeComponent from "../Components/SizeComponent.js";
 import TileComponent, { Tile } from "../Components/TileComponent.js";
 import UIComponent, { UIInteractablePrompt } from "../Components/UIComponent.js";
 import VisibleComponent from "../Components/VisibleComponent.js";
+import { LOG_LEVEL_GEN } from "../Constants.js";
 import { EntityManager } from "../EntityManager.js";
 import { Event, EventManager } from "../EventManager.js";
 import { System, SystemType } from "../System.js";
@@ -99,40 +100,70 @@ export default class LevelSystem extends System {
 
         let rooms = [];
 
-        console.log(`Generating level with depth ${depth}`);
-        console.log(`Level seed: ${newLevel.seed}`);
         let startTotal = new Date();
+        if (LOG_LEVEL_GEN) {
+            console.log(`Generating level with depth ${depth}`);
+            console.log(`Level seed: ${newLevel.seed}`);
+        }
 
         let start = new Date();
         rooms.push(this.generateEntryRoom(newLevel.seed, depth, entryId));
         rooms.push(this.generateExitRoom(newLevel.seed, depth, entryId + 1));
-        console.log(`${this.getTimePassed(start)}ms - generate entry and exit`);
+        if (LOG_LEVEL_GEN) {
+            console.log(`${this.getTimePassed(start)}ms - generate entry and exit`);
+        }
 
-        start = new Date();
+        if (LOG_LEVEL_GEN) {
+            start = new Date();
+        }
         this.generateRooms(newLevel.seed, depth, rooms);
-        console.log(`${this.getTimePassed(start)}ms - generate rooms`);
+        if (LOG_LEVEL_GEN) {
+            console.log(`${this.getTimePassed(start)}ms - generate rooms`);
+        }
 
-        start = new Date();
+        if (LOG_LEVEL_GEN) {
+            start = new Date();
+        }
         const levelMap = this.placeRoomsOnMap(rooms);
-        console.log(`${this.getTimePassed(start)}ms - place rooms on map`);
+        if (LOG_LEVEL_GEN) {
+            console.log(`${this.getTimePassed(start)}ms - place rooms on map`);
+        }
 
-        start = new Date();
+        if (LOG_LEVEL_GEN) {
+            start = new Date();
+        }
         this.connectRooms(newLevel.seed, rooms, levelMap);
-        console.log(`${this.getTimePassed(start)}ms - connect rooms`);
+        if (LOG_LEVEL_GEN) {
+            console.log(`${this.getTimePassed(start)}ms - connect rooms`);
+        }
 
-        start = new Date();
+        if (LOG_LEVEL_GEN) {
+            start = new Date();
+        }
         this.placeWalls(levelMap);
-        console.log(`${this.getTimePassed(start)}ms - place walls on map`);
+        if (LOG_LEVEL_GEN) {
+            console.log(`${this.getTimePassed(start)}ms - place walls on map`);
+        }
 
-        start = new Date();
+        if (LOG_LEVEL_GEN) {
+            start = new Date();
+        }
         this.placeTorches(newLevel, levelMap);
-        console.log(`${this.getTimePassed(start)}ms - place torches on map`);
+        if (LOG_LEVEL_GEN) {
+            console.log(`${this.getTimePassed(start)}ms - place torches on map`);
+        }
 
-        start = new Date();
+        if (LOG_LEVEL_GEN) {
+            start = new Date();
+        }
         this.generateTileEntitiesFromMap(newLevel, levelMap, depth);
-        console.log(`${this.getTimePassed(start)}ms - placing squares from map`);
+        if (LOG_LEVEL_GEN) {
+            console.log(`${this.getTimePassed(start)}ms - placing squares from map`);
+        }
 
-        console.log(`${this.getTimePassed(startTotal)}ms - total level generation\n\n`);
+        if (LOG_LEVEL_GEN) {
+            console.log(`${this.getTimePassed(startTotal)}ms - total level generation\n\n`);
+        }
         return newLevel;
     }
 

@@ -12,6 +12,9 @@ export class InputManager {
         PoppsInput.listenKeyDown(this.keyDownHandler.bind(this));
         PoppsInput.listenKeyUp(this.keyUpHandler.bind(this));
         PoppsInput.listenScroll(this.scrollHandler.bind(this));
+        PoppsInput.listenMouseDown(this.mouseDownHandler.bind(this));
+        PoppsInput.listenMouseUp(this.mouseUpHandler.bind(this));
+        document.addEventListener("contextmenu", (e) => e?.cancelable && e.preventDefault());
     }
     getInputs() {
         return this.inputs;
@@ -72,6 +75,22 @@ export class InputManager {
                     clearScrollInputs();
                 }, 30);
             }
+        }
+    }
+    mouseDownHandler(event) {
+        if (event.button === 0) {
+            this.inputs.push(Input.Primary);
+        }
+        else if (event.button === 2) {
+            this.inputs.push(Input.Secondary);
+        }
+    }
+    mouseUpHandler(event) {
+        if (event.button === 0) {
+            this.inputs = this.inputs.filter((i) => i !== Input.Primary);
+        }
+        else if (event.button === 2) {
+            this.inputs = this.inputs.filter((i) => i !== Input.Secondary);
         }
     }
 }

@@ -45,7 +45,8 @@ export var TextureMap;
     TextureMap[TextureMap["Wall"] = 2] = "Wall";
     TextureMap[TextureMap["DungeonFloor"] = 3] = "DungeonFloor";
     TextureMap[TextureMap["Door"] = 4] = "Door";
-    TextureMap[TextureMap["StairDown"] = 5] = "StairDown";
+    TextureMap[TextureMap["Stair"] = 5] = "Stair";
+    TextureMap[TextureMap["Skeleton"] = 6] = "Skeleton";
 })(TextureMap || (TextureMap = {}));
 export const TextureMaps = new Map([
     [TextureMap.Grass, loadImage(`/assets/img/textureMaps/Grass.png`)],
@@ -53,7 +54,8 @@ export const TextureMaps = new Map([
     [TextureMap.Wall, loadImage(`/assets/img/textureMaps/Wall.png`)],
     [TextureMap.Door, loadImage(`/assets/img/textureMaps/Door.png`)],
     [TextureMap.DungeonFloor, loadImage(`/assets/img/textureMaps/DungeonFloor.png`)],
-    [TextureMap.StairDown, loadImage(`/assets/img/textureMaps/Stair.png`)],
+    [TextureMap.Stair, loadImage(`/assets/img/textureMaps/Stair.png`)],
+    [TextureMap.Skeleton, loadImage(`/assets/img/sprites/Skeleton.png`)],
 ]);
 export var TexturePosition;
 (function (TexturePosition) {

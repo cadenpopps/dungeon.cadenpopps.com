@@ -1,6 +1,7 @@
 import { abs, floor, randomInRange, randomIntInRange } from "../../lib/PoppsMath.js";
 import { CType, Component } from "../Component.js";
 import AIComponent from "../Components/AIComponent.js";
+import AbilityComponent, { SpinAttack } from "../Components/AbilityComponent.js";
 import AccelerationComponent from "../Components/AccelerationComponent.js";
 import CollisionComponent, { CollisionHandler } from "../Components/CollisionComponent.js";
 import ControllerComponent from "../Components/ControllerComponent.js";
@@ -11,9 +12,11 @@ import HealthComponent from "../Components/HealthComponent.js";
 import MovementComponent from "../Components/MovementComponent.js";
 import PositionComponent from "../Components/PositionComponent.js";
 import SizeComponent from "../Components/SizeComponent.js";
-import UIComponent, { UIEnemyHealthBar } from "../Components/UIComponent.js";
+import TextureComponent, { Texture, TextureMap, TextureMaps } from "../Components/TextureComponent.js";
+import UIComponent, { UIEnemyAI, UIEnemyHealthBar } from "../Components/UIComponent.js";
 import VelocityComponent from "../Components/VelocityComponent.js";
 import VisibleComponent from "../Components/VisibleComponent.js";
+import { SHOW_ENEMY_AI } from "../Constants.js";
 import { EntityManager } from "../EntityManager.js";
 import { EventManager } from "../EventManager.js";
 import { System, SystemType } from "../System.js";
@@ -50,18 +53,13 @@ export default class EnemySystem extends System {
         }
     }
 
-    private spawnEnemy(entity: Map<CType, Component>, playerId: number): void {
-        const spawnerPos = entity.get(CType.Position) as PositionComponent;
-        const pLevel = (this.entityManager.get(playerId, CType.Experience) as ExperienceComponent).level;
-        const level = spawnerPos.z + pLevel;
-        const size = randomInRange(0.5, 2);
-        const health = floor(10 * size * level);
-
+    private createEnemy(level: number, pos: PositionComponent, size: number, health: number): Map<CType, Component> {
         const enemy = new Map<CType, Component>([
             [CType.AI, new AIComponent()],
+            [CType.Ability, new AbilityComponent(new SpinAttack(20))],
             [CType.Direction, new DirectionComponent()],
             [CType.Experience, new ExperienceComponent(level)],
-            [CType.Position, new PositionComponent(spawnerPos.x, spawnerPos.y)],
+            [CType.Position, new PositionComponent(pos.x, pos.y)],
             [CType.Velocity, new VelocityComponent(0, 0)],
             [CType.Acceleration, new AccelerationComponent(0, 0)],
             [CType.Visible, new VisibleComponent(false, 4)],
@@ -70,9 +68,22 @@ export default class EnemySystem extends System {
             [CType.Collision, new CollisionComponent(CollisionHandler.Stop)],
             [CType.Size, new SizeComponent(size)],
             [CType.Controller, new ControllerComponent()],
-            [CType.Movement, new MovementComponent(randomIntInRange(10, 30))],
+            [CType.Movement, new MovementComponent(10)],
+            [CType.Texture, new TextureComponent([new Texture(TextureMaps.get(TextureMap.Skeleton))])],
         ]);
+        if (SHOW_ENEMY_AI) {
+            (enemy.get(CType.UI) as UIComponent).elements.push(new UIEnemyAI(size));
+        }
+        return enemy;
+    }
 
+    private spawnEnemy(entity: Map<CType, Component>, playerId: number): void {
+        const spawnerPos = entity.get(CType.Position) as PositionComponent;
+        const pLevel = (this.entityManager.get(playerId, CType.Experience) as ExperienceComponent).level;
+        const level = spawnerPos.z + pLevel;
+        const size = randomInRange(0.5, 2);
+        const health = floor(10 * size * level);
+        const enemy = this.createEnemy(level, spawnerPos, size, health);
         this.entityManager.addEntity(enemy);
         entity.delete(CType.EnemySpawner);
     }
@@ -82,34 +93,12 @@ export default class EnemySystem extends System {
         const spawnerPos = entity.get(CType.Position) as PositionComponent;
         const pLevel = (this.entityManager.get(playerId, CType.Experience) as ExperienceComponent).level;
         const level = spawnerPos.z + pLevel;
-
         const enemies = new Array<Map<CType, Component>>();
         for (let i = 0; i < amount; i++) {
             const size = randomInRange(0.5, 1.25);
             const health = floor(10 * size * level);
-            enemies.push(
-                new Map<CType, Component>([
-                    [CType.AI, new AIComponent()],
-                    [CType.Direction, new DirectionComponent()],
-                    [CType.Experience, new ExperienceComponent(level)],
-                    [
-                        CType.Position,
-                        new PositionComponent(
-                            spawnerPos.x + randomInRange(-EnemySystem.PACK_RADIUS, EnemySystem.PACK_RADIUS),
-                            spawnerPos.y + randomInRange(-EnemySystem.PACK_RADIUS, EnemySystem.PACK_RADIUS)
-                        ),
-                    ],
-                    [CType.Velocity, new VelocityComponent(0, 0)],
-                    [CType.Acceleration, new AccelerationComponent(0, 0)],
-                    [CType.Visible, new VisibleComponent(false, 4)],
-                    [CType.UI, new UIComponent([new UIEnemyHealthBar(size, 1)])],
-                    [CType.Health, new HealthComponent(health)],
-                    [CType.Collision, new CollisionComponent(CollisionHandler.Stop)],
-                    [CType.Size, new SizeComponent(size)],
-                    [CType.Controller, new ControllerComponent()],
-                    [CType.Movement, new MovementComponent(randomIntInRange(10, 30))],
-                ])
-            );
+            const enemy = this.createEnemy(level, spawnerPos, size, health);
+            enemies.push(enemy);
         }
         this.entityManager.addEntities(enemies);
         entity.delete(CType.EnemySpawner);
@@ -121,23 +110,7 @@ export default class EnemySystem extends System {
         const level = spawnerPos.z + pLevel;
         const size = randomInRange(0.5, 2);
         const health = floor(10 * size * level);
-
-        const enemy = new Map<CType, Component>([
-            [CType.AI, new AIComponent()],
-            [CType.Direction, new DirectionComponent()],
-            [CType.Experience, new ExperienceComponent(level)],
-            [CType.Position, new PositionComponent(spawnerPos.x, spawnerPos.y)],
-            [CType.Velocity, new VelocityComponent(0, 0)],
-            [CType.Acceleration, new AccelerationComponent(0, 0)],
-            [CType.Visible, new VisibleComponent(false, 4)],
-            [CType.UI, new UIComponent([new UIEnemyHealthBar(size, 1)])],
-            [CType.Health, new HealthComponent(health)],
-            [CType.Collision, new CollisionComponent(CollisionHandler.Stop)],
-            [CType.Size, new SizeComponent(size)],
-            [CType.Controller, new ControllerComponent()],
-            [CType.Movement, new MovementComponent(randomIntInRange(8, 60))],
-        ]);
-
+        const enemy = this.createEnemy(level, spawnerPos, size, health);
         this.entityManager.addEntity(enemy);
         entity.delete(CType.EnemySpawner);
     }

@@ -4,7 +4,9 @@ import PositionComponent from "./Components/PositionComponent.js";
 import { EntityManager } from "./EntityManager.js";
 import LightSystem from "./Systems/LightSystem.js";
 
-export const SHOW_HITBOXES = false;
+export const SHOW_HITBOXES = true;
+export const LOG_LEVEL_GEN = false;
+export const SHOW_ENEMY_AI = true;
 
 export const xxTransform = [1, 0, 0, -1, -1, 0, 0, 1];
 export const xyTransform = [0, 1, -1, 0, 0, -1, 1, 0];

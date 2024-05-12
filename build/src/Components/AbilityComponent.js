@@ -26,12 +26,12 @@ export class None {
     cooldownLength;
     cooldown;
     constructor() {
-        this.type = AbilityType.SpinAttack;
+        this.type = AbilityType.None;
         this.frames = [];
         this.duration = -1;
         this.currentTick = -1;
-        this.cooldownLength = 0;
-        this.cooldown = 0;
+        this.cooldownLength = -1;
+        this.cooldown = -1;
     }
 }
 export class LungeAttack {

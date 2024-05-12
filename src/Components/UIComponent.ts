@@ -12,6 +12,15 @@ export default class UIComponent extends Component {
     }
 }
 
+export enum UIType {
+    PlayerHealthBar,
+    EnemyHeatlhBar,
+    AbilityCooldowns,
+    InteractablePrompt,
+    Tooltip,
+    EnemyAI,
+}
+
 export interface UIElement {
     type: UIType;
 }
@@ -60,6 +69,22 @@ export class UIEnemyHealthBar implements UIElement {
     }
 }
 
+export class UIEnemyAI implements UIElement {
+    public type: number;
+    public x: number;
+    public y: number;
+    public width: number;
+    public height: number;
+
+    constructor(entitySize: number) {
+        this.type = UIType.EnemyAI;
+        this.x = 0;
+        this.y = -(entitySize * 0.6) - 0.3;
+        this.width = entitySize;
+        this.height = entitySize / 5;
+    }
+}
+
 export class UIAbilityCooldowns implements UIElement {
     public type: number;
     public colorPrimary: Color;
@@ -100,19 +125,4 @@ export class UIToolTip implements UIElement {
         this.type = UIType.Tooltip;
         this.text = text;
     }
-}
-
-export enum UIType {
-    PlayerHealthBar,
-    EnemyHeatlhBar,
-    AbilityCooldowns,
-    InteractablePrompt,
-    Tooltip,
-}
-
-export enum Shape {
-    Square,
-    Circle,
-    Line,
-    Image,
 }
