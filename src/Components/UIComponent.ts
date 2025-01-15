@@ -1,5 +1,6 @@
 import { Component, CType } from "../Component.js";
 import { Color } from "../Constants.js";
+import UISystem from "../Systems/UISystem.js";
 
 export default class UIComponent extends Component {
     public elements: Array<UIElement>;
@@ -19,14 +20,22 @@ export enum UIType {
     InteractablePrompt,
     Tooltip,
     EnemyAI,
+    GameOverScreen,
+    Button,
 }
 
 export interface UIElement {
     type: UIType;
+    fadeIn?: number;
+    fadeOut?: number;
+    fadeCounter?: number;
 }
 
 export class UIPlayerHealthBar implements UIElement {
     public type: number;
+    public fadeIn: number;
+    public fadeOut: number;
+    public fadeCounter: number;
     public x: number;
     public y: number;
     public width: number;
@@ -37,6 +46,9 @@ export class UIPlayerHealthBar implements UIElement {
 
     constructor(health: number) {
         this.type = UIType.PlayerHealthBar;
+        this.fadeIn = 1;
+        this.fadeOut = 2;
+        this.fadeCounter = this.fadeIn * UISystem.FADE_TICK_MULTIPLIER;
         this.x = 48;
         this.y = 32;
         this.width = health * 12;
@@ -49,6 +61,8 @@ export class UIPlayerHealthBar implements UIElement {
 
 export class UIEnemyHealthBar implements UIElement {
     public type: number;
+    public fadeOut: number;
+    public fadeCounter: number;
     public x: number;
     public y: number;
     public width: number;
@@ -59,6 +73,8 @@ export class UIEnemyHealthBar implements UIElement {
 
     constructor(entitySize: number, percentage: number) {
         this.type = UIType.EnemyHeatlhBar;
+        this.fadeOut = 1;
+        this.fadeCounter = 0;
         this.x = 0;
         this.y = -entitySize * 0.6 - 0.1;
         this.width = entitySize;
@@ -71,6 +87,8 @@ export class UIEnemyHealthBar implements UIElement {
 
 export class UIEnemyAI implements UIElement {
     public type: number;
+    public fadeOut: number;
+    public fadeCounter: number;
     public x: number;
     public y: number;
     public width: number;
@@ -78,6 +96,8 @@ export class UIEnemyAI implements UIElement {
 
     constructor(entitySize: number) {
         this.type = UIType.EnemyAI;
+        this.fadeOut = 2;
+        this.fadeCounter = 0;
         this.x = 0;
         this.y = -(entitySize * 0.6) - 0.3;
         this.width = entitySize;
@@ -87,6 +107,9 @@ export class UIEnemyAI implements UIElement {
 
 export class UIAbilityCooldowns implements UIElement {
     public type: number;
+    public fadeIn: number;
+    public fadeOut: number;
+    public fadeCounter: number;
     public colorPrimary: Color;
     public colorSecondary: Color;
     public colorUltimate: Color;
@@ -97,6 +120,9 @@ export class UIAbilityCooldowns implements UIElement {
 
     constructor(colorPrimary: Color, colorSecondary: Color, colorUltimate: Color, colorCooldown: Color) {
         this.type = UIType.AbilityCooldowns;
+        this.fadeIn = 2;
+        this.fadeOut = 2;
+        this.fadeCounter = this.fadeIn * UISystem.FADE_TICK_MULTIPLIER;
         this.colorPrimary = colorPrimary;
         this.colorSecondary = colorSecondary;
         this.colorUltimate = colorUltimate;
@@ -124,5 +150,37 @@ export class UIToolTip implements UIElement {
     constructor(text: string) {
         this.type = UIType.Tooltip;
         this.text = text;
+    }
+}
+
+export class UIGameOverScreen implements UIElement {
+    public type: number;
+    public fadeIn?: number;
+    public fadeCounter?: number;
+    public text: string;
+
+    constructor() {
+        this.type = UIType.GameOverScreen;
+        this.fadeIn = 2;
+        this.fadeCounter = this.fadeIn * UISystem.FADE_TICK_MULTIPLIER;
+        this.text = "YOU DIED";
+    }
+}
+
+export class UIButton implements UIElement {
+    public type: number;
+    public fadeIn?: number;
+    public fadeCounter?: number;
+    public x: number;
+    public y: number;
+    public text: string;
+
+    constructor(text: string, x: number, y: number, fadeIn: number = 0) {
+        this.type = UIType.Button;
+        this.text = text;
+        this.x = x;
+        this.y = y;
+        this.fadeIn = fadeIn;
+        this.fadeCounter = this.fadeIn * UISystem.FADE_TICK_MULTIPLIER;
     }
 }

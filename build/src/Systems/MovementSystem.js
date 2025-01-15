@@ -7,9 +7,6 @@ export default class MovementSystem extends System {
     BASE_DIAGONAL_ACCELERATION = round(this.BASE_ACCELERATION / 1.4, 5);
     MAX_SPEED = 0.005;
     MAX_DIAGONAL_SPEED = round(this.MAX_SPEED / 1.4, 5);
-    SNEAK_ACCELERATION_FACTOR = 0.25;
-    MAX_SNEAK_SPEED = round(this.MAX_SPEED / 2, 5);
-    MAX_SNEAK_DIAGONAL_SPEED = round(this.MAX_DIAGONAL_SPEED / 2, 5);
     ROLL_ACCELERATION = round(this.BASE_ACCELERATION * 5, 5);
     ROLL_DIAGONAL_ACCELERATION = round(this.BASE_DIAGONAL_ACCELERATION * 5, 5);
     MAX_ROLL_SPEED = round(this.MAX_SPEED * 1.5, 5);
@@ -23,45 +20,50 @@ export default class MovementSystem extends System {
             CType.Position,
             CType.Velocity,
             CType.Acceleration,
-            CType.Controller,
         ]);
     }
     logic() {
         for (let entityId of this.entities) {
             const entity = this.entityManager.getEntity(entityId);
             const mov = entity.get(CType.Movement);
+            mov.walking = false;
             const dir = entity.get(CType.Direction);
             const vel = entity.get(CType.Velocity);
             const acc = entity.get(CType.Acceleration);
-            const con = entity.get(CType.Controller);
-            if (con.roll && mov.rollCooldown === 0) {
-                if (entity.has(CType.Health)) {
-                    entity.get(CType.Health).invincibleCounter = mov.rollLength;
-                }
-                mov.rolling = true;
-                mov.rollCounter = mov.rollLength;
-                mov.rollCooldown = mov.rollCooldownLength;
-            }
-            else if (con.sneak) {
-                mov.sneaking = true;
-            }
-            else {
-                mov.sneaking = false;
-            }
-            if (mov.rollCooldown > 0) {
-                mov.rollCooldown--;
+            if (entity.has(CType.Controller)) {
+                this.determineWalking(entityId);
+                this.determineRolling(entityId);
             }
             if (mov.rolling) {
                 this.applyRollingForce(mov, vel, acc, dir);
             }
             else if (mov.walking) {
                 this.applyWalkingForce(mov, vel, acc, dir);
-                if (mov.sneaking) {
-                    this.applySneakingForce(mov, vel, acc, dir);
-                }
             }
             else {
                 this.applyStoppingForce(vel, acc);
+            }
+        }
+    }
+    determineWalking(entityId) {
+        const mov = this.entityManager.get(entityId, CType.Movement);
+        const con = this.entityManager.get(entityId, CType.Controller);
+        if (con.up || con.right || con.down || con.left) {
+            mov.walking = true;
+        }
+    }
+    determineRolling(entityId) {
+        const mov = this.entityManager.get(entityId, CType.Movement);
+        const con = this.entityManager.get(entityId, CType.Controller);
+        if (con.roll && mov.rollCooldown === 0) {
+            mov.rolling = true;
+            mov.rollCounter = mov.rollLength;
+            mov.rollCooldown = mov.rollCooldownLength;
+        }
+        if (mov.rollCooldown > 0) {
+            mov.rollCooldown--;
+            if (mov.rollCounter === 0) {
+                mov.rolling = false;
             }
         }
     }
@@ -152,40 +154,6 @@ export default class MovementSystem extends System {
             if (vel.y > 0) {
                 vel.y *= this.EXTRA_FRICTION;
             }
-        }
-    }
-    applySneakingForce(mov, vel, acc, dir) {
-        acc.x *= this.SNEAK_ACCELERATION_FACTOR;
-        acc.y *= this.SNEAK_ACCELERATION_FACTOR;
-        switch (dir.direction) {
-            case Direction.North:
-                vel.y = max(vel.y, -mov.speed * this.MAX_SNEAK_SPEED);
-                break;
-            case Direction.East:
-                vel.x = min(vel.x, mov.speed * this.MAX_SNEAK_SPEED);
-                break;
-            case Direction.South:
-                vel.y = min(vel.y, mov.speed * this.MAX_SNEAK_SPEED);
-                break;
-            case Direction.West:
-                vel.x = max(vel.x, -mov.speed * this.MAX_SNEAK_SPEED);
-                break;
-            case Direction.NorthEast:
-                vel.x = min(vel.x, mov.speed * this.MAX_SNEAK_DIAGONAL_SPEED);
-                vel.y = max(vel.y, -mov.speed * this.MAX_SNEAK_DIAGONAL_SPEED);
-                break;
-            case Direction.SouthEast:
-                vel.x = min(vel.x, mov.speed * this.MAX_SNEAK_DIAGONAL_SPEED);
-                vel.y = min(vel.y, mov.speed * this.MAX_SNEAK_DIAGONAL_SPEED);
-                break;
-            case Direction.SouthWest:
-                vel.x = max(vel.x, -mov.speed * this.MAX_SNEAK_DIAGONAL_SPEED);
-                vel.y = min(vel.y, mov.speed * this.MAX_SNEAK_DIAGONAL_SPEED);
-                break;
-            case Direction.NorthWest:
-                vel.x = max(vel.x, -mov.speed * this.MAX_SNEAK_DIAGONAL_SPEED);
-                vel.y = max(vel.y, -mov.speed * this.MAX_SNEAK_DIAGONAL_SPEED);
-                break;
         }
     }
     applyRollingForce(mov, vel, acc, dir) {

@@ -93,6 +93,28 @@ export class EntityManager {
         }
     }
 
+    public removeComponent(entityId: number, CType: CType): void {
+        const entity = this.entities.get(entityId);
+        if (entity?.has(CType)) {
+            entity?.delete(CType);
+            this.eventManager.addEvent(Event.entity_modified);
+        }
+    }
+
+    public removeComponents(entityId: number, CTypes: Array<CType>): void {
+        const entity = this.entities.get(entityId);
+        let modified = false;
+        for (const CType of CTypes) {
+            if (entity?.has(CType)) {
+                modified = true;
+                entity?.delete(CType);
+            }
+        }
+        if (modified) {
+            this.eventManager.addEvent(Event.entity_modified);
+        }
+    }
+
     private destroyEntities(): void {
         for (let entityId of this.destroyQueue) {
             this.entities.delete(entityId);

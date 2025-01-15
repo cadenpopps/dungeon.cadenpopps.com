@@ -7,7 +7,6 @@ export default class ControllerComponent extends Component {
     public left: boolean;
     public interact: boolean;
     public roll: boolean;
-    public sneak: boolean;
     public primary: boolean;
     public secondary: boolean;
     public ultimate: boolean;
@@ -22,7 +21,6 @@ export default class ControllerComponent extends Component {
         this.left = false;
         this.interact = false;
         this.roll = false;
-        this.sneak = false;
         this.primary = false;
         this.secondary = false;
         this.ultimate = false;

@@ -1,4 +1,4 @@
-import { abs, distance, oneIn } from "../../lib/PoppsMath.js";
+import { distance, oneIn } from "../../lib/PoppsMath.js";
 import { CType } from "../Component.js";
 import { Behavior } from "../Components/AIComponent.js";
 import { AbilityType } from "../Components/AbilityComponent.js";
@@ -19,6 +19,7 @@ export default class AISystem extends System {
         }
         const entitiesInRange = getEntitiesInRange(new PositionComponent(cam.x, cam.y), cam.visibleDistance, this.entities, this.entityManager);
         for (let entityId of entitiesInRange) {
+            console.log();
             const ai = this.entityManager.get(entityId, CType.AI);
             if (ai.waitTimer > 0) {
                 ai.waitTimer--;
@@ -93,10 +94,6 @@ export default class AISystem extends System {
         }
         const pos = this.entityManager.get(entityId, CType.Position);
         const playerPos = this.entityManager.get(this.playerId, CType.Position);
-        if (abs(pos.x - playerPos.x) < ai.hearingRange && abs(pos.y - playerPos.y) < ai.hearingRange) {
-            const playerCon = this.entityManager.get(this.playerId, CType.Controller);
-            return !playerCon.sneak;
-        }
         const dir = this.entityManager.get(entityId, CType.Direction);
         if (pos.x <= playerPos.x && pos.y <= playerPos.y) {
             return (dir.direction === Direction.East ||

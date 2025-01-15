@@ -1,6 +1,7 @@
 import { abs, floor, max, round } from "../lib/PoppsMath.js";
 import { CType } from "./Component.js";
 import LightSystem from "./Systems/LightSystem.js";
+export const SHOW_TITLE_SCREEN = false;
 export const SHOW_HITBOXES = true;
 export const LOG_LEVEL_GEN = false;
 export const SHOW_ENEMY_AI = true;

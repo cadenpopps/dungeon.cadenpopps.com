@@ -1,6 +1,8 @@
 export class PoppsEngine {
     public looping = false;
     public ticks = 0;
+    public TICK_SPEED = 20;
+    public TPS = 1000 / this.TICK_SPEED;
     private tickCallback!: Function;
 
     public loop(callback: Function): void {

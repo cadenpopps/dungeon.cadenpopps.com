@@ -10,17 +10,17 @@ export default class ControllerSystem extends System {
     }
     logic() {
         for (let entityId of this.entities) {
-            if (this.entityManager.hasComponent(entityId, CType.Camera)) {
+            const entity = this.entityManager.getEntity(entityId);
+            if (entity.has(CType.Camera)) {
                 this.mapScrollToCamera(entityId);
             }
-            if (this.entityManager.hasComponent(entityId, CType.Player) ||
-                this.entityManager.hasComponent(entityId, CType.Camera)) {
+            if (entity.has(CType.Player) || entity.has(CType.Camera)) {
                 this.mapInputsToController(entityId);
             }
-            if (this.entityManager.hasComponent(entityId, CType.Movement)) {
-                this.determineWalking(entityId);
+            if (entity.get(CType.Controller).roll) {
+                entity.get(CType.Health).invincibleCounter = entity.get(CType.Movement).rollLength;
             }
-            if (this.entityManager.hasComponent(entityId, CType.Direction)) {
+            if (entity.has(CType.Direction)) {
                 this.determineDirection(entityId);
             }
         }
@@ -38,19 +38,11 @@ export default class ControllerSystem extends System {
         con.right = this.inputManager.pressed(Input.Right);
         con.interact = this.inputManager.pressed(Input.Interact);
         con.roll = this.inputManager.pressed(Input.Roll);
-        con.sneak = this.inputManager.pressed(Input.Sneak);
         con.primary = this.inputManager.pressed(Input.Primary);
         con.secondary = this.inputManager.pressed(Input.Secondary);
         con.ultimate = this.inputManager.pressed(Input.Ultimate);
         con.zoom_in = this.inputManager.pressed(Input.Zoom_In);
         con.zoom_out = this.inputManager.pressed(Input.Zoom_Out);
-    }
-    determineWalking(entityId) {
-        const con = this.entityManager.get(entityId, CType.Controller);
-        const mov = this.entityManager.get(entityId, CType.Movement);
-        if (con.up || con.right || con.down || con.left) {
-            mov.walking = true;
-        }
     }
     determineDirection(entityId) {
         const con = this.entityManager.get(entityId, CType.Controller);

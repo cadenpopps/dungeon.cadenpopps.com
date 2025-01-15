@@ -22,6 +22,9 @@ export default class CameraSystem extends System {
         }
     }
     static setHighestPriorityCamera(cameraIds, entityManager) {
+        if (cameraIds.length === 0) {
+            return;
+        }
         let priority = 0;
         let prioCam = entityManager.get(cameraIds[0], CType.Camera);
         for (let entityId of cameraIds) {

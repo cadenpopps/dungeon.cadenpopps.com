@@ -1,6 +1,7 @@
 import { abs } from "../../lib/PoppsMath.js";
 import { CType } from "../Component.js";
 import ControllerComponent from "../Components/ControllerComponent.js";
+import HealthComponent from "../Components/HealthComponent.js";
 import InteractableComponent, { Interactable } from "../Components/InteractableComponent.js";
 import LevelChangeComponent from "../Components/LevelChangeComponent.js";
 import PlayerComponent from "../Components/PlayerComponent.js";
@@ -17,8 +18,12 @@ export default class InteractableSystem extends System {
     }
 
     public logic(): void {
-        const possibleInteractions = this.getInteractablesInRange();
-        this.checkInteractions(possibleInteractions);
+        if (this.playerId !== undefined) {
+            if (this.entityManager.get<HealthComponent>(this.playerId, CType.Health).alive) {
+                const possibleInteractions = this.getInteractablesInRange();
+                this.checkInteractions(possibleInteractions);
+            }
+        }
     }
 
     public getEntitiesHelper(): void {

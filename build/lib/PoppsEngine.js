@@ -1,6 +1,8 @@
 export class PoppsEngine {
     looping = false;
     ticks = 0;
+    TICK_SPEED = 20;
+    TPS = 1000 / this.TICK_SPEED;
     tickCallback;
     loop(callback) {
         if (typeof callback == "function") {

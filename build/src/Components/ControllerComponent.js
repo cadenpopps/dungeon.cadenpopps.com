@@ -6,7 +6,6 @@ export default class ControllerComponent extends Component {
     left;
     interact;
     roll;
-    sneak;
     primary;
     secondary;
     ultimate;
@@ -20,7 +19,6 @@ export default class ControllerComponent extends Component {
         this.left = false;
         this.interact = false;
         this.roll = false;
-        this.sneak = false;
         this.primary = false;
         this.secondary = false;
         this.ultimate = false;

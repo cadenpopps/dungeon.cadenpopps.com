@@ -8,11 +8,17 @@ export class EventManager {
     }
 
     public addEvent(event: Event) {
+        if (this.nextQueue.includes(event)) {
+            return;
+        }
         this.nextQueue.push(event);
     }
 
     public addEvents(events: Event[]) {
         for (let event of events) {
+            if (this.nextQueue.includes(event)) {
+                continue;
+            }
             this.nextQueue.push(event);
         }
     }
@@ -25,6 +31,7 @@ export class EventManager {
 
 export enum Event {
     new_game,
+    load_game,
     entity_created,
     entity_destroyed,
     entity_modified,

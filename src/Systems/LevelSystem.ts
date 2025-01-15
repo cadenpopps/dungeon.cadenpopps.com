@@ -48,9 +48,6 @@ export default class LevelSystem extends System {
 
     public handleEvent(event: Event): void {
         switch (event) {
-            case Event.new_game:
-                this.loadLevel(this.levels[0]);
-                break;
             case Event.level_change:
                 this.changeLevel();
                 break;
@@ -58,6 +55,11 @@ export default class LevelSystem extends System {
     }
 
     private changeLevel(): void {
+        if (this.currentLevel === undefined) {
+            this.loadLevel(this.levels[0]);
+            return;
+        }
+
         const exitId = this.entityManager.get<PlayerComponent>(this.entities[0], CType.Player).levelChangeId;
         const depth = this.currentLevel.depth;
 

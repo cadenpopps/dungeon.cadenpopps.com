@@ -9,8 +9,12 @@ export default class InteractableSystem extends System {
         super(SystemType.Interactable, eventManager, entityManager, [CType.Interactable]);
     }
     logic() {
-        const possibleInteractions = this.getInteractablesInRange();
-        this.checkInteractions(possibleInteractions);
+        if (this.playerId !== undefined) {
+            if (this.entityManager.get(this.playerId, CType.Health).alive) {
+                const possibleInteractions = this.getInteractablesInRange();
+                this.checkInteractions(possibleInteractions);
+            }
+        }
     }
     getEntitiesHelper() {
         this.playerId = this.entityManager.getSystemEntities([CType.Player])[0];

@@ -19,6 +19,9 @@ export default class TextureSystem extends System {
         }
     }
     logic() {
+        if (this.directionalTextureIds === undefined) {
+            return;
+        }
         for (const entityId of this.directionalTextureIds) {
             const dir = this.entityManager.get(entityId, CType.Direction);
             const textures = this.entityManager.get(entityId, CType.Texture);

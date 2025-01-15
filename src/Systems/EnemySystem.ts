@@ -35,6 +35,9 @@ export default class EnemySystem extends System {
     }
 
     public logic(): void {
+        if (this.playerId === undefined) {
+            return;
+        }
         const cam = CameraSystem.getHighestPriorityCamera();
         const playerPos = this.entityManager.get(this.playerId, CType.Position) as PositionComponent;
         for (const entityId of this.entities) {

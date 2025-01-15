@@ -1,4 +1,5 @@
 import { Component, CType } from "../Component.js";
+import UISystem from "../Systems/UISystem.js";
 export default class UIComponent extends Component {
     elements;
     layer;
@@ -16,9 +17,14 @@ export var UIType;
     UIType[UIType["InteractablePrompt"] = 3] = "InteractablePrompt";
     UIType[UIType["Tooltip"] = 4] = "Tooltip";
     UIType[UIType["EnemyAI"] = 5] = "EnemyAI";
+    UIType[UIType["GameOverScreen"] = 6] = "GameOverScreen";
+    UIType[UIType["Button"] = 7] = "Button";
 })(UIType || (UIType = {}));
 export class UIPlayerHealthBar {
     type;
+    fadeIn;
+    fadeOut;
+    fadeCounter;
     x;
     y;
     width;
@@ -28,6 +34,9 @@ export class UIPlayerHealthBar {
     colorEmpty;
     constructor(health) {
         this.type = UIType.PlayerHealthBar;
+        this.fadeIn = 1;
+        this.fadeOut = 2;
+        this.fadeCounter = this.fadeIn * UISystem.FADE_TICK_MULTIPLIER;
         this.x = 48;
         this.y = 32;
         this.width = health * 12;
@@ -39,6 +48,8 @@ export class UIPlayerHealthBar {
 }
 export class UIEnemyHealthBar {
     type;
+    fadeOut;
+    fadeCounter;
     x;
     y;
     width;
@@ -48,6 +59,8 @@ export class UIEnemyHealthBar {
     colorEmpty;
     constructor(entitySize, percentage) {
         this.type = UIType.EnemyHeatlhBar;
+        this.fadeOut = 1;
+        this.fadeCounter = 0;
         this.x = 0;
         this.y = -entitySize * 0.6 - 0.1;
         this.width = entitySize;
@@ -59,12 +72,16 @@ export class UIEnemyHealthBar {
 }
 export class UIEnemyAI {
     type;
+    fadeOut;
+    fadeCounter;
     x;
     y;
     width;
     height;
     constructor(entitySize) {
         this.type = UIType.EnemyAI;
+        this.fadeOut = 2;
+        this.fadeCounter = 0;
         this.x = 0;
         this.y = -(entitySize * 0.6) - 0.3;
         this.width = entitySize;
@@ -73,6 +90,9 @@ export class UIEnemyAI {
 }
 export class UIAbilityCooldowns {
     type;
+    fadeIn;
+    fadeOut;
+    fadeCounter;
     colorPrimary;
     colorSecondary;
     colorUltimate;
@@ -82,6 +102,9 @@ export class UIAbilityCooldowns {
     percentageUltimate;
     constructor(colorPrimary, colorSecondary, colorUltimate, colorCooldown) {
         this.type = UIType.AbilityCooldowns;
+        this.fadeIn = 2;
+        this.fadeOut = 2;
+        this.fadeCounter = this.fadeIn * UISystem.FADE_TICK_MULTIPLIER;
         this.colorPrimary = colorPrimary;
         this.colorSecondary = colorSecondary;
         this.colorUltimate = colorUltimate;
@@ -105,6 +128,34 @@ export class UIToolTip {
     constructor(text) {
         this.type = UIType.Tooltip;
         this.text = text;
+    }
+}
+export class UIGameOverScreen {
+    type;
+    fadeIn;
+    fadeCounter;
+    text;
+    constructor() {
+        this.type = UIType.GameOverScreen;
+        this.fadeIn = 2;
+        this.fadeCounter = this.fadeIn * UISystem.FADE_TICK_MULTIPLIER;
+        this.text = "YOU DIED";
+    }
+}
+export class UIButton {
+    type;
+    fadeIn;
+    fadeCounter;
+    x;
+    y;
+    text;
+    constructor(text, x, y, fadeIn = 0) {
+        this.type = UIType.Button;
+        this.text = text;
+        this.x = x;
+        this.y = y;
+        this.fadeIn = fadeIn;
+        this.fadeCounter = this.fadeIn * UISystem.FADE_TICK_MULTIPLIER;
     }
 }
 //# sourceMappingURL=UIComponent.js.map
