@@ -64,14 +64,14 @@ export enum TextureMap {
 }
 
 export const TextureMaps: Map<TextureMap, HTMLImageElement> = new Map<TextureMap, HTMLImageElement>([
-    [TextureMap.Grass, loadImage(`/assets/img/textureMaps/grass.png`)],
-    [TextureMap.Path, loadImage(`/assets/img/textureMaps/path.png`)],
-    [TextureMap.Wall, loadImage(`/assets/img/textureMaps/wall.png`)],
-    [TextureMap.Door, loadImage(`/assets/img/textureMaps/door.png`)],
-    [TextureMap.DungeonFloor, loadImage(`/assets/img/textureMaps/dungeonfloor.png`)],
-    [TextureMap.Stair, loadImage(`/assets/img/textureMaps/stair.png`)],
-    [TextureMap.Skeleton, loadImage(`/assets/img/sprites/skeleton.png`)],
-    [TextureMap.Player, loadImage(`/assets/img/sprites/player.png`)],
+    [TextureMap.Grass, loadImage(`/assets/img/textureMaps/Grass.png`)],
+    [TextureMap.Path, loadImage(`/assets/img/textureMaps/Path.png`)],
+    [TextureMap.Wall, loadImage(`/assets/img/textureMaps/Wall.png`)],
+    [TextureMap.Door, loadImage(`/assets/img/textureMaps/Door.png`)],
+    [TextureMap.DungeonFloor, loadImage(`/assets/img/textureMaps/DungeonFloor.png`)],
+    [TextureMap.Stair, loadImage(`/assets/img/textureMaps/Stair.png`)],
+    [TextureMap.Skeleton, loadImage(`/assets/img/sprites/Skeleton.png`)],
+    [TextureMap.Player, loadImage(`/assets/img/sprites/Player.png`)],
 ]);
 
 export enum TexturePosition {

@@ -50,14 +50,14 @@ export var TextureMap;
     TextureMap[TextureMap["Player"] = 7] = "Player";
 })(TextureMap || (TextureMap = {}));
 export const TextureMaps = new Map([
-    [TextureMap.Grass, loadImage(`/assets/img/textureMaps/grass.png`)],
-    [TextureMap.Path, loadImage(`/assets/img/textureMaps/path.png`)],
-    [TextureMap.Wall, loadImage(`/assets/img/textureMaps/wall.png`)],
-    [TextureMap.Door, loadImage(`/assets/img/textureMaps/door.png`)],
-    [TextureMap.DungeonFloor, loadImage(`/assets/img/textureMaps/dungeonfloor.png`)],
-    [TextureMap.Stair, loadImage(`/assets/img/textureMaps/stair.png`)],
-    [TextureMap.Skeleton, loadImage(`/assets/img/sprites/skeleton.png`)],
-    [TextureMap.Player, loadImage(`/assets/img/sprites/player.png`)],
+    [TextureMap.Grass, loadImage(`/assets/img/textureMaps/Grass.png`)],
+    [TextureMap.Path, loadImage(`/assets/img/textureMaps/Path.png`)],
+    [TextureMap.Wall, loadImage(`/assets/img/textureMaps/Wall.png`)],
+    [TextureMap.Door, loadImage(`/assets/img/textureMaps/Door.png`)],
+    [TextureMap.DungeonFloor, loadImage(`/assets/img/textureMaps/DungeonFloor.png`)],
+    [TextureMap.Stair, loadImage(`/assets/img/textureMaps/Stair.png`)],
+    [TextureMap.Skeleton, loadImage(`/assets/img/sprites/Skeleton.png`)],
+    [TextureMap.Player, loadImage(`/assets/img/sprites/Player.png`)],
 ]);
 export var TexturePosition;
 (function (TexturePosition) {
