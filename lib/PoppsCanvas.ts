@@ -200,10 +200,36 @@ export default class PoppsCanvas {
      * @param y1 y coordinate of top left corner
      * @param x2 x coordinate of bottom right corner
      * @param y2 y coordinate of bottom right corner
+     * @param radii the radius of the corner
+     */
+    public roundRect(x1: number, y1: number, x2: number, y2: number, radii: number): void {
+        this.canvas.beginPath();
+        this.canvas.roundRect(x1, y1, x2, y2, radii);
+        this.canvas.fill();
+    }
+
+    /**
+     * @param x1 x coordinate of top left corner
+     * @param y1 y coordinate of top left corner
+     * @param x2 x coordinate of bottom right corner
+     * @param y2 y coordinate of bottom right corner
      */
     public strokeRect(x1: number, y1: number, x2: number, y2: number): void {
         this.canvas.beginPath();
         this.canvas.rect(x1, y1, x2, y2);
+        this.canvas.stroke();
+    }
+
+    /**
+     * @param x1 x coordinate of top left corner
+     * @param y1 y coordinate of top left corner
+     * @param x2 x coordinate of bottom right corner
+     * @param y2 y coordinate of bottom right corner
+     * @param radii the radius of the corner
+     */
+    public roundStrokeRect(x1: number, y1: number, x2: number, y2: number, radii: number): void {
+        this.canvas.beginPath();
+        this.canvas.roundRect(x1, y1, x2, y2, radii);
         this.canvas.stroke();
     }
 

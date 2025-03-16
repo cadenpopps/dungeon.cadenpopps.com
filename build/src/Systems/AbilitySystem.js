@@ -1,15 +1,12 @@
 import { CType } from "../Component.js";
 import { AbilityType } from "../Components/AbilityComponent.js";
-import HitboxComponent, { CircleHitboxComponent } from "../Components/HitboxComponent.js";
-import PositionComponent from "../Components/PositionComponent.js";
-import RotationComponent, { RotationDirectionMap } from "../Components/RotationComponent.js";
-import SizeComponent from "../Components/SizeComponent.js";
+import HitboxComponent from "../Components/HitboxComponent.js";
 import { System, SystemType } from "../System.js";
 import CameraSystem from "./CameraSystem.js";
 import VisibleSystem from "./VisibleSystem.js";
 export default class AbilitySystem extends System {
     constructor(eventManager, entityManager) {
-        super(SystemType.Ability, eventManager, entityManager, [CType.Ability]);
+        super(SystemType.Ability, eventManager, entityManager, [CType.Ability, CType.Controller]);
     }
     logic() {
         const cam = CameraSystem.getHighestPriorityCamera();
@@ -34,7 +31,6 @@ export default class AbilitySystem extends System {
             this.decrementCooldownAndCurrentTick(ability);
         }
     }
-    getEntitiesHelper() { }
     determineActiveAbility(con, ability) {
         if (con.primary && ability.primary.cooldown === 0) {
             ability.primary.currentTick = ability.primary.duration;
@@ -90,28 +86,11 @@ export default class AbilitySystem extends System {
     }
     spawnHitbox(entityId, ability) {
         const hitboxData = ability.frames[ability.duration - ability.currentTick];
-        if (hitboxData !== null) {
-            const damage = hitboxData.damage;
-            const sourcePos = this.entityManager.get(entityId, CType.Position);
-            const sourceDir = this.entityManager.get(entityId, CType.Direction).direction;
-            const pos = new PositionComponent(sourcePos.x + hitboxData.x, sourcePos.y + hitboxData.y);
-            const size = new SizeComponent(hitboxData.width, hitboxData.height);
+        for (const hitbox of hitboxData) {
             const sourceSize = this.entityManager.get(entityId, CType.Size);
-            const rotationOffset = hitboxData.degrees || 0;
-            const rotation = new RotationComponent(sourcePos, RotationDirectionMap.get(sourceDir) + rotationOffset);
-            let hitbox;
-            if (hitboxData.circle) {
-                hitbox = new CircleHitboxComponent(hitboxData.x * sourceSize.width, hitboxData.y * sourceSize.height, hitboxData.width * sourceSize.width, hitboxData.frames, entityId, damage);
-            }
-            else {
-                hitbox = new HitboxComponent(hitboxData.x * sourceSize.width, hitboxData.y * sourceSize.height, hitboxData.width * sourceSize.width, hitboxData.height * sourceSize.height, rotationOffset, hitboxData.frames, entityId, damage);
-            }
-            this.entityManager.addEntity(new Map([
-                [CType.Position, pos],
-                [CType.Size, size],
-                [CType.Hitbox, hitbox],
-                [CType.Rotation, rotation],
-            ]));
+            this.entityManager.addEntity([
+                new HitboxComponent(hitbox.shape, hitbox.x * sourceSize.width, hitbox.y * sourceSize.height, hitbox.width * sourceSize.width, hitbox.height * sourceSize.height, hitbox.rotation, hitbox.duration, entityId, hitbox.damage),
+            ]);
         }
     }
 }

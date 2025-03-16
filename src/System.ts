@@ -7,8 +7,8 @@ export abstract class System {
     public paused: boolean;
     public requiredComponents: Array<CType>;
     public entities: Array<number>;
-    protected eventManager: EventManager;
-    protected entityManager: EntityManager;
+    public eventManager: EventManager;
+    public entityManager: EntityManager;
 
     constructor(
         type: SystemType,
@@ -17,32 +17,23 @@ export abstract class System {
         requiredComponents: Array<CType>
     ) {
         this.type = type;
-        this.paused = false;
+        this.paused = true;
         this.eventManager = eventManager;
         this.entityManager = entityManager;
         this.requiredComponents = requiredComponents;
         this.entities = new Array<number>();
+        this.entityManager.subscribeToEntities(this.requiredComponents, this.entities, this);
     }
 
     public tick(): void {
         for (let event of this.eventManager.eventQueue) {
             switch (event) {
-                case Event.entity_created:
-                case Event.entity_modified:
-                case Event.entity_destroyed:
-                    this.getEntities();
-                    break;
-                case Event.level_change:
-                    this.pause();
-                    break;
-                case Event.level_loaded:
-                    this.unpause();
-                    break;
                 case Event.pause:
-                    this.pause();
+                    this.paused = true;
                     break;
+                case Event.level_change_complete:
                 case Event.unpause:
-                    this.unpause();
+                    this.paused = false;
                     break;
             }
             this.handleEvent(event);
@@ -54,22 +45,9 @@ export abstract class System {
 
     public handleEvent(_event: Event): void {}
 
+    public entitiesModifiedCallback(): void {}
+
     public logic(): void {}
-
-    public getEntities(): void {
-        this.entities = this.entityManager.getSystemEntities(this.requiredComponents);
-        this.getEntitiesHelper();
-    }
-
-    public getEntitiesHelper(): void {}
-
-    public pause(): void {
-        this.paused = true;
-    }
-
-    public unpause(): void {
-        this.paused = false;
-    }
 }
 
 export enum SystemType {

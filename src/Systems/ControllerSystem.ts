@@ -1,10 +1,9 @@
 import { CType } from "../Component.js";
 import ControllerComponent from "../Components/ControllerComponent.js";
 import DirectionComponent, { Direction } from "../Components/DirectionComponent.js";
-import HealthComponent from "../Components/HealthComponent.js";
-import MovementComponent from "../Components/MovementComponent.js";
+import UIComponent, { UILifecycleState, UIType } from "../Components/UIComponent.js";
 import { EntityManager } from "../EntityManager.js";
-import { EventManager } from "../EventManager.js";
+import { Event, EventManager } from "../EventManager.js";
 import { Input, InputManager } from "../InputManager.js";
 import { System, SystemType } from "../System.js";
 
@@ -16,21 +15,51 @@ export default class ControllerSystem extends System {
         this.inputManager = inputManager;
     }
 
+    public handleEvent(event: Event): void {
+        switch (event) {
+            case Event.level_change_begin:
+                this.paused = true;
+                break;
+        }
+    }
+
     public logic(): void {
         for (let entityId of this.entities) {
             const entity = this.entityManager.getEntity(entityId);
+
+            if (entity.has(CType.UI)) {
+                const ui = entity.get(CType.UI) as UIComponent;
+                if (ui.elements[0].type === UIType.GameOverScreen && ui.elements[0].state === UILifecycleState.Stable) {
+                    this.mapInputsToController(entityId);
+                    const con = entity.get(CType.Controller) as ControllerComponent;
+                    if (
+                        con.up ||
+                        con.down ||
+                        con.left ||
+                        con.right ||
+                        con.interact ||
+                        con.roll ||
+                        con.primary ||
+                        con.secondary ||
+                        con.ultimate ||
+                        con.zoom_in ||
+                        con.zoom_out
+                    ) {
+                        this.entityManager.removeComponent(entityId, CType.Controller);
+                        this.eventManager.addEvent(Event.respawn);
+                        return;
+                    }
+                }
+            }
+
             if (entity.has(CType.Camera)) {
                 this.mapScrollToCamera(entityId);
-            }
-            // Could add a InputComponent with its own input map. That way a camera can be controlled with inputs
-            if (entity.has(CType.Player) || entity.has(CType.Camera)) {
                 this.mapInputsToController(entityId);
             }
 
-            if ((entity.get(CType.Controller) as ControllerComponent).roll) {
-                (entity.get(CType.Health) as HealthComponent).invincibleCounter = (
-                    entity.get(CType.Movement) as MovementComponent
-                ).rollLength;
+            // Could add a InputComponent with its own input map. That way a camera can be controlled with inputs
+            if (entity.has(CType.Player)) {
+                this.mapInputsToController(entityId);
             }
 
             if (entity.has(CType.Direction)) {

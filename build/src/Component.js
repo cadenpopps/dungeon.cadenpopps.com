@@ -31,6 +31,32 @@ export var CType;
     CType[CType["EnemySpawner"] = 22] = "EnemySpawner";
     CType[CType["Experience"] = 23] = "Experience";
     CType[CType["Direction"] = 24] = "Direction";
-    CType[CType["Rotation"] = 25] = "Rotation";
 })(CType || (CType = {}));
+export const CTypeMap = new Map([
+    [CType.Game, "Game"],
+    [CType.Controller, "Controller"],
+    [CType.Position, "Position"],
+    [CType.Velocity, "Velocity"],
+    [CType.Collision, "Collision"],
+    [CType.Visible, "Visible"],
+    [CType.Movement, "Movement"],
+    [CType.Camera, "Camera"],
+    [CType.Level, "Level"],
+    [CType.LevelChange, "LevelChange"],
+    [CType.Player, "Player"],
+    [CType.Interactable, "Interactable"],
+    [CType.Tile, "Tile"],
+    [CType.LightSource, "LightSource"],
+    [CType.Acceleration, "Acceleration"],
+    [CType.Size, "Size"],
+    [CType.AI, "AI"],
+    [CType.UI, "UI"],
+    [CType.Health, "Health"],
+    [CType.Ability, "Ability"],
+    [CType.Hitbox, "Hitbox"],
+    [CType.Texture, "Texture"],
+    [CType.EnemySpawner, "EnemySpawner"],
+    [CType.Experience, "Experience"],
+    [CType.Direction, "Direction"],
+]);
 //# sourceMappingURL=Component.js.map

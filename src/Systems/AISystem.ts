@@ -4,6 +4,7 @@ import AIComponent, { Behavior } from "../Components/AIComponent.js";
 import AbilityComponent, { AbilityType } from "../Components/AbilityComponent.js";
 import ControllerComponent from "../Components/ControllerComponent.js";
 import DirectionComponent, { Direction } from "../Components/DirectionComponent.js";
+import HealthComponent from "../Components/HealthComponent.js";
 import PositionComponent from "../Components/PositionComponent.js";
 import VisibleComponent from "../Components/VisibleComponent.js";
 import { getEntitiesInRange } from "../Constants.js";
@@ -13,8 +14,6 @@ import { System, SystemType } from "../System.js";
 import CameraSystem from "./CameraSystem.js";
 
 export default class AISystem extends System {
-    private playerId!: number;
-
     constructor(eventManager: EventManager, entityManager: EntityManager) {
         super(SystemType.AI, eventManager, entityManager, [CType.AI, CType.Controller, CType.Ability]);
     }
@@ -36,14 +35,17 @@ export default class AISystem extends System {
             if (ai.waitTimer > 0) {
                 ai.waitTimer--;
             } else {
-                this.determineAction(entityId, ai);
+                if (
+                    this.entityManager.hasComponent(this.entityManager.getPlayerId(), CType.Health) &&
+                    this.entityManager.get<HealthComponent>(this.entityManager.getPlayerId(), CType.Health).alive
+                ) {
+                    this.determineAction(entityId, ai);
+                } else {
+                    ai.behavior = Behavior.Wander;
+                }
                 this.takeAction(entityId, ai);
             }
         }
-    }
-
-    public getEntitiesHelper(): void {
-        this.playerId = this.entityManager.getSystemEntities([CType.Player])[0];
     }
 
     private determineAction(entityId: number, ai: AIComponent): void {
@@ -59,7 +61,7 @@ export default class AISystem extends System {
                 }
             }
         } else {
-            if (this.canSeePlayer(entityId, ai)) {
+            if (this.canSeePlayer(entityId)) {
                 ai.behavior = Behavior.MoveIntoCombatRange;
                 ai.noticedPlayer = true;
             } else if (ai.behavior === Behavior.Stop) {
@@ -96,14 +98,14 @@ export default class AISystem extends System {
         }
     }
 
-    private canSeePlayer(entityId: number, ai: AIComponent): boolean {
+    private canSeePlayer(entityId: number): boolean {
         const vis = this.entityManager.get<VisibleComponent>(entityId, CType.Visible);
         if (!vis.visible) {
             return false;
         }
 
         const pos = this.entityManager.get<PositionComponent>(entityId, CType.Position);
-        const playerPos = this.entityManager.get<PositionComponent>(this.playerId, CType.Position);
+        const playerPos = this.entityManager.get<PositionComponent>(this.entityManager.getPlayerId(), CType.Position);
 
         const dir = this.entityManager.get<DirectionComponent>(entityId, CType.Direction);
         if (pos.x <= playerPos.x && pos.y <= playerPos.y) {
@@ -136,9 +138,9 @@ export default class AISystem extends System {
 
     private inCombatRange(entityId: number): boolean {
         const pos = this.entityManager.get<PositionComponent>(entityId, CType.Position);
-        const playerPos = this.entityManager.get<PositionComponent>(this.playerId, CType.Position);
+        const playerPos = this.entityManager.get<PositionComponent>(this.entityManager.getPlayerId(), CType.Position);
         // Substitute 2 for attack range
-        return distance(pos.x, pos.y, playerPos.x, playerPos.y) < 2;
+        return distance(pos.x, pos.y, playerPos.x, playerPos.y) < 1.5;
     }
 
     private stop(con: ControllerComponent): void {
@@ -165,7 +167,7 @@ export default class AISystem extends System {
         this.stop(con);
 
         const pos = this.entityManager.get<PositionComponent>(entityId, CType.Position);
-        const playerPos = this.entityManager.get<PositionComponent>(this.playerId, CType.Position);
+        const playerPos = this.entityManager.get<PositionComponent>(this.entityManager.getPlayerId(), CType.Position);
         if (pos.x < playerPos.x - 0.5) {
             con.right = true;
             con.left = false;

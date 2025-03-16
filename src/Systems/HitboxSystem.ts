@@ -4,20 +4,24 @@ import DirectionComponent from "../Components/DirectionComponent.js";
 import HealthComponent from "../Components/HealthComponent.js";
 import HitboxComponent, { HitboxShape } from "../Components/HitboxComponent.js";
 import PositionComponent from "../Components/PositionComponent.js";
-import RotationComponent, { RotationDirectionMap } from "../Components/RotationComponent.js";
 import SizeComponent from "../Components/SizeComponent.js";
 import VelocityComponent from "../Components/VelocityComponent.js";
-import { getEntitiesInRange } from "../Constants.js";
+import { directionToDegrees, getEntitiesInRange } from "../Constants.js";
 import { EntityManager } from "../EntityManager.js";
 import { EventManager } from "../EventManager.js";
 import { System, SystemType } from "../System.js";
 import CameraSystem from "./CameraSystem.js";
 
 export default class HitboxSystem extends System {
-    private healthEntityIds!: Array<number>;
+    public static HIT_INVINCIBILITY_FRAMES: number = 10;
+    public static KNOCKBACK_BASE_MODIFIER: number = 0.008;
+    public static KNOCKBACK_SIZE_MODIFIER: number = 4;
+
+    private healthEntityIds: Array<number> = new Array<number>();
 
     constructor(eventManager: EventManager, entityManager: EntityManager) {
         super(SystemType.Hitbox, eventManager, entityManager, [CType.Hitbox]);
+        this.entityManager.subscribeToEntities([CType.Health, CType.Position, CType.Size], this.healthEntityIds, this);
     }
 
     public logic(): void {
@@ -31,88 +35,87 @@ export default class HitboxSystem extends System {
             this.healthEntityIds,
             this.entityManager
         );
-        const hitboxesInRange = getEntitiesInRange(
-            new PositionComponent(cam.x, cam.y),
-            cam.visibleDistance,
-            this.entities,
-            this.entityManager
-        );
-        for (let entityId of hitboxesInRange) {
+        for (let entityId of this.entities) {
             const hitbox = this.entityManager.get<HitboxComponent>(entityId, CType.Hitbox);
-            if (!this.entityManager.entities.has(hitbox.sourceId)) {
-                this.entityManager.removeEntity(entityId);
-                continue;
-            }
-            if (hitbox.frames === 0) {
+            if (hitbox.duration === 0) {
                 this.entityManager.removeEntity(entityId);
             } else {
-                hitbox.frames--;
-                this.adjustHitboxPosition(entityId, hitbox);
-                this.hitboxCollision(entityId, hitbox, healthEntitiesInRange);
+                if (this.sourceAlive(hitbox.sourceEntityId)) {
+                    if (hitbox.shape === HitboxShape.Rectangle) {
+                        this.updateHitboxVertices(hitbox);
+                    }
+                    hitbox.duration--;
+                    this.hitboxCollision(entityId, hitbox, healthEntitiesInRange);
+                } else {
+                    this.entityManager.removeEntity(entityId);
+                }
             }
         }
     }
 
-    public getEntitiesHelper(): void {
-        this.healthEntityIds = this.entityManager.getSystemEntities([CType.Health]);
-    }
-
-    private adjustHitboxPosition(entityId: number, hitbox: HitboxComponent): void {
-        const sourcePos = this.entityManager.get<PositionComponent>(hitbox.sourceId, CType.Position);
-        const pos = this.entityManager.get<PositionComponent>(entityId, CType.Position);
-        const sourceDir = this.entityManager.get<DirectionComponent>(hitbox.sourceId, CType.Direction).direction;
-        const rotation = this.entityManager.get<RotationComponent>(entityId, CType.Rotation);
-        pos.x = sourcePos.x + hitbox.xOffset;
-        pos.y = sourcePos.y + hitbox.yOffset;
-        rotation.degrees = (RotationDirectionMap.get(sourceDir) as number) + hitbox.degreesOffset;
+    private sourceAlive(entityId: number): boolean {
+        if (this.entityManager.hasEntity(entityId)) {
+            return this.entityManager.get<HealthComponent>(entityId, CType.Health).alive;
+        }
+        return false;
     }
 
     private hitboxCollision(entityId: number, hitbox: HitboxComponent, healthEntitiesInRange: Array<number>): void {
-        const vertices = hitbox.shape === HitboxShape.Rectangle ? this.getVertices(entityId) : null;
         for (const healthEntityId of healthEntitiesInRange) {
-            if (!hitbox.ignoreIds.includes(healthEntityId)) {
-                const health = this.entityManager.get<HealthComponent>(healthEntityId, CType.Health);
-                if (health.invincibleCounter > 0) {
-                    continue;
-                }
+            const health = this.entityManager.get<HealthComponent>(healthEntityId, CType.Health);
+            if (healthEntityId === hitbox.sourceEntityId || !health.alive || health.invincibleCounter > 0) {
+                continue;
+            }
+            switch (hitbox.shape) {
+                case HitboxShape.Rectangle:
+                    if (this.rectangleOverlap(healthEntityId, hitbox)) {
+                        this.hit(healthEntityId, hitbox);
+                    }
 
-                let overlap = false;
-                if (hitbox.shape === HitboxShape.Rectangle) {
-                    overlap = this.rectangleOverlap(healthEntityId, vertices as Array<PositionComponent>);
-                } else {
-                    overlap = this.circleOverlap(healthEntityId, entityId, hitbox);
-                }
-                if (overlap) {
-                    hitbox.ignoreIds.push(healthEntityId);
-                    for (const sameAttackHitbox of this.entities) {
-                        const h = this.entityManager.get<HitboxComponent>(sameAttackHitbox, CType.Hitbox);
-                        if (h.sourceId === hitbox.sourceId) {
-                            h.ignoreIds.push(healthEntityId);
-                        }
+                    break;
+                case HitboxShape.Circle:
+                    if (this.circleOverlap(healthEntityId, entityId, hitbox)) {
+                        this.hit(healthEntityId, hitbox);
                     }
-                    health.currentHealth -= hitbox.damage;
-                    health.invincibleCounter = 3;
-                    if (
-                        this.entityManager.hasComponent(healthEntityId, CType.Position) &&
-                        this.entityManager.hasComponent(healthEntityId, CType.Velocity)
-                    ) {
-                        const pos = this.entityManager.get<PositionComponent>(healthEntityId, CType.Position);
-                        const vel = this.entityManager.get<VelocityComponent>(healthEntityId, CType.Velocity);
-                        const sourcePos = this.entityManager.get<PositionComponent>(hitbox.sourceId, CType.Position);
-                        vel.x += (pos.x - sourcePos.x) / 10;
-                        vel.y += (pos.y - sourcePos.y) / 10;
-                    }
-                }
+                    break;
             }
         }
     }
 
-    private rectangleOverlap(healthEntityId: number, vertices: Array<PositionComponent>): boolean {
-        const healthEntityVertices = this.getVertices(healthEntityId);
-        const axes = this.getAxes(vertices).concat(this.getAxes(healthEntityVertices));
+    private hit(entityId: number, hitbox: HitboxComponent): void {
+        const health = this.entityManager.get<HealthComponent>(entityId, CType.Health);
+        health.currentHealth -= hitbox.damage;
+        health.invincibleCounter = HitboxSystem.HIT_INVINCIBILITY_FRAMES;
+
+        if (
+            this.entityManager.hasComponent(entityId, CType.Position) &&
+            this.entityManager.hasComponent(entityId, CType.Velocity)
+        ) {
+            this.knockback(entityId, hitbox);
+        }
+    }
+
+    private knockback(entityId: number, hitbox: HitboxComponent): void {
+        const pos = this.entityManager.get<PositionComponent>(entityId, CType.Position);
+        const vel = this.entityManager.get<VelocityComponent>(entityId, CType.Velocity);
+        const sourcePos = this.entityManager.get<PositionComponent>(hitbox.sourceEntityId, CType.Position);
+        const sourceSize = this.entityManager.get<SizeComponent>(hitbox.sourceEntityId, CType.Size);
+        const angle = Math.atan2(pos.x - sourcePos.x, pos.y - sourcePos.y);
+        const magnitude =
+            distance(pos.x, pos.y, sourcePos.x, sourcePos.y) *
+            HitboxSystem.KNOCKBACK_BASE_MODIFIER *
+            (sourceSize.height + HitboxSystem.KNOCKBACK_SIZE_MODIFIER) *
+            (sourceSize.width + HitboxSystem.KNOCKBACK_SIZE_MODIFIER);
+        vel.x += magnitude * Math.sin(angle);
+        vel.y += magnitude * Math.cos(angle);
+    }
+
+    private rectangleOverlap(healthEntityId: number, hitbox: HitboxComponent): boolean {
+        const healthEntityHurtbox = this.getEntityHurtbox(healthEntityId);
+        const axes = this.getAxes(hitbox.vertices).concat(this.getAxes(healthEntityHurtbox));
         for (const axis of axes) {
-            const hitboxProjection = this.projectVerticesOntoAxis(vertices, axis);
-            const healthEntityProjection = this.projectVerticesOntoAxis(healthEntityVertices, axis);
+            const hitboxProjection = this.projectVerticesOntoAxis(hitbox.vertices, axis);
+            const healthEntityProjection = this.projectVerticesOntoAxis(healthEntityHurtbox, axis);
             if (
                 hitboxProjection.max < healthEntityProjection.min ||
                 healthEntityProjection.max < hitboxProjection.min
@@ -124,19 +127,17 @@ export default class HitboxSystem extends System {
     }
 
     private circleOverlap(healthEntityId: number, hitboxId: number, hitbox: HitboxComponent): boolean {
-        const healthEntityVertices = this.getVertices(healthEntityId);
-        const hitboxPos = this.entityManager.get<PositionComponent>(hitboxId, CType.Position);
-        for (const vertex of healthEntityVertices) {
-            if (
-                distance(vertex.x, vertex.y, hitboxPos.x + hitbox.xOffset, hitboxPos.y + hitbox.yOffset) < hitbox.width
-            ) {
+        const healthEntityHurtbox = this.getEntityHurtbox(healthEntityId);
+        const sourcePos = this.entityManager.get<PositionComponent>(hitbox.sourceEntityId, CType.Position);
+        for (const vertex of healthEntityHurtbox) {
+            if (distance(vertex.x, vertex.y, sourcePos.x + hitbox.x, sourcePos.y + hitbox.y) < hitbox.width) {
                 return true;
             }
         }
         return false;
     }
 
-    private getVertices(entityId: number): Array<PositionComponent> {
+    private getEntityHurtbox(entityId: number): Array<PositionComponent> {
         const pos = this.entityManager.get<PositionComponent>(entityId, CType.Position);
         const size = this.entityManager.get<SizeComponent>(entityId, CType.Size);
         const vertices: Array<PositionComponent> = new Array<PositionComponent>();
@@ -145,25 +146,64 @@ export default class HitboxSystem extends System {
         vertices.push(new PositionComponent(pos.x - size.width / 2, pos.y + size.height / 2));
         vertices.push(new PositionComponent(pos.x + size.width / 2, pos.y + size.height / 2));
 
-        if (this.entityManager.hasComponent(entityId, CType.Rotation)) {
-            const rot = this.entityManager.get<RotationComponent>(entityId, CType.Rotation);
-            const angle = (rot.degrees * Math.PI) / 180;
-            const cos = Math.cos(angle);
-            const sin = Math.sin(angle);
-            for (let vertex = 0; vertex < vertices.length; vertex++) {
-                const newVertex = new PositionComponent(
-                    (vertices[vertex].x - rot.centerPoint.x) * cos -
-                        (vertices[vertex].y - rot.centerPoint.y) * sin +
-                        rot.centerPoint.x,
-                    (vertices[vertex].x - rot.centerPoint.x) * sin +
-                        (vertices[vertex].y - rot.centerPoint.y) * cos +
-                        rot.centerPoint.y
-                );
-                vertices[vertex] = newVertex;
-            }
-        }
-
         return vertices;
+    }
+
+    private updateHitboxVertices(hitbox: HitboxComponent): void {
+        const vertices: Array<PositionComponent> = new Array<PositionComponent>();
+        const angle = (hitbox.rotation * Math.PI) / 180;
+        const cos = Math.cos(angle);
+        const sin = Math.sin(angle);
+
+        vertices.push(
+            new PositionComponent(
+                hitbox.x + (-hitbox.width / 2) * cos - (-hitbox.height / 2) * sin,
+                hitbox.y + (-hitbox.height / 2) * cos + (-hitbox.width / 2) * sin
+            )
+        );
+        vertices.push(
+            new PositionComponent(
+                hitbox.x + (-hitbox.width / 2) * cos - (+hitbox.height / 2) * sin,
+                hitbox.y + (+hitbox.height / 2) * cos + (-hitbox.width / 2) * sin
+            )
+        );
+        vertices.push(
+            new PositionComponent(
+                hitbox.x + (hitbox.width / 2) * cos - (hitbox.height / 2) * sin,
+                hitbox.y + (hitbox.height / 2) * cos + (hitbox.width / 2) * sin
+            )
+        );
+        vertices.push(
+            new PositionComponent(
+                hitbox.x + (+hitbox.width / 2) * cos - (-hitbox.height / 2) * sin,
+                hitbox.y + (-hitbox.height / 2) * cos + (+hitbox.width / 2) * sin
+            )
+        );
+
+        const sourcePos = this.entityManager.get<PositionComponent>(hitbox.sourceEntityId, CType.Position);
+        const sourceDir = this.entityManager.get<DirectionComponent>(hitbox.sourceEntityId, CType.Direction);
+        const angle2 = (directionToDegrees(sourceDir.direction) * Math.PI) / 180;
+        const cos2 = Math.cos(angle2);
+        const sin2 = Math.sin(angle2);
+
+        vertices[0] = new PositionComponent(
+            sourcePos.x + (vertices[0].x * cos2 - vertices[0].y * sin2),
+            sourcePos.y + (vertices[0].y * cos2 + vertices[0].x * sin2)
+        );
+        vertices[1] = new PositionComponent(
+            sourcePos.x + (vertices[1].x * cos2 - vertices[1].y * sin2),
+            sourcePos.y + (vertices[1].y * cos2 + vertices[1].x * sin2)
+        );
+        vertices[2] = new PositionComponent(
+            sourcePos.x + (vertices[2].x * cos2 - vertices[2].y * sin2),
+            sourcePos.y + (vertices[2].y * cos2 + vertices[2].x * sin2)
+        );
+        vertices[3] = new PositionComponent(
+            sourcePos.x + (vertices[3].x * cos2 - vertices[3].y * sin2),
+            sourcePos.y + (vertices[3].y * cos2 + vertices[3].x * sin2)
+        );
+
+        hitbox.vertices = vertices;
     }
 
     private getAxes(shape: Array<PositionComponent>): Array<PositionComponent> {

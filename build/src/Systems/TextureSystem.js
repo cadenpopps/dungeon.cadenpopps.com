@@ -6,10 +6,12 @@ import { Tile } from "../Components/TileComponent.js";
 import { Event } from "../EventManager.js";
 import { System, SystemType } from "../System.js";
 export default class TextureSystem extends System {
-    tileEntityIds;
-    directionalTextureIds;
+    tileEntityIds = new Array();
+    directionalTextureIds = new Array();
     constructor(eventManager, entityManager) {
         super(SystemType.Texture, eventManager, entityManager, [CType.Texture]);
+        this.entityManager.subscribeToEntities([CType.Tile], this.tileEntityIds, this);
+        this.entityManager.subscribeToEntities([CType.Direction, CType.Texture], this.directionalTextureIds, this);
     }
     handleEvent(event) {
         switch (event) {
@@ -35,10 +37,6 @@ export default class TextureSystem extends System {
                 }
             }
         }
-    }
-    getEntitiesHelper() {
-        this.tileEntityIds = this.entityManager.getSystemEntities([CType.Tile]);
-        this.directionalTextureIds = this.entityManager.getSystemEntities([CType.Direction, CType.Texture]);
     }
     setTextures() {
         const tileMap = this.createTileMap();

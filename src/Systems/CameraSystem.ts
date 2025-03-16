@@ -16,10 +16,10 @@ export default class CameraSystem extends System {
 
     constructor(eventManager: EventManager, entityManager: EntityManager) {
         super(SystemType.Camera, eventManager, entityManager, [CType.Camera]);
+        entityManager.subscribeToEntities(this.requiredComponents, this.entities, this);
     }
 
     public logic(): void {
-        CameraSystem.setHighestPriorityCamera(this.entities, this.entityManager);
         for (let entityId of this.entities) {
             if (this.entityManager.getEntity(entityId).has(CType.Position)) {
                 this.moveCamera(entityId);
@@ -30,14 +30,14 @@ export default class CameraSystem extends System {
         }
     }
 
-    private static setHighestPriorityCamera(cameraIds: Array<number>, entityManager: EntityManager): void {
-        if (cameraIds.length === 0) {
+    public entitiesModifiedCallback(): void {
+        if (this.entities.length === 0) {
             return;
         }
         let priority = 0;
-        let prioCam = entityManager.get<CameraComponent>(cameraIds[0], CType.Camera);
-        for (let entityId of cameraIds) {
-            const cam = entityManager.get<CameraComponent>(entityId, CType.Camera);
+        let prioCam = this.entityManager.get<CameraComponent>(this.entities[0], CType.Camera);
+        for (let entityId of this.entities) {
+            const cam = this.entityManager.get<CameraComponent>(entityId, CType.Camera);
             if (cam.priority > priority) {
                 priority = cam.priority;
                 prioCam = cam;

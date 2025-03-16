@@ -127,9 +127,19 @@ export default class PoppsCanvas {
         this.canvas.rect(x1, y1, x2, y2);
         this.canvas.fill();
     }
+    roundRect(x1, y1, x2, y2, radii) {
+        this.canvas.beginPath();
+        this.canvas.roundRect(x1, y1, x2, y2, radii);
+        this.canvas.fill();
+    }
     strokeRect(x1, y1, x2, y2) {
         this.canvas.beginPath();
         this.canvas.rect(x1, y1, x2, y2);
+        this.canvas.stroke();
+    }
+    roundStrokeRect(x1, y1, x2, y2, radii) {
+        this.canvas.beginPath();
+        this.canvas.roundRect(x1, y1, x2, y2, radii);
         this.canvas.stroke();
     }
     line(x1, y1, x2, y2, width) {

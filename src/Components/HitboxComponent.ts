@@ -1,60 +1,57 @@
 import { Component, CType } from "../Component.js";
+import PositionComponent from "./PositionComponent.js";
 
 export default class HitboxComponent extends Component {
     public shape: HitboxShape;
-    public xOffset: number;
-    public yOffset: number;
-    public degreesOffset: number;
+    public x: number;
+    public y: number;
     public width: number;
     public height: number;
-    public frames: number;
-    public sourceId: number;
-    public ignoreIds: Array<number>;
+    public rotation: number;
+    public duration: number;
+    public sourceEntityId: number;
     public damage: number;
+    public vertices: Array<PositionComponent>;
 
     constructor(
-        xOffset: number,
-        yOffset: number,
+        shape: HitboxShape,
+        x: number,
+        y: number,
         width: number,
         height: number,
-        degreesOffset: number,
-        frames: number,
-        sourceId: number,
+        rotation: number,
+        duration: number,
+        sourceEntityId: number,
         damage: number
     ) {
         super(CType.Hitbox);
-        this.shape = HitboxShape.Rectangle;
-        this.xOffset = xOffset;
-        this.yOffset = yOffset;
+        this.shape = shape;
+        this.x = x;
+        this.y = y;
         this.width = width;
         this.height = height;
-        this.degreesOffset = degreesOffset;
-        this.frames = frames;
-        this.sourceId = sourceId;
-        this.ignoreIds = [sourceId];
+        this.rotation = rotation;
+        this.duration = duration;
+        this.sourceEntityId = sourceEntityId;
         this.damage = damage;
-    }
-}
-
-export class CircleHitboxComponent extends HitboxComponent {
-    constructor(xOffset: number, yOffset: number, radius: number, frames: number, sourceId: number, damage: number) {
-        super(xOffset, yOffset, radius, radius, 0, frames, sourceId, damage);
-        this.shape = HitboxShape.Circle;
+        this.vertices = new Array<PositionComponent>();
     }
 }
 
 export enum HitboxShape {
     Rectangle,
     Circle,
+    SemiCircle,
+    QuarterCircle,
 }
 
 export interface HitboxData {
+    shape: HitboxShape;
     damage: number;
     x: number;
     y: number;
     width: number;
     height: number;
-    frames: number;
-    degrees: number;
-    circle: boolean;
+    rotation: number;
+    duration: number;
 }

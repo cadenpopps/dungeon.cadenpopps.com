@@ -16,11 +16,13 @@ import { Event, EventManager } from "../EventManager.js";
 import { System, SystemType } from "../System.js";
 
 export default class TextureSystem extends System {
-    private tileEntityIds!: Array<number>;
-    private directionalTextureIds!: Array<number>;
+    private tileEntityIds: Array<number> = new Array<number>();
+    private directionalTextureIds: Array<number> = new Array<number>();
 
     constructor(eventManager: EventManager, entityManager: EntityManager) {
         super(SystemType.Texture, eventManager, entityManager, [CType.Texture]);
+        this.entityManager.subscribeToEntities([CType.Tile], this.tileEntityIds, this);
+        this.entityManager.subscribeToEntities([CType.Direction, CType.Texture], this.directionalTextureIds, this);
     }
 
     public handleEvent(event: Event): void {
@@ -48,11 +50,6 @@ export default class TextureSystem extends System {
                 }
             }
         }
-    }
-
-    public getEntitiesHelper(): void {
-        this.tileEntityIds = this.entityManager.getSystemEntities([CType.Tile]);
-        this.directionalTextureIds = this.entityManager.getSystemEntities([CType.Direction, CType.Texture]);
     }
 
     private setTextures(): void {

@@ -30,12 +30,13 @@ export class EventManager {
 }
 
 export enum Event {
+    init,
     new_game,
+    respawn,
     load_game,
-    entity_created,
-    entity_destroyed,
-    entity_modified,
-    level_change,
+    level_change_begin,
+    level_change_complete,
+    begin_level_load,
     level_loaded,
     pause,
     unpause,

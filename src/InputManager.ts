@@ -2,6 +2,9 @@ import * as PoppsInput from "../lib/PoppsInput.js";
 import { Event, EventManager } from "./EventManager.js";
 
 export class InputManager {
+    public static MOUSE_X: number = 0;
+    public static MOUSE_Y: number = 0;
+    public static MOUSE_DOWN: boolean = false;
     private eventManager: EventManager;
     private scrollTimer!: ReturnType<typeof setTimeout>;
     private inputs: Array<Input>;
@@ -16,6 +19,7 @@ export class InputManager {
         PoppsInput.listenScroll(this.scrollHandler.bind(this));
         PoppsInput.listenMouseDown(this.mouseDownHandler.bind(this));
         PoppsInput.listenMouseUp(this.mouseUpHandler.bind(this));
+        PoppsInput.listenMouseMoved(this.mouseMovedHandler.bind(this));
         document.addEventListener("contextmenu", (e) => e?.cancelable && e.preventDefault());
     }
 
@@ -29,9 +33,9 @@ export class InputManager {
 
     private keyDownHandler(key: string): void {
         const lowerCaseKey = key.toLocaleLowerCase();
-        if (lowerCaseKey === "n") {
-            this.eventManager.addEvent(Event.level_change);
-        }
+        // if (lowerCaseKey === "n") {
+        //     this.eventManager.addEvent(Event.level_change_begin);
+        // }
         if (this.controllerMap.has(lowerCaseKey)) {
             const input = this.controllerMap.get(lowerCaseKey) as Input;
             if (input === Input.Pause) {
@@ -82,8 +86,18 @@ export class InputManager {
         }
     }
 
+    private mouseMovedHandler(event: any): void {
+        if (event.target.width) {
+            InputManager.MOUSE_X = event.clientX - event.target.width / 2;
+        }
+        if (event.target.height) {
+            InputManager.MOUSE_Y = event.clientY - event.target.height / 2;
+        }
+    }
+
     private mouseDownHandler(event: MouseEvent): void {
         if (event.button === 0) {
+            InputManager.MOUSE_DOWN = true;
             this.inputs.push(Input.Primary);
         } else if (event.button === 2) {
             this.inputs.push(Input.Secondary);
@@ -92,6 +106,7 @@ export class InputManager {
 
     private mouseUpHandler(event: MouseEvent): void {
         if (event.button === 0) {
+            InputManager.MOUSE_DOWN = false;
             this.inputs = this.inputs.filter((i) => i !== Input.Primary);
         } else if (event.button === 2) {
             this.inputs = this.inputs.filter((i) => i !== Input.Secondary);

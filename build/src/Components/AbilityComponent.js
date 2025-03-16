@@ -1,5 +1,6 @@
 import { loadJSON } from "../../lib/PoppsLoad.js";
 import { Component, CType } from "../Component.js";
+import { HitboxShape } from "./HitboxComponent.js";
 export default class AbilityComponent extends Component {
     primary;
     secondary;
@@ -85,6 +86,24 @@ export class SlashAttack {
 function convertAbilityData(AbilityData) {
     const AbilityDataMap = new Map();
     for (const abilityName in AbilityData) {
+        for (const frame of AbilityData[abilityName].frames) {
+            for (const hitbox of frame) {
+                switch (hitbox.shape) {
+                    case "rectangle":
+                        hitbox.shape = HitboxShape.Rectangle;
+                        break;
+                    case "circle":
+                        hitbox.shape = HitboxShape.Circle;
+                        break;
+                    case "semicircle":
+                        hitbox.shape = HitboxShape.SemiCircle;
+                        break;
+                    case "quartercircle":
+                        hitbox.shape = HitboxShape.QuarterCircle;
+                        break;
+                }
+            }
+        }
         switch (abilityName) {
             case "LungeAttack":
                 AbilityDataMap.set(AbilityType.LungeAttack, AbilityData[abilityName]);

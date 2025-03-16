@@ -23,10 +23,11 @@ export default class LightSystem extends System {
     public static shadow_green = 8;
     public static shadow_blue = 30;
 
-    private lightSourceIds!: Array<number>;
+    private lightSourceIds: Array<number> = new Array<number>();
 
     constructor(eventManager: EventManager, entityManager: EntityManager) {
         super(SystemType.Light, eventManager, entityManager, [CType.Visible]);
+        this.entityManager.subscribeToEntities([CType.LightSource], this.lightSourceIds, this);
     }
 
     public logic(): void {
@@ -85,9 +86,5 @@ export default class LightSystem extends System {
                 }
             }
         }
-    }
-
-    public getEntitiesHelper(): void {
-        this.lightSourceIds = this.entityManager.getSystemEntities([CType.LightSource]);
     }
 }

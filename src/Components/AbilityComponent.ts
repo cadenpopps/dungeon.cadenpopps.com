@@ -1,6 +1,6 @@
 import { loadJSON } from "../../lib/PoppsLoad.js";
 import { Component, CType } from "../Component.js";
-import { HitboxData } from "./HitboxComponent.js";
+import { HitboxData, HitboxShape } from "./HitboxComponent.js";
 
 export default class AbilityComponent extends Component {
     public primary: Ability;
@@ -16,7 +16,7 @@ export default class AbilityComponent extends Component {
 }
 export interface Ability {
     type: AbilityType;
-    frames: Array<HitboxData | null>;
+    frames: Array<Array<HitboxData>>;
     cooldownLength: number;
     cooldown: number;
     duration: number;
@@ -29,14 +29,15 @@ export enum AbilityType {
     SpinAttack,
     SlashAttack,
 }
+
 export interface AbilityData {
     type: AbilityType;
-    frames: Array<HitboxData | null>;
+    frames: Array<Array<HitboxData>>;
 }
 
 export class None implements Ability {
     public type: number;
-    public frames: Array<HitboxData | null>;
+    public frames: Array<Array<HitboxData>>;
     public duration: number;
     public currentTick: number;
     public cooldownLength: number;
@@ -54,7 +55,7 @@ export class None implements Ability {
 
 export class LungeAttack implements Ability {
     public type: AbilityType;
-    public frames: Array<HitboxData | null>;
+    public frames: Array<Array<HitboxData>>;
     public duration: number;
     public currentTick: number;
     public cooldownLength: number;
@@ -72,7 +73,7 @@ export class LungeAttack implements Ability {
 
 export class SpinAttack implements Ability {
     public type: AbilityType;
-    public frames: Array<HitboxData | null>;
+    public frames: Array<Array<HitboxData>>;
     public duration: number;
     public currentTick: number;
     public cooldownLength: number;
@@ -90,7 +91,7 @@ export class SpinAttack implements Ability {
 
 export class SlashAttack implements Ability {
     public type: AbilityType;
-    public frames: Array<HitboxData | null>;
+    public frames: Array<Array<HitboxData>>;
     public duration: number;
     public currentTick: number;
     public cooldownLength: number;
@@ -109,6 +110,24 @@ export class SlashAttack implements Ability {
 function convertAbilityData(AbilityData: any): Map<AbilityType, AbilityData> {
     const AbilityDataMap: Map<AbilityType, AbilityData> = new Map();
     for (const abilityName in AbilityData) {
+        for (const frame of AbilityData[abilityName].frames) {
+            for (const hitbox of frame) {
+                switch (hitbox.shape) {
+                    case "rectangle":
+                        hitbox.shape = HitboxShape.Rectangle;
+                        break;
+                    case "circle":
+                        hitbox.shape = HitboxShape.Circle;
+                        break;
+                    case "semicircle":
+                        hitbox.shape = HitboxShape.SemiCircle;
+                        break;
+                    case "quartercircle":
+                        hitbox.shape = HitboxShape.QuarterCircle;
+                        break;
+                }
+            }
+        }
         switch (abilityName) {
             case "LungeAttack":
                 AbilityDataMap.set(AbilityType.LungeAttack, AbilityData[abilityName]);

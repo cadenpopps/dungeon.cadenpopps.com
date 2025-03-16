@@ -8,7 +8,6 @@ import { getEntitiesInRange } from "../Constants.js";
 import { System, SystemType } from "../System.js";
 import CameraSystem from "./CameraSystem.js";
 export default class AISystem extends System {
-    playerId;
     constructor(eventManager, entityManager) {
         super(SystemType.AI, eventManager, entityManager, [CType.AI, CType.Controller, CType.Ability]);
     }
@@ -25,13 +24,16 @@ export default class AISystem extends System {
                 ai.waitTimer--;
             }
             else {
-                this.determineAction(entityId, ai);
+                if (this.entityManager.hasComponent(this.entityManager.getPlayerId(), CType.Health) &&
+                    this.entityManager.get(this.entityManager.getPlayerId(), CType.Health).alive) {
+                    this.determineAction(entityId, ai);
+                }
+                else {
+                    ai.behavior = Behavior.Wander;
+                }
                 this.takeAction(entityId, ai);
             }
         }
-    }
-    getEntitiesHelper() {
-        this.playerId = this.entityManager.getSystemEntities([CType.Player])[0];
     }
     determineAction(entityId, ai) {
         if (ai.noticedPlayer) {
@@ -49,7 +51,7 @@ export default class AISystem extends System {
             }
         }
         else {
-            if (this.canSeePlayer(entityId, ai)) {
+            if (this.canSeePlayer(entityId)) {
                 ai.behavior = Behavior.MoveIntoCombatRange;
                 ai.noticedPlayer = true;
             }
@@ -87,13 +89,13 @@ export default class AISystem extends System {
                 break;
         }
     }
-    canSeePlayer(entityId, ai) {
+    canSeePlayer(entityId) {
         const vis = this.entityManager.get(entityId, CType.Visible);
         if (!vis.visible) {
             return false;
         }
         const pos = this.entityManager.get(entityId, CType.Position);
-        const playerPos = this.entityManager.get(this.playerId, CType.Position);
+        const playerPos = this.entityManager.get(this.entityManager.getPlayerId(), CType.Position);
         const dir = this.entityManager.get(entityId, CType.Direction);
         if (pos.x <= playerPos.x && pos.y <= playerPos.y) {
             return (dir.direction === Direction.East ||
@@ -119,8 +121,8 @@ export default class AISystem extends System {
     }
     inCombatRange(entityId) {
         const pos = this.entityManager.get(entityId, CType.Position);
-        const playerPos = this.entityManager.get(this.playerId, CType.Position);
-        return distance(pos.x, pos.y, playerPos.x, playerPos.y) < 2;
+        const playerPos = this.entityManager.get(this.entityManager.getPlayerId(), CType.Position);
+        return distance(pos.x, pos.y, playerPos.x, playerPos.y) < 1.5;
     }
     stop(con) {
         con.up = false;
@@ -143,7 +145,7 @@ export default class AISystem extends System {
     moveIntoCombatRange(entityId, con) {
         this.stop(con);
         const pos = this.entityManager.get(entityId, CType.Position);
-        const playerPos = this.entityManager.get(this.playerId, CType.Position);
+        const playerPos = this.entityManager.get(this.entityManager.getPlayerId(), CType.Position);
         if (pos.x < playerPos.x - 0.5) {
             con.right = true;
             con.left = false;

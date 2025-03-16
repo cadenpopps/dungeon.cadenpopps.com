@@ -1,5 +1,7 @@
 import { CType } from "../Component.js";
 import { Direction } from "../Components/DirectionComponent.js";
+import { UILifecycleState, UIType } from "../Components/UIComponent.js";
+import { Event } from "../EventManager.js";
 import { Input } from "../InputManager.js";
 import { System, SystemType } from "../System.js";
 export default class ControllerSystem extends System {
@@ -8,17 +10,44 @@ export default class ControllerSystem extends System {
         super(SystemType.Controller, eventManager, entityManager, [CType.Controller]);
         this.inputManager = inputManager;
     }
+    handleEvent(event) {
+        switch (event) {
+            case Event.level_change_begin:
+                this.paused = true;
+                break;
+        }
+    }
     logic() {
         for (let entityId of this.entities) {
             const entity = this.entityManager.getEntity(entityId);
+            if (entity.has(CType.UI)) {
+                const ui = entity.get(CType.UI);
+                if (ui.elements[0].type === UIType.GameOverScreen && ui.elements[0].state === UILifecycleState.Stable) {
+                    this.mapInputsToController(entityId);
+                    const con = entity.get(CType.Controller);
+                    if (con.up ||
+                        con.down ||
+                        con.left ||
+                        con.right ||
+                        con.interact ||
+                        con.roll ||
+                        con.primary ||
+                        con.secondary ||
+                        con.ultimate ||
+                        con.zoom_in ||
+                        con.zoom_out) {
+                        this.entityManager.removeComponent(entityId, CType.Controller);
+                        this.eventManager.addEvent(Event.respawn);
+                        return;
+                    }
+                }
+            }
             if (entity.has(CType.Camera)) {
                 this.mapScrollToCamera(entityId);
-            }
-            if (entity.has(CType.Player) || entity.has(CType.Camera)) {
                 this.mapInputsToController(entityId);
             }
-            if (entity.get(CType.Controller).roll) {
-                entity.get(CType.Health).invincibleCounter = entity.get(CType.Movement).rollLength;
+            if (entity.has(CType.Player)) {
+                this.mapInputsToController(entityId);
             }
             if (entity.has(CType.Direction)) {
                 this.determineDirection(entityId);

@@ -1,7 +1,8 @@
 import { abs, floor, max, round } from "../lib/PoppsMath.js";
 import { CType } from "./Component.js";
+import { Direction } from "./Components/DirectionComponent.js";
 import LightSystem from "./Systems/LightSystem.js";
-export const SHOW_TITLE_SCREEN = false;
+export const SHOW_TITLE_SCREEN = true;
 export const SHOW_HITBOXES = true;
 export const LOG_LEVEL_GEN = false;
 export const SHOW_ENEMY_AI = true;
@@ -49,5 +50,27 @@ export function getEntitiesInRange(centerPos, maxDistance, entities, entityManag
         }
     }
     return entitiesInRange;
+}
+export function directionToDegrees(direction) {
+    switch (direction) {
+        case Direction.North:
+            return 180;
+        case Direction.NorthEast:
+            return 225;
+        case Direction.East:
+            return 270;
+        case Direction.SouthEast:
+            return 315;
+        case Direction.South:
+            return 0;
+        case Direction.SouthWest:
+            return 45;
+        case Direction.West:
+            return 90;
+        case Direction.NorthWest:
+            return 135;
+        default:
+            return 0;
+    }
 }
 //# sourceMappingURL=Constants.js.map

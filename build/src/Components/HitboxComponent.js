@@ -1,38 +1,34 @@
 import { Component, CType } from "../Component.js";
 export default class HitboxComponent extends Component {
     shape;
-    xOffset;
-    yOffset;
-    degreesOffset;
+    x;
+    y;
     width;
     height;
-    frames;
-    sourceId;
-    ignoreIds;
+    rotation;
+    duration;
+    sourceEntityId;
     damage;
-    constructor(xOffset, yOffset, width, height, degreesOffset, frames, sourceId, damage) {
+    vertices;
+    constructor(shape, x, y, width, height, rotation, duration, sourceEntityId, damage) {
         super(CType.Hitbox);
-        this.shape = HitboxShape.Rectangle;
-        this.xOffset = xOffset;
-        this.yOffset = yOffset;
+        this.shape = shape;
+        this.x = x;
+        this.y = y;
         this.width = width;
         this.height = height;
-        this.degreesOffset = degreesOffset;
-        this.frames = frames;
-        this.sourceId = sourceId;
-        this.ignoreIds = [sourceId];
+        this.rotation = rotation;
+        this.duration = duration;
+        this.sourceEntityId = sourceEntityId;
         this.damage = damage;
-    }
-}
-export class CircleHitboxComponent extends HitboxComponent {
-    constructor(xOffset, yOffset, radius, frames, sourceId, damage) {
-        super(xOffset, yOffset, radius, radius, 0, frames, sourceId, damage);
-        this.shape = HitboxShape.Circle;
+        this.vertices = new Array();
     }
 }
 export var HitboxShape;
 (function (HitboxShape) {
     HitboxShape[HitboxShape["Rectangle"] = 0] = "Rectangle";
     HitboxShape[HitboxShape["Circle"] = 1] = "Circle";
+    HitboxShape[HitboxShape["SemiCircle"] = 2] = "SemiCircle";
+    HitboxShape[HitboxShape["QuarterCircle"] = 3] = "QuarterCircle";
 })(HitboxShape || (HitboxShape = {}));
 //# sourceMappingURL=HitboxComponent.js.map

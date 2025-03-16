@@ -3,16 +3,18 @@ import { CType } from "../Component.js";
 import { Direction } from "../Components/DirectionComponent.js";
 import { System, SystemType } from "../System.js";
 export default class MovementSystem extends System {
-    BASE_ACCELERATION = 0.03;
+    BASE_ACCELERATION = 0.04;
     BASE_DIAGONAL_ACCELERATION = round(this.BASE_ACCELERATION / 1.4, 5);
-    MAX_SPEED = 0.005;
+    MAX_SPEED = 0.006;
     MAX_DIAGONAL_SPEED = round(this.MAX_SPEED / 1.4, 5);
-    ROLL_ACCELERATION = round(this.BASE_ACCELERATION * 5, 5);
-    ROLL_DIAGONAL_ACCELERATION = round(this.BASE_DIAGONAL_ACCELERATION * 5, 5);
-    MAX_ROLL_SPEED = round(this.MAX_SPEED * 1.5, 5);
-    MAX_ROLL_DIAGONAL_SPEED = round(this.MAX_DIAGONAL_SPEED * 1.5, 5);
-    ROLL_VELOCITY_DAMPER = 0.6;
-    EXTRA_FRICTION = 0.8;
+    ROLL_ACCELERATION_MODIFIER = 4;
+    ROLL_ACCELERATION = round(this.BASE_ACCELERATION * this.ROLL_ACCELERATION_MODIFIER, 5);
+    ROLL_DIAGONAL_ACCELERATION = round(this.BASE_DIAGONAL_ACCELERATION * this.ROLL_ACCELERATION_MODIFIER, 5);
+    ROLL_SPEED_MODIFIER = 1.8;
+    MAX_ROLL_SPEED = round(this.MAX_SPEED * this.ROLL_SPEED_MODIFIER, 5);
+    MAX_ROLL_DIAGONAL_SPEED = round(this.MAX_DIAGONAL_SPEED * this.ROLL_SPEED_MODIFIER, 5);
+    ROLL_VELOCITY_DAMPER = 0.7;
+    EXTRA_FRICTION = 0.7;
     constructor(eventManager, entityManager) {
         super(SystemType.Movement, eventManager, entityManager, [
             CType.Movement,
@@ -55,10 +57,18 @@ export default class MovementSystem extends System {
     determineRolling(entityId) {
         const mov = this.entityManager.get(entityId, CType.Movement);
         const con = this.entityManager.get(entityId, CType.Controller);
-        if (con.roll && mov.rollCooldown === 0) {
-            mov.rolling = true;
-            mov.rollCounter = mov.rollLength;
-            mov.rollCooldown = mov.rollCooldownLength;
+        if (con.roll) {
+            if (mov.rollCooldown === 0) {
+                mov.rolling = true;
+                mov.rollCounter = mov.rollLength;
+                mov.rollCooldown = mov.rollCooldownLength;
+                if (this.entityManager.hasComponent(entityId, CType.Health)) {
+                    this.entityManager.get(entityId, CType.Health).invincibleCounter = mov.rollLength;
+                }
+            }
+        }
+        else {
+            mov.rolling = false;
         }
         if (mov.rollCooldown > 0) {
             mov.rollCooldown--;

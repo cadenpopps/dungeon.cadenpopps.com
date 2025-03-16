@@ -1,6 +1,6 @@
 import { PoppsEngine } from "../lib/PoppsEngine.js";
 import { EntityManager } from "./EntityManager.js";
-import { EventManager } from "./EventManager.js";
+import { Event, EventManager } from "./EventManager.js";
 import { InputManager } from "./InputManager.js";
 import { System } from "./System.js";
 import AISystem from "./Systems/AISystem.js";
@@ -8,7 +8,6 @@ import AbilitySystem from "./Systems/AbilitySystem.js";
 import CameraSystem from "./Systems/CameraSystem.js";
 import ControllerSystem from "./Systems/ControllerSystem.js";
 import EnemySystem from "./Systems/EnemySystem.js";
-import GameSystem from "./Systems/GameSystem.js";
 import GraphicsSystem from "./Systems/GraphicsSystem.js";
 import HealthSystem from "./Systems/HealthSystem.js";
 import HitboxSystem from "./Systems/HitboxSystem.js";
@@ -33,10 +32,9 @@ function gameLoop() {
 const systems = Array<System>();
 const engine = new PoppsEngine();
 const eventManager = new EventManager();
-const entityManager = new EntityManager(eventManager);
+const entityManager = new EntityManager();
 const inputManager = new InputManager(eventManager);
 
-systems.push(new GameSystem(eventManager, entityManager));
 systems.push(new GraphicsSystem(eventManager, entityManager));
 systems.push(new ControllerSystem(eventManager, entityManager, inputManager));
 systems.push(new PlayerSystem(eventManager, entityManager));
@@ -56,3 +54,5 @@ systems.push(new TextureSystem(eventManager, entityManager));
 systems.push(new EnemySystem(eventManager, entityManager));
 
 engine.loop(gameLoop);
+
+eventManager.addEvent(Event.init);

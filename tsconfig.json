@@ -11,11 +11,11 @@
         "noImplicitAny": true /* Enable error reporting for expressions and declarations with an implied 'any' type. */,
         "noImplicitThis": false,
         "strictFunctionTypes": true /* When assigning functions, check to ensure parameters and the return values are subtype-compatible. */,
-        "noUnusedLocals": true /* Enable error reporting when local variables aren't read. */,
-        "noUnusedParameters": true /* Raise an error when a function parameter isn't read. */,
+        "noUnusedLocals": false /* Enable error reporting when local variables aren't read. */,
+        "noUnusedParameters": false /* Raise an error when a function parameter isn't read. */,
         "allowUnreachableCode": true /* Disable error reporting for unreachable code. */,
         "skipLibCheck": true /* Skip type checking all .d.ts files. */,
         "resolveJsonModule": true /* Skip type checking all .d.ts files. */
     },
-    "exclude": ["./tests", "./jest*"]
+    "exclude": ["./tests", "./jest*", "./src/LevelMaker/*"]
 }

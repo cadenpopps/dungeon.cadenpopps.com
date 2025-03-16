@@ -28,52 +28,72 @@ export default class LevelSystem extends System {
     EmptyRooms;
     constructor(eventManager, entityManager) {
         super(SystemType.Level, eventManager, entityManager, [CType.Player]);
-        const reviver = function reviver(_key, value) {
+        const levelReviver = function reviver(_key, value) {
+            if (value !== null && value.type !== undefined) {
+                const tile = convertTile(value);
+                return Array.from(tile.values());
+            }
+            return value;
+        };
+        const roomReviver = function reviver(_key, value) {
             if (value !== null && value.type !== undefined) {
                 return convertTile(value);
             }
             return value;
         };
-        this.levels = [loadJSON("/content/levels/DungeonTown.json", reviver)];
-        this.EntryRooms = loadJSON("/content/rooms/EntryRooms.json", reviver);
-        this.ExitRooms = loadJSON("/content/rooms/ExitRooms.json", reviver);
-        this.EmptyRooms = loadJSON("/content/rooms/EmptyRooms.json", reviver);
+        this.levels = [loadJSON("/content/levels/DungeonTown.json", levelReviver)];
+        this.EntryRooms = loadJSON("/content/rooms/EntryRooms.json", roomReviver);
+        this.ExitRooms = loadJSON("/content/rooms/ExitRooms.json", roomReviver);
+        this.EmptyRooms = loadJSON("/content/rooms/EmptyRooms.json", roomReviver);
     }
     handleEvent(event) {
         switch (event) {
-            case Event.level_change:
+            case Event.new_game:
+                this.levels = [this.levels[0]];
+                this.currentLevel = this.levels[0];
+                break;
+            case Event.respawn:
+                this.levels = [this.levels[0]];
+                this.unloadLevel();
+                this.entityManager.get(this.entities[0], CType.Player).levelChangeId = -1;
+                this.currentLevel = this.levels[0];
+                break;
+            case Event.begin_level_load:
                 this.changeLevel();
                 break;
         }
     }
     changeLevel() {
-        if (this.currentLevel === undefined) {
+        const exitId = this.entityManager.get(this.entities[0], CType.Player).levelChangeId;
+        const depth = this.currentLevel.depth;
+        if (exitId === -1) {
             this.loadLevel(this.levels[0]);
             return;
         }
-        const exitId = this.entityManager.get(this.entities[0], CType.Player).levelChangeId;
-        const depth = this.currentLevel.depth;
-        for (let l of this.levels) {
-            if (depth !== l.depth) {
-                for (let e of l.entities) {
-                    if ((e.has(CType.LevelChange) && e.get(CType.LevelChange).id) === exitId) {
-                        this.loadLevel(l);
-                        return;
-                    }
+        else {
+            this.unloadLevel();
+        }
+        for (const level of this.levels) {
+            if (depth !== level.depth) {
+                if (level.staircaseIds.includes(exitId)) {
+                    this.loadLevel(level);
+                    return;
                 }
             }
         }
         this.loadLevel(this.generateLevel(exitId, depth + 1));
     }
+    unloadLevel() {
+        const allEntities = this.entityManager.getLevelEntities(this.currentLevel.depth);
+        this.currentLevel.entities = Array.from(allEntities.values());
+        this.entityManager.removeEntities(Array.from(allEntities.keys()));
+    }
     loadLevel(level) {
-        if (this.currentLevel) {
-            this.entityManager.removeEntities(this.currentLevel.entityIds);
-        }
         if (!this.levels.includes(level)) {
             this.levels.push(level);
         }
         this.currentLevel = level;
-        this.currentLevel.entityIds = this.entityManager.addEntities(this.currentLevel.entities);
+        this.entityManager.addEntities(this.currentLevel.entities);
         this.eventManager.addEvent(Event.level_loaded);
     }
     getTimePassed(startDate) {
@@ -81,14 +101,14 @@ export default class LevelSystem extends System {
     }
     generateLevel(entryId, depth) {
         const newLevel = new LevelComponent(depth);
-        this.entityManager.addEntity(new Map([[CType.Level, newLevel]]));
-        let rooms = [];
         let startTotal = new Date();
         if (LOG_LEVEL_GEN) {
             console.log(`Generating level with depth ${depth}`);
             console.log(`Level seed: ${newLevel.seed}`);
         }
         let start = new Date();
+        const rooms = [];
+        newLevel.staircaseIds = [entryId, entryId + 1];
         rooms.push(this.generateEntryRoom(newLevel.seed, depth, entryId));
         rooms.push(this.generateExitRoom(newLevel.seed, depth, entryId + 1));
         if (LOG_LEVEL_GEN) {
@@ -142,19 +162,17 @@ export default class LevelSystem extends System {
         return newLevel;
     }
     generateTileEntitiesFromMap(level, levelMap, depth) {
-        for (let row of levelMap) {
-            for (let square of row) {
-                if (square.size !== 0) {
+        const entities = new Array();
+        for (const row of levelMap) {
+            for (const square of row) {
+                if (square.has(CType.Position)) {
                     const pos = square.get(CType.Position);
                     pos.z = depth;
-                    const newSquare = new Map();
-                    for (let entry of square.entries()) {
-                        newSquare.set(entry[0], entry[1]);
-                    }
-                    level.entities.push(newSquare);
                 }
+                entities.push(Array.from(square.values()));
             }
         }
+        level.entities = entities;
     }
     generateEntryRoom(seed, depth, entryId) {
         const LEVEL_SIZE = floor(LevelSystem.BASE_LEVEL_SIZE + LevelSystem.LEVEL_GROWTH * depth);
@@ -710,9 +728,9 @@ export function convertTile(value) {
         case Tile.Grass:
             return newGrass(value.x, value.y);
         case Tile.StairUp:
-            return newEntry(value.x, value.y);
+            return newEntry(value.x, value.y, -1);
         case Tile.StairDown:
-            return newExit(value.x, value.y);
+            return newExit(value.x, value.y, 0);
         case Tile.EnemySpawner:
             return newEnemySpawner(value.x, value.y, false, false);
         case Tile.PackSpawner:
@@ -727,7 +745,7 @@ export function newEnemySpawner(x, y, pack, boss) {
         [CType.Tile, new TileComponent(Tile.Floor, x, y)],
         [CType.Size, new SizeComponent(1)],
         [CType.Position, new PositionComponent(x, y, 0)],
-        [CType.Visible, new VisibleComponent(false)],
+        [CType.Visible, new VisibleComponent(false, 0, false)],
         [CType.EnemySpawner, new EnemySpawnerComponent(pack, boss)],
     ]);
 }
@@ -736,7 +754,7 @@ export function newDungeonFloor(x, y) {
         [CType.Tile, new TileComponent(Tile.Floor, x, y)],
         [CType.Size, new SizeComponent(1)],
         [CType.Position, new PositionComponent(x, y, 0)],
-        [CType.Visible, new VisibleComponent(false)],
+        [CType.Visible, new VisibleComponent(false, 0)],
     ]);
 }
 export function newWall(x, y) {
@@ -745,7 +763,7 @@ export function newWall(x, y) {
         [CType.Size, new SizeComponent(1)],
         [CType.Position, new PositionComponent(x, y, 0)],
         [CType.Collision, new CollisionComponent()],
-        [CType.Visible, new VisibleComponent(true)],
+        [CType.Visible, new VisibleComponent(true, 0)],
     ]);
 }
 export function newDoor(x, y) {
@@ -754,7 +772,7 @@ export function newDoor(x, y) {
         [CType.Size, new SizeComponent(1)],
         [CType.Position, new PositionComponent(x, y, 0)],
         [CType.Interactable, new InteractableComponent(Interactable.Door)],
-        [CType.Visible, new VisibleComponent(false)],
+        [CType.Visible, new VisibleComponent(false, 0)],
     ]);
 }
 export function newGrass(x, y) {
@@ -762,7 +780,7 @@ export function newGrass(x, y) {
         [CType.Tile, new TileComponent(Tile.Grass, x, y)],
         [CType.Size, new SizeComponent(1)],
         [CType.Position, new PositionComponent(x, y, 0)],
-        [CType.Visible, new VisibleComponent(false)],
+        [CType.Visible, new VisibleComponent(false, 0)],
     ]);
 }
 export function newPath(x, y) {
@@ -770,7 +788,7 @@ export function newPath(x, y) {
         [CType.Tile, new TileComponent(Tile.Path, x, y)],
         [CType.Size, new SizeComponent(1)],
         [CType.Position, new PositionComponent(x, y, 0)],
-        [CType.Visible, new VisibleComponent(false)],
+        [CType.Visible, new VisibleComponent(false, 0)],
     ]);
 }
 export function newEntry(x, y, id) {
@@ -779,8 +797,8 @@ export function newEntry(x, y, id) {
         [CType.Size, new SizeComponent(1)],
         [CType.Position, new PositionComponent(x, y, 0)],
         [CType.LevelChange, new LevelChangeComponent(id || 0)],
-        [CType.Interactable, new InteractableComponent(Interactable.LevelChange)],
-        [CType.Visible, new VisibleComponent(false)],
+        [CType.Interactable, new InteractableComponent(Interactable.LevelChange, 2)],
+        [CType.Visible, new VisibleComponent(false, 0)],
         [CType.UI, new UIComponent([new UIInteractablePrompt("to enter previous level")])],
     ]);
 }
@@ -790,25 +808,22 @@ export function newExit(x, y, id) {
         [CType.Size, new SizeComponent(1)],
         [CType.Position, new PositionComponent(x, y, 0)],
         [CType.LevelChange, new LevelChangeComponent(id || 0)],
-        [CType.Interactable, new InteractableComponent(Interactable.LevelChange)],
-        [CType.Visible, new VisibleComponent(false)],
+        [CType.Interactable, new InteractableComponent(Interactable.LevelChange, 2)],
+        [CType.Visible, new VisibleComponent(false, 0)],
         [CType.UI, new UIComponent([new UIInteractablePrompt("to enter next level")])],
     ]);
 }
 export function newTorch(x, y) {
-    return new Map([
-        [CType.Size, new SizeComponent(0.2)],
-        [CType.Visible, new VisibleComponent(false, 2)],
-        [CType.Position, new PositionComponent(x, y)],
-        [
-            CType.LightSource,
-            new LightSourceComponent(LightSystem.LIGHT_MAX - randomIntInRange(5, 7), randomIntInRange(180, 300), {
-                r: randomInt(30),
-                g: randomInt(30),
-                b: randomInt(30),
-                a: 0,
-            }),
-        ],
-    ]);
+    return [
+        new SizeComponent(0.2),
+        new VisibleComponent(false, 2),
+        new PositionComponent(x, y),
+        new LightSourceComponent(LightSystem.LIGHT_MAX - randomIntInRange(5, 7), randomIntInRange(180, 300), {
+            r: randomInt(30),
+            g: randomInt(30),
+            b: randomInt(30),
+            a: 0,
+        }),
+    ];
 }
 //# sourceMappingURL=LevelSystem.js.map

@@ -1,128 +1,235 @@
-import { Component, CType } from "./Component.js";
-import { Event, EventManager } from "./EventManager.js";
+import { Component, CType, CTypeMap } from "./Component.js";
+import PositionComponent from "./Components/PositionComponent.js";
+import { System } from "./System.js";
 
 export class EntityManager {
+    public static PLAYER_ID = 0;
     public entities: Map<number, Map<CType, Component>>;
-    private CTypes = Object.keys(CType).length / 2;
-    private eventManager: EventManager;
-    private idCounter: number;
+    private systems: Array<{
+        componentRequirements: Array<CType>;
+        entityIds: Array<number>;
+        system: System;
+    }>;
+    private modifedSystems = new Array<System>();
+    private createQueue: Array<Array<Component>>;
     private destroyQueue: Array<number>;
+    private addComponentQueue: Array<[number, Array<Component>]>;
+    private removeComponentQueue: Array<[number, Array<CType>]>;
+    private lowestId: number;
 
-    constructor(eventManager: EventManager) {
-        this.eventManager = eventManager;
+    constructor() {
         this.entities = new Map<number, Map<CType, Component>>();
-        for (let i = 0; i < this.CTypes; i++) {
-            this.entities.set(i, new Map<CType, Component>());
-        }
+        this.systems = new Array<{
+            componentRequirements: Array<CType>;
+            entityIds: Array<number>;
+            system: System;
+        }>();
+        this.modifedSystems = new Array<System>();
+        this.createQueue = new Array<Array<Component>>();
         this.destroyQueue = new Array<number>();
-        this.idCounter = 0;
+        this.addComponentQueue = new Array<[number, Array<Component>]>();
+        this.removeComponentQueue = new Array<[number, Array<CType>]>();
+        this.lowestId = 0;
     }
 
     public tick(): void {
-        for (let event of this.eventManager.eventQueue) {
-            switch (event) {
-                case Event.entity_destroyed:
-                    this.destroyEntities();
-                    break;
-            }
+        if (this.destroyQueue.length > 0) {
+            this.destroyEntities();
+        }
+        if (this.createQueue.length > 0) {
+            this.createEntities();
+        }
+        if (this.addComponentQueue.length > 0 || this.removeComponentQueue.length > 0) {
+            this.modifyEntities();
+        }
+        for (const modifiedSystem of this.modifedSystems) {
+            modifiedSystem.entitiesModifiedCallback();
+        }
+        this.modifedSystems = new Array<System>();
+    }
+
+    public hasEntity(entityId: number): boolean {
+        if (this.entities.has(entityId)) {
+            return true;
+        } else {
+            return false;
         }
     }
 
-    public hasComponent(entityId: number, CType: CType): boolean {
-        const entity = this.getEntity(entityId);
-        return entity.has(CType);
+    public hasComponent(entityId: number, cType: CType): boolean {
+        if (this.hasEntity(entityId)) {
+            return this.getEntity(entityId).has(cType);
+        }
+        return false;
     }
 
     public getEntity(entityId: number): Map<CType, Component> {
-        const entity = this.entities.get(entityId);
-        if (entity !== undefined) {
-            return entity;
+        if (this.hasEntity(entityId)) {
+            return this.entities.get(entityId) as Map<CType, Component>;
+        } else {
+            throw new Error(`Entity ${entityId} does not exist`);
         }
-        throw new Error(`Entity ${entityId} not found`);
     }
 
-    public get<T>(entityId: number, CType: CType): T {
-        const entity = this.entities.get(entityId);
-        if (entity !== undefined) {
-            const component = entity.get(CType);
-            if (component !== undefined) {
-                return component as T;
-            }
-            throw new Error(`Entity ${entityId} does not have component ${CType}`);
+    public get<T>(entityId: number, cType: CType): T {
+        const entity = this.getEntity(entityId);
+        if (entity.has(cType)) {
+            return entity.get(cType) as T;
+        } else {
+            throw new Error(`Entity ${entityId} does not have component ${CTypeMap.get(cType)}`);
         }
-        throw new Error(`Entity ${entityId} not found`);
     }
 
-    public addEntity(components: Map<CType, Component>): number {
-        const entityId = this.idCounter;
-        this.idCounter++;
-        this.entities.set(entityId, components);
-        this.eventManager.addEvent(Event.entity_created);
-        return entityId;
+    public addComponent(entityId: number, component: Component): void {
+        this.addComponentQueue.push([entityId, [component]]);
     }
 
-    public addEntities(entities: Array<Map<CType, Component>>): Array<number> {
-        const entityIds = new Array<number>();
-        for (let entity of entities) {
-            const entityId = this.idCounter;
-            this.idCounter++;
-            this.entities.set(entityId, entity);
-            entityIds.push(entityId);
-        }
-        this.eventManager.addEvent(Event.entity_created);
-        return entityIds;
+    public addComponents(entityId: number, components: Array<Component>): void {
+        this.addComponentQueue.push([entityId, components]);
+    }
+
+    public addEntity(components: Array<Component>): void {
+        this.createQueue.push(components);
+    }
+
+    public addEntities(entities: Array<Array<Component>>): void {
+        this.createQueue = this.createQueue.concat(entities);
     }
 
     public removeEntity(entityId: number): void {
         if (this.entities.has(entityId)) {
             this.destroyQueue.push(entityId);
-            this.eventManager.addEvent(Event.entity_destroyed);
         }
     }
 
     public removeEntities(entityIds: Array<number>): void {
-        let entitiesDestroyed = false;
-        for (let entityId of entityIds) {
-            if (this.entities.has(entityId)) {
-                this.destroyQueue.push(entityId);
-                entitiesDestroyed = true;
-            }
-        }
-        if (entitiesDestroyed) {
-            this.eventManager.addEvent(Event.entity_destroyed);
+        for (const entityId of entityIds) {
+            this.removeEntity(entityId);
         }
     }
 
-    public removeComponent(entityId: number, CType: CType): void {
-        const entity = this.entities.get(entityId);
-        if (entity?.has(CType)) {
-            entity?.delete(CType);
-            this.eventManager.addEvent(Event.entity_modified);
+    public removeComponent(entityId: number, cType: CType): void {
+        if (this.hasEntity(entityId)) {
+            this.removeComponentQueue.push([entityId, [cType]]);
         }
     }
 
-    public removeComponents(entityId: number, CTypes: Array<CType>): void {
-        const entity = this.entities.get(entityId);
-        let modified = false;
-        for (const CType of CTypes) {
-            if (entity?.has(CType)) {
-                modified = true;
-                entity?.delete(CType);
+    public removeComponents(entityId: number, cTypes: Array<CType>): void {
+        if (this.hasEntity(entityId)) {
+            this.removeComponentQueue.push([entityId, cTypes]);
+        }
+    }
+
+    private hasComponents(entity: Map<CType, Component>, cTypes: Array<CType>): boolean {
+        for (const cType of cTypes) {
+            if (!entity.has(cType)) {
+                return false;
             }
         }
-        if (modified) {
-            this.eventManager.addEvent(Event.entity_modified);
+        return true;
+    }
+
+    private getNextAvailableId(): number {
+        while (this.entities.has(this.lowestId)) {
+            this.lowestId++;
         }
+        return this.lowestId;
     }
 
     private destroyEntities(): void {
-        for (let entityId of this.destroyQueue) {
-            this.entities.delete(entityId);
+        for (const entityId of this.destroyQueue) {
+            if (this.hasEntity(entityId)) {
+                if (entityId < this.lowestId) {
+                    this.lowestId = entityId;
+                }
+                for (const system of this.systems) {
+                    if (this.hasComponents(this.getEntity(entityId), system.componentRequirements)) {
+                        if (system.entityIds.includes(entityId)) {
+                            system.entityIds.splice(system.entityIds.indexOf(entityId), 1);
+                            if (!this.modifedSystems.includes(system.system)) {
+                                this.modifedSystems.push(system.system);
+                            }
+                        }
+                    }
+                }
+                this.entities.delete(entityId);
+            }
         }
+
         this.destroyQueue = new Array<number>();
     }
 
-    public getSystemEntities(componentRequirements: Array<CType>): Array<number> {
+    private createEntities(): void {
+        for (const entity of this.createQueue) {
+            const entityId = this.getNextAvailableId();
+            const componentMap = new Map<CType, Component>();
+            for (const component of entity) {
+                componentMap.set(component.type, component);
+            }
+            this.entities.set(entityId, componentMap);
+
+            for (const system of this.systems) {
+                if (
+                    !system.entityIds.includes(entityId) &&
+                    this.hasComponents(componentMap, system.componentRequirements)
+                ) {
+                    system.entityIds.push(entityId);
+                    if (!this.modifedSystems.includes(system.system)) {
+                        this.modifedSystems.push(system.system);
+                    }
+                }
+            }
+        }
+
+        this.createQueue = new Array<Array<Component>>();
+    }
+
+    private modifyEntities(): void {
+        for (const instruction of this.removeComponentQueue) {
+            const entityId = instruction[0];
+            const entity = this.getEntity(entityId);
+            for (const ctype of instruction[1]) {
+                entity?.delete(ctype);
+            }
+            for (const system of this.systems) {
+                if (system.entityIds.includes(entityId) && !this.hasComponents(entity, system.componentRequirements)) {
+                    system.entityIds.splice(system.entityIds.indexOf(entityId), 1);
+                    if (!this.modifedSystems.includes(system.system)) {
+                        this.modifedSystems.push(system.system);
+                    }
+                }
+            }
+        }
+        this.removeComponentQueue = new Array<[number, Array<CType>]>();
+
+        for (const instruction of this.addComponentQueue) {
+            const entityId = instruction[0];
+            const entity = this.getEntity(entityId);
+            for (const component of instruction[1]) {
+                entity.set(component.type, component);
+            }
+            for (const system of this.systems) {
+                if (!system.entityIds.includes(entityId) && this.hasComponents(entity, system.componentRequirements)) {
+                    system.entityIds.push(entityId);
+                    if (!this.modifedSystems.includes(system.system)) {
+                        this.modifedSystems.push(system.system);
+                    }
+                }
+            }
+        }
+
+        this.addComponentQueue = new Array<[number, Array<Component>]>();
+    }
+
+    public subscribeToEntities(componentRequirements: Array<CType>, entityIds: Array<number>, system: System): void {
+        this.systems.push({
+            componentRequirements: componentRequirements,
+            entityIds: entityIds,
+            system: system,
+        });
+    }
+
+    public getEntitiesWithComponents(componentRequirements: Array<CType>): Array<number> {
         const entitiesWithComponents = new Array<number>();
         for (let entity of this.entities.entries()) {
             let missingComponent = false;
@@ -136,5 +243,23 @@ export class EntityManager {
             }
         }
         return entitiesWithComponents;
+    }
+
+    public getPlayerId(): number {
+        return EntityManager.PLAYER_ID;
+    }
+
+    public getLevelEntities(depth: number): Map<number, Array<Component>> {
+        const levelEntities = new Map<number, Array<Component>>();
+        for (const entry of this.entities.entries()) {
+            const entity = entry[1];
+            if (entity.has(CType.Player)) {
+                continue;
+            }
+            if (entity.has(CType.Position) && (entity.get(CType.Position) as PositionComponent).z === depth) {
+                levelEntities.set(entry[0], Array.from(entity.values()));
+            }
+        }
+        return levelEntities;
     }
 }

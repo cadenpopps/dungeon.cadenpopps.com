@@ -11,63 +11,56 @@ import { Event, EventManager } from "../EventManager.js";
 import { System, SystemType } from "../System.js";
 
 export default class InteractableSystem extends System {
-    private playerId!: number;
+    private controllerIds: Array<number> = new Array<number>();
 
     constructor(eventManager: EventManager, entityManager: EntityManager) {
         super(SystemType.Interactable, eventManager, entityManager, [CType.Interactable]);
+        this.entityManager.subscribeToEntities(
+            [CType.Controller, CType.Health, CType.Position],
+            this.controllerIds,
+            this
+        );
     }
 
     public logic(): void {
-        if (this.playerId !== undefined) {
-            if (this.entityManager.get<HealthComponent>(this.playerId, CType.Health).alive) {
-                const possibleInteractions = this.getInteractablesInRange();
-                this.checkInteractions(possibleInteractions);
-            }
-        }
-    }
-
-    public getEntitiesHelper(): void {
-        this.playerId = this.entityManager.getSystemEntities([CType.Player])[0];
-    }
-
-    private getInteractablesInRange(): Array<number> {
-        const interactablesInRange = new Array<number>();
-        const playerPos = this.entityManager.get<PositionComponent>(this.playerId, CType.Position);
-        for (let entityId of this.entities) {
-            if (entityId !== this.playerId) {
-                const interactable = this.entityManager.getEntity(entityId);
-                const pos = interactable.get(CType.Position) as PositionComponent;
-                const int = interactable.get(CType.Interactable) as InteractableComponent;
-                if (abs(playerPos.x - pos.x) < int.range && abs(playerPos.y - pos.y) < int.range) {
-                    interactablesInRange.push(entityId);
-                    int.active = true;
-                } else {
-                    int.active = false;
+        for (const entityId of this.entities) {
+            const int = this.entityManager.get<InteractableComponent>(entityId, CType.Interactable);
+            int.visible = false;
+            if (int.counter > 0) {
+                int.counter--;
+            } else {
+                for (const controllerId of this.controllerIds) {
+                    if (this.entityManager.get<HealthComponent>(controllerId, CType.Health).alive) {
+                        if (this.interactableInRange(entityId, int, controllerId)) {
+                            int.visible = true;
+                            if (this.entityManager.get<ControllerComponent>(controllerId, CType.Controller).interact) {
+                                this.handleInteraction(entityId, controllerId);
+                            }
+                        }
+                    }
                 }
             }
         }
-        return interactablesInRange;
     }
 
-    private checkInteractions(possibleInteractions: Array<number>): void {
-        if (this.entityManager.get<ControllerComponent>(this.playerId, CType.Controller).interact) {
-            for (let entityId of possibleInteractions) {
-                this.handleInteraction(entityId);
-            }
-        }
-        return;
+    private interactableInRange(entityId: number, int: InteractableComponent, controllerId: number): boolean {
+        const controllerPos = this.entityManager.get<PositionComponent>(controllerId, CType.Position);
+        const intPos = this.entityManager.get<PositionComponent>(entityId, CType.Position);
+        return abs(controllerPos.x - intPos.x) < int.range && abs(controllerPos.y - intPos.y) < int.range;
     }
 
-    private handleInteraction(entityId: number): void {
-        const interactableType = this.entityManager.get<InteractableComponent>(
-            entityId,
-            CType.Interactable
-        ).interactableType;
-        switch (interactableType) {
+    private handleInteraction(entityId: number, controllerId: number): void {
+        const int = this.entityManager.get<InteractableComponent>(entityId, CType.Interactable);
+        int.counter = int.cooldown;
+        int.visible = false;
+        switch (int.interactableType) {
             case Interactable.LevelChange:
-                this.entityManager.get<PlayerComponent>(this.playerId, CType.Player).levelChangeId =
-                    this.entityManager.get<LevelChangeComponent>(entityId, CType.LevelChange).id;
-                this.eventManager.addEvent(Event.level_change);
+                if (this.entityManager.hasComponent(controllerId, CType.Player)) {
+                    this.entityManager.get<PlayerComponent>(controllerId, CType.Player).levelChangeId =
+                        this.entityManager.get<LevelChangeComponent>(entityId, CType.LevelChange).id;
+                    this.entityManager.get<ControllerComponent>(controllerId, CType.Controller).interact = false;
+                    this.eventManager.addEvent(Event.level_change_begin);
+                }
                 break;
         }
     }

@@ -1,10 +1,7 @@
-import { CType, Component } from "../Component.js";
+import { CType } from "../Component.js";
 import AbilityComponent, { Ability, AbilityType, SpinAttack } from "../Components/AbilityComponent.js";
 import ControllerComponent from "../Components/ControllerComponent.js";
-import DirectionComponent from "../Components/DirectionComponent.js";
-import HitboxComponent, { CircleHitboxComponent } from "../Components/HitboxComponent.js";
-import PositionComponent from "../Components/PositionComponent.js";
-import RotationComponent, { RotationDirectionMap } from "../Components/RotationComponent.js";
+import HitboxComponent from "../Components/HitboxComponent.js";
 import SizeComponent from "../Components/SizeComponent.js";
 import { EntityManager } from "../EntityManager.js";
 import { EventManager } from "../EventManager.js";
@@ -14,7 +11,7 @@ import VisibleSystem from "./VisibleSystem.js";
 
 export default class AbilitySystem extends System {
     constructor(eventManager: EventManager, entityManager: EntityManager) {
-        super(SystemType.Ability, eventManager, entityManager, [CType.Ability]);
+        super(SystemType.Ability, eventManager, entityManager, [CType.Ability, CType.Controller]);
     }
 
     public logic(): void {
@@ -40,8 +37,6 @@ export default class AbilitySystem extends System {
             this.decrementCooldownAndCurrentTick(ability);
         }
     }
-
-    public getEntitiesHelper(): void {}
 
     private determineActiveAbility(con: ControllerComponent, ability: AbilityComponent): void {
         if (con.primary && ability.primary.cooldown === 0) {
@@ -101,48 +96,21 @@ export default class AbilitySystem extends System {
 
     private spawnHitbox(entityId: number, ability: SpinAttack): void {
         const hitboxData = ability.frames[ability.duration - ability.currentTick];
-        if (hitboxData !== null) {
-            const damage = hitboxData.damage;
-            const sourcePos = this.entityManager.get<PositionComponent>(entityId, CType.Position);
-            const sourceDir = this.entityManager.get<DirectionComponent>(entityId, CType.Direction).direction;
-            const pos = new PositionComponent(sourcePos.x + hitboxData.x, sourcePos.y + hitboxData.y);
-            const size = new SizeComponent(hitboxData.width, hitboxData.height);
+        for (const hitbox of hitboxData) {
             const sourceSize = this.entityManager.get<SizeComponent>(entityId, CType.Size);
-            const rotationOffset = hitboxData.degrees || 0;
-            const rotation = new RotationComponent(
-                sourcePos,
-                (RotationDirectionMap.get(sourceDir) as number) + rotationOffset
-            );
-            let hitbox: HitboxComponent;
-            if (hitboxData.circle) {
-                hitbox = new CircleHitboxComponent(
-                    hitboxData.x * sourceSize.width,
-                    hitboxData.y * sourceSize.height,
-                    hitboxData.width * sourceSize.width,
-                    hitboxData.frames,
+            this.entityManager.addEntity([
+                new HitboxComponent(
+                    hitbox.shape,
+                    hitbox.x * sourceSize.width,
+                    hitbox.y * sourceSize.height,
+                    hitbox.width * sourceSize.width,
+                    hitbox.height * sourceSize.height,
+                    hitbox.rotation,
+                    hitbox.duration,
                     entityId,
-                    damage
-                );
-            } else {
-                hitbox = new HitboxComponent(
-                    hitboxData.x * sourceSize.width,
-                    hitboxData.y * sourceSize.height,
-                    hitboxData.width * sourceSize.width,
-                    hitboxData.height * sourceSize.height,
-                    rotationOffset,
-                    hitboxData.frames,
-                    entityId,
-                    damage
-                );
-            }
-            this.entityManager.addEntity(
-                new Map<CType, Component>([
-                    [CType.Position, pos],
-                    [CType.Size, size],
-                    [CType.Hitbox, hitbox],
-                    [CType.Rotation, rotation],
-                ])
-            );
+                    hitbox.damage
+                ),
+            ]);
         }
     }
 }

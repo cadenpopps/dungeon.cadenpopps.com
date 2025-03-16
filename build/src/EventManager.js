@@ -26,14 +26,15 @@ export class EventManager {
 }
 export var Event;
 (function (Event) {
-    Event[Event["new_game"] = 0] = "new_game";
-    Event[Event["load_game"] = 1] = "load_game";
-    Event[Event["entity_created"] = 2] = "entity_created";
-    Event[Event["entity_destroyed"] = 3] = "entity_destroyed";
-    Event[Event["entity_modified"] = 4] = "entity_modified";
-    Event[Event["level_change"] = 5] = "level_change";
-    Event[Event["level_loaded"] = 6] = "level_loaded";
-    Event[Event["pause"] = 7] = "pause";
-    Event[Event["unpause"] = 8] = "unpause";
+    Event[Event["init"] = 0] = "init";
+    Event[Event["new_game"] = 1] = "new_game";
+    Event[Event["respawn"] = 2] = "respawn";
+    Event[Event["load_game"] = 3] = "load_game";
+    Event[Event["level_change_begin"] = 4] = "level_change_begin";
+    Event[Event["level_change_complete"] = 5] = "level_change_complete";
+    Event[Event["begin_level_load"] = 6] = "begin_level_load";
+    Event[Event["level_loaded"] = 7] = "level_loaded";
+    Event[Event["pause"] = 8] = "pause";
+    Event[Event["unpause"] = 9] = "unpause";
 })(Event || (Event = {}));
 //# sourceMappingURL=EventManager.js.map

@@ -4,13 +4,12 @@ import { CType } from "../Component.js";
 import HealthComponent from "../Components/HealthComponent.js";
 import HitboxComponent, { HitboxShape } from "../Components/HitboxComponent.js";
 import PositionComponent from "../Components/PositionComponent.js";
-import RotationComponent from "../Components/RotationComponent.js";
 import SizeComponent from "../Components/SizeComponent.js";
 import TextureComponent from "../Components/TextureComponent.js";
 import VisibleComponent from "../Components/VisibleComponent.js";
 import { SHOW_HITBOXES } from "../Constants.js";
 import { EntityManager } from "../EntityManager.js";
-import { Event, EventManager } from "../EventManager.js";
+import { EventManager } from "../EventManager.js";
 import { System, SystemType } from "../System.js";
 import CameraSystem from "./CameraSystem.js";
 import VisibleSystem from "./VisibleSystem.js";
@@ -30,25 +29,14 @@ export default class GraphicsSystem extends System {
         this.canvas.loop(this.canvasCallback.bind(this));
         this.canvas.setImageSmoothingEnabled(false);
         this.invisibleCanvas.setImageSmoothingEnabled(false);
-    }
-
-    public handleEvent(event: Event): void {
-        switch (event) {
-            case Event.entity_created:
-            case Event.entity_modified:
-            case Event.entity_destroyed:
-                this.groupEntitiesByLayer();
-                break;
-            case Event.level_loaded:
-                this.groupEntitiesByLayer();
-                break;
-        }
-    }
-
-    public getEntitiesHelper(): void {
         if (SHOW_HITBOXES) {
-            this.hitboxIds = this.entityManager.getSystemEntities([CType.Hitbox]);
+            this.hitboxIds = new Array<number>();
+            this.entityManager.subscribeToEntities([CType.Hitbox], this.hitboxIds, this);
         }
+    }
+
+    public entitiesModifiedCallback(): void {
+        this.groupEntitiesByLayer();
     }
 
     private canvasCallback(): void {
@@ -71,14 +59,6 @@ export default class GraphicsSystem extends System {
                 const size = entity.get(CType.Size) as SizeComponent;
                 const width = size.width;
                 const height = size.height;
-
-                if (entity.has(CType.Rotation)) {
-                    this.canvas.canvas.save();
-                    const rotation = entity.get(CType.Rotation) as RotationComponent;
-                    this.canvas.canvas.translate(rotation.centerPoint.x, rotation.centerPoint.y);
-                    this.canvas.canvas.rotate((rotation.degrees * Math.PI) / 180);
-                    this.canvas.canvas.translate(-rotation.centerPoint.x, -rotation.centerPoint.y);
-                }
 
                 if (entity.has(CType.Health)) {
                     const health = entity.get(CType.Health) as HealthComponent;
@@ -175,31 +155,26 @@ export default class GraphicsSystem extends System {
                     this.canvas.rect(pos.x - width / 2, pos.y - height / 2, width, height);
                 }
                 this.canvas.resetGlobalAlpha();
-
-                if (entity.has(CType.Rotation)) {
-                    this.canvas.canvas.restore();
-                }
             }
         }
 
         if (SHOW_HITBOXES) {
             for (const entityId of this.hitboxIds) {
-                const rotation = this.entityManager.get<RotationComponent>(entityId, CType.Rotation);
-                const hitbox = this.entityManager.get<HitboxComponent>(entityId, CType.Hitbox);
-                const pos = this.entityManager.get<PositionComponent>(entityId, CType.Position);
-                const size = this.entityManager.get<SizeComponent>(entityId, CType.Size);
-                const width = size.width;
-                const height = size.height;
                 this.canvas.canvas.save();
-                this.canvas.canvas.translate(rotation.centerPoint.x, rotation.centerPoint.y);
-                this.canvas.canvas.rotate((rotation.degrees * Math.PI) / 180);
-                this.canvas.canvas.translate(-rotation.centerPoint.x, -rotation.centerPoint.y);
-                this.canvas.stroke(255, 0, 40, 0.75);
-                this.canvas.strokeWidth(0.1);
-                if (hitbox.shape === HitboxShape.Rectangle) {
-                    this.canvas.strokeRect(pos.x - width / 2, pos.y - height / 2, width, height);
+                this.canvas.strokeWidth(0.05);
+                this.canvas.stroke(255, 0, 40, 0.9);
+                const hitbox = this.entityManager.get<HitboxComponent>(entityId, CType.Hitbox);
+                if (hitbox.vertices.length > 0) {
+                    this.canvas.canvas.beginPath();
+                    this.canvas.canvas.moveTo(hitbox.vertices[0].x, hitbox.vertices[0].y);
+                    for (const vertex of hitbox.vertices) {
+                        this.canvas.canvas.lineTo(vertex.x, vertex.y);
+                    }
+                    this.canvas.canvas.lineTo(hitbox.vertices[0].x, hitbox.vertices[0].y);
+                    this.canvas.canvas.stroke();
                 } else if (hitbox.shape === HitboxShape.Circle) {
-                    this.canvas.strokeEllipse(pos.x, pos.y, hitbox.width);
+                    const sourcePos = this.entityManager.get<PositionComponent>(hitbox.sourceEntityId, CType.Position);
+                    this.canvas.strokeEllipse(sourcePos.x, sourcePos.y, hitbox.width);
                 }
                 this.canvas.canvas.restore();
             }

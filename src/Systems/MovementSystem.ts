@@ -3,6 +3,7 @@ import { CType } from "../Component.js";
 import AccelerationComponent from "../Components/AccelerationComponent.js";
 import ControllerComponent from "../Components/ControllerComponent.js";
 import DirectionComponent, { Direction } from "../Components/DirectionComponent.js";
+import HealthComponent from "../Components/HealthComponent.js";
 import MovementComponent from "../Components/MovementComponent.js";
 import VelocityComponent from "../Components/VelocityComponent.js";
 import { EntityManager } from "../EntityManager.js";
@@ -10,16 +11,18 @@ import { EventManager } from "../EventManager.js";
 import { System, SystemType } from "../System.js";
 
 export default class MovementSystem extends System {
-    private BASE_ACCELERATION = 0.03;
+    private BASE_ACCELERATION = 0.04;
     private BASE_DIAGONAL_ACCELERATION = round(this.BASE_ACCELERATION / 1.4, 5);
-    private MAX_SPEED = 0.005;
+    private MAX_SPEED = 0.006;
     private MAX_DIAGONAL_SPEED = round(this.MAX_SPEED / 1.4, 5);
-    private ROLL_ACCELERATION = round(this.BASE_ACCELERATION * 5, 5);
-    private ROLL_DIAGONAL_ACCELERATION = round(this.BASE_DIAGONAL_ACCELERATION * 5, 5);
-    private MAX_ROLL_SPEED = round(this.MAX_SPEED * 1.5, 5);
-    private MAX_ROLL_DIAGONAL_SPEED = round(this.MAX_DIAGONAL_SPEED * 1.5, 5);
-    private ROLL_VELOCITY_DAMPER = 0.6;
-    private EXTRA_FRICTION = 0.8;
+    private ROLL_ACCELERATION_MODIFIER = 4;
+    private ROLL_ACCELERATION = round(this.BASE_ACCELERATION * this.ROLL_ACCELERATION_MODIFIER, 5);
+    private ROLL_DIAGONAL_ACCELERATION = round(this.BASE_DIAGONAL_ACCELERATION * this.ROLL_ACCELERATION_MODIFIER, 5);
+    private ROLL_SPEED_MODIFIER = 1.8;
+    private MAX_ROLL_SPEED = round(this.MAX_SPEED * this.ROLL_SPEED_MODIFIER, 5);
+    private MAX_ROLL_DIAGONAL_SPEED = round(this.MAX_DIAGONAL_SPEED * this.ROLL_SPEED_MODIFIER, 5);
+    private ROLL_VELOCITY_DAMPER = 0.7;
+    private EXTRA_FRICTION = 0.7;
 
     constructor(eventManager: EventManager, entityManager: EntityManager) {
         super(SystemType.Movement, eventManager, entityManager, [
@@ -67,10 +70,17 @@ export default class MovementSystem extends System {
         const mov = this.entityManager.get<MovementComponent>(entityId, CType.Movement);
         const con = this.entityManager.get<ControllerComponent>(entityId, CType.Controller);
 
-        if (con.roll && mov.rollCooldown === 0) {
-            mov.rolling = true;
-            mov.rollCounter = mov.rollLength;
-            mov.rollCooldown = mov.rollCooldownLength;
+        if (con.roll) {
+            if (mov.rollCooldown === 0) {
+                mov.rolling = true;
+                mov.rollCounter = mov.rollLength;
+                mov.rollCooldown = mov.rollCooldownLength;
+                if (this.entityManager.hasComponent(entityId, CType.Health)) {
+                    this.entityManager.get<HealthComponent>(entityId, CType.Health).invincibleCounter = mov.rollLength;
+                }
+            }
+        } else {
+            mov.rolling = false;
         }
 
         if (mov.rollCooldown > 0) {

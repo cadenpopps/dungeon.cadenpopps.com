@@ -4,55 +4,49 @@ import { Interactable } from "../Components/InteractableComponent.js";
 import { Event } from "../EventManager.js";
 import { System, SystemType } from "../System.js";
 export default class InteractableSystem extends System {
-    playerId;
+    controllerIds = new Array();
     constructor(eventManager, entityManager) {
         super(SystemType.Interactable, eventManager, entityManager, [CType.Interactable]);
+        this.entityManager.subscribeToEntities([CType.Controller, CType.Health, CType.Position], this.controllerIds, this);
     }
     logic() {
-        if (this.playerId !== undefined) {
-            if (this.entityManager.get(this.playerId, CType.Health).alive) {
-                const possibleInteractions = this.getInteractablesInRange();
-                this.checkInteractions(possibleInteractions);
+        for (const entityId of this.entities) {
+            const int = this.entityManager.get(entityId, CType.Interactable);
+            int.visible = false;
+            if (int.counter > 0) {
+                int.counter--;
             }
-        }
-    }
-    getEntitiesHelper() {
-        this.playerId = this.entityManager.getSystemEntities([CType.Player])[0];
-    }
-    getInteractablesInRange() {
-        const interactablesInRange = new Array();
-        const playerPos = this.entityManager.get(this.playerId, CType.Position);
-        for (let entityId of this.entities) {
-            if (entityId !== this.playerId) {
-                const interactable = this.entityManager.getEntity(entityId);
-                const pos = interactable.get(CType.Position);
-                const int = interactable.get(CType.Interactable);
-                if (abs(playerPos.x - pos.x) < int.range && abs(playerPos.y - pos.y) < int.range) {
-                    interactablesInRange.push(entityId);
-                    int.active = true;
-                }
-                else {
-                    int.active = false;
+            else {
+                for (const controllerId of this.controllerIds) {
+                    if (this.entityManager.get(controllerId, CType.Health).alive) {
+                        if (this.interactableInRange(entityId, int, controllerId)) {
+                            int.visible = true;
+                            if (this.entityManager.get(controllerId, CType.Controller).interact) {
+                                this.handleInteraction(entityId, controllerId);
+                            }
+                        }
+                    }
                 }
             }
         }
-        return interactablesInRange;
     }
-    checkInteractions(possibleInteractions) {
-        if (this.entityManager.get(this.playerId, CType.Controller).interact) {
-            for (let entityId of possibleInteractions) {
-                this.handleInteraction(entityId);
-            }
-        }
-        return;
+    interactableInRange(entityId, int, controllerId) {
+        const controllerPos = this.entityManager.get(controllerId, CType.Position);
+        const intPos = this.entityManager.get(entityId, CType.Position);
+        return abs(controllerPos.x - intPos.x) < int.range && abs(controllerPos.y - intPos.y) < int.range;
     }
-    handleInteraction(entityId) {
-        const interactableType = this.entityManager.get(entityId, CType.Interactable).interactableType;
-        switch (interactableType) {
+    handleInteraction(entityId, controllerId) {
+        const int = this.entityManager.get(entityId, CType.Interactable);
+        int.counter = int.cooldown;
+        int.visible = false;
+        switch (int.interactableType) {
             case Interactable.LevelChange:
-                this.entityManager.get(this.playerId, CType.Player).levelChangeId =
-                    this.entityManager.get(entityId, CType.LevelChange).id;
-                this.eventManager.addEvent(Event.level_change);
+                if (this.entityManager.hasComponent(controllerId, CType.Player)) {
+                    this.entityManager.get(controllerId, CType.Player).levelChangeId =
+                        this.entityManager.get(entityId, CType.LevelChange).id;
+                    this.entityManager.get(controllerId, CType.Controller).interact = false;
+                    this.eventManager.addEvent(Event.level_change_begin);
+                }
                 break;
         }
     }

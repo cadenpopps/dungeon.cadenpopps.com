@@ -9,9 +9,9 @@ export default class CameraSystem extends System {
     CAMERA_ACCEL_DIVIDER = 25;
     constructor(eventManager, entityManager) {
         super(SystemType.Camera, eventManager, entityManager, [CType.Camera]);
+        entityManager.subscribeToEntities(this.requiredComponents, this.entities, this);
     }
     logic() {
-        CameraSystem.setHighestPriorityCamera(this.entities, this.entityManager);
         for (let entityId of this.entities) {
             if (this.entityManager.getEntity(entityId).has(CType.Position)) {
                 this.moveCamera(entityId);
@@ -21,14 +21,14 @@ export default class CameraSystem extends System {
             }
         }
     }
-    static setHighestPriorityCamera(cameraIds, entityManager) {
-        if (cameraIds.length === 0) {
+    entitiesModifiedCallback() {
+        if (this.entities.length === 0) {
             return;
         }
         let priority = 0;
-        let prioCam = entityManager.get(cameraIds[0], CType.Camera);
-        for (let entityId of cameraIds) {
-            const cam = entityManager.get(entityId, CType.Camera);
+        let prioCam = this.entityManager.get(this.entities[0], CType.Camera);
+        for (let entityId of this.entities) {
+            const cam = this.entityManager.get(entityId, CType.Camera);
             if (cam.priority > priority) {
                 priority = cam.priority;
                 prioCam = cam;

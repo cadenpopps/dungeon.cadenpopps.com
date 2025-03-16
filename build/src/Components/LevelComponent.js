@@ -5,12 +5,14 @@ export default class LevelComponent extends Component {
     seed;
     entities;
     entityIds;
+    staircaseIds;
     constructor(depth) {
         super(CType.Level);
         this.depth = depth;
         this.seed = randomInt(65536);
         this.entities = new Array();
         this.entityIds = new Array();
+        this.staircaseIds = new Array();
     }
 }
 //# sourceMappingURL=LevelComponent.js.map

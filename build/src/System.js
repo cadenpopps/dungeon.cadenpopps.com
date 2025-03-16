@@ -8,31 +8,22 @@ export class System {
     entityManager;
     constructor(type, eventManager, entityManager, requiredComponents) {
         this.type = type;
-        this.paused = false;
+        this.paused = true;
         this.eventManager = eventManager;
         this.entityManager = entityManager;
         this.requiredComponents = requiredComponents;
         this.entities = new Array();
+        this.entityManager.subscribeToEntities(this.requiredComponents, this.entities, this);
     }
     tick() {
         for (let event of this.eventManager.eventQueue) {
             switch (event) {
-                case Event.entity_created:
-                case Event.entity_modified:
-                case Event.entity_destroyed:
-                    this.getEntities();
-                    break;
-                case Event.level_change:
-                    this.pause();
-                    break;
-                case Event.level_loaded:
-                    this.unpause();
-                    break;
                 case Event.pause:
-                    this.pause();
+                    this.paused = true;
                     break;
+                case Event.level_change_complete:
                 case Event.unpause:
-                    this.unpause();
+                    this.paused = false;
                     break;
             }
             this.handleEvent(event);
@@ -42,18 +33,8 @@ export class System {
         }
     }
     handleEvent(_event) { }
+    entitiesModifiedCallback() { }
     logic() { }
-    getEntities() {
-        this.entities = this.entityManager.getSystemEntities(this.requiredComponents);
-        this.getEntitiesHelper();
-    }
-    getEntitiesHelper() { }
-    pause() {
-        this.paused = true;
-    }
-    unpause() {
-        this.paused = false;
-    }
 }
 export var SystemType;
 (function (SystemType) {

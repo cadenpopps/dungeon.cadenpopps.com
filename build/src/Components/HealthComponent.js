@@ -4,12 +4,14 @@ export default class HealthComponent extends Component {
     currentHealth;
     alive;
     invincibleCounter;
-    constructor(maxHealth, alive = true) {
+    deathFadeoutCounter;
+    constructor(maxHealth, alive = true, deathFadeoutTime = 30) {
         super(CType.Health);
         this.maxHealth = maxHealth;
         this.currentHealth = this.maxHealth;
         this.alive = alive;
         this.invincibleCounter = 0;
+        this.deathFadeoutCounter = deathFadeoutTime;
     }
 }
 //# sourceMappingURL=HealthComponent.js.map

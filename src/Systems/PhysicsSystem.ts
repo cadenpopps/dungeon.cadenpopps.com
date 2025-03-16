@@ -13,21 +13,44 @@ import CameraSystem from "./CameraSystem.js";
 
 export default class PhysicsSystem extends System {
     public static BIGGEST_ENTITY_SIZE = 0;
-    private velocityIds!: Array<number>;
-    private sizeIds!: Array<number>;
+    private velocityIds: Array<number> = new Array<number>();
 
     constructor(eventManager: EventManager, entityManager: EntityManager) {
-        super(SystemType.Physics, eventManager, entityManager, [CType.Collision]);
+        super(SystemType.Physics, eventManager, entityManager, [CType.Collision, CType.Position]);
+
+        this.entityManager.subscribeToEntities(
+            [CType.Velocity, CType.Collision, CType.Position],
+            this.velocityIds,
+            this
+        );
     }
 
     public handleEvent(event: Event): void {
         switch (event) {
-            case Event.entity_created:
-            case Event.entity_modified:
-            case Event.entity_destroyed:
-                PhysicsSystem.BIGGEST_ENTITY_SIZE = ceil(this.getBiggestEntity(this.sizeIds));
+            case Event.level_change_begin:
+                this.paused = true;
+                for (const entityId of this.velocityIds) {
+                    const vel = this.entityManager.get<VelocityComponent>(entityId, CType.Velocity);
+                    vel.x = 0;
+                    vel.y = 0;
+                }
+
                 break;
         }
+    }
+
+    public entitiesModifiedCallback(): void {
+        let biggestEntitySize = 1;
+        for (let entityId of this.entities) {
+            const size = this.entityManager.get<SizeComponent>(entityId, CType.Size);
+            if (size.width > biggestEntitySize) {
+                biggestEntitySize = size.width;
+            }
+            if (size.height > biggestEntitySize) {
+                biggestEntitySize = size.height;
+            }
+        }
+        PhysicsSystem.BIGGEST_ENTITY_SIZE = biggestEntitySize;
     }
 
     public logic(): void {
@@ -51,11 +74,6 @@ export default class PhysicsSystem extends System {
         this.physics(subGrid, movingEntitiesInRange);
     }
 
-    public getEntitiesHelper(): void {
-        this.velocityIds = this.entityManager.getSystemEntities([CType.Velocity]);
-        this.sizeIds = this.entityManager.getSystemEntities([CType.Size]);
-    }
-
     public static createSubGrid(
         filteredEntities: Array<number>,
         entityManager: EntityManager
@@ -74,20 +92,6 @@ export default class PhysicsSystem extends System {
             subGrid.get(newX)?.get(newY)?.push(entityId);
         }
         return subGrid;
-    }
-
-    private getBiggestEntity(entityIds: Array<number>): number {
-        let biggestEntitySize = 1;
-        for (let entityId of entityIds) {
-            const size = this.entityManager.get<SizeComponent>(entityId, CType.Size);
-            if (size.width > biggestEntitySize) {
-                biggestEntitySize = size.width;
-            }
-            if (size.height > biggestEntitySize) {
-                biggestEntitySize = size.height;
-            }
-        }
-        return biggestEntitySize;
     }
 
     private physics(subGrid: Map<number, Map<number, Array<number>>>, movingEntitiesInRange: Array<number>): void {

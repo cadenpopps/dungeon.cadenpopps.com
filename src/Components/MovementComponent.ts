@@ -10,7 +10,7 @@ export default class MovementComponent extends Component {
     public rollCooldownLength: number;
     public rollCooldown: number;
 
-    constructor(speed: number = 30, rollLength: number = 12, rollCooldownLength: number = 70) {
+    constructor(speed: number = 30, rollLength: number = 10, rollCooldownLength: number = 60) {
         super(CType.Movement);
         this.speed = speed;
         this.walking = false;

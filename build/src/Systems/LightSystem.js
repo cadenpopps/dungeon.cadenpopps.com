@@ -17,9 +17,10 @@ export default class LightSystem extends System {
     static shadow_red = 22;
     static shadow_green = 8;
     static shadow_blue = 30;
-    lightSourceIds;
+    lightSourceIds = new Array();
     constructor(eventManager, entityManager) {
         super(SystemType.Light, eventManager, entityManager, [CType.Visible]);
+        this.entityManager.subscribeToEntities([CType.LightSource], this.lightSourceIds, this);
     }
     logic() {
         const cam = CameraSystem.getHighestPriorityCamera();
@@ -67,9 +68,6 @@ export default class LightSystem extends System {
                 }
             }
         }
-    }
-    getEntitiesHelper() {
-        this.lightSourceIds = this.entityManager.getSystemEntities([CType.LightSource]);
     }
 }
 //# sourceMappingURL=LightSystem.js.map

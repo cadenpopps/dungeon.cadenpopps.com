@@ -1,6 +1,9 @@
 import * as PoppsInput from "../lib/PoppsInput.js";
 import { Event } from "./EventManager.js";
 export class InputManager {
+    static MOUSE_X = 0;
+    static MOUSE_Y = 0;
+    static MOUSE_DOWN = false;
     eventManager;
     scrollTimer;
     inputs;
@@ -14,6 +17,7 @@ export class InputManager {
         PoppsInput.listenScroll(this.scrollHandler.bind(this));
         PoppsInput.listenMouseDown(this.mouseDownHandler.bind(this));
         PoppsInput.listenMouseUp(this.mouseUpHandler.bind(this));
+        PoppsInput.listenMouseMoved(this.mouseMovedHandler.bind(this));
         document.addEventListener("contextmenu", (e) => e?.cancelable && e.preventDefault());
     }
     getInputs() {
@@ -24,9 +28,6 @@ export class InputManager {
     }
     keyDownHandler(key) {
         const lowerCaseKey = key.toLocaleLowerCase();
-        if (lowerCaseKey === "n") {
-            this.eventManager.addEvent(Event.level_change);
-        }
         if (this.controllerMap.has(lowerCaseKey)) {
             const input = this.controllerMap.get(lowerCaseKey);
             if (input === Input.Pause) {
@@ -77,8 +78,17 @@ export class InputManager {
             }
         }
     }
+    mouseMovedHandler(event) {
+        if (event.target.width) {
+            InputManager.MOUSE_X = event.clientX - event.target.width / 2;
+        }
+        if (event.target.height) {
+            InputManager.MOUSE_Y = event.clientY - event.target.height / 2;
+        }
+    }
     mouseDownHandler(event) {
         if (event.button === 0) {
+            InputManager.MOUSE_DOWN = true;
             this.inputs.push(Input.Primary);
         }
         else if (event.button === 2) {
@@ -87,6 +97,7 @@ export class InputManager {
     }
     mouseUpHandler(event) {
         if (event.button === 0) {
+            InputManager.MOUSE_DOWN = false;
             this.inputs = this.inputs.filter((i) => i !== Input.Primary);
         }
         else if (event.button === 2) {

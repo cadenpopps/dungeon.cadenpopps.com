@@ -19,58 +19,53 @@ import { SHOW_ENEMY_AI } from "../Constants.js";
 import { System, SystemType } from "../System.js";
 import CameraSystem from "./CameraSystem.js";
 export default class EnemySystem extends System {
-    playerId;
     static PACK_RADIUS = 3;
     constructor(eventManager, entityManager) {
         super(SystemType.Enemy, eventManager, entityManager, [CType.EnemySpawner]);
     }
-    getEntitiesHelper() {
-        this.playerId = this.entityManager.getSystemEntities([CType.Player])[0];
-    }
     logic() {
-        if (this.playerId === undefined) {
-            return;
-        }
         const cam = CameraSystem.getHighestPriorityCamera();
-        const playerPos = this.entityManager.get(this.playerId, CType.Position);
+        const playerPos = this.entityManager.get(this.entityManager.getPlayerId(), CType.Position);
         for (const entityId of this.entities) {
             const entity = this.entityManager.getEntity(entityId);
             const ePos = entity.get(CType.Position);
             if (abs(playerPos.x - ePos.x) < cam.visibleDistance && abs(playerPos.y - ePos.y) < cam.visibleDistance) {
                 const spawner = entity.get(CType.EnemySpawner);
                 if (spawner.boss) {
-                    this.spawnBoss(entity, this.playerId);
+                    this.spawnBoss(entity, this.entityManager.getPlayerId());
+                    this.entityManager.removeComponent(entityId, CType.EnemySpawner);
                 }
                 else if (spawner.pack) {
-                    this.spawnPack(entity, this.playerId);
+                    this.spawnPack(entity, this.entityManager.getPlayerId());
+                    this.entityManager.removeComponent(entityId, CType.EnemySpawner);
                 }
                 else {
-                    this.spawnEnemy(entity, this.playerId);
+                    this.spawnEnemy(entity, this.entityManager.getPlayerId());
+                    this.entityManager.removeComponent(entityId, CType.EnemySpawner);
                 }
             }
         }
     }
     createEnemy(level, pos, size, health) {
-        const enemy = new Map([
-            [CType.AI, new AIComponent()],
-            [CType.Ability, new AbilityComponent(new SpinAttack(20))],
-            [CType.Direction, new DirectionComponent()],
-            [CType.Experience, new ExperienceComponent(level)],
-            [CType.Position, new PositionComponent(pos.x, pos.y)],
-            [CType.Velocity, new VelocityComponent(0, 0)],
-            [CType.Acceleration, new AccelerationComponent(0, 0)],
-            [CType.Visible, new VisibleComponent(false, 4)],
-            [CType.UI, new UIComponent([new UIEnemyHealthBar(size, 1)])],
-            [CType.Health, new HealthComponent(health)],
-            [CType.Collision, new CollisionComponent(CollisionHandler.Stop)],
-            [CType.Size, new SizeComponent(size)],
-            [CType.Controller, new ControllerComponent()],
-            [CType.Movement, new MovementComponent(10)],
-            [CType.Texture, new TextureComponent([new Texture(TextureMaps.get(TextureMap.Skeleton))])],
-        ]);
-        if (SHOW_ENEMY_AI) {
-            enemy.get(CType.UI).elements.push(new UIEnemyAI(size));
-        }
+        const enemy = [
+            new AIComponent(),
+            new AbilityComponent(new SpinAttack(20)),
+            new DirectionComponent(),
+            new ExperienceComponent(level),
+            new PositionComponent(pos.x, pos.y, pos.z),
+            new VelocityComponent(0, 0),
+            new AccelerationComponent(0, 0),
+            new VisibleComponent(false, 4),
+            SHOW_ENEMY_AI
+                ? new UIComponent([new UIEnemyHealthBar(size, 1)])
+                : new UIComponent([new UIEnemyHealthBar(size, 1), new UIEnemyAI(size)]),
+            new HealthComponent(health),
+            new CollisionComponent(CollisionHandler.Stop),
+            new SizeComponent(size),
+            new ControllerComponent(),
+            new MovementComponent(10),
+            new TextureComponent([new Texture(TextureMaps.get(TextureMap.Skeleton))]),
+        ];
         return enemy;
     }
     spawnEnemy(entity, playerId) {
@@ -81,7 +76,6 @@ export default class EnemySystem extends System {
         const health = floor(10 * size * level);
         const enemy = this.createEnemy(level, spawnerPos, size, health);
         this.entityManager.addEntity(enemy);
-        entity.delete(CType.EnemySpawner);
     }
     spawnPack(entity, playerId) {
         const amount = randomIntInRange(3, 5);
@@ -96,7 +90,6 @@ export default class EnemySystem extends System {
             enemies.push(enemy);
         }
         this.entityManager.addEntities(enemies);
-        entity.delete(CType.EnemySpawner);
     }
     spawnBoss(entity, playerId) {
         const spawnerPos = entity.get(CType.Position);
@@ -106,7 +99,6 @@ export default class EnemySystem extends System {
         const health = floor(10 * size * level);
         const enemy = this.createEnemy(level, spawnerPos, size, health);
         this.entityManager.addEntity(enemy);
-        entity.delete(CType.EnemySpawner);
     }
 }
 //# sourceMappingURL=EnemySystem.js.map
